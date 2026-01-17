@@ -48,30 +48,34 @@
         <h1>[ Enter ]</h1>
     </div>
 
-    <video id="bg-video" loop>
-        <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
-    </video>
+<video id="bg-video" loop playsinline>
+    <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
+</video>
 
     <div class="overlay"></div>
 
     <div class="content">
-        <h2 id="name">Furina</h2>
-        <p>“All the world’s a stage...”</p>
+        <h2 id="name"></h2>
+        <p></p>
     </div>
 
     <script>
-        function startStage() {
-            const video = document.getElementById('bg-video');
-            const splash = document.getElementById('splash');
-            
-            video.style.display = 'block';
-            video.play();
-            splash.style.opacity = '0';
-            
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 1000);
-        }
+function startStage() {
+    const video = document.getElementById('bg-video');
+    const splash = document.getElementById('splash');
+    
+    // Força o vídeo a carregar e tocar
+    video.play().then(() => {
+        console.log("Vídeo rodando!");
+    }).catch(error => {
+        console.log("Erro ao rodar vídeo: ", error);
+    });
+
+    splash.style.opacity = '0';
+    setTimeout(() => {
+        splash.style.display = 'none';
+    }, 1000);
+}
     </script>
 </body>
 </html>
