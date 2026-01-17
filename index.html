@@ -1,182 +1,141 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stage</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Columbina Perfect</title>
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Serif', 'Times New Roman', serif;
+        }
 
-html, body {
-    width: 100%;
-    height: 100%;
-    background: black;
-    overflow: hidden;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
 
-/* SPLASH */
-#splash {
-    position: fixed;
-    inset: 0;
-    background: radial-gradient(circle, #0f2a44, #050a14);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
-    cursor: pointer;
-    transition: opacity 0.8s ease;
-}
+        /* Tela de Entrada */
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #1a3a5a 0%, #050a14 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+            cursor: pointer;
+            transition: opacity 1s ease;
+        }
 
-#splash h1 {
-    color: white;
-    letter-spacing: 6px;
-    border: 1px solid rgba(255,255,255,0.4);
-    padding: 20px 40px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(8px);
-}
+        #splash h1 {
+            color: #fff;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            border: 1px solid #5dade2;
+            padding: 20px 40px;
+            background: rgba(93, 158, 226, 0.1);
+            backdrop-filter: blur(5px);
+        }
 
-/* VIDEO */
-#bg-video {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: -2;
-    display: block;
-}
+        /* Vídeo de Fundo */
+        #bg-video {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover;
+            z-index: 0;
+        }
 
-/* OVERLAY */
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: linear-gradient(
-        180deg,
-        rgba(0,0,0,0.4),
-        rgba(0,0,0,0),
-        rgba(0,0,0,0.5)
-    );
-    z-index: -1;
-}
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                180deg,
+                rgba(0,0,0,0.35) 0%,
+                rgba(0,0,0,0) 50%,
+                rgba(0,0,0,0.35) 100%
+            );
+            z-index: 1;
+            pointer-events: none;
+        }
 
-/* PLAYER CENTRAL */
-.player {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 320px;
-    padding: 18px;
-    background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(15px);
-    border-radius: 18px;
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    box-shadow: 0 0 40px rgba(0,0,0,0.6);
-}
+        /* Conteúdo */
+        .content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
 
-/* CAPA */
-.cover {
-    width: 64px;
-    height: 64px;
-    border-radius: 12px;
-    object-fit: cover;
-}
-
-/* INFO */
-.info {
-    flex: 1;
-}
-
-.title {
-    color: white;
-    font-size: 14px;
-    font-weight: 600;
-}
-
-.artist {
-    color: rgba(255,255,255,0.6);
-    font-size: 12px;
-    margin-bottom: 6px;
-}
-
-.timeline {
-    font-size: 11px;
-    color: rgba(255,255,255,0.6);
-}
-
-/* CONTROLS */
-.controls {
-    font-size: 20px;
-    color: white;
-    cursor: pointer;
-    user-select: none;
-}
-
-/* AUDIO */
-audio {
-    display: none;
-}
-</style>
+        .content h2 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #5dade2;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- SPLASH -->
-<div id="splash" onclick="startStage()">
-    <h1>[ ENTER ]</h1>
-</div>
-
-<!-- VIDEO -->
-<video id="bg-video" muted loop playsinline>
-    <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
-</video>
-
-<div class="overlay"></div>
-
-<!-- PLAYER -->
-<div class="player">
-    <img class="cover" src="https://i.imgur.com/9yG6yKx.jpg">
-    <div class="info">
-        <div class="title">Swim</div>
-        <div class="artist">Chase Atlantic</div>
-        <div class="timeline">00:08 ───|─── 00:18</div>
+    <!-- Splash -->
+    <div id="splash" onclick="startStage()">
+        <h1>[ Click 🔥 ]</h1>
     </div>
-    <div class="controls" onclick="toggleMusic()">▶</div>
-</div>
 
-<audio id="audio" src="music.mp3" loop></audio>
+    <!-- Vídeo -->
+    <video id="bg-video" loop playsinline muted>
+        <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
+    </video>
 
-<script>
-const video = document.getElementById("bg-video");
-const audio = document.getElementById("audio");
-const control = document.querySelector(".controls");
+    <!-- Overlay -->
+    <div class="overlay"></div>
 
-function startStage() {
-    video.play().catch(() => {});
-    const splash = document.getElementById("splash");
-    splash.style.opacity = "0";
-    setTimeout(() => splash.style.display = "none", 800);
-}
+    <!-- Conteúdo -->
+    <div class="content">
+        <h2 id="name">Furina</h2>
+        <p></p>
+    </div>
 
-function toggleMusic() {
-    if (audio.paused) {
-        audio.play();
-        control.textContent = "⏸";
-    } else {
-        audio.pause();
-        control.textContent = "▶";
-    }
-}
-</script>
+    <!-- Script -->
+    <script>
+        function startStage() {
+            const video = document.getElementById('bg-video');
+            const splash = document.getElementById('splash');
+
+            video.muted = false;
+            video.play();
+
+            splash.style.opacity = '0';
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 1000);
+        }
+    </script>
 
 </body>
 </html>
