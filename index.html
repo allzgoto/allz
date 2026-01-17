@@ -1,141 +1,192 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Furina's Stage</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stage</title>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Serif', 'Times New Roman', serif;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #000;
-        }
+html, body {
+    width: 100%;
+    height: 100%;
+    background: black;
+    overflow: hidden;
+}
 
-        /* Tela de Entrada */
-        #splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, #1a3a5a 0%, #050a14 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 3;
-            cursor: pointer;
-            transition: opacity 1s ease;
-        }
+/* SPLASH */
+#splash {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle, #0f2a44, #050a14);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    cursor: pointer;
+    transition: opacity 1s ease;
+}
 
-        #splash h1 {
-            color: #fff;
-            font-size: 2rem;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            border: 1px solid #5dade2;
-            padding: 20px 40px;
-            background: rgba(93, 158, 226, 0.1);
-            backdrop-filter: blur(5px);
-        }
+#splash h1 {
+    color: white;
+    letter-spacing: 6px;
+    border: 1px solid rgba(255,255,255,0.4);
+    padding: 20px 40px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(8px);
+}
 
-        /* Vídeo de Fundo */
-        #bg-video {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            z-index: 0;
-        }
+/* VIDEO */
+#bg-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -2;
+}
 
-        /* Overlay */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                180deg,
-                rgba(0,0,0,0.35) 0%,
-                rgba(0,0,0,0) 50%,
-                rgba(0,0,0,0.35) 100%
-            );
-            z-index: 1;
-            pointer-events: none;
-        }
+/* OVERLAY */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.4),
+        rgba(0,0,0,0),
+        rgba(0,0,0,0.5)
+    );
+    z-index: -1;
+}
 
-        /* Conteúdo */
-        .content {
-            position: relative;
-            z-index: 2;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            text-align: center;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
-        }
+/* PLAYER */
+.player {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    width: 280px;
+    padding: 15px;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border-radius: 16px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.6);
+}
 
-        .content h2 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            color: #5dade2;
-        }
-    </style>
+/* CAPA */
+.cover {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: #222;
+    animation: none;
+}
+
+/* ANIMAÇÃO DA CAPA (18s) */
+.playing .cover {
+    animation: pulse 18s linear infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); filter: brightness(1); }
+    25% { transform: scale(1.05); filter: brightness(1.2); }
+    50% { transform: scale(1); filter: brightness(1); }
+    75% { transform: scale(1.05); filter: brightness(1.2); }
+    100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* INFO */
+.info {
+    flex: 1;
+}
+
+.title {
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.artist {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+}
+
+/* BOTÃO */
+.controls {
+    cursor: pointer;
+    font-size: 20px;
+    color: white;
+    user-select: none;
+}
+
+/* ESCONDER AUDIO */
+audio {
+    display: none;
+}
+</style>
 </head>
 
 <body>
 
-    <!-- Splash -->
-    <div id="splash" onclick="startStage()">
-        <h1>[ Enter ]</h1>
+<!-- SPLASH -->
+<div id="splash" onclick="startStage()">
+    <h1>[ ENTER ]</h1>
+</div>
+
+<!-- VIDEO -->
+<video id="bg-video" loop muted playsinline>
+    <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
+</video>
+
+<div class="overlay"></div>
+
+<!-- PLAYER -->
+<div class="player" id="player">
+    <img class="cover" src="https://i.imgur.com/8Km9tLL.jpg">
+    <div class="info">
+        <div class="title">Swim</div>
+        <div class="artist">Chase Atlantic</div>
     </div>
+    <div class="controls" onclick="toggleMusic()">▶</div>
+</div>
 
-    <!-- Vídeo -->
-    <video id="bg-video" loop playsinline muted>
-        <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
-    </video>
+<audio id="audio" src="music.mp3" loop></audio>
 
-    <!-- Overlay -->
-    <div class="overlay"></div>
+<script>
+const audio = document.getElementById("audio");
+const player = document.getElementById("player");
+const control = document.querySelector(".controls");
+const video = document.getElementById("bg-video");
 
-    <!-- Conteúdo -->
-    <div class="content">
-        <h2 id="name">Furina</h2>
-        <p></p>
-    </div>
+function startStage() {
+    video.play();
 
-    <!-- Script -->
-    <script>
-        function startStage() {
-            const video = document.getElementById('bg-video');
-            const splash = document.getElementById('splash');
+    document.getElementById("splash").style.opacity = "0";
+    setTimeout(() => {
+        document.getElementById("splash").style.display = "none";
+    }, 1000);
+}
 
-            video.muted = false;
-            video.play();
-
-            splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 1000);
-        }
-    </script>
+function toggleMusic() {
+    if (audio.paused) {
+        audio.play();
+        control.textContent = "⏸";
+        player.classList.add("playing");
+    } else {
+        audio.pause();
+        control.textContent = "▶";
+        player.classList.remove("playing");
+    }
+}
+</script>
 
 </body>
 </html>
