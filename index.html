@@ -10,7 +10,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 html, body {
@@ -30,7 +30,7 @@ html, body {
     align-items: center;
     z-index: 10;
     cursor: pointer;
-    transition: opacity 1s ease;
+    transition: opacity 0.8s ease;
 }
 
 #splash h1 {
@@ -50,6 +50,7 @@ html, body {
     height: 100%;
     object-fit: cover;
     z-index: -2;
+    display: block;
 }
 
 /* OVERLAY */
@@ -67,7 +68,7 @@ html, body {
 
 /* PLAYER CENTRAL */
 .player {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -107,11 +108,9 @@ html, body {
     margin-bottom: 6px;
 }
 
-/* TIMELINE FAKE */
 .timeline {
     font-size: 11px;
     color: rgba(255,255,255,0.6);
-    letter-spacing: 1px;
 }
 
 /* CONTROLS */
@@ -137,7 +136,7 @@ audio {
 </div>
 
 <!-- VIDEO -->
-<video id="bg-video" loop muted playsinline>
+<video id="bg-video" muted loop playsinline>
     <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
 </video>
 
@@ -145,8 +144,39 @@ audio {
 
 <!-- PLAYER -->
 <div class="player">
-    <img class="cover" src="https://i.imgur.com/9yG6yKx.jpg" alt="Swim">
+    <img class="cover" src="https://i.imgur.com/9yG6yKx.jpg">
     <div class="info">
         <div class="title">Swim</div>
         <div class="artist">Chase Atlantic</div>
-        <div class="timeline">00:08 ───|─── 00:
+        <div class="timeline">00:08 ───|─── 00:18</div>
+    </div>
+    <div class="controls" onclick="toggleMusic()">▶</div>
+</div>
+
+<audio id="audio" src="music.mp3" loop></audio>
+
+<script>
+const video = document.getElementById("bg-video");
+const audio = document.getElementById("audio");
+const control = document.querySelector(".controls");
+
+function startStage() {
+    video.play().catch(() => {});
+    const splash = document.getElementById("splash");
+    splash.style.opacity = "0";
+    setTimeout(() => splash.style.display = "none", 800);
+}
+
+function toggleMusic() {
+    if (audio.paused) {
+        audio.play();
+        control.textContent = "⏸";
+    } else {
+        audio.pause();
+        control.textContent = "▶";
+    }
+}
+</script>
+
+</body>
+</html>
