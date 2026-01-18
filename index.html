@@ -55,57 +55,38 @@ video{
   pointer-events:none;
 }
 
-/* GLITCH */
+/* TEXTO FANTASMA + GLITCH */
 .glitch{
   position:relative;
   font-size:clamp(4rem,10vw,10rem);
   font-weight:800;
   letter-spacing:0.15em;
-  color:#f0f0ff;
+  color:rgba(240,240,255,0.08);
   text-transform:lowercase;
-  animation:flicker 15s infinite;
 }
 
+/* camadas do glitch */
 .glitch::before,
 .glitch::after{
   content:attr(data-text);
   position:absolute;
   inset:0;
-  opacity:0.8;
+  color:rgba(240,240,255,0.15);
+  opacity:0;
 }
 
-.glitch::before{
-  color:#00ffff;
-  animation:glitchL 15s infinite;
+/* glitch esquerdo */
+.glitch.glitching::before{
+  opacity:1;
+  transform:translate(-3px);
+  clip-path:inset(10% 0 70% 0);
 }
 
-.glitch::after{
-  color:#ff00ff;
-  animation:glitchR 15s infinite;
-}
-
-@keyframes flicker{
-  0%,92%,100%{opacity:1}
-  93%{opacity:.6}
-  94%{opacity:1}
-  95%{opacity:.3}
-  96%{opacity:1}
-}
-
-@keyframes glitchL{
-  0%,90%{transform:none;clip-path:inset(0)}
-  91%{transform:translate(-4px);clip-path:inset(10% 0 70% 0)}
-  92%{transform:translate(3px,-1px);clip-path:inset(40% 0 30% 0)}
-  93%{transform:translate(-2px,1px);clip-path:inset(20% 0 60% 0)}
-  94%{transform:none;clip-path:inset(0)}
-}
-
-@keyframes glitchR{
-  0%,90%{transform:none;clip-path:inset(0)}
-  91%{transform:translate(4px);clip-path:inset(60% 0 20% 0)}
-  92%{transform:translate(-3px,1px);clip-path:inset(30% 0 50% 0)}
-  93%{transform:translate(2px,-1px);clip-path:inset(80% 0 5% 0)}
-  94%{transform:none;clip-path:inset(0)}
+/* glitch direito */
+.glitch.glitching::after{
+  opacity:1;
+  transform:translate(3px);
+  clip-path:inset(60% 0 20% 0);
 }
 
 /* SNOW */
@@ -116,7 +97,7 @@ canvas{
   z-index:5;
 }
 
-/* ASS */
+/* ASSINATURA */
 .ass{
   margin-top:20px;
   font-size:.9rem;
@@ -151,11 +132,19 @@ document.body.addEventListener("click",()=>{
   document.getElementById("audio").play();
 },{once:true});
 
+/* GLITCH SUTIL A CADA 15s */
+const title=document.getElementById("title");
+setInterval(()=>{
+  title.classList.add("glitching");
+  setTimeout(()=>{
+    title.classList.remove("glitching");
+  },180);
+},15000);
+
 /* FINAL FADE */
 setTimeout(()=>{
   const audio=document.getElementById("audio");
   const overlay=document.getElementById("overlay");
-  const title=document.getElementById("title");
 
   overlay.style.background="rgba(0,0,0,0.85)";
   title.style.transition="opacity 6s ease";
