@@ -29,6 +29,7 @@
             inset: 0;
             background: linear-gradient(135deg, #0a2342, #000);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 5;
@@ -50,7 +51,23 @@
             background: rgba(0,0,0,0.4);
             border: 1px solid rgba(100,170,255,0.4);
             backdrop-filter: blur(8px);
-            box-shadow: 0 0 30px rgba(0,80,160,0.35);
+            box-shadow: 0 0 25px rgba(0,80,160,0.4);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        /* Hover pulsante no CLICK */
+        #splash:hover h1 {
+            transform: scale(1.08);
+            box-shadow: 0 0 45px rgba(120,180,255,0.8);
+        }
+
+        /* Assinatura */
+        .signature {
+            margin-top: 14px;
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            color: rgba(200,220,255,0.6);
+            text-shadow: 0 0 10px rgba(120,180,255,0.3);
         }
 
         /* Vídeo */
@@ -78,7 +95,22 @@
             z-index: 1;
         }
 
-        /* Layout da música - CENTRAL */
+        /* Texto fantasma */
+        .ghost-text {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10rem;
+            font-weight: 600;
+            letter-spacing: 20px;
+            color: rgba(255,255,255,0.03);
+            z-index: 1;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        /* Layout da música */
         .music-ui {
             position: absolute;
             top: 50%;
@@ -113,15 +145,9 @@
         }
 
         @keyframes glowPulse {
-            0% {
-                text-shadow: 0 0 6px rgba(120,180,255,0.3);
-            }
-            50% {
-                text-shadow: 0 0 16px rgba(120,180,255,0.9);
-            }
-            100% {
-                text-shadow: 0 0 6px rgba(120,180,255,0.3);
-            }
+            0% { text-shadow: 0 0 6px rgba(120,180,255,0.3); }
+            50% { text-shadow: 0 0 18px rgba(120,180,255,0.9); }
+            100% { text-shadow: 0 0 6px rgba(120,180,255,0.3); }
         }
 
         .progress {
@@ -151,24 +177,27 @@
 
     <!-- Splash -->
     <div id="splash" onclick="startStage()">
-        <h1>[ Click ❄️ ]</h1>
+        <h1> Click ❄️</h1>
+        <div class="signature">ALLZ</div>
     </div>
 
-    <!-- Vídeo (SEM áudio) -->
+    <!-- Vídeo -->
     <video id="bg-video" loop playsinline muted>
         <source src="https://files.catbox.moe/mdnygm.mp4" type="video/mp4">
     </video>
 
     <!-- Música -->
     <audio id="bg-music" loop>
-        <!-- TROCA AQUI PELO SEU LINK -->
         <source src="https://files.catbox.moe/xwbm2h.mp3" type="audio/mpeg">
     </audio>
 
     <!-- Overlay -->
     <div class="overlay"></div>
 
-    <!-- UI da Música -->
+    <!-- Texto Fantasma -->
+    <div class="ghost-text">COLUMBINA</div>
+
+    <!-- UI Música -->
     <div class="music-ui">
         <h3>Swim</h3>
         <span>Chase Atlantic</span>
