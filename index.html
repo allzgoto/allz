@@ -55,19 +55,31 @@
             transition: transform 0.4s ease, box-shadow 0.4s ease;
         }
 
-        /* Hover pulsante no CLICK */
         #splash:hover h1 {
             transform: scale(1.08);
             box-shadow: 0 0 45px rgba(120,180,255,0.8);
         }
 
-        /* Assinatura */
+        /* Assinatura ALLZ com vida */
         .signature {
             margin-top: 14px;
             font-size: 0.8rem;
             letter-spacing: 4px;
-            color: rgba(200,220,255,0.6);
-            text-shadow: 0 0 10px rgba(120,180,255,0.3);
+            color: rgba(200,220,255,0.7);
+            text-shadow: 0 0 12px rgba(120,180,255,0.4);
+            animation: allzFloat 3s ease-in-out infinite,
+                       allzGlow 2.5s ease-in-out infinite;
+        }
+
+        @keyframes allzFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        @keyframes allzGlow {
+            0% { text-shadow: 0 0 8px rgba(120,180,255,0.3); }
+            50% { text-shadow: 0 0 18px rgba(120,180,255,0.8); }
+            100% { text-shadow: 0 0 8px rgba(120,180,255,0.3); }
         }
 
         /* Vídeo */
@@ -117,7 +129,6 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 3;
-
             text-align: center;
             color: #e6f0ff;
             background: rgba(0,0,0,0.25);
@@ -128,20 +139,9 @@
             width: 280px;
         }
 
-        /* Glow pulsante */
         .music-ui h3,
         .music-ui span {
             animation: glowPulse 2.5s ease-in-out infinite;
-        }
-
-        .music-ui h3 {
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
-        .music-ui span {
-            font-size: 0.75rem;
-            opacity: 0.85;
         }
 
         @keyframes glowPulse {
@@ -160,7 +160,6 @@
         }
 
         .progress-bar {
-            width: 0%;
             height: 100%;
             background: linear-gradient(90deg, #7bbcff, #ffffff);
             animation: fakeProgress 180s linear infinite;
@@ -169,6 +168,24 @@
         @keyframes fakeProgress {
             from { width: 0%; }
             to { width: 100%; }
+        }
+
+        /* ❄️ NEVE */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            color: white;
+            font-size: 1em;
+            opacity: 0.8;
+            animation: fall linear infinite;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh);
+            }
         }
     </style>
 </head>
@@ -191,13 +208,9 @@
         <source src="https://files.catbox.moe/xwbm2h.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Overlay -->
     <div class="overlay"></div>
-
-    <!-- Texto Fantasma -->
     <div class="ghost-text">COLUMBINA</div>
 
-    <!-- UI Música -->
     <div class="music-ui">
         <h3>Swim</h3>
         <span>Chase Atlantic</span>
@@ -206,23 +219,34 @@
         </div>
     </div>
 
-    <!-- Script -->
     <script>
         function startStage() {
-            const splash = document.getElementById("splash");
-            const video = document.getElementById("bg-video");
+            document.getElementById("splash").classList.add("splash-hide");
+            document.getElementById("bg-video").play();
             const music = document.getElementById("bg-music");
-
-            splash.classList.add("splash-hide");
-
-            video.play();
             music.volume = 0.15;
             music.play();
 
             setTimeout(() => {
-                splash.style.display = "none";
+                document.getElementById("splash").style.display = "none";
             }, 1000);
         }
+
+        /* Criador de neve */
+        function createSnow() {
+            const snow = document.createElement("div");
+            snow.classList.add("snowflake");
+            snow.innerHTML = "❄";
+            snow.style.left = Math.random() * window.innerWidth + "px";
+            snow.style.animationDuration = (3 + Math.random() * 5) + "s";
+            snow.style.fontSize = (8 + Math.random() * 14) + "px";
+
+            document.body.appendChild(snow);
+
+            setTimeout(() => snow.remove(), 8000);
+        }
+
+        setInterval(createSnow, 180);
     </script>
 
 </body>
