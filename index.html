@@ -13,6 +13,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
+            cursor: url("https://files.catbox.moe/c2kg1h.cur"), auto;
         }
 
         html, body {
@@ -90,7 +91,7 @@
                 rgba(0,0,0,0.4)
             );
             z-index: 1;
-            transition: background 3s ease;
+            transition: background 6s ease;
         }
 
         /* TEXTO FANTASMA */
@@ -105,7 +106,7 @@
             color: rgba(255,255,255,0.03);
             z-index: 1;
             pointer-events: none;
-            transition: opacity 3s ease;
+            transition: opacity 6s ease;
         }
 
         /* UI MÚSICA */
@@ -123,7 +124,7 @@
             border-radius: 16px;
             border: 1px solid rgba(120,180,255,0.3);
             width: 280px;
-            transition: opacity 3s ease;
+            transition: opacity 6s ease;
         }
 
         .music-ui h3,
@@ -156,22 +157,6 @@
         @keyframes fakeProgress {
             to { width: 100%; }
         }
-
-        /* MICRO INTERAÇÃO MOUSE */
-        .mouse-glow {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(120,180,255,0.12), transparent 70%);
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-            transition: opacity 2s ease;
-        }
-
-        .fade-out {
-            opacity: 0;
-        }
     </style>
 </head>
 
@@ -201,12 +186,9 @@
         </div>
     </div>
 
-    <div class="mouse-glow" id="mouseGlow"></div>
-
     <script>
         const music = document.getElementById("bg-music");
         const video = document.getElementById("bg-video");
-        const glow = document.getElementById("mouseGlow");
         const overlay = document.querySelector(".overlay");
         const ghost = document.querySelector(".ghost-text");
         const ui = document.querySelector(".music-ui");
@@ -220,29 +202,24 @@
             music.play();
 
             setTimeout(() => splash.remove(), 1000);
+
+            /* FINAL SILENCIOSO AOS 30s */
+            setTimeout(() => {
+                let vol = music.volume;
+                const fade = setInterval(() => {
+                    if (vol > 0.01) {
+                        vol -= 0.005;
+                        music.volume = vol;
+                    } else {
+                        clearInterval(fade);
+                    }
+                }, 200);
+
+                overlay.style.background = "rgba(0,0,0,0.85)";
+                ghost.style.opacity = "0";
+                ui.style.opacity = "0";
+            }, 30000);
         }
-
-        document.addEventListener("mousemove", e => {
-            glow.style.left = e.clientX + "px";
-            glow.style.top = e.clientY + "px";
-        });
-
-        music.addEventListener("ended", () => {
-            let vol = music.volume;
-            const fade = setInterval(() => {
-                if (vol > 0.01) {
-                    vol -= 0.01;
-                    music.volume = vol;
-                } else {
-                    clearInterval(fade);
-                }
-            }, 100);
-
-            glow.classList.add("fade-out");
-            overlay.style.background = "rgba(0,0,0,0.85)";
-            ghost.style.opacity = "0";
-            ui.style.opacity = "0";
-        });
     </script>
 
 </body>
