@@ -99,36 +99,49 @@ html,body{
     font-weight:600;
     letter-spacing:20px;
     color:rgba(255,255,255,.03);
-    z-index:1;
+    z-index:2;
     pointer-events:none;
     transition:opacity 6s ease, transform .15s;
 }
 
-/* GLITCH TV ANTIGA */
-.glitch{
-    position:relative;
-}
-
-.glitch::before,
-.glitch::after{
+/* GLITCH TV ANTIGA REAL */
+.ghost-text.glitch::before,
+.ghost-text.glitch::after{
     content:attr(data-text);
     position:absolute;
-    inset:0;
-    opacity:0.3;
+    top:0; left:0;
+    width:100%; height:100%;
+    overflow:hidden;
 }
 
-.glitch::before{
+.ghost-text.glitch::before{
     color:rgba(0,180,255,0.4);
     left:2px;
-    text-shadow:1px 0 rgba(0,180,255,0.2);
     clip-path:inset(0 0 50% 0);
+    animation:glitchTop 0.2s infinite;
 }
 
-.glitch::after{
+.ghost-text.glitch::after{
     color:rgba(0,0,50,0.3);
     left:-2px;
-    text-shadow:-1px 0 rgba(0,0,50,0.2);
     clip-path:inset(50% 0 0 0);
+    animation:glitchBottom 0.25s infinite;
+}
+
+@keyframes glitchTop{
+    0% {transform:translate(0,0);}
+    25% {transform:translate(2px,-2px);}
+    50% {transform:translate(-2px,1px);}
+    75% {transform:translate(1px,-1px);}
+    100% {transform:translate(0,0);}
+}
+
+@keyframes glitchBottom{
+    0% {transform:translate(0,0);}
+    25% {transform:translate(-2px,1px);}
+    50% {transform:translate(2px,-1px);}
+    75% {transform:translate(-1px,2px);}
+    100% {transform:translate(0,0);}
 }
 
 /* UI MÚSICA */
@@ -228,7 +241,7 @@ html,body{
 </audio>
 
 <div class="overlay"></div>
-<div class="ghost-text glitch" data-text="COLUMBINA">COLUMBINA</div>
+<div class="ghost-text" id="ghost" data-text="COLUMBINA">COLUMBINA</div>
 
 <div class="music-ui">
     <h3>Swim</h3>
@@ -261,20 +274,20 @@ document.addEventListener("mousemove",e=>{
     setTimeout(()=>p.remove(),1000);
 });
 
-/* ⚠️ MICRO GLITCH TV ANTIGA */
-setInterval(()=>{
-    const g=document.querySelector(".ghost-text");
-    g.classList.add("glitch");
-    setTimeout(()=>g.classList.remove("glitch"),120);
-},15000);
-
-/* REAÇÃO AO MOUSE */
+/* ⚡ REAÇÃO AO MOUSE */
 document.addEventListener("mousemove",e=>{
-    const g=document.querySelector(".ghost-text");
+    const g=document.getElementById("ghost");
     const x=(e.clientX-window.innerWidth/2)/40;
     const y=(e.clientY-window.innerHeight/2)/40;
     g.style.transform=`translate(-50%,-50%) translate(${x}px,${y}px)`;
 });
+
+/* ⚠️ MICRO GLITCH TV ANTIGA */
+setInterval(()=>{
+    const g=document.getElementById("ghost");
+    g.classList.add("glitch");
+    setTimeout(()=>g.classList.remove("glitch"),150); // falha rápida
+},15000);
 
 function startStage(){
     clearInterval(snowInterval);
@@ -284,7 +297,7 @@ function startStage(){
     const video=document.getElementById("bg-video");
     const music=document.getElementById("bg-music");
     const overlay=document.querySelector(".overlay");
-    const ghost=document.querySelector(".ghost-text");
+    const ghost=document.getElementById("ghost");
     const ui=document.querySelector(".music-ui");
 
     splash.classList.add("splash-hide");
