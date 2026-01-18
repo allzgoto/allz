@@ -23,23 +23,28 @@
             background-color: #000;
         }
 
-        /* Tela de Entrada */
+        /* Splash */
         #splash {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: linear-gradient(135deg, #0a2342 0%, #000000 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 3;
             cursor: pointer;
-            transition: opacity 1s ease;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        .splash-hide {
+            opacity: 0;
+            transform: scale(1.15);
         }
 
         #splash h1 {
+            position: relative;
+            z-index: 1;
+
             color: #e6f0ff;
             font-size: 2.2rem;
             letter-spacing: 6px;
@@ -67,7 +72,15 @@
             box-shadow: 0 0 45px rgba(0, 120, 255, 0.6);
         }
 
-        /* Vídeo de Fundo */
+        /* Neve */
+        #snow {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Vídeo */
         #bg-video {
             position: fixed;
             top: 50%;
@@ -82,10 +95,7 @@
         /* Overlay */
         .overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: linear-gradient(
                 180deg,
                 rgba(0,0,0,0.35) 0%,
@@ -105,14 +115,13 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            color: #ffffff;
+            color: #fff;
             text-align: center;
             text-shadow: 0 0 10px rgba(0,0,0,0.8);
         }
 
         .content h2 {
             font-size: 3rem;
-            margin-bottom: 10px;
             font-weight: 600;
         }
     </style>
@@ -122,7 +131,8 @@
 
     <!-- Splash -->
     <div id="splash" onclick="startStage()">
-        <h1> Click 🔥 </h1>
+        <canvas id="snow"></canvas>
+        <h1>ENTER</h1>
     </div>
 
     <!-- Vídeo -->
@@ -136,7 +146,6 @@
     <!-- Conteúdo -->
     <div class="content">
         <h2 id="name"></h2>
-        <p></p>
     </div>
 
     <!-- Script -->
@@ -148,11 +157,67 @@
             video.muted = false;
             video.play();
 
-            splash.style.opacity = '0';
+            splash.classList.add("splash-hide");
+
             setTimeout(() => {
                 splash.style.display = 'none';
             }, 1000);
         }
+
+        /* Neve */
+        const canvas = document.getElementById("snow");
+        const ctx = canvas.getContext("2d");
+
+        let w, h;
+        let flakes = [];
+
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+        }
+
+        window.addEventListener("resize", resize);
+        resize();
+
+        for (let i = 0; i < 120; i++) {
+            flakes.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 2 + 1,
+                d: Math.random() + 1
+            });
+        }
+
+        function snow() {
+            ctx.clearRect(0, 0, w, h);
+            ctx.fillStyle = "rgba(200,220,255,0.8)";
+            ctx.beginPath();
+
+            for (let f of flakes) {
+                ctx.moveTo(f.x, f.y);
+                ctx.arc(f.x, f.y, f.r, 0, Math.PI * 2);
+            }
+
+            ctx.fill();
+            moveSnow();
+        }
+
+        let angle = 0;
+
+        function moveSnow() {
+            angle += 0.01;
+            for (let f of flakes) {
+                f.y += Math.pow(f.d, 2) + 0.5;
+                f.x += Math.sin(angle) * 0.4;
+
+                if (f.y > h) {
+                    f.y = 0;
+                    f.x = Math.random() * w;
+                }
+            }
+        }
+
+        setInterval(snow, 30);
     </script>
 
 </body>
