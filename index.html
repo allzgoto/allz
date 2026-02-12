@@ -25,7 +25,7 @@ body{
     z-index:-1;
 }
 
-/* LOADING */
+/* LOADING SCREEN */
 #loadingScreen{
     position:fixed;
     inset:0;
@@ -64,10 +64,10 @@ body{
 #enterBox{
     margin-top:40px;
     padding:18px 60px;
-    border-radius:12px;
+    border-radius:14px;
     background:rgba(255,255,255,.08);
-    border:1px solid rgba(255,255,255,.2);
-    backdrop-filter:blur(15px);
+    border:1px solid rgba(255,255,255,.25);
+    backdrop-filter:blur(20px);
     letter-spacing:6px;
     opacity:0;
     pointer-events:none;
@@ -90,7 +90,7 @@ body{
     gap:10px;
     z-index:20;
     opacity:0;
-    transition:opacity .3s ease;
+    transition:opacity .4s ease;
 }
 
 #volumeWrapper.visible{
@@ -101,19 +101,24 @@ body{
     width:44px;
     height:44px;
     border-radius:50%;
-    backdrop-filter:blur(10px);
-    background:rgba(255,255,255,0.1);
-    border:1px solid rgba(255,255,255,0.2);
+    backdrop-filter:blur(12px);
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.25);
     display:flex;
     justify-content:center;
     align-items:center;
     cursor:pointer;
+    transition:.3s ease;
+}
+
+#volumeBtn:hover{
+    background:rgba(255,255,255,0.15);
 }
 
 #sliderContainer{
     width:0;
     overflow:hidden;
-    transition:width .3s ease;
+    transition:width .35s cubic-bezier(.4,0,.2,1);
 }
 
 #volumeWrapper.open #sliderContainer{
@@ -145,7 +150,7 @@ body{
 playsinline
 preload="auto"
 loop>
-    <source src="https://drive.google.com/uc?export=preview&id=19AbJPOW0UzLDjgIrxJTt3D_y3Qm8_85h" type="video/mp4">
+    <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
 </video>
 
 <div id="loadingScreen">
@@ -174,30 +179,34 @@ const volumeWrapper = document.getElementById("volumeWrapper");
 const volumeBtn = document.getElementById("volumeBtn");
 const volumeRange = document.getElementById("volumeRange");
 
+/* Volume inicial */
 video.volume = 0.7;
 
-/* Força carregamento */
+/* Força carregamento real */
 video.load();
 
-let fakeProgress = 0;
+let progressInterval;
 
-let interval = setInterval(()=>{
-    if(video.readyState >= 4){
-        fakeProgress += 15;
-    } else if(video.readyState >= 3){
-        fakeProgress += 8;
-    } else {
-        fakeProgress += Math.random()*2;
+video.addEventListener("progress", () => {
+    if(video.buffered.length > 0){
+        let bufferedEnd = video.buffered.end(video.buffered.length - 1);
+        let duration = video.duration;
+        if(duration > 0){
+            let percent = (bufferedEnd / duration) * 100;
+            progressFill.style.width = percent + "%";
+            if(percent >= 95){
+                enterBox.classList.add("show");
+            }
+        }
     }
+});
 
-    if(fakeProgress >= 100){
-        fakeProgress = 100;
-        clearInterval(interval);
+/* Fallback caso metadata demore */
+video.addEventListener("loadedmetadata",()=>{
+    if(video.readyState >= 3){
         enterBox.classList.add("show");
     }
-
-    progressFill.style.width = fakeProgress + "%";
-},200);
+});
 
 enterBox.addEventListener("click", ()=>{
     video.play().then(()=>{
@@ -205,8 +214,9 @@ enterBox.addEventListener("click", ()=>{
         setTimeout(()=>{
             loadingScreen.style.display="none";
         },600);
-
         volumeWrapper.classList.add("visible");
+    }).catch(err=>{
+        console.log("Erro ao iniciar vídeo:", err);
     });
 });
 
