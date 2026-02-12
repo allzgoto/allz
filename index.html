@@ -18,18 +18,7 @@ body{
     font-family:Arial, Helvetica, sans-serif;
 }
 
-/* VIDEO */
-#video{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    background:black;
-    z-index:-2;
-}
-
-/* BLUR BACKGROUND */
+/* VIDEO FUNDO BLUR */
 #video-bg{
     position:fixed;
     inset:0;
@@ -38,14 +27,25 @@ body{
     object-fit:cover;
     filter:blur(80px) brightness(.6);
     transform:scale(1.2);
-    z-index:-3;
+    z-index:-2;
 }
 
-/* ENTER SCREEN */
+/* VIDEO PRINCIPAL */
+#video{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:black;
+    z-index:-1;
+}
+
+/* ENTER */
 #splash{
     position:fixed;
     inset:0;
-    background:radial-gradient(circle at center, #111, #000);
+    background:radial-gradient(circle at center,#111,#000);
     display:flex;
     justify-content:center;
     align-items:center;
@@ -71,7 +71,7 @@ body{
     transform:scale(1.08);
 }
 
-/* VOLUME IOS STYLE */
+/* VOLUME */
 #volumeWrapper{
     position:fixed;
     top:20px;
@@ -99,25 +99,12 @@ body{
     justify-content:center;
     align-items:center;
     cursor:pointer;
-    transition:.3s;
 }
 
-#volumeBtn:hover{
-    background:rgba(255,255,255,0.18);
-}
-
-#volumeBtn svg{
-    width:22px;
-    height:22px;
-    fill:white;
-    opacity:.8;
-}
-
-/* SLIDER */
 #sliderContainer{
     width:0;
     overflow:hidden;
-    transition:width .35s cubic-bezier(.4,0,.2,1);
+    transition:width .35s ease;
 }
 
 #volumeWrapper.open #sliderContainer{
@@ -150,27 +137,18 @@ body{
     <div id="enter-box">ENTER</div>
 </div>
 
-<!-- VIDEO -->
-<video id="video-bg" muted playsinline>
+<!-- VIDEOS (mesmo arquivo, só visual) -->
+<video id="video-bg" preload="auto" muted playsinline>
     <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
 </video>
 
-<video id="video" muted playsinline>
+<video id="video" preload="auto" playsinline>
     <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
 </video>
-
-<audio id="audio">
-    <source src="https://files.catbox.moe/plro9c.mp3" type="audio/mpeg">
-</audio>
 
 <!-- VOLUME -->
 <div id="volumeWrapper">
-    <div id="volumeBtn">
-        <svg id="volumeIcon" viewBox="0 0 24 24">
-            <path d="M3 9v6h4l5 5V4L7 9H3z"/>
-            <path d="M16 8a4 4 0 010 8" fill="none" stroke="white" stroke-width="2"/>
-        </svg>
-    </div>
+    <div id="volumeBtn">🔊</div>
     <div id="sliderContainer">
         <input type="range" id="volumeRange" min="0" max="1" step="0.01" value="0.7">
     </div>
@@ -181,39 +159,36 @@ body{
 const splash = document.getElementById("splash");
 const video = document.getElementById("video");
 const videoBg = document.getElementById("video-bg");
-const audio = document.getElementById("audio");
 
 const volumeWrapper = document.getElementById("volumeWrapper");
 const volumeBtn = document.getElementById("volumeBtn");
 const volumeRange = document.getElementById("volumeRange");
-const volumeIcon = document.getElementById("volumeIcon");
 
-audio.volume = 0.7;
+video.volume = 0.7;
+
+/* Esperar vídeo carregar antes de permitir ENTER */
+video.addEventListener("canplaythrough",()=>{
+    splash.style.cursor="pointer";
+});
 
 /* START */
 splash.addEventListener("click", ()=>{
     splash.style.opacity="0";
     setTimeout(()=>splash.style.display="none",800);
 
-    video.play();
     videoBg.play();
-    audio.play();
+    video.play();
 
     volumeWrapper.classList.add("visible");
 });
 
-/* SINCRONIZAÇÃO SUAVE */
-audio.addEventListener("play",()=>{
-    video.currentTime = audio.currentTime;
-    videoBg.currentTime = audio.currentTime;
+/* LOOP NATURAL */
+video.addEventListener("ended",()=>{
+    video.currentTime=0;
+    videoBg.currentTime=0;
+    video.play();
+    videoBg.play();
 });
-
-setInterval(()=>{
-    if(Math.abs(video.currentTime - audio.currentTime) > 0.25){
-        video.currentTime = audio.currentTime;
-        videoBg.currentTime = audio.currentTime;
-    }
-},2000);
 
 /* VOLUME */
 let hideTimeout;
@@ -221,7 +196,7 @@ let hideTimeout;
 function showVolume(){
     volumeWrapper.classList.add("visible");
     clearTimeout(hideTimeout);
-    hideTimeout = setTimeout(()=>{
+    hideTimeout=setTimeout(()=>{
         volumeWrapper.classList.remove("visible");
         volumeWrapper.classList.remove("open");
     },3000);
@@ -229,27 +204,16 @@ function showVolume(){
 
 document.addEventListener("mousemove", showVolume);
 
-volumeBtn.addEventListener("click", ()=>{
+volumeBtn.addEventListener("click",()=>{
     volumeWrapper.classList.toggle("open");
     showVolume();
 });
 
-volumeRange.addEventListener("input", ()=>{
-    audio.volume = volumeRange.value;
-
-    const percent = volumeRange.value * 100;
+volumeRange.addEventListener("input",()=>{
+    video.volume = volumeRange.value;
+    const percent = volumeRange.value*100;
     volumeRange.style.background =
-        `linear-gradient(to right, white ${percent}%, rgba(255,255,255,.3) ${percent}%)`;
-});
-
-/* LOOP LIMPO */
-audio.addEventListener("ended",()=>{
-    audio.currentTime = 0;
-    video.currentTime = 0;
-    videoBg.currentTime = 0;
-    audio.play();
-    video.play();
-    videoBg.play();
+    `linear-gradient(to right, white ${percent}%, rgba(255,255,255,.3) ${percent}%)`;
 });
 
 </script>
