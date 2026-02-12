@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ALLZ</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
 <style>
 *{
     margin:0;
@@ -15,14 +17,12 @@
 body{
     background:black;
     overflow:hidden;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:'Orbitron', sans-serif;
 }
 
 /* ===== FUNDO BLUR ===== */
 #bg-video{
     position:fixed;
-    top:0;
-    left:0;
     width:100%;
     height:100%;
     object-fit:cover;
@@ -31,14 +31,14 @@ body{
     z-index:-3;
 }
 
-/* ===== VINHETA CINEMÁTICA ===== */
+/* ===== VINHETA ===== */
 #vignette{
     position:fixed;
     width:100%;
     height:100%;
     background:radial-gradient(circle at center,
         rgba(0,0,0,0) 40%,
-        rgba(0,0,0,0.6) 100%);
+        rgba(0,0,0,0.7) 100%);
     pointer-events:none;
     z-index:-2;
 }
@@ -53,20 +53,18 @@ body{
     max-height:100%;
     object-fit:contain;
     z-index:-1;
-    filter:contrast(1.05) brightness(0.95);
 }
 
-/* ===== TELA DE CLICK ===== */
+/* ===== OVERLAY ===== */
 #overlay{
     position:fixed;
     width:100%;
     height:100%;
-    background:black;
+    backdrop-filter:blur(12px);
+    background:rgba(0,0,0,0.6);
     display:flex;
     align-items:center;
     justify-content:center;
-    flex-direction:column;
-    cursor:pointer;
     z-index:10;
     transition:opacity 1s ease;
 }
@@ -76,47 +74,61 @@ body{
     pointer-events:none;
 }
 
+/* Caixa central moderna */
+#click-box{
+    padding:30px 60px;
+    border:1px solid rgba(255,255,255,0.2);
+    background:rgba(0,0,0,0.4);
+    backdrop-filter:blur(20px);
+    text-align:center;
+    cursor:pointer;
+    transition:0.4s;
+}
+
+#click-box:hover{
+    background:rgba(255,255,255,0.05);
+    transform:scale(1.03);
+}
+
 #click-text{
+    font-size:28px;
+    letter-spacing:6px;
     color:white;
-    font-size:22px;
-    letter-spacing:3px;
-    opacity:0.85;
+    opacity:0.9;
 }
 
 #signature{
-    margin-top:8px;
+    margin-top:12px;
     font-size:12px;
     letter-spacing:4px;
     opacity:0.4;
 }
 
-/* ===== VOLUME ICON ===== */
+/* ===== VOLUME ===== */
 #volume-container{
     position:fixed;
-    top:15px;
-    left:15px;
+    top:20px;
+    left:20px;
     z-index:5;
 }
 
 #volume-icon{
-    font-size:22px;
-    color:white;
+    font-size:20px;
     cursor:pointer;
-    opacity:0.7;
+    opacity:0.35;
     transition:0.3s;
 }
 
 #volume-icon:hover{
-    opacity:1;
+    opacity:0.8;
 }
 
 #volume-slider{
     display:none;
-    margin-top:8px;
     width:120px;
+    margin-top:8px;
 }
 
-/* animação suave do slider */
 #volume-slider.show{
     display:block;
 }
@@ -125,27 +137,26 @@ body{
 
 <body>
 
-<!-- FUNDO BLUR -->
 <video id="bg-video" autoplay loop muted playsinline>
     <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
 </video>
 
 <div id="vignette"></div>
 
-<!-- VIDEO PRINCIPAL -->
 <video id="main-video" loop playsinline>
     <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
 </video>
 
-<!-- ÁUDIO -->
 <audio id="audio" loop>
     <source src="https://files.catbox.moe/plro9c.mp3" type="audio/mp3">
 </audio>
 
 <!-- OVERLAY -->
 <div id="overlay">
-    <div id="click-text">CLICK</div>
-    <div id="signature">ALLZ</div>
+    <div id="click-box">
+        <div id="click-text">ENTER</div>
+        <div id="signature">ALLZ</div>
+    </div>
 </div>
 
 <!-- VOLUME -->
@@ -156,22 +167,23 @@ body{
 
 <script>
 const overlay = document.getElementById("overlay");
+const clickBox = document.getElementById("click-box");
 const video = document.getElementById("main-video");
 const audio = document.getElementById("audio");
 const slider = document.getElementById("volume-slider");
 const volumeIcon = document.getElementById("volume-icon");
 
-/* Volume inicial 70% */
+/* Volume inicial */
 audio.volume = 0.7;
 
-/* Mostrar / esconder slider */
+/* Mostrar slider */
 volumeIcon.addEventListener("click", ()=>{
     slider.classList.toggle("show");
 });
 
-/* Controlar volume */
+/* Controle real do volume */
 slider.addEventListener("input", function(){
-    audio.volume = this.value;
+    audio.volume = parseFloat(this.value);
 
     if(this.value == 0){
         volumeIcon.textContent = "🔇";
@@ -182,8 +194,8 @@ slider.addEventListener("input", function(){
     }
 });
 
-/* Click inicial */
-overlay.addEventListener("click", () => {
+/* Clique inicial */
+clickBox.addEventListener("click", ()=>{
     overlay.classList.add("hidden");
 
     video.play();
