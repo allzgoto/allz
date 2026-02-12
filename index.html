@@ -25,7 +25,7 @@ body{
     z-index:-1;
 }
 
-/* LOADING SCREEN */
+/* LOADING */
 #loadingScreen{
     position:fixed;
     inset:0;
@@ -41,23 +41,21 @@ body{
 
 .loading-text{
     letter-spacing:6px;
-    margin-bottom:20px;
+    margin-bottom:25px;
     opacity:.7;
 }
 
-.progress-bar{
-    width:320px;
-    height:4px;
-    background:rgba(255,255,255,.1);
-    border-radius:4px;
-    overflow:hidden;
+.spinner{
+    width:40px;
+    height:40px;
+    border:3px solid rgba(255,255,255,.1);
+    border-top:3px solid white;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
 }
 
-.progress-fill{
-    width:0%;
-    height:100%;
-    background:linear-gradient(90deg,#00d4ff,#ffffff);
-    transition:width .2s ease;
+@keyframes spin{
+    to{ transform:rotate(360deg); }
 }
 
 /* ENTER */
@@ -108,17 +106,12 @@ body{
     justify-content:center;
     align-items:center;
     cursor:pointer;
-    transition:.3s ease;
-}
-
-#volumeBtn:hover{
-    background:rgba(255,255,255,0.15);
 }
 
 #sliderContainer{
     width:0;
     overflow:hidden;
-    transition:width .35s cubic-bezier(.4,0,.2,1);
+    transition:width .3s ease;
 }
 
 #volumeWrapper.open #sliderContainer{
@@ -155,9 +148,7 @@ loop>
 
 <div id="loadingScreen">
     <div class="loading-text">INITIALIZING EXPERIMENT...</div>
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-    </div>
+    <div class="spinner"></div>
     <div id="enterBox">ENTER</div>
 </div>
 
@@ -171,7 +162,6 @@ loop>
 <script>
 
 const video = document.getElementById("video");
-const progressFill = document.getElementById("progressFill");
 const enterBox = document.getElementById("enterBox");
 const loadingScreen = document.getElementById("loadingScreen");
 
@@ -179,44 +169,27 @@ const volumeWrapper = document.getElementById("volumeWrapper");
 const volumeBtn = document.getElementById("volumeBtn");
 const volumeRange = document.getElementById("volumeRange");
 
-/* Volume inicial */
 video.volume = 0.7;
 
-/* Força carregamento real */
-video.load();
-
-let progressInterval;
-
-video.addEventListener("progress", () => {
-    if(video.buffered.length > 0){
-        let bufferedEnd = video.buffered.end(video.buffered.length - 1);
-        let duration = video.duration;
-        if(duration > 0){
-            let percent = (bufferedEnd / duration) * 100;
-            progressFill.style.width = percent + "%";
-            if(percent >= 95){
-                enterBox.classList.add("show");
-            }
-        }
-    }
+/* Espera o navegador dizer que consegue tocar */
+video.addEventListener("canplaythrough", () => {
+    enterBox.classList.add("show");
 });
 
-/* Fallback caso metadata demore */
-video.addEventListener("loadedmetadata",()=>{
-    if(video.readyState >= 3){
+/* Fallback se canplaythrough não disparar */
+video.addEventListener("loadeddata", () => {
+    setTimeout(()=>{
         enterBox.classList.add("show");
-    }
+    }, 1500);
 });
 
-enterBox.addEventListener("click", ()=>{
+enterBox.addEventListener("click", () => {
     video.play().then(()=>{
         loadingScreen.style.opacity="0";
         setTimeout(()=>{
             loadingScreen.style.display="none";
         },600);
         volumeWrapper.classList.add("visible");
-    }).catch(err=>{
-        console.log("Erro ao iniciar vídeo:", err);
     });
 });
 
