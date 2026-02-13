@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dottore</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -25,7 +25,7 @@ body{
   height:140%;
   object-fit:cover;
 
-  /* performance: blur é caro, mas a gente mantém e otimiza */
+  /* performance: blur é caro, mas mantemos e ajudamos o navegador */
   filter: blur(var(--blur-amount, 90px)) brightness(.5) saturate(1.5);
   will-change: transform, filter;
   transform: translateZ(0);
@@ -116,7 +116,7 @@ body{
   pointer-events:none;
   transition:.4s ease;
   cursor:pointer;
-  user-select: none;
+  user-select:none;
 }
 
 #enterBox.show{
@@ -140,10 +140,57 @@ body{
   50%{opacity:.1}
 }
 
+/* VOLUME HUD */
+#volumeHUD{
+  position:fixed;
+  bottom:20px;
+  right:30px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  opacity:.35;
+  transition:.3s ease;
+  font-size:14px;
+  letter-spacing:2px;
+  z-index:2;
+}
+
+#volumeHUD:hover{
+  opacity:1;
+}
+
+/* ícone estilo núcleo experimental */
+#volIcon{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  border:1px solid rgba(0,200,255,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#cfefff;
+  text-shadow:0 0 8px rgba(0,200,255,.8);
+  cursor:pointer;
+}
+
+/* slider escondido até hover */
+#volSlider{
+  width:0;
+  opacity:0;
+  transition:.3s ease;
+  accent-color:#00d4ff;
+  cursor:pointer;
+}
+
+#volumeHUD:hover #volSlider{
+  width:120px;
+  opacity:1;
+}
+
 /* acessibilidade / UX: respeitar usuário que prefere menos animação */
 @media (prefers-reduced-motion: reduce){
   .scanlines{ opacity: .35; }
-  .spinner{ animation: none; }
+  .spinner{ animation:none; }
 }
 
 /* blur mais leve em telas pequenas (performance) */
@@ -156,11 +203,11 @@ body{
 <body>
 
 <video id="videoBlur" playsinline preload="auto" muted loop>
-  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
+  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
 </video>
 
 <video id="video" playsinline preload="auto" loop>
-  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4">
+  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
 </video>
 
 <div class="scanlines"></div>
@@ -175,6 +222,12 @@ body{
   NEURAL LINK ESTABLISHED // SUBJECT ONLINE
 </div>
 
+<!-- Volume HUD -->
+<div id="volumeHUD" aria-label="Controle de volume">
+  <div id="volIcon" title="Volume">◉</div>
+  <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.7" />
+</div>
+
 <script>
 const video = document.getElementById("video");
 const videoBlur = document.getElementById("videoBlur");
@@ -182,6 +235,13 @@ const enterBox = document.getElementById("enterBox");
 const loadingScreen = document.getElementById("loadingScreen");
 const dynamicText = document.getElementById("dynamicText");
 const spinner = document.getElementById("spinner");
+
+const volSlider = document.getElementById("volSlider");
+const volIcon = document.getElementById("volIcon");
+
+/* volume inicial */
+video.volume = 0.7;
+volSlider.value = String(video.volume);
 
 /* frases rotativas */
 const messages = [
@@ -214,28 +274,26 @@ function setLoadingStatus(text) {
   dynamicText.textContent = text;
 }
 
-/* ENTER só quando tiver vídeo “tocável”.
-   loadeddata/canplay é um bom meio-termo (canplaythrough nem sempre dispara bem na vida real). */
 function markReady() {
   if (readyToEnter) return;
   readyToEnter = true;
   showEnter("ENTER");
 }
 
-/* fallback anti-loop: se a rede estiver ruim, ainda libera ENTER (ou vira RETRY se der erro) */
+/* anti-loop: fallback caso demore demais */
 const SAFETY_TIMEOUT_MS = 9000;
-const safetyTimeout = setTimeout(() => {
+let safetyTimeout = setTimeout(() => {
   if (!readyToEnter) {
     setLoadingStatus("SIGNAL DEGRADED // MANUAL START ENABLED");
     markReady();
   }
 }, SAFETY_TIMEOUT_MS);
 
-/* Eventos de carregamento */
+/* Eventos de carregamento do vídeo */
 video.addEventListener("loadeddata", markReady, { once:true });
 video.addEventListener("canplay", markReady, { once:true });
 
-/* Se der erro, vira retry (e não fica infinito) */
+/* Se der erro, vira RETRY */
 function onVideoError() {
   clearTimeout(safetyTimeout);
   spinner.style.display = "none";
@@ -247,21 +305,38 @@ function onVideoError() {
 video.addEventListener("error", onVideoError);
 videoBlur.addEventListener("error", onVideoError);
 
-/* sincronizar blur (mantém tua lógica) */
+/* sincronizar blur com o principal */
 video.addEventListener("play", () => { videoBlur.play().catch(()=>{}); });
 video.addEventListener("pause", () => { try{ videoBlur.pause(); }catch(e){} });
 
-/* pausar quando aba some (performance e estabilidade) */
+/* Ao sair da aba: pausar. Ao voltar: tentar retomar (normal o navegador reduzir/pausar em background) */
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     try { video.pause(); } catch(e){}
     try { videoBlur.pause(); } catch(e){}
+  } else {
+    video.play().catch(()=>{});
+    videoBlur.play().catch(()=>{});
   }
 });
 
+/* ---- Volume HUD ---- */
+function updateIcon(){
+  const v = video.volume;
+  if (v === 0) volIcon.textContent = "⊘";
+  else if (v < 0.4) volIcon.textContent = "◔";
+  else if (v < 0.8) volIcon.textContent = "◑";
+  else volIcon.textContent = "◉";
+}
+volSlider.addEventListener("input", () => {
+  video.volume = Number(volSlider.value);
+  updateIcon();
+});
+updateIcon();
+
 /* Clique ENTER / RETRY */
 enterBox.onclick = async () => {
-  // se foi erro, tenta recarregar
+  // modo retry
   if (enterBox.textContent === "RETRY") {
     spinner.style.display = "";
     setLoadingStatus("RECALIBRATING STREAM...");
@@ -269,15 +344,10 @@ enterBox.onclick = async () => {
     enterShown = false;
     readyToEnter = false;
 
-    // força reload do vídeo
-    try {
-      video.load();
-      videoBlur.load();
-    } catch(e) {}
+    try { video.load(); videoBlur.load(); } catch(e){}
 
-    // reativa safety timeout
     clearTimeout(safetyTimeout);
-    setTimeout(() => {
+    safetyTimeout = setTimeout(() => {
       if (!readyToEnter) {
         setLoadingStatus("SIGNAL DEGRADED // MANUAL START ENABLED");
         markReady();
@@ -288,22 +358,20 @@ enterBox.onclick = async () => {
   }
 
   try {
-    // volume depois do play evita algumas tretas de política do navegador
     await Promise.all([
       video.play(),
       videoBlur.play()
     ]);
 
-    video.volume = 0.7;
+    // reforça volume após play
+    video.volume = Number(volSlider.value);
+    updateIcon();
 
     loadingScreen.style.opacity = "0";
     setTimeout(() => loadingScreen.style.display = "none", 600);
 
-    // se quiser, pode parar as mensagens quando entrar
     clearInterval(msgTimer);
-
   } catch (err) {
-    // se o browser bloquear por qualquer motivo, não deixa o usuário preso
     spinner.style.display = "none";
     setLoadingStatus("PLAYBACK BLOCKED // CLICK AGAIN");
     showEnter("ENTER");
