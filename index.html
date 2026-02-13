@@ -140,51 +140,191 @@ body{
   50%{opacity:.1}
 }
 
-/* VOLUME HUD */
+/* ===== VOLUME (DOTTORE HUD) ===== */
 #volumeHUD{
   position:fixed;
-  bottom:20px;
-  right:30px;
+  top:22px;          /* superior esquerdo */
+  left:24px;
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   gap:12px;
-  opacity:.35;
-  transition:.3s ease;
-  font-size:14px;
-  letter-spacing:2px;
-  z-index:2;
+  z-index:20;
+  opacity:.55;
+  transition:.25s ease;
 }
 
-#volumeHUD:hover{
-  opacity:1;
+#volumeHUD:hover{ opacity:1; }
+
+/* botão / ícone */
+.vol-btn{
+  position:relative;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(0,200,255,.45);
+  background:linear-gradient(180deg, rgba(10,20,35,.65), rgba(5,10,18,.55));
+  backdrop-filter: blur(18px);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  padding:0;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
 }
 
-/* ícone estilo núcleo experimental */
-#volIcon{
+.vol-btn::before{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0,200,255,.18), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(207,239,255,.10), transparent 55%);
+  pointer-events:none;
+}
+
+.vol-svg{
   width:26px;
   height:26px;
-  border-radius:50%;
-  border:1px solid rgba(0,200,255,.6);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#cfefff;
-  text-shadow:0 0 8px rgba(0,200,255,.8);
-  cursor:pointer;
+  filter: drop-shadow(0 0 10px rgba(0,200,255,.45));
 }
 
-/* slider escondido até hover */
-#volSlider{
+.vol-state{
+  position:absolute;
+  left:50%;
+  bottom:-9px;
+  transform:translateX(-50%);
+  font-size:8px;
+  letter-spacing:2px;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid rgba(0,200,255,.35);
+  background:rgba(0,0,0,.35);
+  color:rgba(207,239,255,.9);
+  text-shadow:0 0 8px rgba(0,200,255,.35);
+}
+
+/* painel que abre */
+.vol-panel{
   width:0;
   opacity:0;
-  transition:.3s ease;
-  accent-color:#00d4ff;
+  pointer-events:none;
+  transform:translateY(-2px);
+  transition:.25s ease;
+  padding:10px 0;
+  border-radius:14px;
+  border:1px solid rgba(0,200,255,.35);
+  background:
+    linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.55)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+
+/* abre no hover (desktop) */
+#volumeHUD:hover .vol-panel{
+  width:230px;
+  opacity:1;
+  pointer-events:auto;
+  padding:10px 12px;
+}
+
+/* abre no click (mobile/touch) */
+#volumeHUD.open .vol-panel{
+  width:230px;
+  opacity:1;
+  pointer-events:auto;
+  padding:10px 12px;
+}
+
+.vol-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.vol-title{
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.75;
+}
+
+.vol-readout{
+  font-size:10px;
+  letter-spacing:2px;
+  color:#cfefff;
+  text-shadow:0 0 10px rgba(0,200,255,.35);
+}
+
+/* range SUPER estilizado */
+#volSlider{
+  width:100%;
+  height:26px;
+  background:transparent;
+  appearance:none;
+  -webkit-appearance:none;
   cursor:pointer;
 }
 
-#volumeHUD:hover #volSlider{
-  width:120px;
-  opacity:1;
+/* trilho */
+#volSlider::-webkit-slider-runnable-track{
+  height:6px;
+  border-radius:999px;
+  background:
+    linear-gradient(90deg, rgba(0,200,255,.95), rgba(0,200,255,.25)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 8px);
+  box-shadow: 0 0 18px rgba(0,200,255,.18);
+  border:1px solid rgba(0,200,255,.25);
+}
+
+/* “agulha”/thumb */
+#volSlider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;
+  height:16px;
+  border-radius:6px;
+  margin-top:-6px;
+  background: radial-gradient(circle at 30% 30%, rgba(207,239,255,1), rgba(0,200,255,.55));
+  border:1px solid rgba(0,200,255,.65);
+  box-shadow: 0 0 18px rgba(0,200,255,.55);
+}
+
+/* Firefox */
+#volSlider::-moz-range-track{
+  height:6px;
+  border-radius:999px;
+  background:
+    linear-gradient(90deg, rgba(0,200,255,.95), rgba(0,200,255,.25)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 8px);
+  border:1px solid rgba(0,200,255,.25);
+}
+#volSlider::-moz-range-thumb{
+  width:16px;
+  height:16px;
+  border-radius:6px;
+  background: radial-gradient(circle at 30% 30%, rgba(207,239,255,1), rgba(0,200,255,.55));
+  border:1px solid rgba(0,200,255,.65);
+  box-shadow: 0 0 18px rgba(0,200,255,.55);
+}
+
+.vol-footer{
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.65;
+}
+
+.vol-bars{
+  width:58px;
+  height:10px;
+  border-radius:6px;
+  background:
+    repeating-linear-gradient(90deg, rgba(0,200,255,.55) 0 6px, transparent 6px 10px);
+  filter: drop-shadow(0 0 10px rgba(0,200,255,.25));
 }
 
 /* acessibilidade / UX: respeitar usuário que prefere menos animação */
@@ -222,10 +362,31 @@ body{
   NEURAL LINK ESTABLISHED // SUBJECT ONLINE
 </div>
 
-<!-- Volume HUD -->
-<div id="volumeHUD" aria-label="Controle de volume">
-  <div id="volIcon" title="Volume">◉</div>
-  <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.7" />
+<!-- Volume HUD (Dottore) -->
+<div id="volumeHUD" class="vol" aria-label="Controle de volume">
+  <button id="volIconBtn" class="vol-btn" type="button" aria-label="Abrir controle de volume">
+    <svg class="vol-svg" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(0,200,255,.65)" stroke-width="2"/>
+      <circle cx="24" cy="24" r="8" fill="none" stroke="rgba(207,239,255,.9)" stroke-width="2"/>
+      <path d="M24 9v6M24 33v6M9 24h6M33 24h6" stroke="rgba(0,200,255,.55)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="24" cy="24" r="2.2" fill="rgba(207,239,255,.95)"/>
+    </svg>
+    <span id="volState" class="vol-state">LIVE</span>
+  </button>
+
+  <div id="volPanel" class="vol-panel" role="group" aria-label="Ajuste de volume">
+    <div class="vol-top">
+      <div class="vol-title">AUDIO // MIX</div>
+      <div id="volReadout" class="vol-readout">70%</div>
+    </div>
+
+    <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.7" />
+
+    <div class="vol-footer">
+      <span>OUTPUT</span>
+      <span class="vol-bars" aria-hidden="true"></span>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -235,13 +396,6 @@ const enterBox = document.getElementById("enterBox");
 const loadingScreen = document.getElementById("loadingScreen");
 const dynamicText = document.getElementById("dynamicText");
 const spinner = document.getElementById("spinner");
-
-const volSlider = document.getElementById("volSlider");
-const volIcon = document.getElementById("volIcon");
-
-/* volume inicial */
-video.volume = 0.7;
-volSlider.value = String(video.volume);
 
 /* frases rotativas */
 const messages = [
@@ -320,19 +474,48 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-/* ---- Volume HUD ---- */
-function updateIcon(){
-  const v = video.volume;
-  if (v === 0) volIcon.textContent = "⊘";
-  else if (v < 0.4) volIcon.textContent = "◔";
-  else if (v < 0.8) volIcon.textContent = "◑";
-  else volIcon.textContent = "◉";
+/* ===== Volume HUD (Dottore) ===== */
+const volSlider = document.getElementById("volSlider");
+const volIconBtn = document.getElementById("volIconBtn");
+const volReadout = document.getElementById("volReadout");
+const volState = document.getElementById("volState");
+const volumeHUD = document.getElementById("volumeHUD");
+
+/* volume inicial */
+video.volume = 0.7;
+volSlider.value = String(video.volume);
+
+function updateVolumeUI(){
+  const v = Number(video.volume);
+  const pct = Math.round(v * 100);
+  volReadout.textContent = pct + "%";
+
+  if (pct === 0) {
+    volState.textContent = "MUTED";
+    volState.style.borderColor = "rgba(255,90,90,.45)";
+    volState.style.color = "rgba(255,190,190,.95)";
+  } else {
+    volState.textContent = "LIVE";
+    volState.style.borderColor = "rgba(0,200,255,.35)";
+    volState.style.color = "rgba(207,239,255,.9)";
+  }
 }
 volSlider.addEventListener("input", () => {
   video.volume = Number(volSlider.value);
-  updateIcon();
+  updateVolumeUI();
 });
-updateIcon();
+updateVolumeUI();
+
+/* Mobile/touch: abrir/fechar no clique do ícone */
+volIconBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  volumeHUD.classList.toggle("open");
+});
+
+/* clicar fora fecha (só pro modo open) */
+document.addEventListener("click", () => {
+  volumeHUD.classList.remove("open");
+});
 
 /* Clique ENTER / RETRY */
 enterBox.onclick = async () => {
@@ -363,9 +546,9 @@ enterBox.onclick = async () => {
       videoBlur.play()
     ]);
 
-    // reforça volume após play
+    // reforça volume após play (não quebra nada)
     video.volume = Number(volSlider.value);
-    updateIcon();
+    updateVolumeUI();
 
     loadingScreen.style.opacity = "0";
     setTimeout(() => loadingScreen.style.display = "none", 600);
