@@ -41,6 +41,23 @@ body{
   height:100%;
   object-fit:contain;
   z-index:-4;
+  background:black;
+
+  /* máscara suave nas bordas pra sumir com “barras” */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 8%,
+    black 92%,
+    transparent 100%
+  );
 }
 
 /* SCANLINES */
@@ -143,7 +160,7 @@ body{
 /* ===== VOLUME (DOTTORE HUD) ===== */
 #volumeHUD{
   position:fixed;
-  top:22px;          /* superior esquerdo */
+  top:22px;
   left:24px;
   display:flex;
   align-items:flex-start;
@@ -152,10 +169,8 @@ body{
   opacity:.55;
   transition:.25s ease;
 }
-
 #volumeHUD:hover{ opacity:1; }
 
-/* botão / ícone */
 .vol-btn{
   position:relative;
   width:40px;
@@ -170,7 +185,6 @@ body{
   padding:0;
   box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
 }
-
 .vol-btn::before{
   content:"";
   position:absolute;
@@ -181,13 +195,11 @@ body{
     radial-gradient(circle at 70% 70%, rgba(207,239,255,.10), transparent 55%);
   pointer-events:none;
 }
-
 .vol-svg{
   width:26px;
   height:26px;
   filter: drop-shadow(0 0 10px rgba(0,200,255,.45));
 }
-
 .vol-state{
   position:absolute;
   left:50%;
@@ -203,7 +215,6 @@ body{
   text-shadow:0 0 8px rgba(0,200,255,.35);
 }
 
-/* painel que abre */
 .vol-panel{
   width:0;
   opacity:0;
@@ -220,16 +231,12 @@ body{
   box-shadow: 0 12px 40px rgba(0,0,0,.45);
   overflow:hidden;
 }
-
-/* abre no hover (desktop) */
 #volumeHUD:hover .vol-panel{
   width:230px;
   opacity:1;
   pointer-events:auto;
   padding:10px 12px;
 }
-
-/* abre no click (mobile/touch) */
 #volumeHUD.open .vol-panel{
   width:230px;
   opacity:1;
@@ -243,13 +250,11 @@ body{
   justify-content:space-between;
   margin-bottom:8px;
 }
-
 .vol-title{
   font-size:9px;
   letter-spacing:3px;
   opacity:.75;
 }
-
 .vol-readout{
   font-size:10px;
   letter-spacing:2px;
@@ -257,7 +262,6 @@ body{
   text-shadow:0 0 10px rgba(0,200,255,.35);
 }
 
-/* range SUPER estilizado */
 #volSlider{
   width:100%;
   height:26px;
@@ -266,8 +270,6 @@ body{
   -webkit-appearance:none;
   cursor:pointer;
 }
-
-/* trilho */
 #volSlider::-webkit-slider-runnable-track{
   height:6px;
   border-radius:999px;
@@ -277,8 +279,6 @@ body{
   box-shadow: 0 0 18px rgba(0,200,255,.18);
   border:1px solid rgba(0,200,255,.25);
 }
-
-/* “agulha”/thumb */
 #volSlider::-webkit-slider-thumb{
   -webkit-appearance:none;
   width:16px;
@@ -289,8 +289,6 @@ body{
   border:1px solid rgba(0,200,255,.65);
   box-shadow: 0 0 18px rgba(0,200,255,.55);
 }
-
-/* Firefox */
 #volSlider::-moz-range-track{
   height:6px;
   border-radius:999px;
@@ -317,7 +315,6 @@ body{
   letter-spacing:3px;
   opacity:.65;
 }
-
 .vol-bars{
   width:58px;
   height:10px;
@@ -327,13 +324,13 @@ body{
   filter: drop-shadow(0 0 10px rgba(0,200,255,.25));
 }
 
-/* acessibilidade / UX: respeitar usuário que prefere menos animação */
+/* acessibilidade */
 @media (prefers-reduced-motion: reduce){
   .scanlines{ opacity: .35; }
   .spinner{ animation:none; }
 }
 
-/* blur mais leve em telas pequenas (performance) */
+/* blur mais leve em telas pequenas */
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
 }
@@ -463,7 +460,7 @@ videoBlur.addEventListener("error", onVideoError);
 video.addEventListener("play", () => { videoBlur.play().catch(()=>{}); });
 video.addEventListener("pause", () => { try{ videoBlur.pause(); }catch(e){} });
 
-/* Ao sair da aba: pausar. Ao voltar: tentar retomar (normal o navegador reduzir/pausar em background) */
+/* Ao sair da aba: pausar. Ao voltar: tentar retomar */
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     try { video.pause(); } catch(e){}
@@ -486,8 +483,7 @@ video.volume = 0.7;
 volSlider.value = String(video.volume);
 
 function updateVolumeUI(){
-  const v = Number(video.volume);
-  const pct = Math.round(v * 100);
+  const pct = Math.round(Number(video.volume) * 100);
   volReadout.textContent = pct + "%";
 
   if (pct === 0) {
@@ -511,15 +507,12 @@ volIconBtn.addEventListener("click", (e) => {
   e.stopPropagation();
   volumeHUD.classList.toggle("open");
 });
-
-/* clicar fora fecha (só pro modo open) */
 document.addEventListener("click", () => {
   volumeHUD.classList.remove("open");
 });
 
 /* Clique ENTER / RETRY */
 enterBox.onclick = async () => {
-  // modo retry
   if (enterBox.textContent === "RETRY") {
     spinner.style.display = "";
     setLoadingStatus("RECALIBRATING STREAM...");
@@ -541,12 +534,7 @@ enterBox.onclick = async () => {
   }
 
   try {
-    await Promise.all([
-      video.play(),
-      videoBlur.play()
-    ]);
-
-    // reforça volume após play (não quebra nada)
+    await Promise.all([video.play(), videoBlur.play()]);
     video.volume = Number(volSlider.value);
     updateVolumeUI();
 
