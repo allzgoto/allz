@@ -132,6 +132,9 @@ body{
   align-items:center;
   z-index:10;
   transition:opacity .6s ease;
+
+  /* necessário pro scan overlay */
+  overflow:hidden;
 }
 .loading-text{
   letter-spacing:6px;
@@ -152,7 +155,7 @@ body{
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 #enterBox{
-  margin-top:40px;
+  margin-top:34px;
   padding:18px 70px;
   border-radius:10px;
   background:rgba(10,20,35,0.6);
@@ -170,6 +173,50 @@ body{
   user-select:none;
 }
 #enterBox.show{opacity:1; pointer-events:auto;}
+
+/* ✅ NEW: "PRESS [ENTER]" hint (idea 4) */
+#enterHint{
+  margin-top:12px;
+  font-size:10px;
+  letter-spacing:4px;
+  opacity:0;
+  transition:.35s ease;
+  color:rgba(207,239,255,.75);
+  text-shadow:0 0 10px rgba(0,200,255,.22);
+  user-select:none;
+}
+#enterHint.show{opacity:.85;}
+
+/* ✅ NEW: scanner pass on ready (idea 3) */
+#enterScan{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+  z-index:0;
+}
+#enterScan::before{
+  content:"";
+  position:absolute;
+  left:-40%;
+  top:0;
+  width:45%;
+  height:100%;
+  background:linear-gradient(90deg, transparent, rgba(0,200,255,.10), rgba(207,239,255,.12), rgba(0,200,255,.10), transparent);
+  transform:skewX(-14deg) translateX(-120%);
+  filter: blur(1px);
+}
+#loadingScreen.scan-on #enterScan{
+  opacity:1;
+}
+#loadingScreen.scan-on #enterScan::before{
+  animation: enterScanPass .85s ease 1;
+}
+@keyframes enterScanPass{
+  0%{transform:skewX(-14deg) translateX(-120%); opacity:0}
+  15%{opacity:1}
+  100%{transform:skewX(-14deg) translateX(380%); opacity:0}
+}
 
 /* ========= HUDS ========= */
 .hud{
@@ -215,7 +262,7 @@ body{
 #techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
 #techHUD .sep{opacity:.25}
 
-/* ===== Top controls: MAIS DESTACADO, MAS AINDA CLEAN ===== */
+/* ===== Top controls ===== */
 #topControls{
   position:fixed;
   top:16px;
@@ -224,10 +271,8 @@ body{
   display:flex;
   gap:12px;
   z-index:25;
-
   opacity:.92;
   transition:.18s ease;
-
   filter: drop-shadow(0 0 18px rgba(0,200,255,.22));
 }
 #topControls:hover{opacity:1}
@@ -235,25 +280,20 @@ body{
 .ctrlBtn{
   width:42px;height:34px;
   border-radius:12px;
-
   border:1px solid rgba(0,200,255,.72);
   background:
     radial-gradient(circle at 30% 30%, rgba(0,200,255,.10), transparent 55%),
     linear-gradient(180deg, rgba(12,24,44,.78), rgba(0,0,0,.50));
-
   backdrop-filter: blur(20px);
   color:rgba(207,239,255,.98);
-
   cursor:pointer;
   display:grid;
   place-items:center;
   font-size:14px;
   letter-spacing:2px;
-
   box-shadow:
     0 0 0 1px rgba(0,0,0,.25) inset,
     0 12px 34px rgba(0,0,0,.32);
-
   position:relative;
   overflow:hidden;
 }
@@ -477,8 +517,6 @@ body{
   0%,49%{opacity:1}
   50%,100%{opacity:0}
 }
-
-/* ===== Terminal input (fake commands) ===== */
 .termInputBar{
   display:flex;
   align-items:center;
@@ -523,6 +561,7 @@ body{
   .spinner{animation:none}
   #cinemaFX::before{animation:none}
   #topControls .ctrlBtn::after{animation:none; opacity:0;}
+  #loadingScreen.scan-on #enterScan::before{animation:none !important;}
 }
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
@@ -550,9 +589,15 @@ body{
 <div id="glitchFlash"></div>
 
 <div id="loadingScreen">
+  <!-- ✅ scan overlay -->
+  <div id="enterScan" aria-hidden="true"></div>
+
   <div class="loading-text" id="dynamicText">INITIALIZING EXPERIMENT...</div>
   <div class="spinner" id="spinner"></div>
+
   <div id="enterBox">ENTER</div>
+  <!-- ✅ idea 4 -->
+  <div id="enterHint">PRESS [ENTER] TO PROCEED</div>
 </div>
 
 <div class="hud">NEURAL LINK ESTABLISHED // SUBJECT ONLINE</div>
@@ -569,7 +614,6 @@ body{
   <div class="termLine"><span class="tag">ETHICS</span> <span class="sep">//</span> <span class="value">DISABLED</span></div>
   <div class="termLine"><span class="tag">SUBJECT</span> <span class="sep">//</span> <span class="value" id="sysSubject">ONLINE</span></div>
 
-  <!-- ✅ Upgrade 1: States / Ascension Protocol -->
   <div class="termLine"><span class="tag">PHASE</span> <span class="sep">//</span> <span class="value" id="sysPhase">BOOT</span></div>
   <div class="termLine"><span class="tag">DIRECTIVE</span> <span class="sep">//</span> <span class="value" id="sysDirective">MONITORING</span></div>
 </div>
@@ -626,6 +670,7 @@ const videoBlur = document.getElementById("videoBlur");
 const ambience = document.getElementById("ambience");
 
 const enterBox = document.getElementById("enterBox");
+const enterHint = document.getElementById("enterHint");
 const loadingScreen = document.getElementById("loadingScreen");
 const dynamicText = document.getElementById("dynamicText");
 const spinner = document.getElementById("spinner");
@@ -677,11 +722,35 @@ const msgTimer = setInterval(() => {
 
 /* ===== READY / SAFETY ===== */
 let readyToEnter = false;
+let enterScanPlayed = false;
+
+function playEnterScanOnce(){
+  if (enterScanPlayed) return;
+  enterScanPlayed = true;
+  loadingScreen.classList.remove("scan-on");
+  void loadingScreen.offsetWidth;
+  loadingScreen.classList.add("scan-on");
+  // limpa a classe depois, não fica rodando
+  setTimeout(()=>loadingScreen.classList.remove("scan-on"), 1100);
+}
+
+function setEnterHint(label){
+  // label pode ser "ENTER" ou "RETRY"
+  if (label === "RETRY") {
+    enterHint.textContent = "PRESS [ENTER] TO RETRY";
+  } else {
+    enterHint.textContent = "PRESS [ENTER] TO PROCEED";
+  }
+  enterHint.classList.add("show");
+}
 
 function showEnter(label="ENTER"){
   enterBox.style.pointerEvents = "auto";
   enterBox.textContent = label;
   enterBox.classList.add("show");
+
+  setEnterHint(label);
+  playEnterScanOnce(); // ✅ idea 3: dispara quando enter aparece
 }
 function setLoadingStatus(t){ dynamicText.textContent = t; }
 function markReady(){
@@ -806,11 +875,8 @@ function triggerGlitch(){
   setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
 }
 
-/* =======================================================================
-   ✅ UPGRADE 1: STATES / "ASCENSION PROTOCOL"
-======================================================================= */
+/* ===== Protocol (unchanged) ===== */
 const PROTOCOL_ENABLED = true;
-
 const Protocol = {
   started: false,
   timers: [],
@@ -822,17 +888,18 @@ const Protocol = {
     { name: "ASCENSION", directive: "PROTOCOL: ACTIVE", whenMs: 16800, subject: "MATERIAL" }
   ]
 };
-
 function setProtocolHUD(phase){
   sysPhase.textContent = phase.name.replace("_", " ");
   sysDirective.textContent = phase.directive;
   sysSubject.textContent = phase.subject;
 }
-
 function clearProtocolTimers(){
   for (const t of Protocol.timers) clearTimeout(t);
   Protocol.timers.length = 0;
 }
+let termRunToken = 0;
+let termTyping = false;
+let termInteractive = false;
 
 function terminalAppendDimLine(text){
   const div = document.createElement("div");
@@ -841,23 +908,19 @@ function terminalAppendDimLine(text){
   termLog.appendChild(div);
   termLog.scrollTop = termLog.scrollHeight;
 }
-
 function maybeLogPhaseToTerminal(phase){
   if (!terminal.classList.contains("show")) return;
   if (!termInteractive) return;
   terminalAppendDimLine(`// PHASE UPDATE: ${phase.name.replace("_"," ")} // ${phase.directive}`);
 }
-
 function startAscensionProtocol(){
   if (!PROTOCOL_ENABLED) return;
   if (Protocol.started) return;
   Protocol.started = true;
   clearProtocolTimers();
-
   const first = Protocol.phases[0];
   setProtocolHUD(first);
   Protocol.lastPhase = first.name;
-
   for (let i = 1; i < Protocol.phases.length; i++){
     const ph = Protocol.phases[i];
     const timer = setTimeout(() => {
@@ -871,24 +934,8 @@ function startAscensionProtocol(){
   }
 }
 
-/* =======================================================================
-   TERMINAL + ✅ UPGRADE 2: comandos falsos
-   ✅ Ajustes pedidos:
-   1) Texto do Dottore levemente mais rápido (sem ficar ilegível)
-   2) Tecla T NÃO fecha se painel já estiver aberto (T apenas abre/foca)
-   3) Após terminar lore, mostrar "comandos disponíveis:" automático
-======================================================================= */
-let termRunToken = 0;
-let termTyping = false;
-let termInteractive = false;
-
-/* ✅ velocidade (um pouco mais rápido) */
-const LORE_SPEED = {
-  header: 9,     // era 11
-  lang: 9,       // era 10
-  main: 13,      // era 16
-  post: 9        // bloco final
-};
+/* ===== Terminal helpers (unchanged from last stable) ===== */
+const LORE_SPEED = { header: 9, lang: 9, main: 13, post: 9 };
 
 function clearTerminal(){ termLog.innerHTML = ""; }
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
@@ -899,15 +946,13 @@ async function typeLine(text, cls="", speed=14, token=0){
   const div = document.createElement("div");
   div.className = "termLine " + cls;
   termLog.appendChild(div);
-
   for (let i=0; i<text.length; i++){
     if (!ensureAlive(token)) return;
     div.textContent += text[i];
-    await sleep(speed + Math.random()*14); /* ✅ um pouco menor que antes */
+    await sleep(speed + Math.random()*14);
     termLog.scrollTop = termLog.scrollHeight;
   }
 }
-
 async function typeGlitchPhraseOnly(token){
   const base = "Changing language to...";
   const variants = [
@@ -918,14 +963,12 @@ async function typeGlitchPhraseOnly(token){
     "言語を変更中...",
     "Mudando idioma para..."
   ];
-
   if (!ensureAlive(token)) return;
   const line = document.createElement("div");
   line.className = "termLine dim";
   line.textContent = base;
   termLog.appendChild(line);
   termLog.scrollTop = termLog.scrollHeight;
-
   await sleep(130);
   for (let i=0; i<variants.length; i++){
     if (!ensureAlive(token)) return;
@@ -937,10 +980,7 @@ async function typeGlitchPhraseOnly(token){
   await sleep(200);
 }
 
-/* ===== Fake command handling ===== */
-function normalizeCmd(s){
-  return (s || "").trim().toLowerCase();
-}
+function normalizeCmd(s){ return (s || "").trim().toLowerCase(); }
 function setInputEnabled(on){
   termInput.disabled = !on;
   termHint.style.opacity = on ? ".55" : ".35";
@@ -951,26 +991,23 @@ function focusTerminalInput(){
   if (!termInteractive) return;
   termInput.focus({ preventScroll:true });
 }
-function printUserCmd(raw){
-  terminalAppendDimLine(`${termPrompt.textContent} ${raw}`);
-}
+function printUserCmd(raw){ terminalAppendDimLine(`${termPrompt.textContent} ${raw}`); }
+
 async function respond(textLines){
   const token = termRunToken;
   for (const ln of textLines){
     if (!ensureAlive(token)) return;
-    await typeLine(ln, "", 7, token); /* ✅ respostas um pouco mais rápidas */
+    await typeLine(ln, "", 7, token);
     await sleep(90);
   }
 }
 async function handleCommand(raw){
   const cmd = normalizeCmd(raw);
-
   if (!termInteractive || termTyping){
     terminalAppendDimLine("// INPUT IGNORED: BUSY");
     return;
   }
   if (!cmd) return;
-
   printUserCmd(raw);
 
   if (cmd === "help" || cmd === "?" ){
@@ -986,13 +1023,11 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   if (cmd === "clear" || cmd === "cls"){
     clearTerminal();
     terminalAppendDimLine("// LOG CLEARED // (a memória é seletiva)");
     return;
   }
-
   if (cmd === "status"){
     await respond([
       `SUBJECT: ${sysSubject.textContent}`,
@@ -1003,7 +1038,6 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   if (cmd === "phase" || cmd === "protocol"){
     await respond([
       `ASCENSION PROTOCOL // ${sysPhase.textContent}`,
@@ -1012,7 +1046,6 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   if (cmd === "consent" || cmd === "assinar" || cmd === "consentimento"){
     await respond([
       "CONSENT FORM // OPEN",
@@ -1022,7 +1055,6 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   if (cmd === "whoami" || cmd === "quem sou eu"){
     await respond([
       "IDENTITY QUERY // DENIED",
@@ -1030,7 +1062,6 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   if (cmd === "who are you" || cmd === "whoareyou" || cmd === "quem é você" || cmd === "quem é vc"){
     await respond([
       "Eu sou o único adulto na sala.",
@@ -1038,7 +1069,6 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   if (cmd === "exit" || cmd === "quit" || cmd === "sair"){
     await respond([
       "REQUEST: EXIT",
@@ -1047,13 +1077,11 @@ async function handleCommand(raw){
     ]);
     return;
   }
-
   await respond([
     `UNKNOWN COMMAND: "${raw}"`,
     "Se você quer controle, está no lugar errado."
   ]);
 }
-
 termInput.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   const v = termInput.value;
@@ -1061,7 +1089,6 @@ termInput.addEventListener("keydown", async (e) => {
   await handleCommand(v);
   focusTerminalInput();
 });
-
 async function showCommandsHintAuto(token){
   if (!ensureAlive(token)) return;
   await sleep(220);
@@ -1075,13 +1102,11 @@ async function showCommandsHintAuto(token){
   await typeLine("- clear", "dim", 9, token);
   await typeLine("Dica: digite \"help\" para repetir.", "dim", 9, token);
 }
-
 async function runLoreSequence(){
   const token = ++termRunToken;
   termTyping = true;
   termInteractive = false;
   setInputEnabled(false);
-
   clearTerminal();
 
   await typeLine("TERMINAL DO LABORATÓRIO ONLINE", "dim", LORE_SPEED.header, token);
@@ -1091,16 +1116,7 @@ async function runLoreSequence(){
 
   await typeGlitchPhraseOnly(token);
 
-  const langs = [
-    "English (US)",
-    "Deutsch (DE)",
-    "Français (FR)",
-    "Español (ES)",
-    "Русский (RU)",
-    "日本語 (JP)",
-    "中文 (CN)",
-    "Português (BR)"
-  ];
+  const langs = ["English (US)","Deutsch (DE)","Français (FR)","Español (ES)","Русский (RU)","日本語 (JP)","中文 (CN)","Português (BR)"];
   for (let k = 0; k < langs.length; k++){
     await typeLine(`> ${langs[k]}`, "dim", LORE_SPEED.lang, token);
     await sleep(k === langs.length - 1 ? 280 : 85);
@@ -1122,12 +1138,10 @@ async function runLoreSequence(){
     { t: "Prosseguindo com a calibração.", cls:"", d: 450 },
     { t: "— Il Dottore", cls:"dim", d: 450 },
   ];
-
   for (const L of lines){
     await typeLine(L.t, L.cls, LORE_SPEED.main, token);
     await sleep(L.d);
   }
-
   if (!ensureAlive(token)) return;
 
   await typeLine(" ", "dim", 1, token);
@@ -1135,7 +1149,6 @@ async function runLoreSequence(){
   await typeLine(`DIRECTIVE // ${sysDirective.textContent}`, "dim", LORE_SPEED.post, token);
   await typeLine("Você não é um convidado. É material.", "dim", LORE_SPEED.post, token);
 
-  /* ✅ Novo: após terminar, sistema lista comandos disponíveis */
   await showCommandsHintAuto(token);
 
   const cursor = document.createElement("div");
@@ -1149,7 +1162,6 @@ async function runLoreSequence(){
   setInputEnabled(true);
   focusTerminalInput();
 }
-
 function openTerminal(){
   terminal.classList.add("show");
   terminal.setAttribute("aria-hidden","false");
@@ -1163,35 +1175,22 @@ function closeTerminal(){
   termInteractive = false;
   setInputEnabled(false);
 }
-
 btnTerm.addEventListener("click", (e) => {
   e.stopPropagation();
   if (terminal.classList.contains("show")) closeTerminal();
   else openTerminal();
 });
-
-/* ✅ FIX: tecla T não fecha quando já está aberto.
-   - Agora: T (ou `) apenas ABRE (se fechado) e foca input (se aberto)
-*/
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeTerminal();
 
   const isToggleKey = (e.key === "`" || e.key.toLowerCase() === "t");
   if (isToggleKey) {
-    // Evita conflito quando digitando no input
     const a = document.activeElement;
     const typingInInput = (a === termInput);
-
     if (typingInInput) return;
-
-    if (!terminal.classList.contains("show")) {
-      openTerminal();
-    } else {
-      // não fecha
-      focusTerminalInput();
-    }
+    if (!terminal.classList.contains("show")) openTerminal();
+    else focusTerminalInput();
   }
-
   if (terminal.classList.contains("show") && e.key === "Enter"){
     if (!termInput.disabled) focusTerminalInput();
   }
@@ -1231,7 +1230,9 @@ enterBox.onclick = async () => {
     spinner.style.display = "";
     setLoadingStatus("RECALIBRANDO STREAM...");
     enterBox.classList.remove("show");
+    enterHint.classList.remove("show");
     readyToEnter = false;
+    enterScanPlayed = false;
 
     try { video.load(); videoBlur.load(); ambience.load(); } catch(e){}
 
@@ -1271,6 +1272,27 @@ enterBox.onclick = async () => {
     }
   }
 };
+
+/* ✅ NEW: teclado ENTER dispara o botão ENTER (quando loading está ativo) */
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+
+  // se terminal estiver aberto, Enter pertence ao terminal
+  if (terminal.classList.contains("show")) return;
+
+  // não atrapalhar inputs (segurança)
+  const a = document.activeElement;
+  const isTypingField = a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable);
+  if (isTypingField) return;
+
+  // somente enquanto loading estiver visível e o botão estiver liberado
+  const loadingVisible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
+  if (!loadingVisible) return;
+
+  if (enterBox.classList.contains("show") && enterBox.style.pointerEvents !== "none") {
+    enterBox.click();
+  }
+});
 
 /* ===== Initial defaults for protocol HUD (safe) ===== */
 setProtocolHUD(Protocol.phases[0]);
