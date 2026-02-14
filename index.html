@@ -218,6 +218,7 @@ body{
 #techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
 #techHUD .sep{opacity:.25}
 
+/* ===== Top controls: MAIS VISÍVEL, mas “Dottore” ===== */
 #topControls{
   position:fixed;
   top:16px;
@@ -225,25 +226,57 @@ body{
   transform:translateX(-50%);
   display:flex;
   gap:10px;
-  z-index:7;
-  opacity:.35;
+  z-index:25;
+  opacity:.78;             /* mais visível */
   transition:.2s ease;
+  filter: drop-shadow(0 0 14px rgba(0,200,255,.14));
 }
 #topControls:hover{opacity:1}
+
 .ctrlBtn{
-  width:34px;height:28px;
-  border-radius:8px;
-  border:1px solid rgba(0,200,255,.35);
-  background:rgba(0,0,0,.35);
-  backdrop-filter: blur(14px);
-  color:rgba(207,239,255,.9);
+  width:38px;height:32px;   /* levemente maior */
+  border-radius:10px;
+  border:1px solid rgba(0,200,255,.55); /* mais forte */
+  background:
+    linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.48));
+  backdrop-filter: blur(18px);
+  color:rgba(207,239,255,.95);
   cursor:pointer;
   display:grid;
   place-items:center;
-  font-size:12px;
+  font-size:13px;
   letter-spacing:2px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.25) inset,
+    0 10px 30px rgba(0,0,0,.28);
+  position:relative;
+  overflow:hidden;
 }
+
+/* micro “scanner” passando */
+.ctrlBtn::after{
+  content:"";
+  position:absolute;
+  inset:-40% -30%;
+  background:linear-gradient(90deg, transparent, rgba(0,200,255,.18), transparent);
+  transform:rotate(12deg) translateX(-80%);
+  opacity:.0;
+  pointer-events:none;
+}
+#topControls:hover .ctrlBtn::after{
+  opacity:1;
+  animation:scanPass 1.2s ease infinite;
+}
+@keyframes scanPass{
+  0%{transform:rotate(12deg) translateX(-80%);}
+  100%{transform:rotate(12deg) translateX(80%);}
+}
+
 .ctrlBtn:active{transform:translateY(1px)}
+.ctrlBtn:focus-visible{
+  outline:none;
+  box-shadow: 0 0 0 2px rgba(0,200,255,.45), 0 10px 30px rgba(0,0,0,.28);
+}
 
 /* ========= VOLUME (DOTTORE HUD) ========= */
 #volumeHUD{
@@ -440,6 +473,7 @@ body{
   .scanlines{opacity:.35}
   .spinner{animation:none}
   #cinemaFX::before{animation:none}
+  #topControls .ctrlBtn::after{animation:none; opacity:0;}
 }
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
@@ -458,7 +492,6 @@ body{
   <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
 </video>
 
-<!-- Áudio ambiente: troque o src por um mp3/ogg seu se quiser -->
 <audio id="ambience" preload="auto" loop>
   <source src="https://files.catbox.moe/3q1h1x.mp3" type="audio/mpeg">
 </audio>
@@ -492,10 +525,9 @@ body{
 
 <div id="topControls">
   <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
-  <button class="ctrlBtn" id="btnTerm" title="Terminal">⌁</button>
+  <button class="ctrlBtn" id="btnTerm" title="Painel">⌁</button>
 </div>
 
-<!-- Volume HUD -->
 <div id="volumeHUD" class="vol" aria-label="Controle de volume" style="--bars-w:50%; --bars-a:.55;">
   <button id="volIconBtn" class="vol-btn" type="button" aria-label="Abrir controle de volume">
     <svg class="vol-svg" viewBox="0 0 48 48" aria-hidden="true">
@@ -522,7 +554,6 @@ body{
   </div>
 </div>
 
-<!-- Terminal (LORE) -->
 <div id="terminal" aria-hidden="true">
   <div class="termBox">
     <div class="termHeader">
@@ -590,11 +621,9 @@ const msgTimer = setInterval(() => {
 
 /* ===== READY / SAFETY ===== */
 let readyToEnter = false;
-let enterShown = false;
 
 function showEnter(label="ENTER"){
   enterBox.style.pointerEvents = "auto";
-  enterShown = true;
   enterBox.textContent = label;
   enterBox.classList.add("show");
 }
@@ -605,7 +634,6 @@ function markReady(){
   showEnter("ENTER");
 }
 
-/* Segurança 1 */
 const SAFETY_TIMEOUT_MS = 9000;
 let safetyTimeout = setTimeout(() => {
   if (!readyToEnter) {
@@ -614,7 +642,6 @@ let safetyTimeout = setTimeout(() => {
   }
 }, SAFETY_TIMEOUT_MS);
 
-/* Segurança 2 */
 setTimeout(() => {
   if (!enterBox.classList.contains("show")) {
     setLoadingStatus("AWAITING STREAM // MANUAL START ENABLED");
@@ -723,7 +750,7 @@ function triggerGlitch(){
   setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
 }
 
-/* ===== FX TOGGLES (mantidos, sem comandos) ===== */
+/* ===== FX ===== */
 function setFX(){
   document.getElementById("cinemaFX").style.display = fxGrainOn ? "" : "none";
   document.querySelector(".scanlines").style.display = fxScanOn ? "" : "none";
@@ -746,24 +773,47 @@ async function typeLine(text, cls="", speed=14){
   }
 }
 
+/* frase “Change language...” com glitch de idiomas */
+async function typeGlitchPhrase(){
+  const variants = [
+    "Changing language to...",
+    "Cambiando idioma a...",
+    "Ändere Sprache zu...",
+    "Changement de langue...",
+    "Изменение языка...",
+    "言語を変更中...",
+    "Mudando idioma para...",
+    "Changing language to..."
+  ];
+  // digita uma vez, depois faz “override” rápido com variantes
+  await typeLine(variants[0], "dim", 11);
+  await sleep(120);
+
+  // “glitch”: substitui a última linha rapidamente
+  const last = termLog.lastElementChild;
+  for (let k = 1; k < variants.length; k++){
+    if (!last) break;
+    last.textContent = variants[k];
+    await sleep(85);
+  }
+  await sleep(220);
+}
+
 async function runLoreSequence(){
   clearTerminal();
 
-  // cursor fixo no final
   const cursor = document.createElement("div");
   cursor.className = "termLine";
   cursor.innerHTML = `<span class="cursor" aria-hidden="true">█</span>`;
   termLog.appendChild(cursor);
 
-  // Boot
   cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"TERMINAL DO LABORATÓRIO ONLINE" }));
   cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"HANDSHAKE: ACEITO // AUTORIZAÇÃO: Δ" }));
   cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"CANAL DE LOG: PRIVADO // OBSERVADORES: NENHUM" }));
   await sleep(380);
 
-  // “Selecionando idioma…” (começa em inglês, varre idiomas, para no PT-BR)
-  await typeLine("Alterando idioma para...", "dim", 12);
-  await sleep(220);
+  // Glitch de idiomas (começa em inglês e “vaza” outros)
+  await typeGlitchPhrase();
 
   const langs = [
     "English (US)",
@@ -775,17 +825,13 @@ async function runLoreSequence(){
     "中文 (CN)",
     "Português (BR)"
   ];
-
-  // anima troca rápida
   for (let k = 0; k < langs.length; k++){
     await typeLine(`> ${langs[k]}`, "dim", 10);
     await sleep(k === langs.length - 1 ? 420 : 110);
   }
-
   await typeLine("Idioma definido: Português (BR).", "dim", 12);
   await sleep(420);
 
-  // Agora entra o “Dottore” em PT
   const lines = [
     { t: "…", cls:"dim", d: 520 },
     { t: "Então você encontrou a interface.", cls:"", d: 520 },
@@ -804,8 +850,6 @@ async function runLoreSequence(){
     await typeLine(L.t, L.cls, 16);
     await sleep(L.d);
   }
-
-  termLog.scrollTop = termLog.scrollHeight;
 }
 
 function openTerminal(){
@@ -846,7 +890,6 @@ enterBox.onclick = async () => {
     spinner.style.display = "";
     setLoadingStatus("RECALIBRANDO STREAM...");
     enterBox.classList.remove("show");
-    enterShown = false;
     readyToEnter = false;
 
     try { video.load(); videoBlur.load(); ambience.load(); } catch(e){}
