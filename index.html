@@ -84,15 +84,6 @@ body{
     linear-gradient(90deg, rgba(0,200,255,.05), transparent 35%, transparent 65%, rgba(0,200,255,.04));
   opacity:.65;
 }
-
-/* ✅ ALERT tint (bem discreto, sem poluir vídeo) */
-body.alert #cinemaFX::after{
-  background:
-    radial-gradient(circle at 50% 45%, transparent 0 55%, rgba(0,0,0,.55) 78%, rgba(0,0,0,.85) 100%),
-    linear-gradient(90deg, rgba(255,90,90,.08), transparent 35%, transparent 65%, rgba(255,90,90,.06));
-  opacity:.78;
-}
-
 @keyframes grain{
   0%{transform:translate(0,0)}
   10%{transform:translate(-2%, -3%)}
@@ -107,7 +98,7 @@ body.alert #cinemaFX::after{
   100%{transform:translate(0,0)}
 }
 
-/* Glitch flash (só na entrada e em eventos) */
+/* Glitch flash (só na entrada) */
 #glitchFlash{
   position:fixed;
   inset:0;
@@ -180,7 +171,6 @@ body.alert #cinemaFX::after{
   user-select:none;
 }
 #enterBox.show{opacity:1; pointer-events:auto;}
-
 #enterHint{
   margin-top:12px;
   font-size:10px;
@@ -192,8 +182,6 @@ body.alert #cinemaFX::after{
   user-select:none;
 }
 #enterHint.show{opacity:.85;}
-
-/* scanner do loading (loop 5s) */
 #enterScan{
   position:absolute;
   inset:0;
@@ -278,6 +266,7 @@ body.alert #cinemaFX::after{
   filter: drop-shadow(0 0 18px rgba(0,200,255,.22));
 }
 #topControls:hover{opacity:1}
+
 .ctrlBtn{
   width:42px;height:34px;
   border-radius:12px;
@@ -557,88 +546,154 @@ body.alert #cinemaFX::after{
   white-space:nowrap;
 }
 
-/* ========= EXPERIMENT PANEL (nova UI) ========= */
-#expPanel{
+/* ========= CATALOG (SEPARADO DO TERMINAL) ========= */
+#catalog{
   position:fixed;
-  right:22px;
-  bottom:22px;
-  z-index:28;
-  width:min(360px, calc(100vw - 44px));
-  border-radius:16px;
-  border:1px solid rgba(0,200,255,.30);
-  background:linear-gradient(180deg, rgba(10,20,35,.78), rgba(0,0,0,.62));
-  backdrop-filter: blur(18px);
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
-  overflow:hidden;
+  inset:0;
+  z-index:28; /* abaixo do terminal (30), acima do vídeo */
   display:none;
+  background:rgba(0,0,0,.52);
+  backdrop-filter: blur(14px);
 }
-#expPanel.show{display:block;}
-.expHeader{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.9;
-}
-.expHeader .dim{opacity:.6}
-.expBody{ padding:12px; }
-.expGrid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:10px;
-}
-.expBtn{
-  border-radius:14px;
-  padding:10px 12px;
+#catalog.show{display:block;}
+.catBox{
+  position:absolute;
+  right:22px;
+  top:22px;
+  width:min(520px, calc(100vw - 44px));
+  height:min(74vh, 680px);
+  border-radius:16px;
   border:1px solid rgba(0,200,255,.28);
   background:
-    radial-gradient(circle at 30% 30%, rgba(0,200,255,.08), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.38));
-  color:rgba(207,239,255,.95);
-  cursor:pointer;
-  text-align:left;
-  font-family:'Orbitron', sans-serif;
-  letter-spacing:1px;
+    linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.62)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.04) 0 1px, transparent 1px 12px);
+  box-shadow:0 18px 70px rgba(0,0,0,.62);
+  overflow:hidden;
+}
+.catHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.catTitle{
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.88;
+}
+.catSub{
+  margin-top:4px;
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.55;
+}
+.catRight{
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.55;
+  white-space:nowrap;
+}
+.catBody{
+  height:calc(100% - 54px);
+  overflow:auto;
+  padding:12px;
+}
+.catCard{
+  border:1px solid rgba(0,200,255,.22);
+  border-radius:14px;
+  padding:10px 10px 12px 10px;
+  margin-bottom:10px;
+  background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.38));
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
 }
-.expBtn:hover{ box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(0,200,255,.12); }
-.expName{ font-size:11px; letter-spacing:2px; }
-.expDesc{ margin-top:4px; font-size:10px; opacity:.65; letter-spacing:1px; line-height:1.35; }
-.expFooter{
-  padding:10px 12px;
-  border-top:1px solid rgba(255,255,255,.08);
+.catCardTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  gap:10px;
+}
+.catId{
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.78;
+}
+.catTag{
+  font-size:8px;
+  letter-spacing:2px;
+  padding:2px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,90,90,.28);
+  background:rgba(255,90,90,.06);
+  color:rgba(255,190,190,.92);
+  opacity:.9;
+  white-space:nowrap;
+}
+.catTitle2{
+  margin-top:8px;
+  font-size:11px;
+  letter-spacing:1px;
+  opacity:.92;
+}
+.catTxt{
+  margin-top:6px;
+  font-size:10px;
+  line-height:1.55;
+  letter-spacing:1px;
+  opacity:.78;
+}
+.catMeta{
+  margin-top:9px;
   display:flex;
   justify-content:space-between;
   gap:10px;
   font-size:9px;
-  letter-spacing:3px;
-  opacity:.65;
+  letter-spacing:2px;
+  opacity:.55;
 }
+.catBody::-webkit-scrollbar{width:10px;}
+.catBody::-webkit-scrollbar-thumb{
+  background:rgba(0,200,255,.18);
+  border-radius:999px;
+  border:2px solid rgba(0,0,0,.35);
+}
+.catBody::-webkit-scrollbar-track{background:rgba(0,0,0,.2);}
 
-/* ========= PRESENÇA (só em eventos, sem spam) ========= */
+/* ===== Presence ghost (discreto) ===== */
 #presenceGhost{
   position:fixed;
-  right:22px;
-  bottom:22px;
-  z-index:22;
-  pointer-events:none;
-  font-size:10px;
-  letter-spacing:3px;
+  left:24px;
+  top:64px;
+  z-index:26;
+  padding:8px 12px;
+  border-radius:12px;
+  border:1px solid rgba(0,200,255,.22);
+  background:linear-gradient(180deg, rgba(10,20,35,.62), rgba(0,0,0,.42));
+  backdrop-filter: blur(16px);
+  font-size:9px;
+  letter-spacing:2px;
   opacity:0;
-  transform:translateY(6px);
-  transition:.35s ease;
-  color:rgba(207,239,255,.55);
-  text-shadow:0 0 14px rgba(0,200,255,.12);
-  user-select:none;
+  transform: translateY(-6px);
+  pointer-events:none;
+  transition:.22s ease;
+  color:rgba(207,239,255,.85);
+  text-shadow:0 0 10px rgba(0,200,255,.18);
 }
 #presenceGhost.show{
-  opacity:.88;
-  transform:translateY(0);
+  opacity:.92;
+  transform:none;
 }
 
+/* ===== alert state (leve) ===== */
+body.alert #cinemaFX::after{
+  opacity:.85;
+  background:
+    radial-gradient(circle at 50% 45%, transparent 0 52%, rgba(0,0,0,.60) 78%, rgba(0,0,0,.90) 100%),
+    linear-gradient(90deg, rgba(255,90,90,.08), transparent 35%, transparent 65%, rgba(0,200,255,.04));
+}
+
+/* ===== reduced motion ===== */
 @media (prefers-reduced-motion: reduce){
   .scanlines{opacity:.35}
   .spinner{animation:none}
@@ -649,6 +704,7 @@ body.alert #cinemaFX::after{
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
   #techHUD{display:none;}
+  #presenceGhost{display:none;}
 }
 </style>
 </head>
@@ -673,8 +729,10 @@ body.alert #cinemaFX::after{
 
 <div id="loadingScreen">
   <div id="enterScan" aria-hidden="true"></div>
+
   <div class="loading-text" id="dynamicText">INITIALIZING EXPERIMENT...</div>
   <div class="spinner" id="spinner"></div>
+
   <div id="enterBox">ENTER</div>
   <div id="enterHint">PRESS [ENTER] TO PROCEED</div>
 </div>
@@ -692,14 +750,14 @@ body.alert #cinemaFX::after{
   <div class="termLine"><span class="tag">NEURAL</span> <span class="sep">//</span> <span class="value" id="sysNeural">CALIBRATING</span></div>
   <div class="termLine"><span class="tag">ETHICS</span> <span class="sep">//</span> <span class="value">DISABLED</span></div>
   <div class="termLine"><span class="tag">SUBJECT</span> <span class="sep">//</span> <span class="value" id="sysSubject">ONLINE</span></div>
-
   <div class="termLine"><span class="tag">PHASE</span> <span class="sep">//</span> <span class="value" id="sysPhase">BOOT</span></div>
   <div class="termLine"><span class="tag">DIRECTIVE</span> <span class="sep">//</span> <span class="value" id="sysDirective">MONITORING</span></div>
 </div>
 
 <div id="topControls">
   <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
-  <button class="ctrlBtn" id="btnTerm" title="Painel">⌁</button>
+  <button class="ctrlBtn" id="btnTerm" title="Terminal">⌁</button>
+  <button class="ctrlBtn" id="btnCat" title="Catálogo">☷</button>
 </div>
 
 <div id="volumeHUD" class="vol" aria-label="Controle de volume" style="--bars-w:50%; --bars-a:.55;">
@@ -726,6 +784,23 @@ body.alert #cinemaFX::after{
   </div>
 </div>
 
+<div id="presenceGhost" aria-hidden="true">…</div>
+
+<!-- ========= CATALOG (separado) ========= -->
+<div id="catalog" aria-hidden="true">
+  <div class="catBox" role="dialog" aria-label="Catálogo de Experimentos">
+    <div class="catHeader">
+      <div>
+        <div class="catTitle">CATÁLOGO // REGISTROS DO DOTTORE</div>
+        <div class="catSub">Arquivo interno. Verdade opcional. (E para alternar / ESC para fechar)</div>
+      </div>
+      <div class="catRight">STATUS: SELADO</div>
+    </div>
+    <div id="catBody" class="catBody"></div>
+  </div>
+</div>
+
+<!-- ========= TERMINAL ========= -->
 <div id="terminal" aria-hidden="true">
   <div class="termBox">
     <div class="termHeader">
@@ -742,47 +817,7 @@ body.alert #cinemaFX::after{
   </div>
 </div>
 
-<!-- ✅ novo painel interativo -->
-<div id="expPanel" aria-hidden="true">
-  <div class="expHeader">
-    <div>EXPERIMENT PANEL // Δ</div>
-    <div class="dim">ESC para fechar</div>
-  </div>
-  <div class="expBody">
-    <div class="expGrid">
-      <button class="expBtn" data-exp="neural">
-        <div class="expName">NEURAL OVERRIDE</div>
-        <div class="expDesc">Suprime vontade. Converte resistência em obediência.</div>
-      </button>
-      <button class="expBtn" data-exp="memory">
-        <div class="expName">MEMORY EXTRACTION</div>
-        <div class="expDesc">Remove lembranças úteis. Mantém trauma como âncora.</div>
-      </button>
-      <button class="expBtn" data-exp="pain">
-        <div class="expName">PAIN CALIBRATION</div>
-        <div class="expDesc">Ajusta limite. Estabiliza resposta com reforço aversivo.</div>
-      </button>
-      <button class="expBtn" data-exp="identity">
-        <div class="expName">IDENTITY DISSOLUTION</div>
-        <div class="expDesc">Nome, história, crenças. Tudo vira ruído.</div>
-      </button>
-      <button class="expBtn" data-exp="ascend">
-        <div class="expName">ASCENSION TRIGGER</div>
-        <div class="expDesc">Força fase final. Você assiste. Você aprende.</div>
-      </button>
-    </div>
-  </div>
-  <div class="expFooter">
-    <span>Dica: use ↑↓ e ENTER</span>
-    <span>cancel</span>
-  </div>
-</div>
-
-<div id="presenceGhost" aria-hidden="true">…</div>
-
-<!-- ===== PARTE 1 TERMINA AQUI ===== -->
-
-  <script>
+<script>
 /* ===== ELEMENTS ===== */
 const video = document.getElementById("video");
 const videoBlur = document.getElementById("videoBlur");
@@ -807,6 +842,7 @@ const sysDirective = document.getElementById("sysDirective");
 
 const btnFS = document.getElementById("btnFS");
 const btnTerm = document.getElementById("btnTerm");
+const btnCat = document.getElementById("btnCat");
 
 const volumeHUD = document.getElementById("volumeHUD");
 const volSlider = document.getElementById("volSlider");
@@ -820,12 +856,25 @@ const termInput = document.getElementById("termInput");
 const termPrompt = document.getElementById("termPrompt");
 const termHint = document.getElementById("termHint");
 
-const expPanel = document.getElementById("expPanel");
-const expButtons = Array.from(expPanel.querySelectorAll(".expBtn"));
+const catalog = document.getElementById("catalog");
+const catBody = document.getElementById("catBody");
 const presenceGhost = document.getElementById("presenceGhost");
 
 /* ===== FLAGS ===== */
 let ambOn = true;
+
+/* ===== Presence Ghost ===== */
+let ghostTimer = null;
+function ghost(text, ms=1100){
+  presenceGhost.textContent = text;
+  presenceGhost.classList.add("show");
+  presenceGhost.setAttribute("aria-hidden","false");
+  clearTimeout(ghostTimer);
+  ghostTimer = setTimeout(() => {
+    presenceGhost.classList.remove("show");
+    presenceGhost.setAttribute("aria-hidden","true");
+  }, ms);
+}
 
 /* ===== LOADING TEXT ===== */
 const messages = [
@@ -877,7 +926,6 @@ function showEnter(label="ENTER"){
   enterBox.classList.add("show");
   setEnterHint(label);
 
-  // scanner: toca na primeira vez e depois loop a cada 5s
   if (!enterScanPlayed){
     enterScanPlayed = true;
     playEnterScan();
@@ -1007,25 +1055,11 @@ function triggerGlitch(){
   setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
 }
 
-/* ===== Presence Ghost (evento, sem spam) ===== */
-let ghostTimer = null;
-function ghost(text, ms=1100){
-  presenceGhost.textContent = text;
-  presenceGhost.classList.add("show");
-  presenceGhost.setAttribute("aria-hidden","false");
-  clearTimeout(ghostTimer);
-  ghostTimer = setTimeout(() => {
-    presenceGhost.classList.remove("show");
-    presenceGhost.setAttribute("aria-hidden","true");
-  }, ms);
-}
-
-/* ===== Protocol (base) ===== */
+/* ===== Protocol ===== */
 const PROTOCOL_ENABLED = true;
 const Protocol = {
   started: false,
   timers: [],
-  lastPhase: null,
   phases: [
     { name: "BOOT", directive: "MONITORING", whenMs: 0, subject: "ONLINE" },
     { name: "SUBJECT_LOCK", directive: "IDENTITY: IRRELEVANT", whenMs: 4200, subject: "LOCKED" },
@@ -1047,44 +1081,115 @@ function startAscensionProtocol(){
   if (Protocol.started) return;
   Protocol.started = true;
   clearProtocolTimers();
-  const first = Protocol.phases[0];
-  setProtocolHUD(first);
-  Protocol.lastPhase = first.name;
-
+  setProtocolHUD(Protocol.phases[0]);
   for (let i = 1; i < Protocol.phases.length; i++){
     const ph = Protocol.phases[i];
-    const timer = setTimeout(() => {
-      setProtocolHUD(ph);
-    }, ph.whenMs);
-    Protocol.timers.push(timer);
+    Protocol.timers.push(setTimeout(() => setProtocolHUD(ph), ph.whenMs));
   }
 }
 
-/* ===== Terminal state / persistence ===== */
+/* ===== Terminal persistence ===== */
 let termRunToken = 0;
 let termTyping = false;
 let termInteractive = false;
 let termBootCompleted = false;
-let termSnapshotHTML = "";   // ✅ persist after “commands”
-let lockdownEnabled = false;
-let isLocking = false;
+let termSnapshotHTML = "";
 
+/* ===== Terminal helpers ===== */
 const LORE_SPEED = { header: 9, lang: 9, main: 13, post: 9 };
 
 function clearTerminal(){ termLog.innerHTML = ""; }
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 function ensureAlive(token){ return token === termRunToken && terminal.classList.contains("show"); }
 
-function terminalAppendLine(text, cls=""){
+function terminalAppendDimLine(text){
   const div = document.createElement("div");
-  div.className = "termLine " + cls;
+  div.className = "termLine dim";
   div.textContent = text;
   termLog.appendChild(div);
   termLog.scrollTop = termLog.scrollHeight;
-  return div;
 }
-function terminalAppendDimLine(text){ return terminalAppendLine(text, "dim"); }
+function makeCursorLine(){
+  const cursor = document.createElement("div");
+  cursor.className = "termLine";
+  cursor.innerHTML = `<span class="cursor" aria-hidden="true">█</span>`;
+  return cursor;
+}
 
+/* ===== Audio: terminal open sound (WebAudio) ===== */
+let audioCtx = null;
+let masterGain = null;
+let audioReady = false;
+
+function initAudioEngine(){
+  if (audioReady) return;
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    audioCtx = new AC();
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.55;
+    masterGain.connect(audioCtx.destination);
+    audioReady = true;
+  } catch(e){}
+}
+function resumeAudioIfNeeded(){
+  if (!audioCtx) return;
+  if (audioCtx.state === "suspended") audioCtx.resume().catch(()=>{});
+}
+function playTerminalOpenSound(){
+  if (!audioReady || !audioCtx || !masterGain) return;
+  resumeAudioIfNeeded();
+  const now = audioCtx.currentTime;
+
+  // beep 1
+  const o1 = audioCtx.createOscillator();
+  const g1 = audioCtx.createGain();
+  o1.type = "sine";
+  o1.frequency.setValueAtTime(880, now);
+  o1.frequency.exponentialRampToValueAtTime(520, now + 0.09);
+  g1.gain.setValueAtTime(0.0001, now);
+  g1.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+  g1.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+  o1.connect(g1).connect(masterGain);
+  o1.start(now);
+  o1.stop(now + 0.14);
+
+  // noise burst (curto, filtrado)
+  const dur = 0.12;
+  const bufferSize = Math.floor(audioCtx.sampleRate * dur);
+  const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const data = noiseBuffer.getChannelData(0);
+  for (let i=0; i<bufferSize; i++){
+    data[i] = (Math.random()*2 - 1) * (1 - i/bufferSize);
+  }
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = noiseBuffer;
+
+  const bp = audioCtx.createBiquadFilter();
+  bp.type = "bandpass";
+  bp.frequency.setValueAtTime(1200, now);
+  bp.Q.setValueAtTime(6, now);
+
+  const ng = audioCtx.createGain();
+  ng.gain.setValueAtTime(0.0001, now);
+  ng.gain.exponentialRampToValueAtTime(0.10, now + 0.01);
+  ng.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+
+  noise.connect(bp).connect(ng).connect(masterGain);
+  noise.start(now + 0.02);
+  noise.stop(now + 0.02 + dur);
+
+  // micro-duck do ambience (não quebra nada)
+  try{
+    const base = Math.min(0.35, Math.max(0.02, Number(video.volume) * 0.25));
+    const prev = ambience.volume;
+    ambience.volume = Math.max(0.02, base * 0.65);
+    setTimeout(()=>{ ambience.volume = Math.min(prev, base); }, 180);
+  } catch(e){}
+}
+
+/* ===== Typewriter ===== */
 async function typeLine(text, cls="", speed=14, token=0){
   if (!ensureAlive(token)) return;
   const div = document.createElement("div");
@@ -1094,8 +1199,6 @@ async function typeLine(text, cls="", speed=14, token=0){
   for (let i=0; i<text.length; i++){
     if (!ensureAlive(token)) return;
     div.textContent += text[i];
-    // ✅ “áudio reage ao terminal”: micro duck/pulse durante digitação
-    pulseAudio(0.10);
     await sleep(speed + Math.random()*14);
     termLog.scrollTop = termLog.scrollHeight;
   }
@@ -1111,12 +1214,15 @@ async function typeGlitchPhraseOnly(token){
     "Mudando idioma para..."
   ];
   if (!ensureAlive(token)) return;
-  const line = terminalAppendDimLine(base);
+  const line = document.createElement("div");
+  line.className = "termLine dim";
+  line.textContent = base;
+  termLog.appendChild(line);
+  termLog.scrollTop = termLog.scrollHeight;
   await sleep(130);
   for (let i=0; i<variants.length; i++){
     if (!ensureAlive(token)) return;
     line.textContent = variants[i];
-    pulseAudio(0.14);
     await sleep(70);
   }
   if (!ensureAlive(token)) return;
@@ -1124,7 +1230,7 @@ async function typeGlitchPhraseOnly(token){
   await sleep(200);
 }
 
-/* ===== Terminal input control ===== */
+/* ===== Terminal input ===== */
 function normalizeCmd(s){ return (s || "").trim().toLowerCase(); }
 function setInputEnabled(on){
   termInput.disabled = !on;
@@ -1138,48 +1244,6 @@ function focusTerminalInput(){
 }
 function printUserCmd(raw){ terminalAppendDimLine(`${termPrompt.textContent} ${raw}`); }
 
-/* ===== Audio react (safe, lightweight) ===== */
-let audioPulse = 0;
-let pulseTimer = null;
-
-function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-
-/* pulseAudio: aumenta levemente ambience e “tremor” do blur durante eventos/typing */
-function pulseAudio(amount=0.12, holdMs=220){
-  audioPulse = clamp(audioPulse + amount, 0, 0.65);
-
-  if (!pulseTimer){
-    pulseTimer = setInterval(() => {
-      audioPulse = Math.max(0, audioPulse - 0.06);
-      applyReactiveMix();
-      if (audioPulse <= 0.001){
-        clearInterval(pulseTimer);
-        pulseTimer = null;
-      }
-    }, 60);
-  }
-
-  applyReactiveMix();
-  // pequena sustentação
-  setTimeout(() => {
-    audioPulse = Math.max(0, audioPulse - 0.04);
-    applyReactiveMix();
-  }, holdMs);
-}
-
-function applyReactiveMix(){
-  // base ambience já é controlado pelo volume; aqui só adiciona um “boost” temporário
-  const base = Math.min(0.35, Math.max(0.02, Number(video.volume) * 0.25));
-  ambience.volume = clamp(base + audioPulse * 0.10, 0.02, 0.38);
-
-  // blur “respira” discretamente (sem stutter)
-  const baseBlur = getComputedStyle(document.documentElement).getPropertyValue("--blur-amount").trim();
-  const numeric = Number((baseBlur || "90px").replace("px","")) || 90;
-  const extra = audioPulse * 18; // máx ~12px
-  videoBlur.style.filter = `blur(${(numeric + extra).toFixed(1)}px) brightness(.5) saturate(1.5)`;
-}
-
-/* ===== Commands: responses ===== */
 async function respond(textLines){
   const token = termRunToken;
   for (const ln of textLines){
@@ -1188,17 +1252,10 @@ async function respond(textLines){
     await sleep(90);
   }
 }
-function makeCursor(){
-  const cursor = document.createElement("div");
-  cursor.className = "termLine";
-  cursor.innerHTML = `<span class="cursor" aria-hidden="true">█</span>`;
-  return cursor;
-}
 
-/* ===== Commands list auto (only once) ===== */
 async function showCommandsHintAuto(token){
   if (!ensureAlive(token)) return;
-  await sleep(160);
+  await sleep(220);
   await typeLine(" ", "dim", 1, token);
   await typeLine("COMANDOS DISPONÍVEIS:", "dim", 9, token);
   await typeLine("- status", "dim", 9, token);
@@ -1206,26 +1263,20 @@ async function showCommandsHintAuto(token){
   await typeLine("- consent", "dim", 9, token);
   await typeLine("- whoami", "dim", 9, token);
   await typeLine("- who are you", "dim", 9, token);
-  await typeLine("- subject", "dim", 9, token);
-  await typeLine("- overwrite", "dim", 9, token);
-  await typeLine("- lockdown on/off", "dim", 9, token);
-  await typeLine("- experiment", "dim", 9, token);
-  await typeLine("- cancel", "dim", 9, token);
   await typeLine("- clear", "dim", 9, token);
   await typeLine("Dica: digite \"help\" para repetir.", "dim", 9, token);
 }
 
-/* ===== Lore sequence (persist after completed) ===== */
 async function runLoreSequence(){
   const token = ++termRunToken;
   termTyping = true;
   termInteractive = false;
   setInputEnabled(false);
 
-  // ✅ se já completou antes, restaurar snapshot sem resetar
+  // ✅ se já chegou nos comandos, não reseta ao reabrir
   if (termBootCompleted && termSnapshotHTML){
     termLog.innerHTML = termSnapshotHTML;
-    termLog.appendChild(makeCursor());
+    termLog.appendChild(makeCursorLine());
     termLog.scrollTop = termLog.scrollHeight;
     termTyping = false;
     termInteractive = true;
@@ -1254,17 +1305,17 @@ async function runLoreSequence(){
   await sleep(280);
 
   const lines = [
-    { t: "…", cls:"dim", d: 320 },
-    { t: "Então você encontrou a interface.", cls:"", d: 340 },
-    { t: "Ótimo. Curiosidade é a única virtude que eu ainda tolero.", cls:"", d: 440 },
-    { t: "Vamos deixar claro: consentimento é um conceito decorativo.", cls:"dim", d: 480 },
-    { t: "Estado do sujeito: responsivo.", cls:"", d: 320 },
-    { t: "Módulo de ética: desativado.", cls:"", d: 320 },
-    { t: "Limite de dor: ajustável.", cls:"dim", d: 420 },
-    { t: "Se estiver com medo, não desvie o olhar.", cls:"", d: 500 },
-    { t: "Observar exige devoção.", cls:"dim", d: 420 },
-    { t: "Prosseguindo com a calibração.", cls:"", d: 420 },
-    { t: "— Il Dottore", cls:"dim", d: 420 },
+    { t: "…", cls:"dim", d: 360 },
+    { t: "Então você encontrou a interface.", cls:"", d: 360 },
+    { t: "Ótimo. Curiosidade é a única virtude que eu ainda tolero.", cls:"", d: 480 },
+    { t: "Vamos deixar claro: consentimento é um conceito decorativo.", cls:"dim", d: 520 },
+    { t: "Estado do sujeito: responsivo.", cls:"", d: 360 },
+    { t: "Módulo de ética: desativado.", cls:"", d: 360 },
+    { t: "Limite de dor: ajustável.", cls:"dim", d: 450 },
+    { t: "Se estiver com medo, não desvie o olhar.", cls:"", d: 520 },
+    { t: "Observar exige devoção.", cls:"dim", d: 450 },
+    { t: "Prosseguindo com a calibração.", cls:"", d: 450 },
+    { t: "— Il Dottore", cls:"dim", d: 450 },
   ];
   for (const L of lines){
     await typeLine(L.t, L.cls, LORE_SPEED.main, token);
@@ -1280,7 +1331,8 @@ async function runLoreSequence(){
   await showCommandsHintAuto(token);
 
   if (!ensureAlive(token)) return;
-  termLog.appendChild(makeCursor());
+
+  termLog.appendChild(makeCursorLine());
   termLog.scrollTop = termLog.scrollHeight;
 
   termTyping = false;
@@ -1288,181 +1340,20 @@ async function runLoreSequence(){
   setInputEnabled(true);
   focusTerminalInput();
 
-  // ✅ salva snapshot do terminal após comandos (persistência)
   termBootCompleted = true;
   termSnapshotHTML = termLog.innerHTML.replace(/<div class="termLine"><span class="cursor" aria-hidden="true">█<\/span><\/div>/g, "");
   ghost("CONTROL SURFACE: GRANTED", 1300);
 }
 
-/* ===== Terminal open/close logic ===== */
-function openTerminal(){
-  terminal.classList.add("show");
-  terminal.setAttribute("aria-hidden","false");
-  runLoreSequence().catch(()=>{});
-}
-function closeTerminal(){
-  // ✅ se fechar no meio do typing, reseta na próxima abertura
-  const wasTyping = termTyping;
-  terminal.classList.remove("show");
-  terminal.setAttribute("aria-hidden","true");
-  termRunToken++;
-  termTyping = false;
-  termInteractive = false;
-  setInputEnabled(false);
-
-  // se fechou enquanto Dottore digitava: resetar boot
-  if (wasTyping){
-    termBootCompleted = false;
-    termSnapshotHTML = "";
-  }
-}
-
-/* ===== Experiment Panel controls ===== */
-let expOpen = false;
-let expIndex = 0;
-
-function openExpPanel(){
-  expOpen = true;
-  expIndex = 0;
-  expPanel.classList.add("show");
-  expPanel.setAttribute("aria-hidden","false");
-  highlightExpIndex();
-  ghost("EXPERIMENT PANEL: OPEN", 1200);
-  pulseAudio(0.18);
-}
-function closeExpPanel(){
-  expOpen = false;
-  expPanel.classList.remove("show");
-  expPanel.setAttribute("aria-hidden","true");
-  ghost("EXPERIMENT PANEL: CLOSED", 900);
-}
-function highlightExpIndex(){
-  expButtons.forEach((b,i) => {
-    b.style.borderColor = (i===expIndex) ? "rgba(255,90,90,.40)" : "rgba(0,200,255,.28)";
-    b.style.boxShadow = (i===expIndex) ? "0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(255,90,90,.10)" : "0 0 0 1px rgba(0,0,0,.25) inset";
-  });
-}
-function selectExpByIndex(){
-  const btn = expButtons[expIndex];
-  if (!btn) return;
-  runExperiment(btn.dataset.exp);
-}
-expButtons.forEach((btn, idx) => {
-  btn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    expIndex = idx;
-    highlightExpIndex();
-    runExperiment(btn.dataset.exp);
-  });
-});
-
-/* ===== Visual event helpers ===== */
-let alertTimer = null;
-function setAlert(on, ms=700){
-  clearTimeout(alertTimer);
-  if (on){
-    document.body.classList.add("alert");
-    alertTimer = setTimeout(() => document.body.classList.remove("alert"), ms);
-  } else {
-    document.body.classList.remove("alert");
-  }
-}
-
-/* ===== Command: experiments ===== */
-async function runExperiment(kind){
-  closeExpPanel();
-
-  // terminal feedback
-  if (terminal.classList.contains("show")){
-    terminalAppendDimLine(`// EXPERIMENT SELECTED: ${kind.toUpperCase()} //`);
-  }
-
-  // efeito visual discreto
-  triggerGlitch();
-  setAlert(true, 850);
-  pulseAudio(0.30, 260);
-
-  // pequenos “efeitos” sem mexer pesado em vídeo
-  if (kind === "neural"){
-    sysDirective.textContent = "NEURAL OVERRIDE: ACTIVE";
-    ghost("WILL: SUPPRESSED", 1300);
-    if (terminal.classList.contains("show")){
-      await respond([
-        "Neuro-interface: conectada.",
-        "Resposta motora: redirecionada.",
-        "Você vai chamar isso de escolha. Eu chamo de ruído."
-      ]);
-    }
-    return;
-  }
-  if (kind === "memory"){
-    sysDirective.textContent = "MEMORY: EXTRACTION";
-    ghost("MEMORY: HARVESTING", 1400);
-    if (terminal.classList.contains("show")){
-      await respond([
-        "Iniciando dump de memória.",
-        "Fragmentos úteis: retidos.",
-        "Fragmentos humanos: descartados."
-      ]);
-    }
-    return;
-  }
-  if (kind === "pain"){
-    sysDirective.textContent = "PAIN: CALIBRATION";
-    ghost("PAIN LIMIT: MODULATED", 1400);
-    if (terminal.classList.contains("show")){
-      await respond([
-        "Você sempre mente sobre tolerância.",
-        "Eu não."
-      ]);
-    }
-    return;
-  }
-  if (kind === "identity"){
-    sysDirective.textContent = "IDENTITY: DISSOLUTION";
-    ghost("NAME: OPTIONAL", 1400);
-    if (terminal.classList.contains("show")){
-      await respond([
-        "Nome: irrelevante.",
-        "História: reescrita.",
-        "Se ainda existir 'você', é por conveniência."
-      ]);
-    }
-    return;
-  }
-  if (kind === "ascend"){
-    sysDirective.textContent = "ASCENSION: FORCED";
-    ghost("ASCENSION: TRIGGERED", 1500);
-    if (terminal.classList.contains("show")){
-      await respond([
-        "Você pediu por um 'deus'.",
-        "Eu forneço o mecanismo.",
-        "Agora assista."
-      ]);
-    }
-    return;
-  }
-}
-
-/* ===== Command handling (NO random logs) ===== */
 async function handleCommand(raw){
   const cmd = normalizeCmd(raw);
   if (!termInteractive || termTyping){
     terminalAppendDimLine("// INPUT IGNORED: BUSY");
-    pulseAudio(0.08);
     return;
   }
   if (!cmd) return;
-
-  // lockdown: se estiver travando, ignora
-  if (isLocking){
-    terminalAppendDimLine("// LOCKDOWN: ACTIVE");
-    return;
-  }
-
   printUserCmd(raw);
 
-  // HELP
   if (cmd === "help" || cmd === "?" ){
     await respond([
       "Comandos disponíveis:",
@@ -1471,31 +1362,20 @@ async function handleCommand(raw){
       "- consent",
       "- whoami",
       "- who are you",
-      "- subject",
-      "- overwrite",
-      "- lockdown on/off",
-      "- experiment",
-      "- cancel",
       "- clear"
     ]);
     return;
   }
-
-  // CLEAR
   if (cmd === "clear" || cmd === "cls"){
     clearTerminal();
     terminalAppendDimLine("// LOG CLEARED // (a memória é seletiva)");
-    termLog.appendChild(makeCursor());
+    termLog.appendChild(makeCursorLine());
     termLog.scrollTop = termLog.scrollHeight;
-    // atualizar snapshot (persistência)
     if (termBootCompleted){
       termSnapshotHTML = termLog.innerHTML.replace(/<div class="termLine"><span class="cursor" aria-hidden="true">█<\/span><\/div>/g, "");
     }
-    pulseAudio(0.10);
     return;
   }
-
-  // STATUS
   if (cmd === "status"){
     await respond([
       `SUBJECT: ${sysSubject.textContent}`,
@@ -1504,22 +1384,16 @@ async function handleCommand(raw){
       `ETHICS: DISABLED`,
       `PHASE: ${sysPhase.textContent} // ${sysDirective.textContent}`
     ]);
-    pulseAudio(0.10);
     return;
   }
-
-  // PHASE / PROTOCOL
   if (cmd === "phase" || cmd === "protocol"){
     await respond([
       `ASCENSION PROTOCOL // ${sysPhase.textContent}`,
       `DIRECTIVE // ${sysDirective.textContent}`,
       "Observação: você não é um operador. É material."
     ]);
-    pulseAudio(0.10);
     return;
   }
-
-  // CONSENT
   if (cmd === "consent" || cmd === "assinar" || cmd === "consentimento"){
     await respond([
       "CONSENT FORM // OPEN",
@@ -1527,149 +1401,36 @@ async function handleCommand(raw){
       "CONSENT: OVERRIDDEN",
       "Você chama isso de moral? Interessante."
     ]);
-    setAlert(true, 650);
-    pulseAudio(0.18);
     return;
   }
-
-  // WHOAMI
   if (cmd === "whoami" || cmd === "quem sou eu"){
     await respond([
       "IDENTITY QUERY // DENIED",
       "Você não precisa de um nome para cumprir sua função."
     ]);
-    pulseAudio(0.10);
     return;
   }
-
-  // WHO ARE YOU
   if (cmd === "who are you" || cmd === "whoareyou" || cmd === "quem é você" || cmd === "quem é vc"){
     await respond([
       "Eu sou o único adulto na sala.",
       "E você... é apenas um recurso."
     ]);
-    pulseAudio(0.12);
     return;
   }
-
-  // SUBJECT (biometria falsa)
-  if (cmd === "subject"){
-    const bpm = 58 + Math.floor(Math.random()*36);
-    const temp = (35.7 + Math.random()*1.2).toFixed(1);
-    const stress = ["BAIXO","MODERADO","ALTO","CRÍTICO"][Math.floor(Math.random()*4)];
-    await respond([
-      "SUBJECT BIOMETRICS // READ",
-      `HR: ${bpm} bpm`,
-      `TEMP: ${temp}°C`,
-      `STRESS: ${stress}`,
-      "Conclusão: ainda funcional."
-    ]);
-    pulseAudio(0.14);
-    return;
-  }
-
-  // OVERWRITE (directive temporary)
-  if (cmd === "overwrite"){
-    const prev = sysDirective.textContent;
-    sysDirective.textContent = "DIRECTIVE: OVERRIDDEN";
-    await respond([
-      "REQUEST: DIRECTIVE OVERRIDE",
-      "RESULT: ACCEPTED",
-      "Você quis 'controle'. Eu dei um botão. Não confunda."
-    ]);
-    triggerGlitch();
-    setAlert(true, 700);
-    pulseAudio(0.22);
-    setTimeout(() => { sysDirective.textContent = prev; }, 5200);
-    return;
-  }
-
-  // LOCKDOWN toggle
-  if (cmd === "lockdown on" || cmd === "lockdown"){
-    lockdownEnabled = true;
-    await respond([
-      "LOCKDOWN MODE: ENABLED",
-      "Erros serão punidos com latência.",
-      "Disciplina é um método. Não uma escolha."
-    ]);
-    setAlert(true, 520);
-    pulseAudio(0.16);
-    return;
-  }
-  if (cmd === "lockdown off"){
-    lockdownEnabled = false;
-    await respond([
-      "LOCKDOWN MODE: DISABLED",
-      "Pena. Eu estava começando a gostar."
-    ]);
-    pulseAudio(0.12);
-    return;
-  }
-
-  // EXPERIMENT PANEL
-  if (cmd === "experiment" || cmd === "experiments" || cmd === "exp"){
-    openExpPanel();
-    await respond([
-      "Painel de experimentos: aberto.",
-      "Escolha com ↑↓ e ENTER. Ou clique.",
-      "Digite \"cancel\" para abortar."
-    ]);
-    pulseAudio(0.14);
-    return;
-  }
-
-  // CANCEL
-  if (cmd === "cancel" || cmd === "abort"){
-    if (expOpen){
-      closeExpPanel();
-      await respond(["Experimento abortado.", "Boa tentativa de autopreservação."]);
-      pulseAudio(0.12);
-      return;
-    }
-    await respond(["Nada em execução.", "Eu não cancelo. Eu adio."]);
-    pulseAudio(0.10);
-    return;
-  }
-
-  // EXIT
   if (cmd === "exit" || cmd === "quit" || cmd === "sair"){
     await respond([
       "REQUEST: EXIT",
       "RESULT: DENIED",
       "Negado. Ainda não terminou."
     ]);
-    pulseAudio(0.12);
     return;
   }
-
-  // UNKNOWN
   await respond([
     `UNKNOWN COMMAND: "${raw}"`,
     "Se você quer controle, está no lugar errado."
   ]);
-  pulseAudio(0.10);
-
-  // lockdown punishment (3s)
-  if (lockdownEnabled){
-    isLocking = true;
-    setInputEnabled(false);
-    terminalAppendDimLine("// LOCKDOWN // 3000ms");
-    setAlert(true, 900);
-    pulseAudio(0.20);
-    setTimeout(() => {
-      isLocking = false;
-      setInputEnabled(true);
-      focusTerminalInput();
-      terminalAppendDimLine("// LOCKDOWN RELEASED");
-      // refresh snapshot
-      if (termBootCompleted){
-        termSnapshotHTML = termLog.innerHTML.replace(/<div class="termLine"><span class="cursor" aria-hidden="true">█<\/span><\/div>/g, "");
-      }
-    }, 3000);
-  }
 }
 
-/* ===== Terminal input key ===== */
 termInput.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   const v = termInput.value;
@@ -1677,53 +1438,162 @@ termInput.addEventListener("keydown", async (e) => {
   await handleCommand(v);
   focusTerminalInput();
 
-  // persist snapshot after each command (when boot completed)
   if (termBootCompleted){
     termSnapshotHTML = termLog.innerHTML.replace(/<div class="termLine"><span class="cursor" aria-hidden="true">█<\/span><\/div>/g, "");
   }
 });
 
-/* ===== Global keys ===== */
+/* ===== Terminal open/close ===== */
+function openTerminal(){
+  // som especial ao abrir (agora é real)
+  playTerminalOpenSound();
+
+  terminal.classList.add("show");
+  terminal.setAttribute("aria-hidden","false");
+  runLoreSequence().catch(()=>{});
+}
+function closeTerminal(){
+  const wasTyping = termTyping;
+  terminal.classList.remove("show");
+  terminal.setAttribute("aria-hidden","true");
+  termRunToken++;
+  termTyping = false;
+  termInteractive = false;
+  setInputEnabled(false);
+
+  // se fechou no meio do texto, reseta na próxima
+  if (wasTyping){
+    termBootCompleted = false;
+    termSnapshotHTML = "";
+  }
+}
+
+/* ===== Catalog (separado do terminal) ===== */
+const catalogItems = [
+  {
+    id:"Ω-01",
+    tag:"HUMAN TRIAL",
+    title:"Ressonância Neural — “Obediência Reflexa”",
+    txt:"O sujeito aprendeu a obedecer antes de compreender. Foi… eficiente. A vontade própria é um ruído barato.",
+    metaL:"RESULT: SUCCESS",
+    metaR:"STATUS: ARCHIVED"
+  },
+  {
+    id:"Σ-13",
+    tag:"BIO-REWRITE",
+    title:"Reestruturação Celular — “Forma Utilitária”",
+    txt:"Uma anatomia não precisa ser bonita. Precisa ser útil. Dor é apenas um alerta… e alertas podem ser silenciados.",
+    metaL:"LOSS: ACCEPTABLE",
+    metaR:"ETHICS: DISABLED"
+  },
+  {
+    id:"Δ-07",
+    tag:"MEMORY",
+    title:"Extração de Memória — “Fragmentos Selecionados”",
+    txt:"Lembranças são propriedade pública quando eu decido. O resto é descarte sentimental.",
+    metaL:"DATA: RECOVERED",
+    metaR:"CONSENT: OVERRIDDEN"
+  },
+  {
+    id:"K-22",
+    tag:"PSYCH",
+    title:"Condicionamento — “Fé Sintética”",
+    txt:"Você chama de crença. Eu chamo de configuração. Um deus não precisa de oração. Precisa de controle.",
+    metaL:"STABILITY: HIGH",
+    metaR:"SUBJECT: FUNCTIONAL"
+  },
+  {
+    id:"ASC-00",
+    tag:"ASCENSION",
+    title:"Protocolo de Ascensão — “Deus é um Cargo”",
+    txt:"A divindade não é destino. É um posto. E alguém precisa ter competência suficiente para ocupá-lo.",
+    metaL:"PHASE: ACTIVE",
+    metaR:"OBS: DO NOT INTERRUPT"
+  }
+];
+
+function renderCatalog(){
+  catBody.innerHTML = "";
+  for (const it of catalogItems){
+    const card = document.createElement("div");
+    card.className = "catCard";
+    card.innerHTML = `
+      <div class="catCardTop">
+        <div class="catId">REF: ${it.id}</div>
+        <div class="catTag">${it.tag}</div>
+      </div>
+      <div class="catTitle2">${it.title}</div>
+      <div class="catTxt">${it.txt}</div>
+      <div class="catMeta">
+        <span>${it.metaL}</span>
+        <span>${it.metaR}</span>
+      </div>
+    `;
+    catBody.appendChild(card);
+  }
+}
+renderCatalog();
+
+function openCatalog(){
+  // não conflitar com terminal (catálogo é “arquivo”, mas terminal é prioridade)
+  if (terminal.classList.contains("show")) closeTerminal();
+  catalog.classList.add("show");
+  catalog.setAttribute("aria-hidden","false");
+  ghost("CATÁLOGO: ACESSO CONCEDIDO", 1300);
+}
+function closeCatalog(){
+  catalog.classList.remove("show");
+  catalog.setAttribute("aria-hidden","true");
+  ghost("CATÁLOGO: FECHADO", 900);
+}
+btnCat.addEventListener("click", (e)=>{ e.stopPropagation(); catalog.classList.contains("show") ? closeCatalog() : openCatalog(); });
+catalog.addEventListener("click", (e)=>{ if (e.target === catalog) closeCatalog(); });
+
+/* ===== Buttons ===== */
 btnTerm.addEventListener("click", (e) => {
   e.stopPropagation();
   if (terminal.classList.contains("show")) closeTerminal();
   else openTerminal();
 });
+
+/* ===== Global keys ===== */
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape"){
-    if (expOpen){ closeExpPanel(); return; }
+    if (catalog.classList.contains("show")) { closeCatalog(); return; }
     closeTerminal();
     return;
   }
 
-  // abrir terminal com ` ou T (não fecha mais)
+  // abrir terminal com ` ou T (não fecha com T)
   const isToggleKey = (e.key === "`" || e.key.toLowerCase() === "t");
   if (isToggleKey) {
     const a = document.activeElement;
-    const typingInInput = (a === termInput);
-    if (typingInInput) return;
+    if (a === termInput) return;
     if (!terminal.classList.contains("show")) openTerminal();
     else focusTerminalInput();
     return;
   }
 
-  // navegar painel de experimentos
-  if (expOpen){
-    if (e.key === "ArrowDown"){ expIndex = (expIndex + 1) % expButtons.length; highlightExpIndex(); pulseAudio(0.08); e.preventDefault(); }
-    if (e.key === "ArrowUp"){ expIndex = (expIndex - 1 + expButtons.length) % expButtons.length; highlightExpIndex(); pulseAudio(0.08); e.preventDefault(); }
-    if (e.key === "Enter"){ selectExpByIndex(); e.preventDefault(); }
+  // catálogo com E (se não estiver digitando em input)
+  if (e.key.toLowerCase() === "e"){
+    const a = document.activeElement;
+    const isTypingField = a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable);
+    if (isTypingField) return;
+    catalog.classList.contains("show") ? closeCatalog() : openCatalog();
+    return;
   }
 
-  // Enter foca input do terminal (sem fechar)
+  // Enter foca input do terminal
   if (terminal.classList.contains("show") && e.key === "Enter"){
     if (!termInput.disabled) focusTerminalInput();
   }
 });
+
 terminal.addEventListener("click", (e) => {
   if (e.target === terminal) closeTerminal();
 });
 
-/* ===== HELPERS ===== */
+/* ===== ENTER / RETRY ===== */
 function hideLoading(){
   loadingScreen.style.opacity = "0";
   setTimeout(() => loadingScreen.style.display = "none", 600);
@@ -1731,6 +1601,7 @@ function hideLoading(){
   stopEnterScanLoop();
   sysSubject.textContent = "ATIVO";
 }
+
 function waitForPlaying(el, timeoutMs=1200){
   return new Promise((resolve, reject) => {
     let done = false;
@@ -1747,8 +1618,11 @@ function waitForPlaying(el, timeoutMs=1200){
   });
 }
 
-/* ===== ENTER / RETRY ===== */
 enterBox.onclick = async () => {
+  // init webaudio on user gesture
+  initAudioEngine();
+  resumeAudioIfNeeded();
+
   enterBox.style.pointerEvents = "none";
 
   if (enterBox.textContent === "RETRY") {
@@ -1784,7 +1658,6 @@ enterBox.onclick = async () => {
     updateVolumeUI();
     triggerGlitch();
     hideLoading();
-
     startAscensionProtocol();
     ghost("SUBJECT: CONNECTED", 1200);
 
@@ -1803,7 +1676,6 @@ enterBox.onclick = async () => {
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Enter") return;
 
-  // se terminal estiver aberto, Enter pertence ao terminal
   if (terminal.classList.contains("show")) return;
 
   const a = document.activeElement;
@@ -1814,26 +1686,21 @@ document.addEventListener("keydown", (e) => {
   if (!loadingVisible) return;
 
   if (enterBox.classList.contains("show") && enterBox.style.pointerEvents !== "none") {
+    // init audio too
+    initAudioEngine();
+    resumeAudioIfNeeded();
     enterBox.click();
   }
 });
 
-/* ===== Initial defaults ===== */
+/* ===== Misc ===== */
 setProtocolHUD(Protocol.phases[0]);
-</script>
 
-  <script>
-/* ===== Snapshot cursor guard (micro fix final) ===== */
-/* garante que só exista 1 cursor visual no final do log */
-(function cursorGuard(){
-  const cursors = termLog.querySelectorAll(".cursor");
-  if (cursors.length <= 1) return;
-
-  for (let i = 0; i < cursors.length - 1; i++){
-    const el = cursors[i].closest(".termLine");
-    if (el) el.remove();
-  }
-})();
+/* ===== Extra: quick init on any click (helps Opera sometimes) ===== */
+document.addEventListener("pointerdown", () => {
+  initAudioEngine();
+  resumeAudioIfNeeded();
+}, { once:false });
 </script>
 
 </body>
