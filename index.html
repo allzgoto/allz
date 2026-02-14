@@ -41,6 +41,17 @@ body{
   mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
+/* ✅ Micro camera cut (cinematográfico, curto, sem arcade) */
+body.camera-cut #video,
+body.camera-cut #videoBlur{
+  animation: cameraCut .22s ease 1;
+}
+@keyframes cameraCut{
+  0%{transform:scale(1) translateZ(0); filter:none}
+  40%{transform:scale(1.012) translateZ(0); filter:contrast(1.05)}
+  100%{transform:scale(1) translateZ(0); filter:none}
+}
+
 /* ========= FX OVERLAYS ========= */
 .scanlines{
   position:fixed;
@@ -84,6 +95,16 @@ body{
     linear-gradient(90deg, rgba(0,200,255,.05), transparent 35%, transparent 65%, rgba(0,200,255,.04));
   opacity:.65;
 }
+
+/* ✅ “Breathing” de luz (só depois do loading) */
+body.live #cinemaFX::after{
+  animation:breath 7.8s ease-in-out infinite;
+}
+@keyframes breath{
+  0%,100%{opacity:.58}
+  50%{opacity:.73}
+}
+
 @keyframes grain{
   0%{transform:translate(0,0)}
   10%{transform:translate(-2%, -3%)}
@@ -132,9 +153,7 @@ body{
   align-items:center;
   z-index:10;
   transition:opacity .6s ease;
-
-  /* necessário pro scan overlay */
-  overflow:hidden;
+  overflow:hidden; /* pro scan */
 }
 .loading-text{
   letter-spacing:6px;
@@ -174,7 +193,7 @@ body{
 }
 #enterBox.show{opacity:1; pointer-events:auto;}
 
-/* ✅ NEW: "PRESS [ENTER]" hint (idea 4) */
+/* ✅ “PRESS [ENTER]” */
 #enterHint{
   margin-top:12px;
   font-size:10px;
@@ -187,7 +206,24 @@ body{
 }
 #enterHint.show{opacity:.85;}
 
-/* ✅ NEW: scanner pass on ready (idea 3) */
+/* ✅ “modo disciplina” (anti-spam) */
+#disciplineNote{
+  margin-top:10px;
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:0;
+  transform:translateY(-2px);
+  transition:.22s ease;
+  color:rgba(255,190,190,.85);
+  text-shadow:0 0 10px rgba(255,90,90,.15);
+  user-select:none;
+}
+#disciplineNote.show{
+  opacity:.88;
+  transform:translateY(0);
+}
+
+/* ✅ Scanner no loading */
 #enterScan{
   position:absolute;
   inset:0;
@@ -206,12 +242,9 @@ body{
   transform:skewX(-14deg) translateX(-120%);
   filter: blur(1px);
 }
-#loadingScreen.scan-on #enterScan{
-  opacity:1;
-}
-#loadingScreen.scan-on #enterScan::before{
-  animation: enterScanPass .85s ease 1;
-}
+#loadingScreen.scan-on #enterScan{ opacity:1; }
+#loadingScreen.scan-on #enterScan::before{ animation: enterScanPass .85s ease 1; }
+
 @keyframes enterScanPass{
   0%{transform:skewX(-14deg) translateX(-120%); opacity:0}
   15%{opacity:1}
@@ -507,16 +540,42 @@ body{
 }
 .termLog .dim{opacity:.55}
 .termLine{margin:2px 0}
+
+/* ✅ Cursor com “vida” */
 .cursor{
   display:inline-block;
   margin-left:6px;
   opacity:.9;
   animation:cursorBlink 1s steps(2) infinite;
+  will-change: transform, opacity, filter;
+}
+body.cursor-jitter .cursor{
+  animation:
+    cursorBlink 1s steps(2) infinite,
+    cursorJitter 1.7s steps(3) infinite;
 }
 @keyframes cursorBlink{
   0%,49%{opacity:1}
   50%,100%{opacity:0}
 }
+@keyframes cursorJitter{
+  0%{transform:translate(0,0)}
+  25%{transform:translate(0.2px,-0.3px)}
+  50%{transform:translate(-0.3px,0.2px)}
+  75%{transform:translate(0.3px,0.1px)}
+  100%{transform:translate(0,0)}
+}
+.cursor.pulse{
+  animation:
+    cursorBlink 1s steps(2) infinite,
+    cursorPulse .65s ease 1;
+}
+@keyframes cursorPulse{
+  0%{filter:drop-shadow(0 0 0 rgba(0,200,255,0)); transform:scale(1)}
+  40%{filter:drop-shadow(0 0 18px rgba(0,200,255,.35)); transform:scale(1.06)}
+  100%{filter:drop-shadow(0 0 0 rgba(0,200,255,0)); transform:scale(1)}
+}
+
 .termInputBar{
   display:flex;
   align-items:center;
@@ -556,12 +615,97 @@ body{
   white-space:nowrap;
 }
 
+/* ========= PRESENÇA (mensagem rara) ========= */
+#presenceGhost{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:22;
+  pointer-events:none;
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:0;
+  transform:translateY(6px);
+  transition:.35s ease;
+  color:rgba(207,239,255,.55);
+  text-shadow:0 0 14px rgba(0,200,255,.12);
+  user-select:none;
+}
+#presenceGhost.show{
+  opacity:.85;
+  transform:translateY(0);
+}
+
+/* ========= RETÍCULO / RASTREIO (centro) ========= */
+#reticle{
+  position:fixed;
+  left:50%;
+  top:50%;
+  width:110px;
+  height:110px;
+  transform:translate(-50%,-50%);
+  z-index:8;
+  pointer-events:none;
+  opacity:0;
+  transition:.25s ease;
+  filter: drop-shadow(0 0 18px rgba(0,200,255,.10));
+}
+#reticle::before,
+#reticle::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:999px;
+  border:1px solid rgba(0,200,255,.15);
+}
+#reticle::after{
+  inset:18px;
+  border-color: rgba(207,239,255,.12);
+}
+#reticle .cross{
+  position:absolute;
+  left:50%; top:50%;
+  width:100%; height:100%;
+  transform:translate(-50%,-50%);
+}
+#reticle .cross::before,
+#reticle .cross::after{
+  content:"";
+  position:absolute;
+  background: rgba(0,200,255,.16);
+}
+#reticle .cross::before{
+  left:50%; top:10px;
+  width:1px; height:calc(100% - 20px);
+  transform:translateX(-50%);
+  opacity:.75;
+}
+#reticle .cross::after{
+  top:50%; left:10px;
+  height:1px; width:calc(100% - 20px);
+  transform:translateY(-50%);
+  opacity:.65;
+}
+#reticle.active{
+  opacity:.75;
+  animation: reticleWake .7s ease 1;
+}
+@keyframes reticleWake{
+  0%{transform:translate(-50%,-50%) scale(.985); opacity:0}
+  35%{opacity:.78}
+  100%{transform:translate(-50%,-50%) scale(1); opacity:.75}
+}
+
 @media (prefers-reduced-motion: reduce){
   .scanlines{opacity:.35}
   .spinner{animation:none}
   #cinemaFX::before{animation:none}
+  body.live #cinemaFX::after{animation:none}
   #topControls .ctrlBtn::after{animation:none; opacity:0;}
   #loadingScreen.scan-on #enterScan::before{animation:none !important;}
+  body.cursor-jitter .cursor{animation:cursorBlink 1s steps(2) infinite;}
+  #reticle.active{animation:none}
+  body.camera-cut #video, body.camera-cut #videoBlur{animation:none}
 }
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
@@ -588,16 +732,18 @@ body{
 <div id="cinemaFX"></div>
 <div id="glitchFlash"></div>
 
+<!-- ✅ Retículo central (acorda no movimento) -->
+<div id="reticle" aria-hidden="true"><div class="cross"></div></div>
+
 <div id="loadingScreen">
-  <!-- ✅ scan overlay -->
   <div id="enterScan" aria-hidden="true"></div>
 
   <div class="loading-text" id="dynamicText">INITIALIZING EXPERIMENT...</div>
   <div class="spinner" id="spinner"></div>
 
   <div id="enterBox">ENTER</div>
-  <!-- ✅ idea 4 -->
   <div id="enterHint">PRESS [ENTER] TO PROCEED</div>
+  <div id="disciplineNote">PACIÊNCIA.</div>
 </div>
 
 <div class="hud">NEURAL LINK ESTABLISHED // SUBJECT ONLINE</div>
@@ -663,6 +809,9 @@ body{
   </div>
 </div>
 
+<!-- ✅ Presença rara -->
+<div id="presenceGhost" aria-hidden="true">…</div>
+
 <script>
 /* ===== ELEMENTS ===== */
 const video = document.getElementById("video");
@@ -671,6 +820,7 @@ const ambience = document.getElementById("ambience");
 
 const enterBox = document.getElementById("enterBox");
 const enterHint = document.getElementById("enterHint");
+const disciplineNote = document.getElementById("disciplineNote");
 const loadingScreen = document.getElementById("loadingScreen");
 const dynamicText = document.getElementById("dynamicText");
 const spinner = document.getElementById("spinner");
@@ -682,7 +832,6 @@ const sysClock = document.getElementById("sysClock");
 const sysStream = document.getElementById("sysStream");
 const sysNeural = document.getElementById("sysNeural");
 const sysSubject = document.getElementById("sysSubject");
-
 const sysPhase = document.getElementById("sysPhase");
 const sysDirective = document.getElementById("sysDirective");
 
@@ -697,10 +846,12 @@ const volState = document.getElementById("volState");
 
 const terminal = document.getElementById("terminal");
 const termLog = document.getElementById("termLog");
-
 const termInput = document.getElementById("termInput");
 const termPrompt = document.getElementById("termPrompt");
 const termHint = document.getElementById("termHint");
+
+const presenceGhost = document.getElementById("presenceGhost");
+const reticle = document.getElementById("reticle");
 
 /* ===== FLAGS ===== */
 let ambOn = true;
@@ -722,25 +873,35 @@ const msgTimer = setInterval(() => {
 
 /* ===== READY / SAFETY ===== */
 let readyToEnter = false;
-let enterScanPlayed = false;
 
-function playEnterScanOnce(){
-  if (enterScanPlayed) return;
-  enterScanPlayed = true;
+/* ===== Scanner loop no loading (a cada 5s) ===== */
+let scanLoop = null;
+function playEnterScan(){
   loadingScreen.classList.remove("scan-on");
   void loadingScreen.offsetWidth;
   loadingScreen.classList.add("scan-on");
-  // limpa a classe depois, não fica rodando
   setTimeout(()=>loadingScreen.classList.remove("scan-on"), 1100);
+}
+function startScanLoop(){
+  if (scanLoop) return;
+  // passa um scan logo ao iniciar (sutil)
+  playEnterScan();
+  scanLoop = setInterval(() => {
+    // só enquanto o loading estiver visível
+    const visible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
+    if (!visible) return;
+    playEnterScan();
+  }, 5000);
+}
+function stopScanLoop(){
+  if (!scanLoop) return;
+  clearInterval(scanLoop);
+  scanLoop = null;
+  loadingScreen.classList.remove("scan-on");
 }
 
 function setEnterHint(label){
-  // label pode ser "ENTER" ou "RETRY"
-  if (label === "RETRY") {
-    enterHint.textContent = "PRESS [ENTER] TO RETRY";
-  } else {
-    enterHint.textContent = "PRESS [ENTER] TO PROCEED";
-  }
+  enterHint.textContent = (label === "RETRY") ? "PRESS [ENTER] TO RETRY" : "PRESS [ENTER] TO PROCEED";
   enterHint.classList.add("show");
 }
 
@@ -748,9 +909,8 @@ function showEnter(label="ENTER"){
   enterBox.style.pointerEvents = "auto";
   enterBox.textContent = label;
   enterBox.classList.add("show");
-
   setEnterHint(label);
-  playEnterScanOnce(); // ✅ idea 3: dispara quando enter aparece
+  startScanLoop(); // ✅ loop de 5s já começa/continua
 }
 function setLoadingStatus(t){ dynamicText.textContent = t; }
 function markReady(){
@@ -875,7 +1035,15 @@ function triggerGlitch(){
   setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
 }
 
-/* ===== Protocol (unchanged) ===== */
+/* ===== Micro camera cut trigger ===== */
+function triggerCameraCut(){
+  document.body.classList.remove("camera-cut");
+  void document.body.offsetWidth;
+  document.body.classList.add("camera-cut");
+  setTimeout(()=>document.body.classList.remove("camera-cut"), 320);
+}
+
+/* ===== Protocol ===== */
 const PROTOCOL_ENABLED = true;
 const Protocol = {
   started: false,
@@ -897,10 +1065,6 @@ function clearProtocolTimers(){
   for (const t of Protocol.timers) clearTimeout(t);
   Protocol.timers.length = 0;
 }
-let termRunToken = 0;
-let termTyping = false;
-let termInteractive = false;
-
 function terminalAppendDimLine(text){
   const div = document.createElement("div");
   div.className = "termLine dim";
@@ -908,33 +1072,13 @@ function terminalAppendDimLine(text){
   termLog.appendChild(div);
   termLog.scrollTop = termLog.scrollHeight;
 }
-function maybeLogPhaseToTerminal(phase){
-  if (!terminal.classList.contains("show")) return;
-  if (!termInteractive) return;
-  terminalAppendDimLine(`// PHASE UPDATE: ${phase.name.replace("_"," ")} // ${phase.directive}`);
-}
-function startAscensionProtocol(){
-  if (!PROTOCOL_ENABLED) return;
-  if (Protocol.started) return;
-  Protocol.started = true;
-  clearProtocolTimers();
-  const first = Protocol.phases[0];
-  setProtocolHUD(first);
-  Protocol.lastPhase = first.name;
-  for (let i = 1; i < Protocol.phases.length; i++){
-    const ph = Protocol.phases[i];
-    const timer = setTimeout(() => {
-      setProtocolHUD(ph);
-      if (Protocol.lastPhase !== ph.name){
-        Protocol.lastPhase = ph.name;
-        maybeLogPhaseToTerminal(ph);
-      }
-    }, ph.whenMs);
-    Protocol.timers.push(timer);
-  }
-}
 
-/* ===== Terminal helpers (unchanged from last stable) ===== */
+/* ===== TERMINAL ===== */
+let termRunToken = 0;
+let termTyping = false;
+let termInteractive = false;
+let lastCursorSpan = null;
+
 const LORE_SPEED = { header: 9, lang: 9, main: 13, post: 9 };
 
 function clearTerminal(){ termLog.innerHTML = ""; }
@@ -953,6 +1097,7 @@ async function typeLine(text, cls="", speed=14, token=0){
     termLog.scrollTop = termLog.scrollHeight;
   }
 }
+
 async function typeGlitchPhraseOnly(token){
   const base = "Changing language to...";
   const variants = [
@@ -969,6 +1114,7 @@ async function typeGlitchPhraseOnly(token){
   line.textContent = base;
   termLog.appendChild(line);
   termLog.scrollTop = termLog.scrollHeight;
+
   await sleep(130);
   for (let i=0; i<variants.length; i++){
     if (!ensureAlive(token)) return;
@@ -980,6 +1126,7 @@ async function typeGlitchPhraseOnly(token){
   await sleep(200);
 }
 
+/* input helpers */
 function normalizeCmd(s){ return (s || "").trim().toLowerCase(); }
 function setInputEnabled(on){
   termInput.disabled = !on;
@@ -1001,6 +1148,7 @@ async function respond(textLines){
     await sleep(90);
   }
 }
+
 async function handleCommand(raw){
   const cmd = normalizeCmd(raw);
   if (!termInteractive || termTyping){
@@ -1082,6 +1230,22 @@ async function handleCommand(raw){
     "Se você quer controle, está no lugar errado."
   ]);
 }
+
+/* ✅ cursor reage ao input (flash/pulse curtinho) */
+function pulseCursor(){
+  if (!lastCursorSpan) return;
+  lastCursorSpan.classList.remove("pulse");
+  void lastCursorSpan.offsetWidth;
+  lastCursorSpan.classList.add("pulse");
+  setTimeout(()=> lastCursorSpan && lastCursorSpan.classList.remove("pulse"), 720);
+}
+termInput.addEventListener("keydown", (e) => {
+  // qualquer tecla digitável: feedback mínimo
+  if (!termInput.disabled && termInteractive && !termTyping){
+    const printable = e.key.length === 1 || e.key === "Backspace" || e.key === "Delete";
+    if (printable) pulseCursor();
+  }
+});
 termInput.addEventListener("keydown", async (e) => {
   if (e.key !== "Enter") return;
   const v = termInput.value;
@@ -1089,6 +1253,7 @@ termInput.addEventListener("keydown", async (e) => {
   await handleCommand(v);
   focusTerminalInput();
 });
+
 async function showCommandsHintAuto(token){
   if (!ensureAlive(token)) return;
   await sleep(220);
@@ -1102,6 +1267,7 @@ async function showCommandsHintAuto(token){
   await typeLine("- clear", "dim", 9, token);
   await typeLine("Dica: digite \"help\" para repetir.", "dim", 9, token);
 }
+
 async function runLoreSequence(){
   const token = ++termRunToken;
   termTyping = true;
@@ -1157,11 +1323,16 @@ async function runLoreSequence(){
   termLog.appendChild(cursor);
   termLog.scrollTop = termLog.scrollHeight;
 
+  lastCursorSpan = cursor.querySelector(".cursor");
+  // ✅ pulso quando termina (bem “agora é sua vez”)
+  pulseCursor();
+
   termTyping = false;
   termInteractive = true;
   setInputEnabled(true);
   focusTerminalInput();
 }
+
 function openTerminal(){
   terminal.classList.add("show");
   terminal.setAttribute("aria-hidden","false");
@@ -1173,13 +1344,17 @@ function closeTerminal(){
   termRunToken++;
   termTyping = false;
   termInteractive = false;
+  lastCursorSpan = null;
   setInputEnabled(false);
 }
+
 btnTerm.addEventListener("click", (e) => {
   e.stopPropagation();
   if (terminal.classList.contains("show")) closeTerminal();
   else openTerminal();
 });
+
+/* ✅ FIX já existente: T não fecha, só abre/foca */
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape") closeTerminal();
 
@@ -1199,13 +1374,97 @@ terminal.addEventListener("click", (e) => {
   if (e.target === terminal) closeTerminal();
 });
 
+/* ✅ Cursor jitter global (sempre que terminal existir) */
+document.body.classList.add("cursor-jitter");
+
+/* ===== PRESENÇA RARA (sem “texto de máquina”) ===== */
+const presenceLines = [
+  "…",
+  "Não se mexa.",
+  "Eu estou medindo você.",
+  "Respire. Eu preciso de estabilidade.",
+  "Você não tem opção de saída.",
+  "Continue.",
+  "Olhe para a tela."
+];
+let presenceTimer = null;
+let presenceCooldown = false;
+
+function showPresenceOnce(){
+  if (presenceCooldown) return;
+  // só quando já entrou no vídeo e terminal está fechado
+  const loadingHidden = loadingScreen.style.display === "none" || getComputedStyle(loadingScreen).display === "none";
+  if (!loadingHidden) return;
+  if (terminal.classList.contains("show")) return;
+
+  presenceCooldown = true;
+  const msg = presenceLines[Math.floor(Math.random()*presenceLines.length)];
+  presenceGhost.textContent = msg;
+  presenceGhost.classList.add("show");
+
+  setTimeout(()=> presenceGhost.classList.remove("show"), 1400);
+  setTimeout(()=> presenceCooldown = false, 8000); // evita spam
+}
+function schedulePresence(){
+  if (presenceTimer) clearTimeout(presenceTimer);
+  const delay = 40000 + Math.random()*50000; // 40s ~ 90s
+  presenceTimer = setTimeout(() => {
+    showPresenceOnce();
+    schedulePresence();
+  }, delay);
+}
+
+/* ===== RETÍCULO acorda com mouse ===== */
+let reticleTO = null;
+function wakeReticle(){
+  // só depois do loading
+  const loadingHidden = loadingScreen.style.display === "none" || getComputedStyle(loadingScreen).display === "none";
+  if (!loadingHidden) return;
+
+  reticle.classList.add("active");
+  clearTimeout(reticleTO);
+  reticleTO = setTimeout(()=> reticle.classList.remove("active"), 650);
+}
+document.addEventListener("mousemove", () => wakeReticle(), { passive:true });
+
+/* ===== START PROTOCOL ===== */
+function startAscensionProtocol(){
+  if (!PROTOCOL_ENABLED) return;
+  if (Protocol.started) return;
+  Protocol.started = true;
+  clearProtocolTimers();
+
+  const first = Protocol.phases[0];
+  setProtocolHUD(first);
+  Protocol.lastPhase = first.name;
+
+  for (let i = 1; i < Protocol.phases.length; i++){
+    const ph = Protocol.phases[i];
+    const timer = setTimeout(() => {
+      setProtocolHUD(ph);
+      if (Protocol.lastPhase !== ph.name){
+        Protocol.lastPhase = ph.name;
+        if (terminal.classList.contains("show") && termInteractive){
+          terminalAppendDimLine(`// PHASE UPDATE: ${ph.name.replace("_"," ")} // ${ph.directive}`);
+        }
+      }
+    }, ph.whenMs);
+    Protocol.timers.push(timer);
+  }
+}
+
 /* ===== HELPERS ===== */
 function hideLoading(){
   loadingScreen.style.opacity = "0";
   setTimeout(() => loadingScreen.style.display = "none", 600);
   clearInterval(msgTimer);
   sysSubject.textContent = "ATIVO";
+
+  stopScanLoop();                 // ✅ para scanner
+  document.body.classList.add("live"); // ✅ ativa “breathing”
+  schedulePresence();             // ✅ inicia presença rara
 }
+
 function waitForPlaying(el, timeoutMs=1200){
   return new Promise((resolve, reject) => {
     let done = false;
@@ -1222,8 +1481,38 @@ function waitForPlaying(el, timeoutMs=1200){
   });
 }
 
+/* ===== DISCIPLINA (anti spam no loading) ===== */
+let spamCount = 0;
+let spamWindowTO = null;
+let disciplineLock = false;
+
+function noteDiscipline(text="PACIÊNCIA."){
+  disciplineNote.textContent = text;
+  disciplineNote.classList.add("show");
+  setTimeout(()=> disciplineNote.classList.remove("show"), 950);
+}
+
+function registerLoadingSpam(){
+  if (disciplineLock) return;
+  spamCount++;
+  clearTimeout(spamWindowTO);
+  spamWindowTO = setTimeout(()=> { spamCount = 0; }, 1200);
+
+  if (spamCount >= 4){
+    disciplineLock = true;
+    noteDiscipline("COMPORTAMENTO REGISTRADO.");
+    // bloqueio curto (não quebra o fluxo)
+    setTimeout(()=> {
+      disciplineLock = false;
+      spamCount = 0;
+    }, 1400);
+  }
+}
+
 /* ===== ENTER / RETRY ===== */
 enterBox.onclick = async () => {
+  if (disciplineLock) return;
+
   enterBox.style.pointerEvents = "none";
 
   if (enterBox.textContent === "RETRY") {
@@ -1231,8 +1520,9 @@ enterBox.onclick = async () => {
     setLoadingStatus("RECALIBRANDO STREAM...");
     enterBox.classList.remove("show");
     enterHint.classList.remove("show");
+    disciplineNote.classList.remove("show");
+
     readyToEnter = false;
-    enterScanPlayed = false;
 
     try { video.load(); videoBlur.load(); ambience.load(); } catch(e){}
 
@@ -1243,6 +1533,9 @@ enterBox.onclick = async () => {
         markReady();
       }
     }, SAFETY_TIMEOUT_MS);
+
+    // reativa o scan loop durante o loading
+    startScanLoop();
 
     setTimeout(() => enterBox.style.pointerEvents = "auto", 200);
     return;
@@ -1257,9 +1550,11 @@ enterBox.onclick = async () => {
     if (ambOn) ambience.play().catch(()=>{});
 
     updateVolumeUI();
-    triggerGlitch();
-    hideLoading();
 
+    triggerCameraCut(); // ✅ micro cut (antes do glitch)
+    triggerGlitch();
+
+    hideLoading();
     startAscensionProtocol();
 
   } catch (err) {
@@ -1273,28 +1568,36 @@ enterBox.onclick = async () => {
   }
 };
 
-/* ✅ NEW: teclado ENTER dispara o botão ENTER (quando loading está ativo) */
+/* ✅ Teclado ENTER (loading) */
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Enter") return;
 
-  // se terminal estiver aberto, Enter pertence ao terminal
+  // terminal aberto: Enter é do terminal
   if (terminal.classList.contains("show")) return;
 
-  // não atrapalhar inputs (segurança)
   const a = document.activeElement;
   const isTypingField = a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable);
   if (isTypingField) return;
 
-  // somente enquanto loading estiver visível e o botão estiver liberado
   const loadingVisible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
   if (!loadingVisible) return;
 
+  // disciplina: se apertar feito louco, responde
+  registerLoadingSpam();
+  if (disciplineLock) return;
+
   if (enterBox.classList.contains("show") && enterBox.style.pointerEvents !== "none") {
     enterBox.click();
+  } else {
+    // se ainda não está pronto, a resposta é fria
+    noteDiscipline("AGUARDE.");
   }
 });
 
-/* ===== Initial defaults for protocol HUD (safe) ===== */
+/* ===== Retoma scan loop enquanto loading existir (seguro) ===== */
+startScanLoop();
+
+/* ===== Defaults ===== */
 setProtocolHUD(Protocol.phases[0]);
 </script>
 
