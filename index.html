@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Dottore</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 body{
   background:black;
   overflow:hidden;
-  font-family:'Orbitron',sans-serif;
+  font-family:'Orbitron', sans-serif;
   color:white;
 }
 
-/* ================= VIDEO ================= */
-
+/* ========= VIDEO LAYERS ========= */
 #videoBlur{
   position:fixed;
   inset:-20%;
   width:140%;
   height:140%;
   object-fit:cover;
-  filter:blur(90px) brightness(.5) saturate(1.5);
+  filter: blur(var(--blur-amount, 90px)) brightness(.5) saturate(1.5);
+  will-change: transform, filter;
+  transform: translateZ(0);
   z-index:-5;
 }
-
 #video{
   position:fixed;
   inset:0;
@@ -36,260 +36,1603 @@ body{
   object-fit:contain;
   z-index:-4;
   background:black;
+
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%);
 }
 
-/* micro camera cut */
-body.camera-cut #video,
-body.camera-cut #videoBlur{
-  animation:cut .22s ease;
-}
-@keyframes cut{
-  0%{transform:scale(1)}
-  40%{transform:scale(1.012)}
-  100%{transform:scale(1)}
-}
-
-/* ================= FX ================= */
-
+/* ========= FX OVERLAYS ========= */
 .scanlines{
   position:fixed;
   inset:0;
-  pointer-events:none;
   background:repeating-linear-gradient(
     to bottom,
-    rgba(255,255,255,.03),
-    rgba(255,255,255,.03) 1px,
+    rgba(255,255,255,0.03),
+    rgba(255,255,255,0.03) 1px,
     transparent 1px,
     transparent 3px
   );
+  pointer-events:none;
   z-index:3;
   mix-blend-mode:overlay;
+  opacity:.75;
 }
 
+/* Grain + vinheta */
 #cinemaFX{
   position:fixed;
   inset:0;
   pointer-events:none;
   z-index:4;
 }
+#cinemaFX::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  opacity:.08;
+  mix-blend-mode:overlay;
+  transform: translateZ(0);
+  animation:grain 5s steps(10) infinite;
+}
 #cinemaFX::after{
   content:"";
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 45%, transparent 0 55%, rgba(0,0,0,.6) 85%, rgba(0,0,0,.9));
-  animation:breath 8s ease-in-out infinite;
+    radial-gradient(circle at 50% 45%, transparent 0 55%, rgba(0,0,0,.55) 78%, rgba(0,0,0,.85) 100%),
+    linear-gradient(90deg, rgba(0,200,255,.05), transparent 35%, transparent 65%, rgba(0,200,255,.04));
+  opacity:.65;
 }
-@keyframes breath{
-  0%,100%{opacity:.55}
-  50%{opacity:.75}
+@keyframes grain{
+  0%{transform:translate(0,0)}
+  10%{transform:translate(-2%, -3%)}
+  20%{transform:translate(-4%, 2%)}
+  30%{transform:translate(3%, -2%)}
+  40%{transform:translate(2%, 4%)}
+  50%{transform:translate(-3%, 2%)}
+  60%{transform:translate(4%, 0%)}
+  70%{transform:translate(0%, 3%)}
+  80%{transform:translate(-2%, -2%)}
+  90%{transform:translate(3%, 1%)}
+  100%{transform:translate(0,0)}
 }
 
-/* ================= LOADING ================= */
-
-#loading{
+/* Glitch flash (só na entrada) */
+#glitchFlash{
   position:fixed;
   inset:0;
-  background:radial-gradient(circle,#0a0f18,#000);
+  pointer-events:none;
+  z-index:9;
+  opacity:0;
+  background:
+    linear-gradient(90deg, rgba(0,200,255,.12), transparent 35%, rgba(255,90,90,.08)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 4px);
+  mix-blend-mode:screen;
+}
+.glitch-on #glitchFlash{ animation:glitchFlash .55s steps(6) 1; }
+@keyframes glitchFlash{
+  0%{opacity:0}
+  10%{opacity:1; transform:translateX(8px)}
+  25%{opacity:.35; transform:translateX(-10px)}
+  40%{opacity:1; transform:translateX(6px)}
+  60%{opacity:.2; transform:translateX(-5px)}
+  80%{opacity:.9; transform:translateX(2px)}
+  100%{opacity:0; transform:none}
+}
+
+/* ========= LOADING ========= */
+#loadingScreen{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at center,#0a0f18,#000);
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
   z-index:10;
-  overflow:hidden;
-}
+  transition:opacity .6s ease;
 
-#scan{
+  overflow:hidden; /* necessário pro scan overlay */
+}
+.loading-text{
+  letter-spacing:6px;
+  margin-bottom:20px;
+  font-size:12px;
+  opacity:.8;
+  text-align:center;
+  animation:flicker 2s infinite;
+  max-width:90vw;
+}
+@keyframes flicker{0%,100%{opacity:.8}50%{opacity:1}}
+.spinner{
+  width:40px;height:40px;
+  border:3px solid rgba(255,255,255,.1);
+  border-top:3px solid #00d4ff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+#enterBox{
+  margin-top:34px;
+  padding:18px 70px;
+  border-radius:10px;
+  background:rgba(10,20,35,0.6);
+  border:1px solid rgba(0,200,255,0.4);
+  backdrop-filter:blur(25px);
+  letter-spacing:8px;
+  font-weight:600;
+  font-size:14px;
+  color:#cfefff;
+  text-shadow:0 0 8px rgba(0,200,255,0.7);
+  opacity:0;
+  pointer-events:none;
+  transition:.4s ease;
+  cursor:pointer;
+  user-select:none;
+}
+#enterBox.show{opacity:1; pointer-events:auto;}
+
+/* "PRESS [ENTER]" hint */
+#enterHint{
+  margin-top:12px;
+  font-size:10px;
+  letter-spacing:4px;
+  opacity:0;
+  transition:.35s ease;
+  color:rgba(207,239,255,.75);
+  text-shadow:0 0 10px rgba(0,200,255,.22);
+  user-select:none;
+}
+#enterHint.show{opacity:.85;}
+
+/* scanner pass on ready */
+#enterScan{
   position:absolute;
   inset:0;
   pointer-events:none;
   opacity:0;
+  z-index:0;
 }
-#scan::before{
+#enterScan::before{
   content:"";
   position:absolute;
   left:-40%;
   top:0;
   width:45%;
   height:100%;
-  background:linear-gradient(90deg,transparent,rgba(0,200,255,.12),transparent);
-  transform:skewX(-14deg);
+  background:linear-gradient(90deg, transparent, rgba(0,200,255,.10), rgba(207,239,255,.12), rgba(0,200,255,.10), transparent);
+  transform:skewX(-14deg) translateX(-120%);
+  filter: blur(1px);
+}
+#loadingScreen.scan-on #enterScan{
+  opacity:1;
+}
+#loadingScreen.scan-on #enterScan::before{
+  animation: enterScanPass .85s ease 1;
+}
+@keyframes enterScanPass{
+  0%{transform:skewX(-14deg) translateX(-120%); opacity:0}
+  15%{opacity:1}
+  100%{transform:skewX(-14deg) translateX(380%); opacity:0}
 }
 
-.loading-scan #scan{opacity:1}
-.loading-scan #scan::before{
-  animation:scan .8s ease;
+/* ========= HUDS ========= */
+.hud{
+  position:fixed;
+  bottom:20px;
+  left:30px;
+  font-size:10px;
+  opacity:.4;
+  letter-spacing:2px;
+  animation:blink 4s infinite;
+  z-index:6;
 }
-@keyframes scan{
-  from{transform:skewX(-14deg) translateX(-120%)}
-  to{transform:skewX(-14deg) translateX(380%)}
-}
+@keyframes blink{0%,100%{opacity:.4}50%{opacity:.12}}
 
-.loading-text{
-  letter-spacing:6px;
-  font-size:12px;
-  opacity:.85;
-  margin-bottom:20px;
+#coordsHUD{
+  position:fixed;
+  top:18px;
+  right:22px;
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.45;
+  z-index:6;
+  text-align:right;
+  user-select:none;
 }
+#coordsHUD .line{opacity:.7}
+#coordsHUD .blink{animation:coordsBlink 2.8s infinite}
+@keyframes coordsBlink{0%,100%{opacity:.55}50%{opacity:.15}}
 
-#enter{
-  margin-top:25px;
-  padding:16px 60px;
-  border:1px solid rgba(0,200,255,.5);
-  border-radius:10px;
-  background:rgba(10,20,35,.6);
-  letter-spacing:8px;
+#techHUD{
+  position:fixed;
+  top:80px;
+  left:24px;
+  width:min(360px, 42vw);
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.35;
+  z-index:6;
+  user-select:none;
+  line-height:1.55;
+}
+#techHUD .tag{opacity:.85}
+#techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
+#techHUD .sep{opacity:.25}
+
+/* ===== Top controls ===== */
+#topControls{
+  position:fixed;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:12px;
+  z-index:25;
+  opacity:.92;
+  transition:.18s ease;
+  filter: drop-shadow(0 0 18px rgba(0,200,255,.22));
+}
+#topControls:hover{opacity:1}
+
+.ctrlBtn{
+  width:42px;height:34px;
+  border-radius:12px;
+  border:1px solid rgba(0,200,255,.72);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0,200,255,.10), transparent 55%),
+    linear-gradient(180deg, rgba(12,24,44,.78), rgba(0,0,0,.50));
+  backdrop-filter: blur(20px);
+  color:rgba(207,239,255,.98);
   cursor:pointer;
+  display:grid;
+  place-items:center;
+  font-size:14px;
+  letter-spacing:2px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.25) inset,
+    0 12px 34px rgba(0,0,0,.32);
+  position:relative;
+  overflow:hidden;
+}
+.ctrlBtn::before{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.06);
+  pointer-events:none;
+}
+.ctrlBtn::after{
+  content:"";
+  position:absolute;
+  inset:-40% -30%;
+  background:linear-gradient(90deg, transparent, rgba(0,200,255,.22), transparent);
+  transform:rotate(12deg) translateX(-90%);
+  opacity:.0;
+  pointer-events:none;
+}
+#topControls:hover .ctrlBtn::after{
+  opacity:1;
+  animation:scanPass 1.05s ease infinite;
+}
+@keyframes scanPass{
+  0%{transform:rotate(12deg) translateX(-90%);}
+  100%{transform:rotate(12deg) translateX(90%);}
+}
+.ctrlBtn:hover{
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.25) inset,
+    0 16px 42px rgba(0,0,0,.38),
+    0 0 26px rgba(0,200,255,.18);
+}
+.ctrlBtn:active{transform:translateY(1px)}
+.ctrlBtn:focus-visible{
+  outline:none;
+  box-shadow: 0 0 0 2px rgba(0,200,255,.55), 0 16px 42px rgba(0,0,0,.38);
+}
+
+/* ========= VOLUME ========= */
+#volumeHUD{
+  position:fixed;
+  top:22px;
+  left:24px;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  z-index:20;
+  opacity:.55;
+  transition:.25s ease;
+}
+#volumeHUD:hover{ opacity:1; }
+.vol-btn{
+  position:relative;
+  width:40px;height:40px;
+  border-radius:12px;
+  border:1px solid rgba(0,200,255,.45);
+  background:linear-gradient(180deg, rgba(10,20,35,.65), rgba(5,10,18,.55));
+  backdrop-filter: blur(18px);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  padding:0;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+}
+.vol-btn::before{
+  content:"";
+  position:absolute; inset:-1px;
+  border-radius:12px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(0,200,255,.18), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(207,239,255,.10), transparent 55%);
+  pointer-events:none;
+}
+.vol-svg{width:26px;height:26px;filter:drop-shadow(0 0 10px rgba(0,200,255,.45));}
+.vol-state{
+  position:absolute;
+  left:50%; bottom:-9px;
+  transform:translateX(-50%);
+  font-size:8px;
+  letter-spacing:2px;
+  padding:2px 6px;
+  border-radius:999px;
+  border:1px solid rgba(0,200,255,.35);
+  background:rgba(0,0,0,.35);
+  color:rgba(207,239,255,.9);
+  text-shadow:0 0 8px rgba(0,200,255,.35);
+}
+.vol-panel{
+  width:0;
   opacity:0;
   pointer-events:none;
-  transition:.4s;
+  transform:translateY(-2px);
+  transition:.25s ease;
+  padding:10px 0;
+  border-radius:14px;
+  border:1px solid rgba(0,200,255,.35);
+  background:
+    linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.55)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  overflow:hidden;
 }
-#enter.show{
+#volumeHUD:hover .vol-panel,
+#volumeHUD.open .vol-panel{
+  width:240px;
   opacity:1;
   pointer-events:auto;
+  padding:10px 12px;
 }
-
-#hint{
-  font-size:10px;
-  margin-top:10px;
-  letter-spacing:4px;
-  opacity:.8;
+.vol-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.vol-title{font-size:9px;letter-spacing:3px;opacity:.75;}
+.vol-readout{font-size:10px;letter-spacing:2px;color:#cfefff;text-shadow:0 0 10px rgba(0,200,255,.35);}
+#volSlider{
+  width:100%;
+  height:26px;
+  background:transparent;
+  appearance:none;
+  -webkit-appearance:none;
+  cursor:pointer;
 }
-
-/* ================= PRESENCE ================= */
-
-#presence{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  font-size:10px;
+#volSlider::-webkit-slider-runnable-track{
+  height:6px;border-radius:999px;
+  background:
+    linear-gradient(90deg, rgba(0,200,255,.95), rgba(0,200,255,.25)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 8px);
+  box-shadow:0 0 18px rgba(0,200,255,.18);
+  border:1px solid rgba(0,200,255,.25);
+}
+#volSlider::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;border-radius:6px;
+  margin-top:-6px;
+  background: radial-gradient(circle at 30% 30%, rgba(207,239,255,1), rgba(0,200,255,.55));
+  border:1px solid rgba(0,200,255,.65);
+  box-shadow:0 0 18px rgba(0,200,255,.55);
+}
+#volSlider::-moz-range-track{
+  height:6px;border-radius:999px;
+  background:
+    linear-gradient(90deg, rgba(0,200,255,.95), rgba(0,200,255,.25)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 8px);
+  border:1px solid rgba(0,200,255,.25);
+}
+#volSlider::-moz-range-thumb{
+  width:16px;height:16px;border-radius:6px;
+  background: radial-gradient(circle at 30% 30%, rgba(207,239,255,1), rgba(0,200,255,.55));
+  border:1px solid rgba(0,200,255,.65);
+  box-shadow:0 0 18px rgba(0,200,255,.55);
+}
+.vol-footer{
+  margin-top:8px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:9px;
   letter-spacing:3px;
-  opacity:0;
-  transition:.4s;
-  pointer-events:none;
+  opacity:.65;
 }
-#presence.show{opacity:.85}
+.vol-bars{
+  width:70px;
+  height:10px;
+  border-radius:6px;
+  background:repeating-linear-gradient(90deg, rgba(0,200,255,var(--bars-a,.55)) 0 6px, transparent 6px 10px);
+  filter: drop-shadow(0 0 10px rgba(0,200,255,.25));
+  clip-path: inset(0 calc(100% - var(--bars-w,50%)) 0 0 round 6px);
+  transition: clip-path .08s linear;
+}
 
-/* ================= TERMINAL ================= */
-
+/* ========= TERMINAL ========= */
 #terminal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(18px);
+  z-index:30;
   display:none;
-  z-index:20;
+  background:rgba(0,0,0,.65);
+  backdrop-filter: blur(18px);
 }
-#terminal.show{display:block}
-
-.term{
+#terminal.show{display:block;}
+.termBox{
   position:absolute;
-  bottom:24px;
   left:24px;
-  width:600px;
+  bottom:24px;
+  width:min(720px, calc(100vw - 48px));
+  border-radius:16px;
   border:1px solid rgba(0,200,255,.35);
-  background:rgba(0,0,0,.75);
+  background:linear-gradient(180deg, rgba(10,20,35,.75), rgba(0,0,0,.6));
+  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+.termHeader{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 12px;
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.8;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.termLog{
+  max-height:min(46vh, 420px);
+  overflow:auto;
   padding:12px;
   font-size:11px;
-  line-height:1.5;
-  max-height:45vh;
-  overflow:auto;
+  line-height:1.55;
+  letter-spacing:1px;
+  opacity:.9;
 }
-
+.termLog .dim{opacity:.55}
+.termLine{margin:2px 0}
 .cursor{
-  animation:blink 1s steps(2) infinite;
+  display:inline-block;
+  margin-left:6px;
+  opacity:.9;
+  animation:cursorBlink 1s steps(2) infinite;
 }
-@keyframes blink{
-  50%{opacity:0}
+@keyframes cursorBlink{
+  0%,49%{opacity:1}
+  50%,100%{opacity:0}
+}
+.termInputBar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px 12px 12px;
+  border-top:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.22));
+}
+.termPrompt{
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.75;
+  user-select:none;
+  white-space:nowrap;
+}
+#termInput{
+  flex:1;
+  height:32px;
+  border-radius:12px;
+  border:1px solid rgba(0,200,255,.25);
+  background:rgba(0,0,0,.35);
+  color:rgba(207,239,255,.95);
+  padding:0 12px;
+  font-family:'Orbitron', sans-serif;
+  letter-spacing:1px;
+  font-size:11px;
+  outline:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+}
+#termInput::placeholder{ color:rgba(207,239,255,.45); }
+#termInput:disabled{ opacity:.55; cursor:not-allowed; }
+.termHint{
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.55;
+  user-select:none;
+  white-space:nowrap;
 }
 
+/* ========= PRESENÇA (canto, nunca no centro) ========= */
+#presenceGhost{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:22;
+  pointer-events:none;
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:0;
+  transform:translateY(6px);
+  transition:.35s ease;
+  color:rgba(207,239,255,.55);
+  text-shadow:0 0 14px rgba(0,200,255,.12);
+  user-select:none;
+}
+#presenceGhost.show{
+  opacity:.88;
+  transform:translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .scanlines{opacity:.35}
+  .spinner{animation:none}
+  #cinemaFX::before{animation:none}
+  #topControls .ctrlBtn::after{animation:none; opacity:0;}
+  #loadingScreen.scan-on #enterScan::before{animation:none !important;}
+}
+@media (max-width: 768px){
+  :root{ --blur-amount: 55px; }
+  #techHUD{display:none;}
+}
 </style>
 </head>
 
 <body>
 
-<video id="videoBlur" muted loop playsinline src="https://files.catbox.moe/um6f2u.mp4"></video>
-<video id="video" loop playsinline src="https://files.catbox.moe/um6f2u.mp4"></video>
+<video id="videoBlur" playsinline preload="auto" muted loop>
+  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
+</video>
+
+<video id="video" playsinline preload="auto" loop>
+  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
+</video>
+
+<audio id="ambience" preload="auto" loop>
+  <source src="https://files.catbox.moe/3q1h1x.mp3" type="audio/mpeg">
+</audio>
 
 <div class="scanlines"></div>
 <div id="cinemaFX"></div>
+<div id="glitchFlash"></div>
 
-<div id="loading">
-  <div id="scan"></div>
-  <div class="loading-text">INITIALIZING EXPERIMENT...</div>
-  <div id="enter">ENTER</div>
-  <div id="hint">PRESS ENTER TO PROCEED</div>
+<div id="loadingScreen">
+  <div id="enterScan" aria-hidden="true"></div>
+
+  <div class="loading-text" id="dynamicText">INITIALIZING EXPERIMENT...</div>
+  <div class="spinner" id="spinner"></div>
+
+  <div id="enterBox">ENTER</div>
+  <div id="enterHint">PRESS [ENTER] TO PROCEED</div>
 </div>
 
-<div id="presence">Não se mexa.</div>
+<div class="hud">NEURAL LINK ESTABLISHED // SUBJECT ONLINE</div>
 
-<div id="terminal">
-  <div class="term" id="log">
-    TERMINAL ONLINE<br>
-    Você não é um convidado. É material.<br>
-    <span class="cursor">█</span>
+<div id="coordsHUD">
+  <div class="line blink" id="coordA">COORD: --.---- / --.----</div>
+  <div class="line" id="coordB">NODE: Σ-07 // LINK: STABLE</div>
+</div>
+
+<div id="techHUD">
+  <div class="termLine"><span class="tag">SYS</span> <span class="sep">//</span> <span class="value" id="sysClock">--:--:--</span></div>
+  <div class="termLine"><span class="tag">STREAM</span> <span class="sep">//</span> <span class="value" id="sysStream">BUFFERING</span></div>
+  <div class="termLine"><span class="tag">NEURAL</span> <span class="sep">//</span> <span class="value" id="sysNeural">CALIBRATING</span></div>
+  <div class="termLine"><span class="tag">ETHICS</span> <span class="sep">//</span> <span class="value">DISABLED</span></div>
+  <div class="termLine"><span class="tag">SUBJECT</span> <span class="sep">//</span> <span class="value" id="sysSubject">ONLINE</span></div>
+
+  <div class="termLine"><span class="tag">PHASE</span> <span class="sep">//</span> <span class="value" id="sysPhase">BOOT</span></div>
+  <div class="termLine"><span class="tag">DIRECTIVE</span> <span class="sep">//</span> <span class="value" id="sysDirective">MONITORING</span></div>
+</div>
+
+<div id="topControls">
+  <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
+  <button class="ctrlBtn" id="btnTerm" title="Painel">⌁</button>
+</div>
+
+<div id="volumeHUD" class="vol" aria-label="Controle de volume" style="--bars-w:50%; --bars-a:.55;">
+  <button id="volIconBtn" class="vol-btn" type="button" aria-label="Abrir controle de volume">
+    <svg class="vol-svg" viewBox="0 0 48 48" aria-hidden="true">
+      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(0,200,255,.65)" stroke-width="2"/>
+      <circle cx="24" cy="24" r="8" fill="none" stroke="rgba(207,239,255,.9)" stroke-width="2"/>
+      <path d="M24 9v6M24 33v6M9 24h6M33 24h6" stroke="rgba(0,200,255,.55)" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="24" cy="24" r="2.2" fill="rgba(207,239,255,.95)"/>
+    </svg>
+    <span id="volState" class="vol-state">LIVE</span>
+  </button>
+
+  <div id="volPanel" class="vol-panel" role="group" aria-label="Ajuste de volume">
+    <div class="vol-top">
+      <div class="vol-title">AUDIO // MIX</div>
+      <div id="volReadout" class="vol-readout">70%</div>
+    </div>
+    <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.7" />
+    <div class="vol-footer">
+      <span>OUTPUT</span>
+      <span class="vol-bars" aria-hidden="true"></span>
+    </div>
   </div>
 </div>
 
-<script>
+<div id="terminal" aria-hidden="true">
+  <div class="termBox">
+    <div class="termHeader">
+      <div>LAB TERMINAL // ACCESS: GRANTED</div>
+      <div class="dim">ESC para fechar</div>
+    </div>
+    <div id="termLog" class="termLog"></div>
 
-const loading = document.getElementById("loading");
-const enter = document.getElementById("enter");
+    <div class="termInputBar" aria-label="Console">
+      <div class="termPrompt" id="termPrompt">root@lab:~$</div>
+      <input id="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="Digite um comando (ex: help)" />
+      <div class="termHint" id="termHint">ENTER</div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Presence inteligente (canto) -->
+<div id="presenceGhost" aria-hidden="true">…</div>
+
+<script>
+/* ===== ELEMENTS ===== */
 const video = document.getElementById("video");
 const videoBlur = document.getElementById("videoBlur");
+const ambience = document.getElementById("ambience");
+
+const enterBox = document.getElementById("enterBox");
+const enterHint = document.getElementById("enterHint");
+const loadingScreen = document.getElementById("loadingScreen");
+const dynamicText = document.getElementById("dynamicText");
+const spinner = document.getElementById("spinner");
+
+const coordA = document.getElementById("coordA");
+const coordB = document.getElementById("coordB");
+
+const sysClock = document.getElementById("sysClock");
+const sysStream = document.getElementById("sysStream");
+const sysNeural = document.getElementById("sysNeural");
+const sysSubject = document.getElementById("sysSubject");
+
+const sysPhase = document.getElementById("sysPhase");
+const sysDirective = document.getElementById("sysDirective");
+
+const btnFS = document.getElementById("btnFS");
+const btnTerm = document.getElementById("btnTerm");
+
+const volumeHUD = document.getElementById("volumeHUD");
+const volSlider = document.getElementById("volSlider");
+const volIconBtn = document.getElementById("volIconBtn");
+const volReadout = document.getElementById("volReadout");
+const volState = document.getElementById("volState");
+
 const terminal = document.getElementById("terminal");
-const presence = document.getElementById("presence");
+const termLog = document.getElementById("termLog");
 
-let ready = false;
+const termInput = document.getElementById("termInput");
+const termPrompt = document.getElementById("termPrompt");
+const termHint = document.getElementById("termHint");
 
-/* scanner loop */
-function playScan(){
-  loading.classList.remove("loading-scan");
-  void loading.offsetWidth;
-  loading.classList.add("loading-scan");
+const presenceGhost = document.getElementById("presenceGhost");
+
+/* ===== FLAGS ===== */
+let ambOn = true;
+
+/* ===== LOADING TEXT ===== */
+const messages = [
+  "INITIALIZING EXPERIMENT...",
+  "STABILIZING MEMORY FRAGMENTS...",
+  "NEURAL PATHWAYS SYNCHRONIZED...",
+  "ETHICS MODULE DISABLED...",
+  "SUBJECT AWARENESS: IRRELEVANT",
+  "PROCEEDING WITHOUT CONSENT..."
+];
+let msgIndex = 0;
+const msgTimer = setInterval(() => {
+  msgIndex = (msgIndex + 1) % messages.length;
+  dynamicText.textContent = messages[msgIndex];
+}, 2200);
+
+/* ===== READY / SAFETY ===== */
+let readyToEnter = false;
+let enterScanPlayed = false;
+
+/* ✅ scanner loop (a cada 5s) enquanto o loading estiver vivo */
+let scanLoop = null;
+function playEnterScan(){
+  loadingScreen.classList.remove("scan-on");
+  void loadingScreen.offsetWidth;
+  loadingScreen.classList.add("scan-on");
+  setTimeout(()=>loadingScreen.classList.remove("scan-on"), 1100);
 }
-setInterval(playScan,5000);
-playScan();
+function startScanLoop(){
+  if (scanLoop) return;
+  playEnterScan();
+  scanLoop = setInterval(() => {
+    const loadingVisible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
+    if (!loadingVisible) return;
+    playEnterScan();
+  }, 5000);
+}
+function stopScanLoop(){
+  if (!scanLoop) return;
+  clearInterval(scanLoop);
+  scanLoop = null;
+  loadingScreen.classList.remove("scan-on");
+}
 
-/* ready */
-setTimeout(()=>{
-  ready=true;
-  enter.classList.add("show");
-},2500);
+function playEnterScanOnce(){
+  if (enterScanPlayed) return;
+  enterScanPlayed = true;
+  playEnterScan();
+}
 
-/* enter */
-async function start(){
-  if(!ready) return;
-  document.body.classList.add("camera-cut");
-  await video.play().catch(()=>{});
-  videoBlur.play().catch(()=>{});
-  loading.style.display="none";
+function setEnterHint(label){
+  if (label === "RETRY") {
+    enterHint.textContent = "PRESS [ENTER] TO RETRY";
+  } else {
+    enterHint.textContent = "PRESS [ENTER] TO PROCEED";
+  }
+  enterHint.classList.add("show");
+}
+
+function showEnter(label="ENTER"){
+  enterBox.style.pointerEvents = "auto";
+  enterBox.textContent = label;
+  enterBox.classList.add("show");
+
+  setEnterHint(label);
+  playEnterScanOnce();
+  startScanLoop();
+}
+function setLoadingStatus(t){ dynamicText.textContent = t; }
+function markReady(){
+  if (readyToEnter) return;
+  readyToEnter = true;
+  showEnter("ENTER");
+}
+
+const SAFETY_TIMEOUT_MS = 9000;
+let safetyTimeout = setTimeout(() => {
+  if (!readyToEnter) {
+    setLoadingStatus("SIGNAL DEGRADED // MANUAL START ENABLED");
+    markReady();
+  }
+}, SAFETY_TIMEOUT_MS);
+
+setTimeout(() => {
+  if (!enterBox.classList.contains("show")) {
+    setLoadingStatus("AWAITING STREAM // MANUAL START ENABLED");
+    showEnter("ENTER");
+  }
+}, 2500);
+
+video.addEventListener("loadeddata", markReady, { once:true });
+video.addEventListener("canplay", markReady, { once:true });
+
+function onVideoError(){
+  clearTimeout(safetyTimeout);
+  spinner.style.display = "none";
+  setLoadingStatus("ERROR // DATA CORRUPTED // TAP TO RETRY");
+  showEnter("RETRY");
+}
+video.addEventListener("error", onVideoError);
+videoBlur.addEventListener("error", onVideoError);
+
+/* ===== SYNC BLUR ===== */
+video.addEventListener("play", () => { videoBlur.play().catch(()=>{}); });
+video.addEventListener("pause", () => { try{ videoBlur.pause(); }catch(e){} });
+
+/* ===== VISIBILITY ===== */
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    try{ video.pause(); }catch(e){}
+    try{ videoBlur.pause(); }catch(e){}
+    try{ ambience.pause(); }catch(e){}
+  } else {
+    video.play().catch(()=>{});
+    videoBlur.play().catch(()=>{});
+    if (ambOn) ambience.play().catch(()=>{});
+  }
+});
+
+/* ===== VOLUME UI ===== */
+video.volume = 0.7;
+volSlider.value = String(video.volume);
+
+/* ✅ Audio reactive (fallback seguro) */
+let audioCtx = null;
+let ambSource = null;
+let ambGain = null;
+let ambFilter = null;
+let audioReactiveEnabled = false;
+let ambienceBaseVol = 0.18; // base (vai ser recalculado pelo updateVolumeUI)
+let termAudioMode = false;
+
+function initAudioReactive(){
+  if (audioReactiveEnabled) return;
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+
+    audioCtx = new AC();
+
+    // IMPORTANT: MediaElementSource pode ser criado 1x por elemento
+    ambSource = audioCtx.createMediaElementSource(ambience);
+    ambGain = audioCtx.createGain();
+    ambFilter = audioCtx.createBiquadFilter();
+
+    ambFilter.type = "lowpass";
+    ambFilter.frequency.value = 12000;
+    ambFilter.Q.value = 0.7;
+
+    ambGain.gain.value = 1;
+
+    ambSource.connect(ambFilter);
+    ambFilter.connect(ambGain);
+    ambGain.connect(audioCtx.destination);
+
+    audioReactiveEnabled = true;
+
+    // garante que o volume do elemento não brigue (mantém baixo; a mistura é no gain)
+    ambience.volume = 1;
+    applyAmbienceMix();
+  }catch(e){
+    audioReactiveEnabled = false;
+  }
+}
+
+function applyAmbienceMix(){
+  // multiplier quando terminal está aberto
+  const modeMul = termAudioMode ? 1.25 : 1.0;
+  const target = ambienceBaseVol * modeMul;
+
+  if (audioReactiveEnabled && ambGain){
+    // clamp
+    ambGain.gain.value = Math.max(0.0, Math.min(1.0, target));
+    if (ambFilter){
+      // quando terminal aberto, corta um pouco (ficar mais “lab/monitor”)
+      ambFilter.frequency.value = termAudioMode ? 6800 : 12000;
+      ambFilter.Q.value = termAudioMode ? 1.1 : 0.7;
+    }
+  } else {
+    // fallback simples (sem webaudio)
+    ambience.volume = Math.max(0.0, Math.min(0.35, target));
+  }
+}
+
+function pulseTerminalAudio(intensity=0.06){
+  if (!audioReactiveEnabled || !ambGain) return;
+  // envelope leve: sobe rápido e volta
+  const now = audioCtx.currentTime;
+  const base = Math.max(0.0, Math.min(1.0, ambienceBaseVol * (termAudioMode ? 1.25 : 1.0)));
+  const peak = Math.max(0.0, Math.min(1.0, base + intensity));
+
+  ambGain.gain.cancelScheduledValues(now);
+  ambGain.gain.setValueAtTime(ambGain.gain.value, now);
+  ambGain.gain.linearRampToValueAtTime(peak, now + 0.015);
+  ambGain.gain.linearRampToValueAtTime(base, now + 0.09);
+}
+
+function setTerminalAudioMode(on){
+  termAudioMode = !!on;
+  applyAmbienceMix();
+  // micro pulso de “lock”
+  if (termAudioMode) pulseTerminalAudio(0.09);
+}
+
+function updateVolumeUI(){
+  const pct = Math.round(Number(video.volume) * 100);
+  volReadout.textContent = pct + "%";
+  volumeHUD.style.setProperty("--bars-w", Math.max(6, pct) + "%");
+  volumeHUD.style.setProperty("--bars-a", String(0.25 + (pct/100) * 0.55));
+
+  if (pct === 0) {
+    volState.textContent = "MUTED";
+    volState.style.borderColor = "rgba(255,90,90,.45)";
+    volState.style.color = "rgba(255,190,190,.95)";
+  } else {
+    volState.textContent = "LIVE";
+    volState.style.borderColor = "rgba(0,200,255,.35)";
+    volState.style.color = "rgba(207,239,255,.9)";
+  }
+
+  // base do ambience (segue vídeo, mas discreto)
+  ambienceBaseVol = Math.min(0.35, Math.max(0.02, Number(video.volume) * 0.25));
+  applyAmbienceMix();
+}
+volSlider.addEventListener("input", () => {
+  video.volume = Number(volSlider.value);
+  updateVolumeUI();
+});
+updateVolumeUI();
+
+volIconBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  volumeHUD.classList.toggle("open");
+});
+document.addEventListener("click", () => volumeHUD.classList.remove("open"));
+
+/* ===== TECH HUD DYNAMIC ===== */
+function pad2(n){ return String(n).padStart(2,"0"); }
+function tickTech(){
+  const d = new Date();
+  sysClock.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+  const r = Math.random();
+  sysStream.textContent = video.readyState >= 3 ? "STABLE" : (video.readyState ? "BUFFERING" : "OFFLINE");
+  sysNeural.textContent = r > 0.92 ? "ANOMALIA DETECTADA" : (r > 0.75 ? "SINCRONIZANDO" : "CALIBRADO");
+}
+setInterval(tickTech, 900);
+tickTech();
+
+function rndCoord(){
+  const a = (Math.random()*180 - 90).toFixed(4);
+  const b = (Math.random()*360 - 180).toFixed(4);
+  coordA.textContent = `COORD: ${a} / ${b}`;
+  coordB.textContent = `NÓ: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // LINK: ${Math.random()>.15?"ESTÁVEL":"DEGRADADO"}`;
+}
+setInterval(rndCoord, 2200);
+rndCoord();
+
+/* ===== FULLSCREEN ===== */
+async function toggleFullscreen(){
+  try{
+    if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
+  } catch(e){}
+}
+btnFS.addEventListener("click", toggleFullscreen);
+
+/* ===== GLITCH ===== */
+function triggerGlitch(){
+  document.body.classList.remove("glitch-on");
+  void document.body.offsetWidth;
+  document.body.classList.add("glitch-on");
+  setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
+}
+
+/* ===== Protocol (unchanged) ===== */
+const PROTOCOL_ENABLED = true;
+const Protocol = {
+  started: false,
+  timers: [],
+  lastPhase: null,
+  phases: [
+    { name: "BOOT", directive: "MONITORING", whenMs: 0, subject: "ONLINE" },
+    { name: "SUBJECT_LOCK", directive: "IDENTITY: IRRELEVANT", whenMs: 4200, subject: "LOCKED" },
+    { name: "CALIBRATION", directive: "PAIN LIMIT: ADJUSTABLE", whenMs: 9800, subject: "RESPONSIVE" },
+    { name: "ASCENSION", directive: "PROTOCOL: ACTIVE", whenMs: 16800, subject: "MATERIAL" }
+  ]
+};
+function setProtocolHUD(phase){
+  sysPhase.textContent = phase.name.replace("_", " ");
+  sysDirective.textContent = phase.directive;
+  sysSubject.textContent = phase.subject;
+}
+function clearProtocolTimers(){
+  for (const t of Protocol.timers) clearTimeout(t);
+  Protocol.timers.length = 0;
+}
+let termRunToken = 0;
+let termTyping = false;
+let termInteractive = false;
+
+function terminalAppendDimLine(text){
+  const div = document.createElement("div");
+  div.className = "termLine dim";
+  div.textContent = text;
+  termLog.appendChild(div);
+  termLog.scrollTop = termLog.scrollHeight;
+}
+
+/* ===== Presence inteligente ===== */
+const Presence = {
+  timer: null,
+  cooldown: false,
+  lastKeyTime: 0,
+  lastEnterTime: 0,
+  lastTerminalOpen: 0
+};
+
+function showPresence(text, ms=1400){
+  presenceGhost.textContent = text;
+  presenceGhost.classList.add("show");
+  setTimeout(()=>presenceGhost.classList.remove("show"), ms);
+}
+
+function presencePick(){
+  const phase = sysPhase.textContent || "BOOT";
+  const inTerminal = terminal.classList.contains("show");
+
+  const pools = {
+    BOOT: [
+      "Silêncio.",
+      "Eu estou observando.",
+      "Você chegou cedo demais.",
+      "A curiosidade é um vício útil."
+    ],
+    "SUBJECT LOCK": [
+      "Identidade: irrelevante.",
+      "Não finja que tem escolha.",
+      "Fique parado. Isso facilita.",
+      "Material registrado."
+    ],
+    CALIBRATION: [
+      "Calibração em curso.",
+      "Respire. Eu preciso de estabilidade.",
+      "A dor é só um parâmetro.",
+      "Sua resistência é… mediana."
+    ],
+    ASCENSION: [
+      "Você vai assistir de perto.",
+      "Controle total é só o começo.",
+      "Deus não pede permissão.",
+      "Protocolo ativo. Sem exceções."
+    ],
+    TERMINAL: [
+      "Digite. Eu avalio.",
+      "Erros são… educativos.",
+      "Não improvise.",
+      "Você acha que isso é um jogo?"
+    ]
+  };
+
+  if (inTerminal) return pools.TERMINAL[Math.floor(Math.random()*pools.TERMINAL.length)];
+  const key = pools[phase] ? phase : "BOOT";
+  const pool = pools[key] || pools.BOOT;
+  return pool[Math.floor(Math.random()*pool.length)];
+}
+
+function schedulePresence(){
+  if (Presence.timer) clearTimeout(Presence.timer);
+  // 45s ~ 105s
+  const delay = 45000 + Math.random()*60000;
+  Presence.timer = setTimeout(() => {
+    const loadingVisible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
+    if (!loadingVisible && !Presence.cooldown){
+      // não aparece se terminal acabou de abrir (evita “spam”)
+      const now = Date.now();
+      if (now - Presence.lastTerminalOpen > 2500){
+        Presence.cooldown = true;
+        showPresence(presencePick());
+        setTimeout(()=>Presence.cooldown = false, 9000);
+      }
+    }
+    schedulePresence();
+  }, delay);
+}
+
+/* presença reativa a eventos */
+function presenceOnPhase(ph){
+  // bem raro e discreto
+  if (Presence.cooldown) return;
+  if (Math.random() > 0.33) return;
+  Presence.cooldown = true;
+  showPresence(`// ${ph.name.replace("_"," ")} // ${ph.directive}`, 1600);
+  setTimeout(()=>Presence.cooldown = false, 9000);
+}
+function presenceOnTerminalOpen(){
+  Presence.lastTerminalOpen = Date.now();
+  if (Presence.cooldown) return;
+  Presence.cooldown = true;
+  showPresence("Abra o terminal. Eu preciso de respostas.", 1500);
+  setTimeout(()=>Presence.cooldown = false, 10000);
+}
+
+function maybeLogPhaseToTerminal(phase){
+  if (!terminal.classList.contains("show")) return;
+  if (!termInteractive) return;
+  terminalAppendDimLine(`// PHASE UPDATE: ${phase.name.replace("_"," ")} // ${phase.directive}`);
+}
+
+function startAscensionProtocol(){
+  if (!PROTOCOL_ENABLED) return;
+  if (Protocol.started) return;
+  Protocol.started = true;
+  clearProtocolTimers();
+  const first = Protocol.phases[0];
+  setProtocolHUD(first);
+  Protocol.lastPhase = first.name;
+
+  // presença leve
+  presenceOnPhase(first);
+
+  for (let i = 1; i < Protocol.phases.length; i++){
+    const ph = Protocol.phases[i];
+    const timer = setTimeout(() => {
+      setProtocolHUD(ph);
+      if (Protocol.lastPhase !== ph.name){
+        Protocol.lastPhase = ph.name;
+        maybeLogPhaseToTerminal(ph);
+        presenceOnPhase(ph);
+      }
+    }, ph.whenMs);
+    Protocol.timers.push(timer);
+  }
+}
+
+/* ===== Logs dinâmicos ===== */
+const DynLogs = {
+  enabled: true,
+  timer: null
+};
+function randomHex(n=4){
+  const chars = "0123456789ABCDEF";
+  let s = "";
+  for (let i=0;i<n;i++) s += chars[(Math.random()*chars.length)|0];
+  return s;
+}
+function dynLogLine(){
+  const phase = sysPhase.textContent || "BOOT";
+  const lines = [
+    `[SYS] kernel tick // ${pad2(new Date().getHours())}:${pad2(new Date().getMinutes())}:${pad2(new Date().getSeconds())}`,
+    `[NET] uplink Δ // jitter:${(Math.random()*3.2).toFixed(2)}ms`,
+    `[MEM] segment ${randomHex(3)} // stable`,
+    `[I/O] bus Σ-${String((Math.random()*99|0)+1).padStart(2,"0")} // ok`,
+    `[BIO] subject response // ${Math.random()>.2?"present":"latent"}`,
+    `[SEC] observer scan // none`,
+    `[LAB] protocol:${phase.replace(" ","_")} // locked`,
+    `[DBG] checksum ${randomHex(6)} // pass`
+  ];
+  return lines[(Math.random()*lines.length)|0];
+}
+function scheduleDynamicLogs(token){
+  if (DynLogs.timer) clearTimeout(DynLogs.timer);
+  if (!DynLogs.enabled) return;
+  if (!terminal.classList.contains("show")) return;
+  if (!termInteractive || termTyping) return;
+  if (token !== termRunToken) return;
+
+  const delay = 3200 + Math.random()*5200; // 3.2s ~ 8.4s
+  DynLogs.timer = setTimeout(() => {
+    // só enquanto estiver vivo e interativo
+    if (terminal.classList.contains("show") && termInteractive && !termTyping && token === termRunToken && DynLogs.enabled){
+      terminalAppendDimLine(dynLogLine());
+      // micro reação no áudio (leve)
+      if (termAudioMode) pulseTerminalAudio(0.035);
+    }
+    scheduleDynamicLogs(token);
+  }, delay);
+}
+function stopDynamicLogs(){
+  if (DynLogs.timer) clearTimeout(DynLogs.timer);
+  DynLogs.timer = null;
+}
+
+/* ===== Terminal helpers ===== */
+const LORE_SPEED = { header: 9, lang: 9, main: 13, post: 9 };
+
+function clearTerminal(){ termLog.innerHTML = ""; }
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+function ensureAlive(token){ return token === termRunToken && terminal.classList.contains("show"); }
+
+async function typeLine(text, cls="", speed=14, token=0){
+  if (!ensureAlive(token)) return;
+  const div = document.createElement("div");
+  div.className = "termLine " + cls;
+  termLog.appendChild(div);
+
+  for (let i=0; i<text.length; i++){
+    if (!ensureAlive(token)) return;
+    div.textContent += text[i];
+
+    // ✅ Áudio reage ao terminal: pequenos pulsos durante digitação
+    if (termAudioMode && !cls.includes("dim") && (i % 3 === 0)) pulseTerminalAudio(0.028);
+    if (termAudioMode && cls.includes("dim") && (i % 5 === 0)) pulseTerminalAudio(0.020);
+
+    await sleep(speed + Math.random()*14);
+    termLog.scrollTop = termLog.scrollHeight;
+  }
+}
+async function typeGlitchPhraseOnly(token){
+  const base = "Changing language to...";
+  const variants = [
+    "Cambiando idioma a...",
+    "Ändere Sprache zu...",
+    "Changement de langue...",
+    "Изменение языка...",
+    "言語を変更中...",
+    "Mudando idioma para..."
+  ];
+  if (!ensureAlive(token)) return;
+  const line = document.createElement("div");
+  line.className = "termLine dim";
+  line.textContent = base;
+  termLog.appendChild(line);
+  termLog.scrollTop = termLog.scrollHeight;
+
+  await sleep(130);
+  for (let i=0; i<variants.length; i++){
+    if (!ensureAlive(token)) return;
+    line.textContent = variants[i];
+    if (termAudioMode) pulseTerminalAudio(0.035);
+    await sleep(70);
+  }
+  if (!ensureAlive(token)) return;
+  line.textContent = base;
+  await sleep(200);
+}
+
+function normalizeCmd(s){ return (s || "").trim().toLowerCase(); }
+function setInputEnabled(on){
+  termInput.disabled = !on;
+  termHint.style.opacity = on ? ".55" : ".35";
+  termInput.placeholder = on ? "Digite um comando (ex: help)" : "Sistema ocupado...";
+}
+function focusTerminalInput(){
+  if (!terminal.classList.contains("show")) return;
+  if (!termInteractive) return;
+  termInput.focus({ preventScroll:true });
+}
+function printUserCmd(raw){ terminalAppendDimLine(`${termPrompt.textContent} ${raw}`); }
+
+async function respond(textLines){
+  const token = termRunToken;
+  for (const ln of textLines){
+    if (!ensureAlive(token)) return;
+    await typeLine(ln, "", 7, token);
+    await sleep(90);
+  }
+}
+async function handleCommand(raw){
+  const cmd = normalizeCmd(raw);
+  if (!termInteractive || termTyping){
+    terminalAppendDimLine("// INPUT IGNORED: BUSY");
+    return;
+  }
+  if (!cmd) return;
+  printUserCmd(raw);
+
+  // ✅ logs dinâmicos toggle (safe)
+  if (cmd === "logs on"){
+    DynLogs.enabled = true;
+    await respond(["DYNAMIC LOGS: ENABLED."]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "logs off"){
+    DynLogs.enabled = false;
+    stopDynamicLogs();
+    await respond(["DYNAMIC LOGS: DISABLED."]);
+    return;
+  }
+
+  if (cmd === "help" || cmd === "?" ){
+    await respond([
+      "Comandos disponíveis:",
+      "- status",
+      "- phase",
+      "- consent",
+      "- whoami",
+      "- who are you",
+      "- exit",
+      "- clear",
+      "- logs on",
+      "- logs off"
+    ]);
+    return;
+  }
+  if (cmd === "clear" || cmd === "cls"){
+    clearTerminal();
+    terminalAppendDimLine("// LOG CLEARED // (a memória é seletiva)");
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "status"){
+    await respond([
+      `SUBJECT: ${sysSubject.textContent}`,
+      `STREAM: ${sysStream.textContent}`,
+      `NEURAL: ${sysNeural.textContent}`,
+      `ETHICS: DISABLED`,
+      `PHASE: ${sysPhase.textContent} // ${sysDirective.textContent}`
+    ]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "phase" || cmd === "protocol"){
+    await respond([
+      `ASCENSION PROTOCOL // ${sysPhase.textContent}`,
+      `DIRECTIVE // ${sysDirective.textContent}`,
+      "Observação: você não é um operador. É material."
+    ]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "consent" || cmd === "assinar" || cmd === "consentimento"){
+    await respond([
+      "CONSENT FORM // OPEN",
+      "SIGNATURE: ACCEPTED",
+      "CONSENT: OVERRIDDEN",
+      "Você chama isso de moral? Interessante."
+    ]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "whoami" || cmd === "quem sou eu"){
+    await respond([
+      "IDENTITY QUERY // DENIED",
+      "Você não precisa de um nome para cumprir sua função."
+    ]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "who are you" || cmd === "whoareyou" || cmd === "quem é você" || cmd === "quem é vc"){
+    await respond([
+      "Eu sou o único adulto na sala.",
+      "E você... é apenas um recurso."
+    ]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  if (cmd === "exit" || cmd === "quit" || cmd === "sair"){
+    await respond([
+      "REQUEST: EXIT",
+      "RESULT: DENIED",
+      "Negado. Ainda não terminou."
+    ]);
+    scheduleDynamicLogs(termRunToken);
+    return;
+  }
+  await respond([
+    `UNKNOWN COMMAND: "${raw}"`,
+    "Se você quer controle, está no lugar errado."
+  ]);
+  scheduleDynamicLogs(termRunToken);
+}
+
+termInput.addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
+  const v = termInput.value;
+  termInput.value = "";
+  if (termAudioMode) pulseTerminalAudio(0.06);
+  await handleCommand(v);
+  focusTerminalInput();
+});
+
+async function showCommandsHintAuto(token){
+  if (!ensureAlive(token)) return;
+  await sleep(220);
+  await typeLine(" ", "dim", 1, token);
+  await typeLine("COMANDOS DISPONÍVEIS:", "dim", 9, token);
+  await typeLine("- status", "dim", 9, token);
+  await typeLine("- phase", "dim", 9, token);
+  await typeLine("- consent", "dim", 9, token);
+  await typeLine("- whoami", "dim", 9, token);
+  await typeLine("- who are you", "dim", 9, token);
+  await typeLine("- clear", "dim", 9, token);
+  await typeLine("- logs on / logs off", "dim", 9, token);
+  await typeLine("Dica: digite \"help\" para repetir.", "dim", 9, token);
+}
+
+async function runLoreSequence(){
+  const token = ++termRunToken;
+  termTyping = true;
+  termInteractive = false;
+  setInputEnabled(false);
+  clearTerminal();
+
+  // ao abrir terminal, entra em modo áudio “monitor”
+  setTerminalAudioMode(true);
+
+  await typeLine("TERMINAL DO LABORATÓRIO ONLINE", "dim", LORE_SPEED.header, token);
+  await typeLine("HANDSHAKE: ACEITO // AUTORIZAÇÃO: Δ", "dim", LORE_SPEED.header, token);
+  await typeLine("CANAL DE LOG: PRIVADO // OBSERVADORES: NENHUM", "dim", LORE_SPEED.header, token);
+  await sleep(220);
+
+  await typeGlitchPhraseOnly(token);
+
+  const langs = ["English (US)","Deutsch (DE)","Français (FR)","Español (ES)","Русский (RU)","日本語 (JP)","中文 (CN)","Português (BR)"];
+  for (let k = 0; k < langs.length; k++){
+    await typeLine(`> ${langs[k]}`, "dim", LORE_SPEED.lang, token);
+    await sleep(k === langs.length - 1 ? 280 : 85);
+  }
+
+  await typeLine("Idioma definido: Português (BR).", "dim", LORE_SPEED.header, token);
+  await sleep(280);
+
+  const lines = [
+    { t: "…", cls:"dim", d: 360 },
+    { t: "Então você encontrou a interface.", cls:"", d: 360 },
+    { t: "Ótimo. Curiosidade é a única virtude que eu ainda tolero.", cls:"", d: 480 },
+    { t: "Vamos deixar claro: consentimento é um conceito decorativo.", cls:"dim", d: 520 },
+    { t: "Estado do sujeito: responsivo.", cls:"", d: 360 },
+    { t: "Módulo de ética: desativado.", cls:"", d: 360 },
+    { t: "Limite de dor: ajustável.", cls:"dim", d: 450 },
+    { t: "Se estiver com medo, não desvie o olhar.", cls:"", d: 520 },
+    { t: "Observar exige devoção.", cls:"dim", d: 450 },
+    { t: "Prosseguindo com a calibração.", cls:"", d: 450 },
+    { t: "— Il Dottore", cls:"dim", d: 450 },
+  ];
+
+  for (const L of lines){
+    await typeLine(L.t, L.cls, LORE_SPEED.main, token);
+    await sleep(L.d);
+  }
+  if (!ensureAlive(token)) return;
+
+  await typeLine(" ", "dim", 1, token);
+  await typeLine(`ASCENSION PROTOCOL // ${sysPhase.textContent}`, "dim", LORE_SPEED.post, token);
+  await typeLine(`DIRECTIVE // ${sysDirective.textContent}`, "dim", LORE_SPEED.post, token);
+  await typeLine("Você não é um convidado. É material.", "dim", LORE_SPEED.post, token);
+
+  await showCommandsHintAuto(token);
+
+  const cursor = document.createElement("div");
+  cursor.className = "termLine";
+  cursor.innerHTML = `<span class="cursor" aria-hidden="true">█</span>`;
+  termLog.appendChild(cursor);
+  termLog.scrollTop = termLog.scrollHeight;
+
+  termTyping = false;
+  termInteractive = true;
+  setInputEnabled(true);
+  focusTerminalInput();
+
+  // ✅ inicia logs dinâmicos (só agora, pra não bagunçar o lore)
+  scheduleDynamicLogs(token);
+}
+
+function openTerminal(){
+  terminal.classList.add("show");
+  terminal.setAttribute("aria-hidden","false");
+  presenceOnTerminalOpen();
+  runLoreSequence().catch(()=>{});
+}
+function closeTerminal(){
+  terminal.classList.remove("show");
+  terminal.setAttribute("aria-hidden","true");
+  termRunToken++;
+  termTyping = false;
+  termInteractive = false;
+  setInputEnabled(false);
+  stopDynamicLogs();
+
+  // sai do modo áudio do terminal
+  setTerminalAudioMode(false);
+}
+
+btnTerm.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (terminal.classList.contains("show")) closeTerminal();
+  else openTerminal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeTerminal();
+
+  const isToggleKey = (e.key === "`" || e.key.toLowerCase() === "t");
+  if (isToggleKey) {
+    const a = document.activeElement;
+    const typingInInput = (a === termInput);
+    if (typingInInput) return;
+
+    // ✅ T não fecha mais: abre ou só foca
+    if (!terminal.classList.contains("show")) openTerminal();
+    else focusTerminalInput();
+  }
+
+  if (terminal.classList.contains("show") && e.key === "Enter"){
+    if (!termInput.disabled) focusTerminalInput();
+  }
+});
+terminal.addEventListener("click", (e) => {
+  if (e.target === terminal) closeTerminal();
+});
+
+/* ===== HELPERS ===== */
+function hideLoading(){
+  loadingScreen.style.opacity = "0";
+  setTimeout(() => loadingScreen.style.display = "none", 600);
+  clearInterval(msgTimer);
+  sysSubject.textContent = "ATIVO";
+  stopScanLoop();
+
+  // presença começa após iniciar
   schedulePresence();
 }
-enter.onclick=start;
-document.addEventListener("keydown",e=>{
-  if(e.key==="Enter" && loading.style.display!=="none") start();
-});
 
-/* terminal toggle (T abre só) */
-document.addEventListener("keydown",e=>{
-  if(e.key.toLowerCase()==="t"){
-    terminal.classList.add("show");
-  }
-  if(e.key==="Escape"){
-    terminal.classList.remove("show");
-  }
-});
-
-/* presença rara */
-function schedulePresence(){
-  setTimeout(()=>{
-    presence.classList.add("show");
-    setTimeout(()=>presence.classList.remove("show"),1400);
-    schedulePresence();
-  },40000+Math.random()*40000);
+function waitForPlaying(el, timeoutMs=1200){
+  return new Promise((resolve, reject) => {
+    let done = false;
+    const onPlay = () => { if(done) return; done=true; cleanup(); resolve(); };
+    const onErr = () => { if(done) return; done=true; cleanup(); reject(new Error("play error")); };
+    const t = setTimeout(() => { if(done) return; done=true; cleanup(); resolve(); }, timeoutMs);
+    function cleanup(){
+      clearTimeout(t);
+      el.removeEventListener("playing", onPlay);
+      el.removeEventListener("error", onErr);
+    }
+    el.addEventListener("playing", onPlay, { once:true });
+    el.addEventListener("error", onErr, { once:true });
+  });
 }
 
+/* ===== ENTER / RETRY ===== */
+enterBox.onclick = async () => {
+  enterBox.style.pointerEvents = "none";
+
+  if (enterBox.textContent === "RETRY") {
+    spinner.style.display = "";
+    setLoadingStatus("RECALIBRANDO STREAM...");
+    enterBox.classList.remove("show");
+    enterHint.classList.remove("show");
+    readyToEnter = false;
+    enterScanPlayed = false;
+
+    try { video.load(); videoBlur.load(); ambience.load(); } catch(e){}
+
+    clearTimeout(safetyTimeout);
+    safetyTimeout = setTimeout(() => {
+      if (!readyToEnter) {
+        setLoadingStatus("SINAL DEGRADADO // INÍCIO MANUAL LIBERADO");
+        markReady();
+      }
+    }, SAFETY_TIMEOUT_MS);
+
+    setTimeout(() => enterBox.style.pointerEvents = "auto", 200);
+    return;
+  }
+
+  try {
+    // inicia WebAudio reativo no 1º gesto do usuário (seguro)
+    initAudioReactive();
+    if (audioCtx && audioCtx.state === "suspended") { try{ await audioCtx.resume(); }catch(e){} }
+
+    video.muted = false;
+    await video.play();
+    await waitForPlaying(video, 1500);
+
+    videoBlur.play().catch(()=>{});
+    if (ambOn) ambience.play().catch(()=>{});
+
+    updateVolumeUI();
+    triggerGlitch();
+    hideLoading();
+
+    startAscensionProtocol();
+
+  } catch (err) {
+    spinner.style.display = "none";
+    setLoadingStatus("REPRODUÇÃO BLOQUEADA // CLIQUE NOVAMENTE");
+    showEnter("ENTER");
+  } finally {
+    if (loadingScreen.style.display !== "none") {
+      enterBox.style.pointerEvents = "auto";
+    }
+  }
+};
+
+/* teclado ENTER dispara o botão ENTER (quando loading está ativo) */
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter") return;
+
+  if (terminal.classList.contains("show")) return;
+
+  const a = document.activeElement;
+  const isTypingField = a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable);
+  if (isTypingField) return;
+
+  const loadingVisible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
+  if (!loadingVisible) return;
+
+  if (enterBox.classList.contains("show") && enterBox.style.pointerEvents !== "none") {
+    enterBox.click();
+  }
+});
+
+/* ===== Initial defaults for protocol HUD (safe) ===== */
+setProtocolHUD(Protocol.phases[0]);
+startScanLoop();
 </script>
 
 </body>
