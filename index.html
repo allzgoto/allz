@@ -692,7 +692,7 @@ function tickTech(){
   sysClock.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   const r = Math.random();
   sysStream.textContent = video.readyState >= 3 ? "STABLE" : (video.readyState ? "BUFFERING" : "OFFLINE");
-  sysNeural.textContent = r > 0.92 ? "ANOMALY DETECTED" : (r > 0.75 ? "SYNCING" : "CALIBRATED");
+  sysNeural.textContent = r > 0.92 ? "ANOMALIA DETECTADA" : (r > 0.75 ? "SINCRONIZANDO" : "CALIBRADO");
 }
 setInterval(tickTech, 900);
 tickTech();
@@ -701,7 +701,7 @@ function rndCoord(){
   const a = (Math.random()*180 - 90).toFixed(4);
   const b = (Math.random()*360 - 180).toFixed(4);
   coordA.textContent = `COORD: ${a} / ${b}`;
-  coordB.textContent = `NODE: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // LINK: ${Math.random()>.15?"STABLE":"DEGRADED"}`;
+  coordB.textContent = `NÓ: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // LINK: ${Math.random()>.15?"ESTÁVEL":"DEGRADADO"}`;
 }
 setInterval(rndCoord, 2200);
 rndCoord();
@@ -723,7 +723,7 @@ function triggerGlitch(){
   setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
 }
 
-/* ===== FX TOGGLES (mantidos, mas sem comandos) ===== */
+/* ===== FX TOGGLES (mantidos, sem comandos) ===== */
 function setFX(){
   document.getElementById("cinemaFX").style.display = fxGrainOn ? "" : "none";
   document.querySelector(".scanlines").style.display = fxScanOn ? "" : "none";
@@ -749,41 +749,62 @@ async function typeLine(text, cls="", speed=14){
 async function runLoreSequence(){
   clearTerminal();
 
+  // cursor fixo no final
   const cursor = document.createElement("div");
   cursor.className = "termLine";
   cursor.innerHTML = `<span class="cursor" aria-hidden="true">█</span>`;
   termLog.appendChild(cursor);
 
-  cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"LAB TERMINAL ONLINE" }));
-  cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"HANDSHAKE: ACCEPTED // CLEARANCE: Δ" }));
-  cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"LOG CHANNEL: PRIVATE // OBSERVERS: NONE" }));
-  await sleep(450);
+  // Boot
+  cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"TERMINAL DO LABORATÓRIO ONLINE" }));
+  cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"HANDSHAKE: ACEITO // AUTORIZAÇÃO: Δ" }));
+  cursor.before(Object.assign(document.createElement("div"), { className:"termLine dim", textContent:"CANAL DE LOG: PRIVADO // OBSERVADORES: NENHUM" }));
+  await sleep(380);
 
-  const lines = [
-    { t: "…", cls:"dim", d: 520 },
-    { t: "So you found the interface.", cls:"", d: 520 },
-    { t: "Good. Curiosity is the only virtue I still tolerate.", cls:"", d: 650 },
-    { t: "Let us be clear: consent is a decorative concept.", cls:"dim", d: 700 },
-    { t: "Subject status: responsive.", cls:"", d: 520 },
-    { t: "Ethics module: disabled.", cls:"", d: 520 },
-    { t: "Pain threshold: adjustable.", cls:"dim", d: 650 },
-    { t: "If you are frightened, do not avert your eyes.", cls:"", d: 720 },
-    { t: "Observation requires devotion.", cls:"dim", d: 650 },
-    { t: "Proceeding with calibration.", cls:"", d: 600 },
-    { t: "— Il Dottore", cls:"dim", d: 720 },
+  // “Selecionando idioma…” (começa em inglês, varre idiomas, para no PT-BR)
+  await typeLine("Alterando idioma para...", "dim", 12);
+  await sleep(220);
+
+  const langs = [
+    "English (US)",
+    "Deutsch (DE)",
+    "Français (FR)",
+    "Español (ES)",
+    "Русский (RU)",
+    "日本語 (JP)",
+    "中文 (CN)",
+    "Português (BR)"
   ];
 
-  cursor.remove();
+  // anima troca rápida
+  for (let k = 0; k < langs.length; k++){
+    await typeLine(`> ${langs[k]}`, "dim", 10);
+    await sleep(k === langs.length - 1 ? 420 : 110);
+  }
+
+  await typeLine("Idioma definido: Português (BR).", "dim", 12);
+  await sleep(420);
+
+  // Agora entra o “Dottore” em PT
+  const lines = [
+    { t: "…", cls:"dim", d: 520 },
+    { t: "Então você encontrou a interface.", cls:"", d: 520 },
+    { t: "Ótimo. Curiosidade é a única virtude que eu ainda tolero.", cls:"", d: 680 },
+    { t: "Vamos deixar claro: consentimento é um conceito decorativo.", cls:"dim", d: 760 },
+    { t: "Estado do sujeito: responsivo.", cls:"", d: 540 },
+    { t: "Módulo de ética: desativado.", cls:"", d: 540 },
+    { t: "Limite de dor: ajustável.", cls:"dim", d: 660 },
+    { t: "Se estiver com medo, não desvie o olhar.", cls:"", d: 760 },
+    { t: "Observar exige devoção.", cls:"dim", d: 660 },
+    { t: "Prosseguindo com a calibração.", cls:"", d: 620 },
+    { t: "— Il Dottore", cls:"dim", d: 720 },
+  ];
 
   for (const L of lines){
     await typeLine(L.t, L.cls, 16);
     await sleep(L.d);
   }
 
-  const cursor2 = document.createElement("div");
-  cursor2.className = "termLine";
-  cursor2.innerHTML = `<span class="cursor" aria-hidden="true">█</span>`;
-  termLog.appendChild(cursor2);
   termLog.scrollTop = termLog.scrollHeight;
 }
 
@@ -814,7 +835,7 @@ function hideLoading(){
   loadingScreen.style.opacity = "0";
   setTimeout(() => loadingScreen.style.display = "none", 600);
   clearInterval(msgTimer);
-  sysSubject.textContent = "ACTIVE";
+  sysSubject.textContent = "ATIVO";
 }
 
 /* ===== ENTER / RETRY (ROBUSTO) ===== */
@@ -823,7 +844,7 @@ enterBox.onclick = async () => {
 
   if (enterBox.textContent === "RETRY") {
     spinner.style.display = "";
-    setLoadingStatus("RECALIBRATING STREAM...");
+    setLoadingStatus("RECALIBRANDO STREAM...");
     enterBox.classList.remove("show");
     enterShown = false;
     readyToEnter = false;
@@ -833,7 +854,7 @@ enterBox.onclick = async () => {
     clearTimeout(safetyTimeout);
     safetyTimeout = setTimeout(() => {
       if (!readyToEnter) {
-        setLoadingStatus("SIGNAL DEGRADED // MANUAL START ENABLED");
+        setLoadingStatus("SINAL DEGRADADO // INÍCIO MANUAL LIBERADO");
         markReady();
       }
     }, SAFETY_TIMEOUT_MS);
@@ -855,7 +876,7 @@ enterBox.onclick = async () => {
 
   } catch (err) {
     spinner.style.display = "none";
-    setLoadingStatus("PLAYBACK BLOCKED // CLICK AGAIN");
+    setLoadingStatus("REPRODUÇÃO BLOQUEADA // CLIQUE NOVAMENTE");
     showEnter("ENTER");
   } finally {
     if (loadingScreen.style.display !== "none") {
