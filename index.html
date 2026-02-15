@@ -416,7 +416,6 @@ body.entered #enterFooterLeft{ display:none; }
 #socialControl:hover{opacity:1}
 
 .linkPill{
-  position:relative;
   height:34px;
   padding:0 12px;
   border-radius:999px;
@@ -435,7 +434,8 @@ body.entered #enterFooterLeft{ display:none; }
   box-shadow:
     0 0 0 1px rgba(255,255,255,.04) inset,
     0 14px 40px rgba(0,0,0,.28);
-  overflow:visible; /* allow glow ring */
+  position:relative;
+  overflow:visible;
 }
 .linkPill svg{width:18px;height:18px;opacity:.95;filter:drop-shadow(0 0 10px rgba(170,240,255,.22));}
 .linkPill:hover{
@@ -446,188 +446,110 @@ body.entered #enterFooterLeft{ display:none; }
   transform: translateY(-1px);
 }
 .linkPill:active{transform:translateY(1px);}
-
-/* ✅ V5: glow rotativo constante no botão LINKS (sem hover) */
-.linkPill.live::before{
-  content:"";
-  position:absolute;
-  inset:-6px;
-  border-radius:999px;
-  background:
-    conic-gradient(
-      from 0deg,
-      rgba(120,220,255,.0),
-      rgba(120,220,255,.35),
-      rgba(255,80,120,.18),
-      rgba(120,220,255,.35),
-      rgba(120,220,255,.0)
-    );
-  filter: blur(8px);
-  opacity:.85;
-  z-index:-1;
-  animation: linksAura 3.2s linear infinite;
-}
-.linkPill.live::after{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  border-radius:999px;
-  border:1px solid rgba(170,240,255,.22);
-  box-shadow: 0 0 22px rgba(120,220,255,.16);
-  pointer-events:none;
-}
-@keyframes linksAura{
-  to{ transform: rotate(360deg); }
-}
-
 @media (max-width: 520px){
   .linkPill span{display:none;}
   .linkPill{padding:0 10px;}
 }
 
-/* ========= V5: ROUTES MENU (icons em fileira abaixo do botão LINKS) ========= */
-#linksMenu{
-  position:absolute;
-  right:0;
-  top:44px;
-  width:258px;
+/* ===== V5: ROUTES NODE (icons abaixo do botão LINKS) ===== */
+#routesNode{
+  position:fixed;
+  top:56px;
+  right:18px;
+  z-index:26;
+  display:none;
+}
+#routesNode.show{display:block;}
+
+.routesBox{
+  width:220px;
   border-radius:16px;
-  border:1px solid rgba(170,240,255,.22);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(120,220,255,.12), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,.26), rgba(0,0,0,.18));
-  backdrop-filter: blur(22px);
-  box-shadow: 0 18px 60px rgba(0,0,0,.42);
-  overflow:hidden;
-  transform: translateY(-8px);
-  opacity:0;
-  pointer-events:none;
-  transition: .22s ease;
-}
-
-#linksMenu.open{
-  transform: translateY(0);
-  opacity:1;
-  pointer-events:auto;
-}
-
-.linksMenuHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 12px;
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.90;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.linksMenuHeader .dim{opacity:.55; font-size:9px; letter-spacing:2px;}
-
-.linksMenuBody{
-  padding:12px;
-}
-
-/* ✅ sem textos atrás do botão: aqui só ícones */
-.routeRow{
-  display:flex;
-  gap:10px;
-  justify-content:flex-start;
-  align-items:center;
-}
-
-.routeBtn{
-  width:46px;
-  height:42px;
-  border-radius:14px;
   border:1px solid rgba(170,240,255,.24);
   background:
-    radial-gradient(circle at 35% 30%, rgba(170,240,255,.10), transparent 60%),
-    linear-gradient(180deg, rgba(12,24,44,.46), rgba(0,0,0,.22));
-  backdrop-filter: blur(18px);
-  box-shadow: 0 0 0 1px rgba(0,0,0,.25) inset;
+    radial-gradient(circle at 20% 10%, rgba(170,240,255,.10), transparent 55%),
+    linear-gradient(180deg, rgba(10,20,35,.55), rgba(0,0,0,.35));
+  backdrop-filter: blur(22px);
+  box-shadow:0 18px 60px rgba(0,0,0,.45);
+  overflow:hidden;
+}
+.routesHeader{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 12px;
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.85;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.routesHeader .dim{opacity:.55}
+.routesRow{
+  display:flex;
+  gap:10px;
+  padding:12px;
+  justify-content:space-between;
+}
+
+/* icon buttons */
+.routeBtn{
+  width:44px;height:44px;
+  border-radius:14px;
+  border:1px solid rgba(170,240,255,.28);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(170,240,255,.12), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
   display:grid;
   place-items:center;
   cursor:pointer;
   position:relative;
-  overflow:hidden;
-  transform: translateY(-6px);
+
   opacity:0;
-  transition: .22s ease;
+  transform:translateY(-6px);
+}
+#routesNode.show .routeBtn{
+  animation:routeIn .22s ease forwards;
+}
+#routesNode.show .routeBtn:nth-child(1){animation-delay:.02s}
+#routesNode.show .routeBtn:nth-child(2){animation-delay:.06s}
+#routesNode.show .routeBtn:nth-child(3){animation-delay:.10s}
+#routesNode.show .routeBtn:nth-child(4){animation-delay:.14s}
+
+@keyframes routeIn{
+  to{opacity:1; transform:none;}
 }
 
-/* cascata/stagger */
-#linksMenu.open .routeBtn{
-  transform: translateY(0);
-  opacity:1;
-}
-#linksMenu.open .routeBtn:nth-child(1){ transition-delay: 40ms; }
-#linksMenu.open .routeBtn:nth-child(2){ transition-delay: 90ms; }
-#linksMenu.open .routeBtn:nth-child(3){ transition-delay: 140ms; }
-#linksMenu.open .routeBtn:nth-child(4){ transition-delay: 190ms; }
-
-.routeBtn::before{
-  content:"";
-  position:absolute;
-  inset:2px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.06);
-  pointer-events:none;
-}
-.routeBtn::after{
-  content:"";
-  position:absolute;
-  inset:-40% -30%;
-  background:linear-gradient(90deg, transparent, rgba(170,240,255,.18), transparent);
-  transform:rotate(14deg) translateX(-90%);
-  opacity:0;
-  pointer-events:none;
-}
-.routeBtn:hover::after{
-  opacity:1;
-  animation:scanPass 1.05s ease infinite;
-}
-.routeBtn:hover{
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.25) inset,
-    0 18px 46px rgba(0,0,0,.35),
-    0 0 22px rgba(170,240,255,.10);
-  transform: translateY(-1px);
-}
-.routeBtn:active{ transform: translateY(1px); }
 .routeBtn svg{
   width:18px;height:18px;
-  filter: drop-shadow(0 0 10px rgba(170,240,255,.18));
-  opacity:.95;
+  opacity:.92;
+  filter:drop-shadow(0 0 10px rgba(170,240,255,.18));
+}
+.routeBtn:hover{
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 26px rgba(170,240,255,.12);
+  transform: translateY(-1px);
 }
 
-/* tooltip no hover (nome do ícone) */
-.routeBtn[data-tip]::marker{content:"";}
-.routeBtn[data-tip] .sr{display:none;}
-.routeBtn[data-tip]::before{ /* keep inner border (already), tooltip uses ::tooltip below */ }
-.routeBtn[data-tip]::tooltip{content:"";}
-
-.routeBtn[data-tip] .tip{
+/* tooltip label (sem nome fixo na UI) */
+.routeTip{
   position:absolute;
-  left:50%;
-  top:48px;
-  transform: translateX(-50%) translateY(-6px);
-  background: rgba(0,0,0,.42);
-  border:1px solid rgba(170,240,255,.22);
-  border-radius:999px;
-  padding:6px 10px;
-  font-size:9px;
-  letter-spacing:3px;
-  color: rgba(225,250,255,.92);
+  top:50%;
+  right:54px;
+  transform:translateY(-50%) translateX(8px);
   opacity:0;
   pointer-events:none;
+  transition:.16s ease;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(170,240,255,.22);
+  background:rgba(0,0,0,.38);
+  backdrop-filter: blur(16px);
   white-space:nowrap;
-  backdrop-filter: blur(14px);
-  box-shadow: 0 10px 30px rgba(0,0,0,.35);
-  transition: .16s ease;
+  box-shadow:0 10px 30px rgba(0,0,0,.35);
 }
-.routeBtn:hover .tip{
+.routeTip .t{font-size:9px; letter-spacing:3px; opacity:.92;}
+.routeTip .s{font-size:8px; letter-spacing:2px; opacity:.55; margin-top:2px;}
+.routeBtn:hover .routeTip{
   opacity:1;
-  transform: translateX(-50%) translateY(0);
+  transform:translateY(-50%) translateX(0);
 }
 
 /* ========= VOLUME ========= */
@@ -1013,7 +935,7 @@ body.entered #enterFooterLeft{ display:none; }
 .fToggle span{ font-size:9px; letter-spacing:3px; opacity:.78; }
 .fToggle.off{ opacity:.45; border-color: rgba(255,255,255,.10); }
 
-/* ========= CHANNELS (REDES SOCIAIS) ========= */
+/* ========= CHANNELS (V5: Redes sociais) ========= */
 #channels{
   position:fixed;
   inset:0;
@@ -1045,6 +967,7 @@ body.entered #enterFooterLeft{ display:none; }
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .chHeader .dim{opacity:.55}
+
 .chGrid{
   display:grid;
   grid-template-columns:repeat(2, minmax(0,1fr));
@@ -1054,18 +977,19 @@ body.entered #enterFooterLeft{ display:none; }
 @media (max-width: 900px){
   .chGrid{grid-template-columns:1fr;}
 }
-.chCol{
-  display:block;
-  text-decoration:none;
-  color:inherit;
+
+/* Top cards (Discord/Instagram) — agora sem “JOIN/OPEN” grudado */
+.chTopCard{
   border-radius:16px;
   border:1px solid rgba(255,255,255,.06);
   background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.16));
   padding:18px 18px 16px 18px;
   position:relative;
   overflow:hidden;
+  text-decoration:none;
+  color:inherit;
 }
-.chCol::before{
+.chTopCard::before{
   content:"";
   position:absolute;
   inset:-40% -30%;
@@ -1073,7 +997,7 @@ body.entered #enterFooterLeft{ display:none; }
   transform:rotate(14deg) translateX(-90%);
   opacity:0;
 }
-.chCol:hover::before{
+.chTopCard:hover::before{
   opacity:1;
   animation:scanPass 1.05s ease infinite;
 }
@@ -1097,27 +1021,89 @@ body.entered #enterFooterLeft{ display:none; }
   font-size:22px;
   letter-spacing:3px;
   opacity:.92;
-  margin-bottom:12px;
+  margin-bottom:6px;
 }
-.chCard{
-  width:100%;
-  height:120px;
+.chSub{
+  text-align:center;
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.55;
+}
+
+/* Bottom identity panels (com ações e imagem de teste) */
+.idGrid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:16px;
+  padding:0 14px 14px 14px;
+}
+@media (max-width: 900px){
+  .idGrid{grid-template-columns:1fr;}
+}
+.idPanel{
   border-radius:16px;
-  border:2px solid rgba(207,239,255,.55);
-  background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
+  border:1px solid rgba(0,200,255,.18);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(0,200,255,.10), transparent 55%),
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.35));
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
   overflow:hidden;
 }
-.chCardInner{
-  height:100%;
-  padding:14px 16px;
+.idHead{
   display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  gap:6px;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.85;
 }
-.chSmall{ font-size:10px; letter-spacing:3px; opacity:.55; }
-.chBig{ font-size:22px; letter-spacing:3px; opacity:.95; }
+.idHead .dim{opacity:.55}
+.idBody{
+  padding:12px;
+}
+.idFrame{
+  width:100%;
+  aspect-ratio: 16/10;
+  border-radius:14px;
+  border:1px solid rgba(170,240,255,.18);
+  background:
+    radial-gradient(circle at 35% 25%, rgba(170,240,255,.10), transparent 60%),
+    linear-gradient(180deg, rgba(12,24,44,.55), rgba(0,0,0,.60));
+  overflow:hidden;
+  position:relative;
+}
+.idFrame img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter: grayscale(.25) contrast(1.05) brightness(.82) saturate(1.05);
+  opacity:.92;
+}
+.idHint{
+  margin-top:10px;
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.55;
+  line-height:1.45;
+}
+.idAction{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(170,240,255,.22);
+  background:rgba(0,0,0,.22);
+  font-size:9px;
+  letter-spacing:3px;
+  color:rgba(225,250,255,.95);
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+  cursor:pointer;
+  text-decoration:none;
+}
+.idAction:hover{ box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(170,240,255,.10); }
 
 /* ========= ADMIN ========= */
 #admin{
@@ -1288,7 +1274,7 @@ body.entered #enterFooterLeft{ display:none; }
   #cinemaFX::before{animation:none}
   #topControls .ctrlBtn::after{animation:none; opacity:0;}
   #loadingScreen.scan-on #enterScan::before{animation:none !important;}
-  .linkPill.live::before{animation:none;}
+  #routesNode.show .routeBtn{animation:none; opacity:1; transform:none;}
 }
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
@@ -1316,7 +1302,7 @@ body.entered #enterFooterLeft{ display:none; }
 <div id="glitchFlash"></div>
 
 <!-- ✅ version always -->
-<div id="versionTag"><span class="v">dottore lab interface: v4</span></div>
+<div id="versionTag"><span class="v">dottore lab interface: v5</span></div>
 
 <div id="loadingScreen">
   <div id="enterScan" aria-hidden="true"></div>
@@ -1357,13 +1343,12 @@ body.entered #enterFooterLeft{ display:none; }
   <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
   <button class="ctrlBtn" id="btnCat" title="Catálogo">≡</button>
   <button class="ctrlBtn" id="btnTerm" title="Terminal">⌁</button>
-
   <button class="ctrlBtn" id="btnAdmin" title="Admin Console" aria-label="Abrir console admin">⌖</button>
 </div>
 
 <!-- Social / Links control -->
 <div id="socialControl" aria-label="Outbound links">
-  <button class="linkPill live" id="btnLinks" type="button" title="Canais / Rotas" aria-label="Abrir rotas">
+  <button class="linkPill" id="btnLinks" type="button" title="Outbound Node" aria-label="Abrir node de rotas">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M10.6 13.4 8.5 15.5a3 3 0 0 1-4.2-4.2l2.1-2.1a3 3 0 0 1 4.2 0"
             fill="none" stroke="rgba(210,248,255,.95)" stroke-width="1.7" stroke-linecap="round"/>
@@ -1374,52 +1359,50 @@ body.entered #enterFooterLeft{ display:none; }
     </svg>
     <span>LINKS</span>
   </button>
+</div>
 
-  <!-- ✅ V5 menu (icons em fileira) -->
-  <div id="linksMenu" aria-hidden="true">
-    <div class="linksMenuHeader">
+<!-- V5: ROUTES NODE (icons row) -->
+<div id="routesNode" aria-hidden="true">
+  <div class="routesBox">
+    <div class="routesHeader">
       <div>OUTBOUND NODE // ROUTES</div>
       <div class="dim">ESC</div>
     </div>
-    <div class="linksMenuBody">
-      <div class="routeRow" role="group" aria-label="Rotas">
-        <button class="routeBtn" id="routeSocial" type="button" aria-label="Redes Sociais">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 12a3 3 0 1 1 3-3" fill="none" stroke="rgba(170,240,255,.90)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M17 12a3 3 0 1 0-3-3" fill="none" stroke="rgba(170,240,255,.70)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M8.6 14.2c.9 1.2 2.1 1.8 3.4 1.8s2.5-.6 3.4-1.8" fill="none" stroke="rgba(120,220,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <span class="tip">REDES</span>
-        </button>
+    <div class="routesRow" role="navigation" aria-label="Rotas externas">
+      <button class="routeBtn" id="rSocial" type="button" aria-label="Redes sociais">
+        <div class="routeTip"><div class="t">REDES SOCIAIS</div><div class="s">Discord / Instagram</div></div>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 12a4 4 0 1 1 4 4" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M16 12a4 4 0 1 0-4-4" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
 
-        <button class="routeBtn" id="routeGames" type="button" aria-label="Jogos">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7.5 14.5h-1a2.5 2.5 0 0 1 0-5h1l2-2h5l2 2h1a2.5 2.5 0 0 1 0 5h-1" fill="none" stroke="rgba(170,240,255,.82)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M9 12h2M10 11v2" fill="none" stroke="rgba(120,220,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M15.5 11.3h.01M16.8 12.6h.01" fill="none" stroke="rgba(170,240,255,.72)" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-          <span class="tip">JOGOS</span>
-        </button>
+      <button class="routeBtn" id="rGames" type="button" aria-label="Jogos">
+        <div class="routeTip"><div class="t">JOGOS</div><div class="s">Placeholder</div></div>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 15h10l2-6a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3l2 6Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M9.2 12h2.6M10.5 10.7v2.6" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M15.5 11.2h.01M16.8 12.8h.01" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </button>
 
-        <button class="routeBtn" id="routeArchive" type="button" aria-label="Archive">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 7h16v4H4z" fill="none" stroke="rgba(170,240,255,.82)" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M6 11v9h12v-9" fill="none" stroke="rgba(170,240,255,.62)" stroke-width="1.6" stroke-linejoin="round"/>
-            <path d="M10 15h4" fill="none" stroke="rgba(120,220,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <span class="tip">ARCHIVE</span>
-        </button>
+      <button class="routeBtn" id="rArchive" type="button" aria-label="Archive">
+        <div class="routeTip"><div class="t">ARCHIVE</div><div class="s">Galeria pessoal</div></div>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16v4H4V7Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M6 11v9h12v-9" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M10 15h4" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
 
-        <button class="routeBtn" id="routeTx" type="button" aria-label="Transmission">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 17c2-2 2-8 0-10" fill="none" stroke="rgba(170,240,255,.70)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M17 17c-2-2-2-8 0-10" fill="none" stroke="rgba(170,240,255,.70)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M10 15c1-1 1-5 0-6" fill="none" stroke="rgba(120,220,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M14 15c-1-1-1-5 0-6" fill="none" stroke="rgba(120,220,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          <span class="tip">TX</span>
-        </button>
-      </div>
+      <button class="routeBtn" id="rTx" type="button" aria-label="Transmission">
+        <div class="routeTip"><div class="t">TRANSMISSION</div><div class="s">Áudio / playlist</div></div>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 4v16" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M8 8a6 6 0 0 0 0 8" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M16 8a6 6 0 0 1 0 8" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </button>
     </div>
   </div>
 </div>
@@ -1483,7 +1466,7 @@ body.entered #enterFooterLeft{ display:none; }
   </div>
 </div>
 
-<!-- CHANNELS (REDES SOCIAIS) -->
+<!-- CHANNELS (V5: Social panel) -->
 <div id="channels" aria-hidden="true">
   <div class="chBox">
     <div class="chHeader">
@@ -1491,33 +1474,54 @@ body.entered #enterFooterLeft{ display:none; }
       <div class="dim">ESC para fechar</div>
     </div>
 
+    <!-- TOP: Discord / Instagram "sozinhos" -->
     <div class="chGrid">
-      <a class="chCol" id="linkDiscord" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer">
+      <a class="chTopCard" id="linkDiscord" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer">
         <div class="chCircle" aria-hidden="true">
           <img alt="" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" decoding="async" loading="lazy">
         </div>
         <div class="chLabel">DISCORD NODE</div>
-        <div class="chCard">
-          <div class="chCardInner">
-            <div class="chSmall">REALTIME LINK</div>
-            <div class="chBig">JOIN CHANNEL</div>
-          </div>
-        </div>
+        <div class="chSub">REALTIME LINK</div>
       </a>
 
-      <a class="chCol" id="linkInstagram" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer">
+      <a class="chTopCard" id="linkInstagram" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer">
         <div class="chCircle" aria-hidden="true">
           <img alt="" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" decoding="async" loading="lazy">
         </div>
         <div class="chLabel">INSTAGRAM NODE</div>
-        <div class="chCard">
-          <div class="chCardInner">
-            <div class="chSmall">VISUAL ARCHIVE</div>
-            <div class="chBig">OPEN PROFILE</div>
-          </div>
-        </div>
+        <div class="chSub">VISUAL ARCHIVE</div>
       </a>
     </div>
+
+    <!-- BOTTOM: Quadrados (identidade) + ações + imagens -->
+    <div class="idGrid">
+      <div class="idPanel">
+        <div class="idHead">
+          <div>IDENTITY // GENSHIN PROFILE</div>
+          <a class="idAction" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer" aria-label="Join Discord">JOIN CHANNEL</a>
+        </div>
+        <div class="idBody">
+          <div class="idFrame">
+            <img alt="" src="https://images.unsplash.com/photo-1542556391-64b7e906d4d2?auto=format&fit=crop&w=1400&q=60" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+          </div>
+          <div class="idHint">Slot reservado para seu perfil customizado. Substitua a imagem quando quiser.</div>
+        </div>
+      </div>
+
+      <div class="idPanel">
+        <div class="idHead">
+          <div>IDENTITY // SLOT-02</div>
+          <a class="idAction" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">OPEN PROFILE</a>
+        </div>
+        <div class="idBody">
+          <div class="idFrame">
+            <img alt="" src="https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=1400&q=60" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+          </div>
+          <div class="idHint">Placeholder preparado para expansão futura. Mantém estética e hierarquia.</div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1627,13 +1631,6 @@ const btnCat  = document.getElementById("btnCat");
 const btnLinks = document.getElementById("btnLinks");
 const btnAdmin = document.getElementById("btnAdmin");
 
-/* V5 routes menu */
-const linksMenu = document.getElementById("linksMenu");
-const routeSocial = document.getElementById("routeSocial");
-const routeGames = document.getElementById("routeGames");
-const routeArchive = document.getElementById("routeArchive");
-const routeTx = document.getElementById("routeTx");
-
 const volumeHUD = document.getElementById("volumeHUD");
 const volSlider = document.getElementById("volSlider");
 const volIconBtn = document.getElementById("volIconBtn");
@@ -1652,6 +1649,13 @@ const catGrid = document.getElementById("catGrid");
 
 const channels = document.getElementById("channels");
 const admin = document.getElementById("admin");
+
+/* V5 routes node */
+const routesNode = document.getElementById("routesNode");
+const rSocial = document.getElementById("rSocial");
+const rGames = document.getElementById("rGames");
+const rArchive = document.getElementById("rArchive");
+const rTx = document.getElementById("rTx");
 
 /* Catalog filter toggles */
 const fArchived = document.getElementById("fArchived");
@@ -1843,10 +1847,7 @@ function updateVolumeUI(){
   volReadout.textContent = pct + "%";
   volumeHUD.style.setProperty("--bars-w", Math.max(6, pct) + "%");
   volumeHUD.style.setProperty("--bars-a", String(0.25 + (pct/100) * 0.55));
-
-  // ✅ sem LIVE
   volState.style.display = (pct === 0) ? "inline-block" : "none";
-
   ambience.volume = Math.min(0.35, Math.max(0.02, Number(video.volume) * 0.25));
 }
 volSlider.addEventListener("input", () => {
@@ -2302,7 +2303,7 @@ async function runLoreSequence(){
 
 /* ===== Terminal open/close ===== */
 function openTerminal(){
-  closeCatalog(); closeChannels(); closeAdmin(); closeLinksMenu();
+  closeCatalog(); closeChannels(); closeAdmin(); closeRoutes();
 
   terminal.classList.add("show");
   terminal.setAttribute("aria-hidden","false");
@@ -2348,73 +2349,66 @@ btnTerm.addEventListener("click", (e) => {
   else openTerminal();
 });
 
-/* ===== V5 LINKS MENU ===== */
-function openLinksMenu(){
+/* ===== Routes node (V5) ===== */
+function openRoutes(){
   closeTerminal(); closeCatalog(); closeAdmin();
-  linksMenu.classList.add("open");
-  linksMenu.setAttribute("aria-hidden","false");
-  pulseStrip("ROUTING:MENU", "NODE:ACTIVE", "TRACE:ROUTES");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
+  routesNode.classList.add("show");
+  routesNode.setAttribute("aria-hidden","false");
   armAudioOnce();
-  blip(720, 0.07, 0.030);
+  blip(720, 0.06, 0.022);
+  pulseStrip("ROUTES:OPEN", "NODE:ACTIVE", "TRACE:LINK");
+  ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
-function closeLinksMenu(){
-  linksMenu.classList.remove("open");
-  linksMenu.setAttribute("aria-hidden","true");
+function closeRoutes(){
+  if (!routesNode.classList.contains("show")) return;
+  routesNode.classList.remove("show");
+  routesNode.setAttribute("aria-hidden","true");
+  pulseStrip("ROUTES:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
-function toggleLinksMenu(){
-  if (linksMenu.classList.contains("open")) closeLinksMenu();
-  else openLinksMenu();
+function toggleRoutes(){
+  if (routesNode.classList.contains("show")) closeRoutes();
+  else openRoutes();
 }
 
-/* botão LINKS agora abre o MENU (não abre overlay direto) */
 btnLinks.addEventListener("click", (e) => {
   e.stopPropagation();
-  toggleLinksMenu();
+  toggleRoutes();
 });
+routesNode.addEventListener("click", (e) => e.stopPropagation());
+document.addEventListener("click", () => closeRoutes());
 
-/* fechar menu clicando fora */
-document.addEventListener("click", (e) => {
-  if (!linksMenu.classList.contains("open")) return;
-  const inside = (e.target === btnLinks) || btnLinks.contains(e.target) || linksMenu.contains(e.target);
-  if (!inside) closeLinksMenu();
-});
-
-/* ===== Channels overlay (REDES SOCIAIS) ===== */
+/* ===== Channels overlay (Redes sociais) ===== */
 function openChannels(){
-  closeTerminal(); closeCatalog(); closeAdmin(); closeLinksMenu();
+  closeTerminal(); closeCatalog(); closeAdmin(); closeRoutes();
   channels.classList.add("show");
   channels.setAttribute("aria-hidden","false");
   armAudioOnce();
   blip(720, 0.07, 0.030);
-  pulseStrip("ROUTING:OPEN", "OUTBOUND:READY", "TRACE:LINK");
+  pulseStrip("SOCIAL:OPEN", "OUTBOUND:READY", "TRACE:LINK");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 function closeChannels(){
   if (!channels.classList.contains("show")) return;
   channels.classList.remove("show");
   channels.setAttribute("aria-hidden","true");
-  pulseStrip("ROUTING:CLOSED", "FEED:STANDBY", "TRACE:—");
+  pulseStrip("SOCIAL:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
 channels.addEventListener("click", (e) => {
   if (e.target === channels) closeChannels();
 });
 
-/* rotas (por enquanto só redes abre painel real; resto placeholder) */
-routeSocial.addEventListener("click", (e) => {
-  e.stopPropagation();
-  openChannels();
+/* Routes actions */
+rSocial.addEventListener("click", () => openChannels());
+[rGames, rArchive, rTx].forEach((btn, i) => {
+  btn.addEventListener("click", () => {
+    closeRoutes();
+    armAudioOnce();
+    blip(610, 0.06, 0.018);
+    const name = i === 0 ? "GAMES" : i === 1 ? "ARCHIVE" : "TRANSMISSION";
+    pulseStrip(`ROUTE:${name}`, "STATUS:PENDING", "TRACE:—");
+    ss2.classList.remove("faint"); ss3.classList.remove("faint");
+  });
 });
-function placeholderRoute(label){
-  pulseStrip(`ROUTE:${label}`, "STATUS:PENDING", "TRACE:—");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
-  armAudioOnce();
-  blip(520, 0.06, 0.020);
-  closeLinksMenu();
-}
-routeGames.addEventListener("click", (e) => { e.stopPropagation(); placeholderRoute("GAMES"); });
-routeArchive.addEventListener("click", (e) => { e.stopPropagation(); placeholderRoute("ARCHIVE"); });
-routeTx.addEventListener("click", (e) => { e.stopPropagation(); placeholderRoute("TX"); });
 
 /* ===== Catalog ===== */
 const CATALOG_ITEMS = [
@@ -2515,7 +2509,7 @@ renderCatalog();
 
 function openCatalog(){
   if (terminal.classList.contains("show")) closeTerminal();
-  closeChannels(); closeAdmin(); closeLinksMenu();
+  closeRoutes(); closeChannels(); closeAdmin();
 
   catalog.classList.add("show");
   catalog.setAttribute("aria-hidden","false");
@@ -2542,9 +2536,9 @@ catalog.addEventListener("click", (e) => {
 
 /* ===== Admin metrics (local) ===== */
 const LS = {
-  views: "dli_views_v4",
-  device: "dli_device_v4",
-  last: "dli_admin_last_v4"
+  views: "dli_views_v5",
+  device: "dli_device_v5",
+  last: "dli_admin_last_v5"
 };
 function nowStamp(){
   const d = new Date();
@@ -2600,7 +2594,7 @@ function setAdminModeDash(on){
 }
 
 function openAdmin(){
-  closeTerminal(); closeCatalog(); closeChannels(); closeLinksMenu();
+  closeTerminal(); closeCatalog(); closeChannels(); closeRoutes();
   admin.classList.add("show");
   admin.setAttribute("aria-hidden","false");
 
@@ -2695,7 +2689,7 @@ document.addEventListener("keydown", (e) => {
     if (catalog.classList.contains("show")) { closeCatalog(); return; }
     if (channels.classList.contains("show")) { closeChannels(); return; }
     if (admin.classList.contains("show")) { closeAdmin(); return; }
-    if (linksMenu.classList.contains("open")) { closeLinksMenu(); return; }
+    if (routesNode.classList.contains("show")) { closeRoutes(); return; }
   }
 
   const isToggleKey = (e.key === "`" || e.key.toLowerCase() === "t");
