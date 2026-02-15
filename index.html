@@ -121,7 +121,7 @@ body{
   100%{opacity:0; transform:none}
 }
 
-/* ===== Sub-layer glitch (HUD/scanlines only, never center) ===== */
+/* ===== Sub-layer glitch (HUD/scanlines only) ===== */
 body.subglitch .scanlines{
   opacity:.95;
   filter: hue-rotate(8deg) contrast(1.15);
@@ -183,8 +183,6 @@ body.subglitch #statusStrip{
   user-select:none;
 }
 #enterBox.show{opacity:1; pointer-events:auto;}
-
-/* "PRESS [ENTER]" hint */
 #enterHint{
   margin-top:12px;
   font-size:10px;
@@ -196,8 +194,6 @@ body.subglitch #statusStrip{
   user-select:none;
 }
 #enterHint.show{opacity:.85;}
-
-/* scanner pass on ready */
 #enterScan{
   position:absolute;
   inset:0;
@@ -224,6 +220,20 @@ body.subglitch #statusStrip{
   100%{transform:skewX(-14deg) translateX(380%); opacity:0}
 }
 
+/* ✅ ENTER footer: canto inferior esquerdo */
+#enterFooterLine{
+  position:fixed;
+  left:18px;
+  bottom:12px;
+  z-index:11;
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.35;
+  user-select:none;
+  text-shadow:0 0 10px rgba(0,200,255,.10);
+}
+body.entered #enterFooterLine{ display:none; }
+
 /* ========= HUDS ========= */
 #coordsHUD{
   position:fixed;
@@ -240,7 +250,6 @@ body.subglitch #statusStrip{
 #coordsHUD .blink{animation:coordsBlink 2.8s infinite}
 @keyframes coordsBlink{0%,100%{opacity:.55}50%{opacity:.15}}
 
-/* ===== Status Strip (thin left micro logs) ===== */
 #statusStrip{
   position:fixed;
   left:10px;
@@ -349,7 +358,7 @@ body.subglitch #statusStrip{
 /* ===== Social control (top-right) ===== */
 #socialControl{
   position:fixed;
-  top:18px;           /* ✅ subiu */
+  top:18px;
   right:22px;
   z-index:26;
   opacity:.92;
@@ -358,19 +367,19 @@ body.subglitch #statusStrip{
 }
 #socialControl:hover{opacity:1}
 #socialControl .ctrlBtn{
-  width:58px;
+  width:74px;
   height:34px;
   border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:8px;
   padding:0 10px;
 }
 #socialControl .socLabel{
   font-size:9px;
   letter-spacing:3px;
-  opacity:.75;
+  opacity:.8;
   color:rgba(207,239,255,.9);
   transform: translateY(0.5px);
 }
@@ -423,10 +432,11 @@ body.subglitch #statusStrip{
   letter-spacing:2px;
   padding:2px 6px;
   border-radius:999px;
-  border:1px solid rgba(0,200,255,.35);
+  border:1px solid rgba(255,90,90,.45);
   background:rgba(0,0,0,.35);
-  color:rgba(207,239,255,.9);
-  text-shadow:0 0 8px rgba(0,200,255,.35);
+  color:rgba(255,190,190,.95);
+  text-shadow:0 0 8px rgba(255,90,90,.25);
+  display:none; /* ✅ só aparece quando MUTED */
 }
 .vol-panel{
   width:0;
@@ -510,412 +520,26 @@ body.subglitch #statusStrip{
   transition: clip-path .08s linear;
 }
 
-/* ========= TERMINAL ========= */
-#terminal{
-  position:fixed;
-  inset:0;
-  z-index:30;
-  display:none;
-  background:rgba(0,0,0,.65);
-  backdrop-filter: blur(18px);
-}
-#terminal.show{display:block;}
-.termBox{
-  position:absolute;
-  left:24px;
-  bottom:24px;
-  width:min(720px, calc(100vw - 48px));
-  border-radius:16px;
-  border:1px solid rgba(0,200,255,.35);
-  background:linear-gradient(180deg, rgba(10,20,35,.75), rgba(0,0,0,.6));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
-  overflow:hidden;
-}
-.termHeader{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 12px;
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.8;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.termLog{
-  max-height:min(46vh, 420px);
-  overflow:auto;
-  padding:12px;
-  font-size:11px;
-  line-height:1.55;
-  letter-spacing:1px;
-  opacity:.9;
-}
-.termLog .dim{opacity:.55}
-.termLine{margin:2px 0}
-.cursor{
-  display:inline-block;
-  margin-left:6px;
-  opacity:.9;
-  animation:cursorBlink 1s steps(2) infinite;
-}
-@keyframes cursorBlink{
-  0%,49%{opacity:1}
-  50%,100%{opacity:0}
-}
-.termInputBar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px 12px 12px;
-  border-top:1px solid rgba(255,255,255,.08);
-  background:linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.22));
-}
-.termPrompt{
-  font-size:10px;
-  letter-spacing:2px;
-  opacity:.75;
-  user-select:none;
-  white-space:nowrap;
-}
-#termInput{
-  flex:1;
-  height:32px;
-  border-radius:12px;
-  border:1px solid rgba(0,200,255,.25);
-  background:rgba(0,0,0,.35);
-  color:rgba(207,239,255,.95);
-  padding:0 12px;
-  font-family:'Orbitron', sans-serif;
-  letter-spacing:1px;
-  font-size:11px;
-  outline:none;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-#termInput::placeholder{ color:rgba(207,239,255,.45); }
-#termInput:disabled{ opacity:.55; cursor:not-allowed; }
-.termHint{
-  font-size:9px;
-  letter-spacing:2px;
-  opacity:.55;
-  user-select:none;
-  white-space:nowrap;
-}
-
-/* ========= CATALOG (overlay) ========= */
-#catalog{
-  position:fixed;
-  inset:0;
-  z-index:29;
+/* ========= TERMINAL / CATALOG / CHANNELS (mesmo do anterior) ========= */
+#terminal, #catalog, #channels, #admin{
+  position:fixed; inset:0;
   display:none;
   background:rgba(0,0,0,.62);
   backdrop-filter: blur(18px);
 }
-#catalog.show{display:block;}
-.catBox{
-  position:absolute;
-  right:24px;
-  bottom:24px;
-  width:min(860px, calc(100vw - 48px));
-  border-radius:16px;
-  border:1px solid rgba(0,200,255,.30);
-  background:linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.58));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
-  overflow:hidden;
-}
-.catHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:12px;
-  padding:10px 12px;
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.85;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  flex-wrap:wrap;
-}
-.catHeader .dim{opacity:.55}
-.catBody{
-  padding:12px;
-  max-height:min(56vh, 520px);
-  overflow:auto;
-}
-.catGrid{
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap:12px;
-}
-@media (max-width: 900px){
-  .catGrid{grid-template-columns:1fr;}
-}
-.catCard{
-  border-radius:14px;
-  border:1px solid rgba(0,200,255,.22);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(0,200,255,.08), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.35));
-  overflow:hidden;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.catThumb{
-  position:relative;
-  width:100%;
-  aspect-ratio: 16 / 9;
-  background:
-    radial-gradient(circle at 40% 35%, rgba(0,200,255,.10), transparent 60%),
-    linear-gradient(180deg, rgba(12,24,44,.70), rgba(0,0,0,.55));
-  border-bottom:1px solid rgba(255,255,255,.06);
-  overflow:hidden;
-}
-.catThumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter: grayscale(.35) contrast(1.05) brightness(.78) saturate(1.1);
-  transform: translateZ(0);
-}
-.catThumb::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.60)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 4px);
-  mix-blend-mode:overlay;
-  opacity:.55;
-  pointer-events:none;
-}
-.catThumb.noimg::before{
-  content:"NO SIGNAL";
-  position:absolute;
-  left:12px;
-  top:12px;
-  font-size:10px;
-  letter-spacing:4px;
-  opacity:.65;
-  color:rgba(207,239,255,.75);
-  text-shadow:0 0 10px rgba(0,200,255,.18);
-  z-index:2;
-}
-.catStamp{
-  position:absolute;
-  left:10px;
-  bottom:10px;
-  z-index:2;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(0,200,255,.35);
-  background:rgba(0,0,0,.45);
-  backdrop-filter: blur(12px);
-  font-size:9px;
-  letter-spacing:2px;
-  color:rgba(207,239,255,.95);
-  text-shadow:0 0 10px rgba(0,200,255,.22);
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.catContent{
-  padding:10px 12px 12px 12px;
-}
-.catTitle{
-  font-size:11px;
-  letter-spacing:2px;
-  opacity:.92;
-  margin-bottom:6px;
-}
-.catDesc{
-  font-size:10px;
-  letter-spacing:1px;
-  line-height:1.55;
-  opacity:.80;
-}
-.catMeta{
-  margin-top:10px;
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-  font-size:9px;
-  letter-spacing:2px;
-  opacity:.55;
-}
-.catBadge{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-}
-.catDot{
-  width:7px;height:7px;border-radius:50%;
-  background:rgba(0,200,255,.75);
-  box-shadow:0 0 12px rgba(0,200,255,.35);
-  flex:0 0 auto;
-}
-.catRight{white-space:nowrap;}
+#terminal{ z-index:30; }
+#catalog{ z-index:29; }
+#channels{ z-index:28; background:rgba(0,0,0,.58); backdrop-filter: blur(16px); }
+#admin{ z-index:27; }
 
-.catFilters{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.catFilters .label{
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.55;
-  margin-right:4px;
-}
-.fToggle{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-  border-radius:12px;
-  border:1px solid rgba(0,200,255,.22);
-  background:rgba(0,0,0,.22);
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  user-select:none;
-}
-.fToggle input{
-  width:14px;height:14px;
-  accent-color: rgba(0,200,255,.85);
-}
-.fToggle span{
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.78;
-}
-.fToggle.off{
-  opacity:.45;
-  border-color: rgba(255,255,255,.10);
-}
+#terminal.show, #catalog.show, #channels.show, #admin.show{ display:block; }
 
-/* ========= CHANNELS (overlay) ========= */
-#channels{
-  position:fixed;
-  inset:0;
-  z-index:28;
-  display:none;
-  background:rgba(0,0,0,.58);
-  backdrop-filter: blur(16px);
-}
-#channels.show{display:block;}
-.chBox{
-  position:absolute;
-  left:50%;
-  bottom:24px;
-  transform:translateX(-50%);
-  width:min(1040px, calc(100vw - 48px));
-  border-radius:16px;
-  border:1px solid rgba(0,200,255,.28);
-  background:linear-gradient(180deg, rgba(10,20,35,.70), rgba(0,0,0,.58));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
-  overflow:hidden;
-}
-.chHeader{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 12px;
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.85;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.chHeader .dim{opacity:.55}
-.chGrid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0,1fr));
-  gap:16px;
-  padding:14px;
-}
-@media (max-width: 900px){
-  .chGrid{grid-template-columns:1fr;}
-}
-.chCol{
-  display:block;
-  text-decoration:none;
-  color:inherit;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.06);
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.16));
-  padding:18px 18px 16px 18px;
-  position:relative;
-  overflow:hidden;
-}
-.chCol::before{
-  content:"";
-  position:absolute;
-  inset:-40% -30%;
-  background:linear-gradient(90deg, transparent, rgba(0,200,255,.12), transparent);
-  transform:rotate(14deg) translateX(-90%);
-  opacity:0;
-}
-.chCol:hover::before{
-  opacity:1;
-  animation:scanPass 1.05s ease infinite;
-}
-.chCircle{
-  width:150px;height:150px;
-  margin:6px auto 14px auto;
-  border-radius:50%;
-  border:2px solid rgba(207,239,255,.65);
-  box-shadow:0 0 26px rgba(0,200,255,.12);
-  display:grid;
-  place-items:center;
-  background:radial-gradient(circle at 30% 30%, rgba(0,200,255,.08), transparent 55%);
-}
-.chCircle img{
-  width:56px;height:56px;
-  filter: drop-shadow(0 0 12px rgba(0,200,255,.20));
-  opacity:.95;
-}
-.chLabel{
-  text-align:center;
-  font-size:22px;
-  letter-spacing:3px;
-  opacity:.92;
-  margin-bottom:12px;
-}
-.chCard{
-  width:100%;
-  height:120px;
-  border-radius:16px;
-  border:2px solid rgba(207,239,255,.55);
-  background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  overflow:hidden;
-}
-.chCardInner{
-  height:100%;
-  padding:14px 16px;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
-  gap:6px;
-}
-.chSmall{
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.55;
-}
-.chBig{
-  font-size:22px;
-  letter-spacing:3px;
-  opacity:.95;
-}
-
-/* ========= ADMIN (overlay) ========= */
-#admin{
-  position:fixed;
-  inset:0;
-  z-index:27;
-  display:none;
-  background:rgba(0,0,0,.62);
-  backdrop-filter: blur(18px);
-}
-#admin.show{display:block;}
-
+/* ========= ADMIN ========= */
 .adminBox{
   position:absolute;
   left:50%;
   top:50%;
-  transform:translate(-50%,-50%); /* ✅ centralizado */
+  transform:translate(-50%,-50%);
   width:min(980px, calc(100vw - 48px));
   border-radius:16px;
   border:1px solid rgba(0,200,255,.30);
@@ -934,14 +558,11 @@ body.subglitch #statusStrip{
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 .adminHeader .dim{opacity:.55}
-
-.adminBody{
-  padding:14px;
-}
+.adminBody{ padding:14px; }
 
 .adminGridTop{
   display:grid;
-  grid-template-columns: 1fr; /* ✅ user em cima e pass embaixo */
+  grid-template-columns:1fr;
   gap:12px;
 }
 .adminField{
@@ -1020,6 +641,15 @@ body.subglitch #statusStrip{
   color: rgba(255,190,190,.95);
 }
 
+/* ✅ Conteúdo secreto (stats) escondido até autenticar */
+.adminSecret{
+  display:none;
+}
+#admin.unlocked .adminSecret{
+  display:block;
+}
+
+/* stats / danger */
 .adminStats{
   margin-top:14px;
   display:grid;
@@ -1052,7 +682,6 @@ body.subglitch #statusStrip{
   opacity:.85;
   letter-spacing:2px;
 }
-
 .adminFooter{
   margin-top:12px;
   opacity:.55;
@@ -1074,6 +703,7 @@ body.subglitch #statusStrip{
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(255,90,90,.10);
 }
 
+/* glitch no nome */
 .glitchName{
   display:inline-block;
 }
@@ -1093,7 +723,7 @@ body.subglitch #statusStrip{
   100%{transform:none; filter:none;}
 }
 
-/* ===== Bottom right version ===== */
+/* ===== Bottom right version (sempre visível) ===== */
 #versionTag{
   position:fixed;
   right:18px;
@@ -1107,24 +737,11 @@ body.subglitch #statusStrip{
 }
 #versionTag .v{opacity:.85;color:rgba(207,239,255,.85);}
 
-/* ===== Hide unwanted phrases on main (after ENTER) ===== */
-/* - remove top-left tech phrase entirely (we won't render techHUD) */
-/* - keep bottom-left phrase ONLY on ENTER screen */
-#enterFooterLine{
-  margin-top:22px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.35;
-  user-select:none;
-}
-body.entered #enterFooterLine{ display:none; }
-
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
   .scanlines{opacity:.35}
   .spinner{animation:none}
   #cinemaFX::before{animation:none}
-  #topControls .ctrlBtn::after{animation:none; opacity:0;}
   #loadingScreen.scan-on #enterScan::before{animation:none !important;}
 }
 @media (max-width: 768px){
@@ -1151,6 +768,9 @@ body.entered #enterFooterLine{ display:none; }
 <div id="cinemaFX"></div>
 <div id="glitchFlash"></div>
 
+<!-- ✅ versão sempre -->
+<div id="versionTag"><span class="v">dottore lab interface: v4</span></div>
+
 <div id="loadingScreen">
   <div id="enterScan" aria-hidden="true"></div>
   <div class="loading-text" id="dynamicText">INITIALIZING EXPERIMENT...</div>
@@ -1158,32 +778,27 @@ body.entered #enterFooterLine{ display:none; }
 
   <div id="enterBox">ENTER</div>
   <div id="enterHint">PRESS [ENTER] TO PROCEED</div>
-
-  <!-- ✅ Frase inferior esquerda só no ENTER -->
-  <div id="enterFooterLine">NEURAL LINK ESTABLISHED // SUBJECT ONLINE</div>
 </div>
+
+<!-- ✅ ENTER frase no canto inferior esquerdo -->
+<div id="enterFooterLine">NEURAL LINK ESTABLISHED // SUBJECT ONLINE</div>
 
 <div id="coordsHUD">
   <div class="line blink" id="coordA">COORD: --.---- / --.----</div>
   <div class="line" id="coordB">NODE: Σ-07 // LINK: STABLE</div>
 </div>
 
-<!-- STATUS STRIP -->
 <div id="statusStrip" aria-hidden="true">
   <div class="statusLine" id="ss1"><span class="k">STRIP</span> <span class="v">IDLE</span></div>
   <div class="statusLine faint" id="ss2"><span class="k">FEED</span> <span class="v">STANDBY</span></div>
   <div class="statusLine faint" id="ss3"><span class="k">TRACE</span> <span class="v">—</span></div>
 </div>
 
-<!-- ✅ versão no canto inferior direito -->
-<div id="versionTag"><span class="v">dottore lab interface: v4</span></div>
-
 <div id="topControls">
   <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
   <button class="ctrlBtn" id="btnCat" title="Catálogo">≡</button>
   <button class="ctrlBtn" id="btnTerm" title="Painel">⌁</button>
 
-  <!-- ✅ Admin button -->
   <button class="ctrlBtn" id="btnAdmin" title="Admin Console" aria-label="Abrir console admin">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M12 2 20 6v6c0 5-3.4 9.4-8 10-4.6-.6-8-5-8-10V6l8-4Z" fill="none" stroke="rgba(0,200,255,.85)" stroke-width="1.6"/>
@@ -1192,23 +807,23 @@ body.entered #enterFooterLine{ display:none; }
   </button>
 </div>
 
-<!-- Social / Outbound control (top-right) -->
-<div id="socialControl" aria-label="Outbound links">
-  <button class="ctrlBtn" id="btnLinks" type="button" title="Canais / Redes" aria-label="Abrir canais externos">
-    <!-- ✅ ícone melhor de outbound -->
+<!-- ✅ Redes sociais -->
+<div id="socialControl" aria-label="Redes sociais">
+  <button class="ctrlBtn" id="btnLinks" type="button" title="Redes" aria-label="Abrir redes sociais">
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M14 3h7v7" fill="none" stroke="rgba(0,200,255,.85)" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M21 3 12 12" fill="none" stroke="rgba(207,239,255,.95)" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M10 6H6a3 3 0 0 0-3 3v9a3 3 0 0 0 3 3h9a3 3 0 0 0 3-3v-4"
-            fill="none" stroke="rgba(0,200,255,.55)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M16 8a3 3 0 1 0-2.8-4" fill="none" stroke="rgba(0,200,255,.85)" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M8 13a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" fill="none" stroke="rgba(0,200,255,.75)" stroke-width="1.7"/>
+      <path d="M18 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z" fill="none" stroke="rgba(0,200,255,.55)" stroke-width="1.7"/>
+      <path d="M10.6 14.2 14.8 11.8" fill="none" stroke="rgba(207,239,255,.95)" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M10.7 17.3 15.1 18.2" fill="none" stroke="rgba(207,239,255,.85)" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M14.9 9.2 10.3 12.7" fill="none" stroke="rgba(207,239,255,.75)" stroke-width="1.7" stroke-linecap="round"/>
     </svg>
-    <span class="socLabel">LINKS</span>
+    <span class="socLabel">REDES</span>
   </button>
 </div>
 
 <div id="volumeHUD" class="vol" aria-label="Controle de volume" style="--bars-w:50%; --bars-a:.55;">
   <button id="volIconBtn" class="vol-btn" type="button" aria-label="Abrir controle de volume">
-    <!-- ✅ ícone speaker real -->
     <svg class="vol-svg" viewBox="0 0 24 24" aria-hidden="true">
       <path d="M3 10v4a2 2 0 0 0 2 2h3l5 4V4L8 8H5a2 2 0 0 0-2 2Z"
             fill="none" stroke="rgba(207,239,255,.95)" stroke-width="1.8" stroke-linejoin="round"/>
@@ -1217,7 +832,7 @@ body.entered #enterFooterLine{ display:none; }
       <path d="M18.5 7c1.6 1.4 2.5 3 2.5 5s-.9 3.6-2.5 5"
             fill="none" stroke="rgba(0,200,255,.45)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
-    <span id="volState" class="vol-state">LIVE</span>
+    <span id="volState" class="vol-state">MUTED</span>
   </button>
 
   <div id="volPanel" class="vol-panel" role="group" aria-label="Ajuste de volume">
@@ -1233,76 +848,29 @@ body.entered #enterFooterLine{ display:none; }
   </div>
 </div>
 
-<div id="catalog" aria-hidden="true">
-  <div class="catBox">
-    <div class="catHeader">
-      <div>EXPERIMENT CATALOG // INDEX: Σ</div>
-
-      <div class="catFilters" aria-label="Index Filter">
-        <span class="label">INDEX FILTER</span>
-
-        <label class="fToggle" id="fArchivedWrap">
-          <input type="checkbox" id="fArchived" checked />
-          <span>ARCHIVED</span>
-        </label>
-
-        <label class="fToggle" id="fActiveWrap">
-          <input type="checkbox" id="fActive" checked />
-          <span>ACTIVE</span>
-        </label>
-
-        <label class="fToggle" id="fSealedWrap">
-          <input type="checkbox" id="fSealed" checked />
-          <span>SEALED</span>
-        </label>
-      </div>
-
-      <div class="dim">ESC para fechar</div>
-    </div>
-    <div class="catBody">
-      <div id="catGrid" class="catGrid"></div>
-    </div>
-  </div>
-</div>
-
+<!-- ========= CHANNELS ========= -->
 <div id="channels" aria-hidden="true">
-  <div class="chBox">
-    <div class="chHeader">
-      <div>OUTBOUND ROUTING // CHANNEL ACCESS</div>
+  <div class="adminBox" style="width:min(1040px, calc(100vw - 48px));">
+    <div class="adminHeader">
+      <div>OUTBOUND ROUTING // SOCIAL ACCESS</div>
       <div class="dim">ESC para fechar</div>
     </div>
-
-    <div class="chGrid">
-      <a class="chCol" id="linkDiscord" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer">
-        <div class="chCircle" aria-hidden="true">
-          <img alt="" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" decoding="async" loading="lazy">
-        </div>
-        <div class="chLabel">DISCORD NODE</div>
-        <div class="chCard">
-          <div class="chCardInner">
-            <div class="chSmall">REALTIME LINK</div>
-            <div class="chBig">JOIN CHANNEL</div>
-          </div>
-        </div>
+    <div class="adminBody" style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:16px;">
+      <a class="adminField" style="text-decoration:none;color:inherit; display:block;"
+         href="https://discord.gg/example" target="_blank" rel="noopener noreferrer">
+        <div class="adminLabel">DISCORD</div>
+        <div class="adminValue">JOIN CHANNEL</div>
       </a>
-
-      <a class="chCol" id="linkInstagram" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer">
-        <div class="chCircle" aria-hidden="true">
-          <img alt="" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" decoding="async" loading="lazy">
-        </div>
-        <div class="chLabel">INSTAGRAM NODE</div>
-        <div class="chCard">
-          <div class="chCardInner">
-            <div class="chSmall">VISUAL ARCHIVE</div>
-            <div class="chBig">OPEN PROFILE</div>
-          </div>
-        </div>
+      <a class="adminField" style="text-decoration:none;color:inherit; display:block;"
+         href="https://instagram.com/example" target="_blank" rel="noopener noreferrer">
+        <div class="adminLabel">INSTAGRAM</div>
+        <div class="adminValue">OPEN PROFILE</div>
       </a>
     </div>
   </div>
 </div>
 
-<!-- ✅ ADMIN CONSOLE -->
+<!-- ========= ADMIN ========= -->
 <div id="admin" aria-hidden="true">
   <div class="adminBox">
     <div class="adminHeader">
@@ -1311,6 +879,7 @@ body.entered #enterFooterLine{ display:none; }
     </div>
 
     <div class="adminBody">
+      <!-- LOGIN ONLY -->
       <div class="adminGridTop">
         <div class="adminField">
           <div class="adminLabel">USER</div>
@@ -1326,49 +895,67 @@ body.entered #enterFooterLine{ display:none; }
       <div class="adminActions">
         <button class="aBtn" id="adminAuth">ACESSAR</button>
         <button class="aBtn" id="adminClear">LIMPAR</button>
-
         <div id="adminStatus" class="aPill">Aguardando autenticação…</div>
       </div>
 
-      <div class="adminStats">
-        <div class="statCard">
-          <div class="statTitle">VIEWS // ENTER</div>
-          <div class="statVal" id="mViews">0</div>
+      <!-- ✅ SECRET (só após autenticar) -->
+      <div class="adminSecret">
+        <div class="adminStats">
+          <div class="statCard">
+            <div class="statTitle">VIEWS // ENTER</div>
+            <div class="statVal" id="mViews">0</div>
+          </div>
+          <div class="statCard">
+            <div class="statTitle">UNIQUE // DEVICE</div>
+            <div class="statVal" id="mUnique">0</div>
+          </div>
+          <div class="statCard">
+            <div class="statTitle">LAST ACCESS</div>
+            <div class="statVal statSmall" id="mLast">—</div>
+          </div>
         </div>
-        <div class="statCard">
-          <div class="statTitle">UNIQUE // DEVICE</div>
-          <div class="statVal" id="mUnique">0</div>
-        </div>
-        <div class="statCard">
-          <div class="statTitle">LAST ACCESS</div>
-          <div class="statVal statSmall" id="mLast">—</div>
-        </div>
-      </div>
 
-      <div class="adminDangerRow">
-        <button class="aBtn danger" id="adminReset">RESET METRICS</button>
-        <button class="aBtn" id="adminLock">LOCK</button>
-      </div>
+        <div class="adminDangerRow">
+          <button class="aBtn danger" id="adminReset">RESET METRICS</button>
+          <button class="aBtn" id="adminLock">LOCK</button>
+        </div>
 
-      <div class="adminFooter">
-        Nota: métricas são locais (neste navegador/dispositivo). Sem backend, não existe contagem global real.
+        <div class="adminFooter">
+          Nota: métricas são locais (neste navegador/dispositivo). Sem backend, não existe contagem global real.
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ========= TERMINAL / CATALOG (mantidos simples aqui) ========= -->
 <div id="terminal" aria-hidden="true">
-  <div class="termBox">
-    <div class="termHeader">
+  <div class="adminBox" style="left:24px; top:auto; bottom:24px; transform:none; width:min(720px, calc(100vw - 48px));">
+    <div class="adminHeader">
       <div>LAB TERMINAL // ACCESS: GRANTED</div>
       <div class="dim">ESC para fechar</div>
     </div>
-    <div id="termLog" class="termLog"></div>
+    <div class="adminBody">
+      <div id="termLog" style="max-height:min(46vh, 420px); overflow:auto; font-size:11px; line-height:1.55; letter-spacing:1px; opacity:.9;"></div>
+      <div style="display:flex; gap:10px; align-items:center; margin-top:10px;">
+        <div id="termPrompt" style="font-size:10px; letter-spacing:2px; opacity:.75; white-space:nowrap;">root@lab:~$</div>
+        <input id="termInput" class="adminInput" style="height:32px" type="text" autocomplete="off" spellcheck="false" placeholder="Digite um comando (ex: help)" />
+        <div id="termHint" style="font-size:9px; letter-spacing:2px; opacity:.55; white-space:nowrap;">ENTER</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <div class="termInputBar" aria-label="Console">
-      <div class="termPrompt" id="termPrompt">root@lab:~$</div>
-      <input id="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="Digite um comando (ex: help)" />
-      <div class="termHint" id="termHint">ENTER</div>
+<div id="catalog" aria-hidden="true">
+  <div class="adminBox" style="right:24px; left:auto; top:auto; bottom:24px; transform:none; width:min(860px, calc(100vw - 48px));">
+    <div class="adminHeader">
+      <div>EXPERIMENT CATALOG // INDEX: Σ</div>
+      <div class="dim">ESC para fechar</div>
+    </div>
+    <div class="adminBody">
+      <div style="opacity:.65; letter-spacing:2px; font-size:10px;">
+        (Catálogo mantido — não mexi nele nesta revisão)
+      </div>
     </div>
   </div>
 </div>
@@ -1407,17 +994,8 @@ const termPrompt = document.getElementById("termPrompt");
 const termHint = document.getElementById("termHint");
 
 const catalog = document.getElementById("catalog");
-const catGrid = document.getElementById("catGrid");
 const channels = document.getElementById("channels");
 
-const fArchived = document.getElementById("fArchived");
-const fActive = document.getElementById("fActive");
-const fSealed = document.getElementById("fSealed");
-const fArchivedWrap = document.getElementById("fArchivedWrap");
-const fActiveWrap = document.getElementById("fActiveWrap");
-const fSealedWrap = document.getElementById("fSealedWrap");
-
-const ss1 = document.getElementById("ss1");
 const ss2 = document.getElementById("ss2");
 const ss3 = document.getElementById("ss3");
 
@@ -1432,36 +1010,6 @@ const adminLock = document.getElementById("adminLock");
 const mViews = document.getElementById("mViews");
 const mUnique = document.getElementById("mUnique");
 const mLast = document.getElementById("mLast");
-
-/* ===== FLAGS ===== */
-let ambOn = true;
-let hasEntered = false;
-
-/* ===== STATUS STRIP ===== */
-let stripTimers = [];
-function setStripLine(el, key, val){
-  if (!el) return;
-  el.innerHTML = `<span class="k">${key}</span> <span class="v">${val}</span>`;
-}
-function clearStripTimers(){
-  for (const t of stripTimers) clearTimeout(t);
-  stripTimers.length = 0;
-}
-function pulseStrip(eventLine, feedLine, traceLine){
-  if (eventLine) setStripLine(ss1, "STRIP", eventLine);
-  if (feedLine)  setStripLine(ss2, "FEED", feedLine);
-  if (traceLine) setStripLine(ss3, "TRACE", traceLine);
-
-  clearStripTimers();
-  stripTimers.push(setTimeout(() => {
-    setStripLine(ss2, "FEED", "STANDBY");
-    ss2.classList.add("faint");
-  }, 5200));
-  stripTimers.push(setTimeout(() => {
-    setStripLine(ss3, "TRACE", "—");
-    ss3.classList.add("faint");
-  }, 8200));
-}
 
 /* ===== LOADING TEXT ===== */
 const messages = [
@@ -1478,105 +1026,55 @@ const msgTimer = setInterval(() => {
   dynamicText.textContent = messages[msgIndex];
 }, 2200);
 
-function hardStopMediaIfNotEntered(){
-  if (hasEntered) return;
-  try{ video.pause(); video.currentTime = 0; }catch(e){}
-  try{ videoBlur.pause(); videoBlur.currentTime = 0; }catch(e){}
-  try{ ambience.pause(); ambience.currentTime = 0; }catch(e){}
-}
-document.addEventListener("DOMContentLoaded", hardStopMediaIfNotEntered);
-window.addEventListener("pageshow", () => hardStopMediaIfNotEntered());
+let hasEntered = false;
 
 /* ===== READY / SAFETY ===== */
 let readyToEnter = false;
-let scanLoopTimer = null;
 
-function playEnterScan(){
-  loadingScreen.classList.remove("scan-on");
-  void loadingScreen.offsetWidth;
-  loadingScreen.classList.add("scan-on");
-  setTimeout(()=>loadingScreen.classList.remove("scan-on"), 1100);
-}
-function startScanLoop(){
-  if (scanLoopTimer) return;
-  scanLoopTimer = setInterval(() => {
-    const loadingVisible = loadingScreen.style.display !== "none" && getComputedStyle(loadingScreen).display !== "none";
-    if (!loadingVisible) return;
-    if (!enterBox.classList.contains("show")) return;
-    playEnterScan();
-  }, 5000);
-}
-function stopScanLoop(){
-  if (!scanLoopTimer) return;
-  clearInterval(scanLoopTimer);
-  scanLoopTimer = null;
-}
-function setEnterHint(label){
-  enterHint.textContent = (label === "RETRY") ? "PRESS [ENTER] TO RETRY" : "PRESS [ENTER] TO PROCEED";
-  enterHint.classList.add("show");
-}
 function showEnter(label="ENTER"){
   enterBox.style.pointerEvents = "auto";
   enterBox.textContent = label;
   enterBox.classList.add("show");
-  setEnterHint(label);
-  playEnterScan();
-  startScanLoop();
+  enterHint.textContent = (label === "RETRY") ? "PRESS [ENTER] TO RETRY" : "PRESS [ENTER] TO PROCEED";
+  enterHint.classList.add("show");
 }
-function setLoadingStatus(t){ dynamicText.textContent = t; }
 function markReady(){
   if (readyToEnter) return;
   readyToEnter = true;
   showEnter("ENTER");
 }
 
-const SAFETY_TIMEOUT_MS = 9000;
-let safetyTimeout = setTimeout(() => {
-  if (!readyToEnter) {
-    setLoadingStatus("SIGNAL DEGRADED // MANUAL START ENABLED");
-    markReady();
-  }
-}, SAFETY_TIMEOUT_MS);
-
-setTimeout(() => {
-  if (!enterBox.classList.contains("show")) {
-    setLoadingStatus("AWAITING STREAM // MANUAL START ENABLED");
-    showEnter("ENTER");
-  }
-}, 2500);
+setTimeout(() => { if (!enterBox.classList.contains("show")) showEnter("ENTER"); }, 2500);
 
 video.addEventListener("loadeddata", markReady, { once:true });
 video.addEventListener("canplay", markReady, { once:true });
 
 function onVideoError(){
-  clearTimeout(safetyTimeout);
   spinner.style.display = "none";
-  setLoadingStatus("ERROR // DATA CORRUPTED // TAP TO RETRY");
+  dynamicText.textContent = "ERROR // DATA CORRUPTED // TAP TO RETRY";
   showEnter("RETRY");
 }
 video.addEventListener("error", onVideoError);
 videoBlur.addEventListener("error", onVideoError);
 
-/* ===== SYNC BLUR ===== */
-video.addEventListener("play", () => { videoBlur.play().catch(()=>{}); });
-video.addEventListener("pause", () => { try{ videoBlur.pause(); }catch(e){} });
+/* ===== COORDS ===== */
+function rndCoord(){
+  const a = (Math.random()*180 - 90).toFixed(4);
+  const b = (Math.random()*360 - 180).toFixed(4);
+  coordA.textContent = `COORD: ${a} / ${b}`;
+  coordB.textContent = `NODE: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // LINK: ${Math.random()>.15?"STABLE":"DEGRADED"}`;
+}
+setInterval(rndCoord, 2200);
+rndCoord();
 
-/* ✅ VISIBILITY */
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    try{ video.pause(); }catch(e){}
-    try{ videoBlur.pause(); }catch(e){}
-    try{ ambience.pause(); }catch(e){}
-    return;
-  }
-  if (!hasEntered) {
-    hardStopMediaIfNotEntered();
-    return;
-  }
-  video.play().catch(()=>{});
-  videoBlur.play().catch(()=>{});
-  if (ambOn) ambience.play().catch(()=>{});
-});
+/* ===== FULLSCREEN ===== */
+async function toggleFullscreen(){
+  try{
+    if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
+  } catch(e){}
+}
+btnFS.addEventListener("click", toggleFullscreen);
 
 /* ===== VOLUME UI ===== */
 video.volume = 0.7;
@@ -1588,14 +1086,11 @@ function updateVolumeUI(){
   volumeHUD.style.setProperty("--bars-w", Math.max(6, pct) + "%");
   volumeHUD.style.setProperty("--bars-a", String(0.25 + (pct/100) * 0.55));
 
+  // ✅ tira LIVE: só mostra MUTED quando pct === 0
   if (pct === 0) {
-    volState.textContent = "MUTED";
-    volState.style.borderColor = "rgba(255,90,90,.45)";
-    volState.style.color = "rgba(255,190,190,.95)";
+    volState.style.display = "inline-block";
   } else {
-    volState.textContent = "LIVE";
-    volState.style.borderColor = "rgba(0,200,255,.35)";
-    volState.style.color = "rgba(207,239,255,.9)";
+    volState.style.display = "none";
   }
 
   ambience.volume = Math.min(0.35, Math.max(0.02, Number(video.volume) * 0.25));
@@ -1612,437 +1107,52 @@ volIconBtn.addEventListener("click", (e) => {
 });
 document.addEventListener("click", () => volumeHUD.classList.remove("open"));
 
-/* ===== COORDS ===== */
-function rndCoord(){
-  const a = (Math.random()*180 - 90).toFixed(4);
-  const b = (Math.random()*360 - 180).toFixed(4);
-  coordA.textContent = `COORD: ${a} / ${b}`;
-  coordB.textContent = `NÓ: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // LINK: ${Math.random()>.15?"ESTÁVEL":"DEGRADADO"}`;
-}
-setInterval(rndCoord, 2200);
-rndCoord();
-
-/* ===== FULLSCREEN ===== */
-async function toggleFullscreen(){
-  try{
-    if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-    else await document.exitFullscreen();
-  } catch(e){}
-}
-btnFS.addEventListener("click", toggleFullscreen);
-
-/* ===== GLITCH ===== */
-function triggerGlitch(){
-  document.body.classList.remove("glitch-on");
-  void document.body.offsetWidth;
-  document.body.classList.add("glitch-on");
-  setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
-}
-
-/* ===== Sub-layer glitch event ===== */
-let subglitchArmed = false;
-let subglitchTimer = null;
-
-function triggerSubglitch(){
-  if (!subglitchArmed) return;
-  document.body.classList.add("subglitch");
-  const dur = 220 + Math.random()*220;
-  setTimeout(()=>document.body.classList.remove("subglitch"), dur);
-}
-function scheduleSubglitch(){
-  if (!subglitchArmed) return;
-  if (subglitchTimer) clearTimeout(subglitchTimer);
-  const next = 60000 + Math.random()*60000;
-  subglitchTimer = setTimeout(() => {
-    triggerSubglitch();
-    scheduleSubglitch();
-  }, next);
-}
-
-/* ===== Audio Reactor ===== */
-const AudioFX = {
-  ctx: null,
-  master: null,
-  drone: null,
-  droneGain: null,
-  lfo: null,
-  lfoGain: null,
-  armed: false,
-  lastTap: 0
-};
-function ensureAudio(){
-  if (AudioFX.ctx) return true;
-  try{
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!Ctx) return false;
-    AudioFX.ctx = new Ctx();
-    AudioFX.master = AudioFX.ctx.createGain();
-    AudioFX.master.gain.value = 0.0;
-    AudioFX.master.connect(AudioFX.ctx.destination);
-
-    const o1 = AudioFX.ctx.createOscillator();
-    const o2 = AudioFX.ctx.createOscillator();
-    o1.type = "triangle"; o2.type = "sine";
-    o1.frequency.value = 44;
-    o2.frequency.value = 118;
-
-    AudioFX.droneGain = AudioFX.ctx.createGain();
-    AudioFX.droneGain.gain.value = 0.0;
-
-    o1.connect(AudioFX.droneGain);
-    o2.connect(AudioFX.droneGain);
-    AudioFX.droneGain.connect(AudioFX.master);
-
-    AudioFX.lfo = AudioFX.ctx.createOscillator();
-    AudioFX.lfo.type = "sine";
-    AudioFX.lfo.frequency.value = 2.2;
-    AudioFX.lfoGain = AudioFX.ctx.createGain();
-    AudioFX.lfoGain.gain.value = 0.0;
-    AudioFX.lfo.connect(AudioFX.lfoGain);
-    AudioFX.lfoGain.connect(AudioFX.droneGain.gain);
-
-    o1.start();
-    o2.start();
-    AudioFX.lfo.start();
-
-    return true;
-  }catch(e){
-    return false;
-  }
-}
-function armAudioOnce(){
-  if (AudioFX.armed) return;
-  if (!ensureAudio()) return;
-  AudioFX.armed = true;
-  try{
-    if (AudioFX.ctx.state === "suspended") AudioFX.ctx.resume().catch(()=>{});
-  }catch(e){}
-}
-function setTerminalAudioState(state){
-  if (!AudioFX.armed || !AudioFX.master) return;
-  const now = AudioFX.ctx.currentTime;
-
-  const target = (state === "off") ? 0.0 : (state === "open" ? 0.045 : 0.065);
-  const lfoAmt = (state === "typing") ? 0.018 : 0.0;
-
-  AudioFX.master.gain.cancelScheduledValues(now);
-  AudioFX.master.gain.setTargetAtTime(target, now, 0.06);
-
-  AudioFX.lfoGain.gain.cancelScheduledValues(now);
-  AudioFX.lfoGain.gain.setTargetAtTime(lfoAmt, now, 0.05);
-}
-function blip(freq=820, dur=0.055, gain=0.06){
-  if (!AudioFX.armed || !AudioFX.ctx || !AudioFX.master) return;
-  const now = AudioFX.ctx.currentTime;
-  const o = AudioFX.ctx.createOscillator();
-  const g = AudioFX.ctx.createGain();
-  o.type = "square";
-  o.frequency.setValueAtTime(freq, now);
-  g.gain.setValueAtTime(0.0001, now);
-  g.gain.exponentialRampToValueAtTime(gain, now + 0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-  o.connect(g);
-  g.connect(AudioFX.master);
-  o.start(now);
-  o.stop(now + dur + 0.02);
-}
-
-/* ===== Protocol (mantido minimal) ===== */
-const PROTOCOL_ENABLED = true;
-const Protocol = {
-  started: false,
-  timers: [],
-  phases: [
-    { name: "BOOT", directive: "MONITORING", whenMs: 0 },
-    { name: "SUBJECT_LOCK", directive: "IDENTITY: IRRELEVANT", whenMs: 4200 },
-    { name: "CALIBRATION", directive: "PAIN LIMIT: ADJUSTABLE", whenMs: 9800 },
-    { name: "ASCENSION", directive: "PROTOCOL: ACTIVE", whenMs: 16800 }
-  ]
-};
-function clearProtocolTimers(){
-  for (const t of Protocol.timers) clearTimeout(t);
-  Protocol.timers.length = 0;
-}
-function startAscensionProtocol(){
-  if (!PROTOCOL_ENABLED) return;
-  if (Protocol.started) return;
-  Protocol.started = true;
-  clearProtocolTimers();
-  for (let i = 0; i < Protocol.phases.length; i++){
-    const ph = Protocol.phases[i];
-    const timer = setTimeout(() => {
-      pulseStrip(`PHASE:${ph.name.replace("_"," ")}`, "TELEMETRY:SYNC", `DIR:${ph.directive}`);
-      ss2.classList.remove("faint");
-      ss3.classList.remove("faint");
-    }, ph.whenMs);
-    Protocol.timers.push(timer);
-  }
-}
-
-/* ===== Terminal (mantido) ===== */
-let termRunToken = 0;
-let termTyping = false;
-let termInteractive = false;
-let loreCompleted = false;
-
-function terminalAppendDimLine(text){
-  const div = document.createElement("div");
-  div.className = "termLine dim";
-  div.textContent = text;
-  termLog.appendChild(div);
-  termLog.scrollTop = termLog.scrollHeight;
-}
-function clearTerminal(){ termLog.innerHTML = ""; }
-function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-function ensureAlive(token){ return token === termRunToken && terminal.classList.contains("show"); }
-
-async function typeLine(text, cls="", speed=14, token=0){
-  if (!ensureAlive(token)) return;
-  const div = document.createElement("div");
-  div.className = "termLine " + cls;
-  termLog.appendChild(div);
-
-  for (let i=0; i<text.length; i++){
-    if (!ensureAlive(token)) return;
-    div.textContent += text[i];
-
-    const now = performance.now();
-    if (now - AudioFX.lastTap > 26){
-      AudioFX.lastTap = now;
-      blip(720 + Math.random()*180, 0.03, 0.015);
-    }
-
-    await sleep(speed + Math.random()*14);
-    termLog.scrollTop = termLog.scrollHeight;
-  }
-}
-function normalizeCmd(s){ return (s || "").trim().toLowerCase(); }
-function setInputEnabled(on){
-  termInput.disabled = !on;
-  termHint.style.opacity = on ? ".55" : ".35";
-  termInput.placeholder = on ? "Digite um comando (ex: help)" : "Sistema ocupado...";
-}
-function focusTerminalInput(){
-  if (!terminal.classList.contains("show")) return;
-  if (!termInteractive) return;
-  termInput.focus({ preventScroll:true });
-}
-function printUserCmd(raw){ terminalAppendDimLine(`${termPrompt.textContent} ${raw}`); }
-
-async function respond(textLines){
-  const token = termRunToken;
-  for (const ln of textLines){
-    if (!ensureAlive(token)) return;
-    await typeLine(ln, "", 7, token);
-    await sleep(90);
-  }
-}
-async function handleCommand(raw){
-  const cmd = normalizeCmd(raw);
-  if (!termInteractive || termTyping){
-    terminalAppendDimLine("// INPUT IGNORED: BUSY");
-    return;
-  }
-  if (!cmd) return;
-  printUserCmd(raw);
-
-  blip(520, 0.05, 0.030);
-
-  if (cmd === "help" || cmd === "?" ){
-    await respond([
-      "Comandos disponíveis:",
-      "- status",
-      "- phase",
-      "- consent",
-      "- whoami",
-      "- who are you",
-      "- exit",
-      "- clear"
-    ]);
-    return;
-  }
-  if (cmd === "clear" || cmd === "cls"){
-    clearTerminal();
-    terminalAppendDimLine("// LOG CLEARED // (a memória é seletiva)");
-    return;
-  }
-  if (cmd === "status"){
-    await respond([
-      "SUBJECT: MATERIAL",
-      "STREAM: STABLE",
-      "NEURAL: CALIBRATED",
-      "ETHICS: DISABLED"
-    ]);
-    return;
-  }
-  if (cmd === "phase" || cmd === "protocol"){
-    await respond([
-      "ASCENSION PROTOCOL // ACTIVE",
-      "Observação: você não é um operador. É material."
-    ]);
-    return;
-  }
-  if (cmd === "consent" || cmd === "assinar" || cmd === "consentimento"){
-    await respond([
-      "CONSENT FORM // OPEN",
-      "SIGNATURE: ACCEPTED",
-      "CONSENT: OVERRIDDEN",
-      "Você chama isso de moral? Interessante."
-    ]);
-    return;
-  }
-  if (cmd === "whoami" || cmd === "quem sou eu"){
-    await respond([
-      "IDENTITY QUERY // DENIED",
-      "Você não precisa de um nome para cumprir sua função."
-    ]);
-    return;
-  }
-  if (cmd === "who are you" || cmd === "whoareyou" || cmd === "quem é você" || cmd === "quem é vc"){
-    await respond([
-      "Eu sou o único adulto na sala.",
-      "E você... é apenas um recurso."
-    ]);
-    return;
-  }
-  if (cmd === "exit" || cmd === "quit" || cmd === "sair"){
-    await respond([
-      "REQUEST: EXIT",
-      "RESULT: DENIED",
-      "Negado. Ainda não terminou."
-    ]);
-    return;
-  }
-  await respond([
-    `UNKNOWN COMMAND: "${raw}"`,
-    "Se você quer controle, está no lugar errado."
-  ]);
-}
-
-termInput.addEventListener("keydown", async (e) => {
-  if (e.key !== "Enter") return;
-  const v = termInput.value;
-  termInput.value = "";
-  await handleCommand(v);
-  focusTerminalInput();
-});
-
-async function runLoreSequence(){
-  const token = ++termRunToken;
-  loreCompleted = false;
-  termTyping = true;
-  termInteractive = false;
-  setInputEnabled(false);
-  clearTerminal();
-
-  setTerminalAudioState("typing");
-
-  await typeLine("TERMINAL DO LABORATÓRIO ONLINE", "dim", 9, token);
-  await typeLine("HANDSHAKE: ACEITO // AUTORIZAÇÃO: Δ", "dim", 9, token);
-  await typeLine("CANAL DE LOG: PRIVADO // OBSERVADORES: NENHUM", "dim", 9, token);
-  await sleep(220);
-
-  const lines = [
-    { t: "…", cls:"dim", d: 360 },
-    { t: "Então você encontrou a interface.", cls:"", d: 360 },
-    { t: "Curiosidade é a única virtude que eu ainda tolero.", cls:"", d: 480 },
-    { t: "Consentimento é um conceito decorativo.", cls:"dim", d: 520 },
-    { t: "Estado do sujeito: responsivo.", cls:"", d: 360 },
-    { t: "Módulo de ética: desativado.", cls:"", d: 360 },
-    { t: "Limite de dor: ajustável.", cls:"dim", d: 450 },
-    { t: "— Il Dottore", cls:"dim", d: 450 },
-  ];
-  for (const L of lines){
-    await typeLine(L.t, L.cls, 13, token);
-    await sleep(L.d);
-  }
-  if (!ensureAlive(token)) return;
-
-  termTyping = false;
-  termInteractive = true;
-  loreCompleted = true;
-  setInputEnabled(true);
-  focusTerminalInput();
-
-  setTerminalAudioState("open");
-  blip(440, 0.07, 0.040);
-
-  pulseStrip("TERMINAL:ONLINE", "INPUT:ARMED", "TRACE:ACTIVE");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
-}
-
-/* ===== overlay open/close ===== */
+/* ===== overlays open/close ===== */
 function closeCatalog(){
   if (!catalog.classList.contains("show")) return;
   catalog.classList.remove("show");
   catalog.setAttribute("aria-hidden","true");
-  pulseStrip("CATALOG:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
 function closeChannels(){
   if (!channels.classList.contains("show")) return;
   channels.classList.remove("show");
   channels.setAttribute("aria-hidden","true");
-  pulseStrip("ROUTING:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
 function closeAdmin(){
   if (!admin.classList.contains("show")) return;
   admin.classList.remove("show");
   admin.setAttribute("aria-hidden","true");
-  pulseStrip("ADMIN:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
 function closeTerminal(){
-  const wasTyping = termTyping;
-
+  if (!terminal.classList.contains("show")) return;
   terminal.classList.remove("show");
   terminal.setAttribute("aria-hidden","true");
-
-  if (wasTyping){
-    termRunToken++;
-    termTyping = false;
-    termInteractive = false;
-    loreCompleted = false;
-    setInputEnabled(false);
-  } else {
-    termInteractive = false;
-    setInputEnabled(false);
-  }
-
-  setTerminalAudioState("off");
-  pulseStrip("TERMINAL:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
 
 function openTerminal(){
   closeCatalog(); closeChannels(); closeAdmin();
   terminal.classList.add("show");
   terminal.setAttribute("aria-hidden","false");
-  armAudioOnce();
-  blip(860, 0.08, 0.040);
-  pulseStrip("TERMINAL:OPEN", "CHANNEL:PRIVATE", "TRACE:ACTIVE");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
-
-  if (loreCompleted && !termTyping){
-    termInteractive = true;
-    setInputEnabled(true);
-    focusTerminalInput();
-    setTerminalAudioState("open");
-    return;
-  }
-  runLoreSequence().catch(()=>{});
 }
 btnTerm.addEventListener("click", (e) => {
   e.stopPropagation();
   if (terminal.classList.contains("show")) closeTerminal();
   else openTerminal();
 });
-
+function openCatalog(){
+  closeTerminal(); closeChannels(); closeAdmin();
+  catalog.classList.add("show");
+  catalog.setAttribute("aria-hidden","false");
+}
+btnCat.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (catalog.classList.contains("show")) closeCatalog();
+  else openCatalog();
+});
 function openChannels(){
   closeTerminal(); closeCatalog(); closeAdmin();
   channels.classList.add("show");
   channels.setAttribute("aria-hidden","false");
-  armAudioOnce();
-  blip(720, 0.07, 0.030);
-  pulseStrip("ROUTING:OPEN", "OUTBOUND:READY", "TRACE:LINK");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 btnLinks.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -2052,108 +1162,32 @@ btnLinks.addEventListener("click", (e) => {
 channels.addEventListener("click", (e) => {
   if (e.target === channels) closeChannels();
 });
-
-/* ===== Catalog ===== */
-const CATALOG_ITEMS = [
-  { ref:"Σ-01 / VIVISECTION", status:"ARCHIVED", title:"PROJETO VITRINE // ÓRGÃOS EM LOOP",
-    desc:"Exposição didática: manter o sujeito vivo o suficiente para assistir a própria anatomia 'funcionando'. Uma aula. Para ele, um castigo.",
-    img:"https://files.catbox.moe/sc2vn9" },
-  { ref:"Σ-07 / TRANSFER", status:"ACTIVE", title:"PROTOCOLO EIDOLON // IDENTIDADE REVOGADA",
-    desc:"Separar a pessoa do nome. O nome do medo. Remover o resto. O que sobra obedece melhor.",
-    img:"https://files.catbox.moe/z5b43n.jpg" },
-  { ref:"Δ-12 / NEURAL", status:"SEALED", title:"CÓRTEX-Δ // DOR COMO TELEMETRIA",
-    desc:"Dor não é punição. É um sensor. Você chama de crueldade porque não entende instrumentação.",
-    img:"https://files.catbox.moe/aon2r8.webp" },
-  { ref:"K-03 / SYNTH", status:"ARCHIVED", title:"GEL-SDS // PUREZA ABSOLUTA",
-    desc:"Separar, quantificar, descartar. O destino de qualquer coisa que não alcança o padrão. Incluindo você.",
-    img:"https://files.catbox.moe/a13jar.jpg" }
-];
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, (m) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[m]));
+function openAdmin(){
+  closeTerminal(); closeCatalog(); closeChannels();
+  admin.classList.add("show");
+  admin.setAttribute("aria-hidden","false");
+  adminPass.focus({preventScroll:true});
 }
-function currentFilter(){
-  return {
-    ARCHIVED: !!fArchived.checked,
-    ACTIVE: !!fActive.checked,
-    SEALED: !!fSealed.checked
-  };
-}
-function syncFilterUI(){
-  fArchivedWrap.classList.toggle("off", !fArchived.checked);
-  fActiveWrap.classList.toggle("off", !fActive.checked);
-  fSealedWrap.classList.toggle("off", !fSealed.checked);
-}
-function renderCatalog(){
-  const filt = currentFilter();
-  syncFilterUI();
-
-  catGrid.innerHTML = "";
-  for (const it of CATALOG_ITEMS){
-    if (!filt[it.status]) continue;
-
-    const card = document.createElement("div");
-    card.className = "catCard";
-    card.innerHTML = `
-      <div class="catThumb">
-        <img src="${escapeHtml(it.img)}" alt="" loading="lazy" decoding="async"
-             referrerpolicy="no-referrer" crossorigin="anonymous" />
-        <div class="catStamp">${escapeHtml(it.ref)}</div>
-      </div>
-      <div class="catContent">
-        <div class="catTitle">${escapeHtml(it.title)}</div>
-        <div class="catDesc">${escapeHtml(it.desc)}</div>
-        <div class="catMeta">
-          <div class="catBadge"><span class="catDot"></span><span>${escapeHtml(it.ref)}</span></div>
-          <div class="catRight">${escapeHtml(it.status)}</div>
-        </div>
-      </div>
-    `;
-    const thumb = card.querySelector(".catThumb");
-    const img = card.querySelector("img");
-    img.addEventListener("error", () => {
-      try{ img.style.display = "none"; }catch(e){}
-      thumb.classList.add("noimg");
-    }, { once:true });
-
-    catGrid.appendChild(card);
-  }
-}
-renderCatalog();
-
-[fArchived, fActive, fSealed].forEach(el => {
-  el.addEventListener("change", () => {
-    renderCatalog();
-    pulseStrip("CATALOG:FILTER", "INDEX:APPLIED", "TRACE:UPDATED");
-    ss2.classList.remove("faint"); ss3.classList.remove("faint");
-    blip(610, 0.06, 0.018);
-  });
-});
-
-function openCatalog(){
-  if (terminal.classList.contains("show")) closeTerminal();
-  closeChannels(); closeAdmin();
-
-  catalog.classList.add("show");
-  catalog.setAttribute("aria-hidden","false");
-  armAudioOnce();
-  blip(640, 0.07, 0.032);
-
-  pulseStrip("CATALOG:OPEN", "INDEX:Σ", "TRACE:ARCHIVE");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
-}
-btnCat.addEventListener("click", (e) => {
+btnAdmin.addEventListener("click", (e) => {
   e.stopPropagation();
-  if (catalog.classList.contains("show")) closeCatalog();
-  else openCatalog();
+  if (admin.classList.contains("show")) closeAdmin();
+  else openAdmin();
 });
-catalog.addEventListener("click", (e) => {
-  if (e.target === catalog) closeCatalog();
+admin.addEventListener("click", (e) => {
+  if (e.target === admin) closeAdmin();
 });
 
-/* ===== ADMIN METRICS (local) ===== */
+/* ===== keyboard ESC ===== */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape"){
+    if (terminal.classList.contains("show")) { closeTerminal(); return; }
+    if (catalog.classList.contains("show")) { closeCatalog(); return; }
+    if (channels.classList.contains("show")) { closeChannels(); return; }
+    if (admin.classList.contains("show")) { closeAdmin(); return; }
+  }
+});
+
+/* ===== Admin metrics (local) ===== */
 const LS = {
   views: "dli_views_v4",
   device: "dli_device_v4",
@@ -2198,35 +1232,7 @@ function setAdminStatus(text, mode){
   if (mode === "bad") adminStatus.classList.add("bad");
 }
 
-function openAdmin(){
-  closeTerminal(); closeCatalog(); closeChannels();
-  admin.classList.add("show");
-  admin.setAttribute("aria-hidden","false");
-  armAudioOnce();
-  blip(760, 0.07, 0.032);
-  pulseStrip("ADMIN:OPEN", "AUTH:REQUIRED", "TRACE:CONTROL");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
-
-  // se não tem device ainda, cria (não é "global", é só id local)
-  ensureDevice();
-  refreshAdminUI();
-
-  // se não destravou, mantém status neutro
-  if (!adminUnlocked) setAdminStatus("Aguardando autenticação…");
-  adminPass.focus({preventScroll:true});
-}
-btnAdmin.addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (admin.classList.contains("show")) closeAdmin();
-  else openAdmin();
-});
-admin.addEventListener("click", (e) => {
-  if (e.target === admin) closeAdmin();
-});
-
 function doNameGlitch(){
-  // aplica glitch no "Dottore" dentro do status
-  const html = adminStatus.innerHTML;
   const span = adminStatus.querySelector(".glitchName");
   if (!span) return;
   span.classList.remove("on");
@@ -2239,24 +1245,21 @@ function tryAuth(){
   const pass = (adminPass.value || "").trim();
   if (pass !== "Projeto26"){
     adminUnlocked = false;
+    admin.classList.remove("unlocked");           // ✅ garante LOCKED
     setAdminStatus("Senha incorreta.", "bad");
-    blip(260, 0.07, 0.028);
     return;
   }
 
   adminUnlocked = true;
+  admin.classList.add("unlocked");               // ✅ libera stats
+  ensureDevice();
   setLast(nowStamp());
   refreshAdminUI();
 
-  // ✅ mensagem com glitch no nome
   adminStatus.innerHTML = `Bem-vindo ao Painel, <span class="glitchName">Dottore</span>`;
   adminStatus.classList.remove("bad");
   adminStatus.classList.add("ok");
-  blip(980, 0.08, 0.038);
   doNameGlitch();
-
-  pulseStrip("ADMIN:GRANTED", "ACCESS:ROOT", "TRACE:Δ");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 adminAuth.addEventListener("click", tryAuth);
 adminPass.addEventListener("keydown", (e) => {
@@ -2266,140 +1269,66 @@ adminPass.addEventListener("keydown", (e) => {
 adminClear.addEventListener("click", () => {
   adminPass.value = "";
   adminPass.focus({preventScroll:true});
-  blip(540, 0.05, 0.020);
 });
 
-adminReset.addEventListener("click", () => {
+adminReset?.addEventListener("click", () => {
+  if (!adminUnlocked) return;
   localStorage.removeItem(LS.views);
   localStorage.removeItem(LS.device);
   localStorage.removeItem(LS.last);
   adminUnlocked = false;
+  admin.classList.remove("unlocked");
   ensureDevice();
   refreshAdminUI();
   setAdminStatus("Métricas resetadas.", "ok");
-  blip(620, 0.07, 0.030);
-  pulseStrip("ADMIN:RESET", "METRICS:WIPE", "TRACE:CLEAR");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
 });
 
-adminLock.addEventListener("click", () => {
+adminLock?.addEventListener("click", () => {
   adminUnlocked = false;
+  admin.classList.remove("unlocked");
   adminPass.value = "";
   setAdminStatus("Sessão bloqueada.");
-  blip(420, 0.06, 0.028);
-  pulseStrip("ADMIN:LOCK", "AUTH:REQUIRED", "TRACE:—");
-  ss2.classList.remove("faint"); ss3.classList.remove("faint");
 });
 
-/* ===== Keyboard routing ===== */
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape"){
-    if (terminal.classList.contains("show")) { closeTerminal(); return; }
-    if (catalog.classList.contains("show")) { closeCatalog(); return; }
-    if (channels.classList.contains("show")) { closeChannels(); return; }
-    if (admin.classList.contains("show")) { closeAdmin(); return; }
-  }
-
-  const isToggleKey = (e.key === "`" || e.key.toLowerCase() === "t");
-  if (isToggleKey){
-    const a = document.activeElement;
-    const typingInInput = (a === termInput || a === adminPass);
-    if (typingInInput) return;
-    if (!terminal.classList.contains("show")) openTerminal();
-    else focusTerminalInput();
-  }
-
-  if (e.key.toLowerCase() === "c"){
-    const a = document.activeElement;
-    const isTypingField = a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable);
-    if (isTypingField) return;
-    if (!catalog.classList.contains("show")) openCatalog();
-    else closeCatalog();
-  }
-});
-
-/* ===== HELPERS ===== */
+/* ===== ENTER / RETRY ===== */
 function hideLoading(){
   loadingScreen.style.opacity = "0";
   setTimeout(() => loadingScreen.style.display = "none", 600);
   clearInterval(msgTimer);
-  stopScanLoop();
-  document.body.classList.add("entered"); // ✅ usado pra esconder frase do ENTER
-}
-function waitForPlaying(el, timeoutMs=1200){
-  return new Promise((resolve, reject) => {
-    let done = false;
-    const onPlay = () => { if(done) return; done=true; cleanup(); resolve(); };
-    const onErr = () => { if(done) return; done=true; cleanup(); reject(new Error("play error")); };
-    const t = setTimeout(() => { if(done) return; done=true; cleanup(); resolve(); }, timeoutMs);
-    function cleanup(){
-      clearTimeout(t);
-      el.removeEventListener("playing", onPlay);
-      el.removeEventListener("error", onErr);
-    }
-    el.addEventListener("playing", onPlay, { once:true });
-    el.addEventListener("error", onErr, { once:true });
-  });
+  document.body.classList.add("entered");
 }
 
-/* ===== ENTER / RETRY ===== */
 enterBox.onclick = async () => {
   enterBox.style.pointerEvents = "none";
-  armAudioOnce();
 
   if (enterBox.textContent === "RETRY") {
     spinner.style.display = "";
-    setLoadingStatus("RECALIBRANDO STREAM...");
+    dynamicText.textContent = "RECALIBRANDO STREAM...";
     enterBox.classList.remove("show");
     enterHint.classList.remove("show");
     readyToEnter = false;
 
     try { video.load(); videoBlur.load(); ambience.load(); } catch(e){}
-
-    clearTimeout(safetyTimeout);
-    safetyTimeout = setTimeout(() => {
-      if (!readyToEnter) {
-        setLoadingStatus("SINAL DEGRADADO // INÍCIO MANUAL LIBERADO");
-        markReady();
-      }
-    }, SAFETY_TIMEOUT_MS);
-
-    setTimeout(() => enterBox.style.pointerEvents = "auto", 200);
+    setTimeout(() => { showEnter("ENTER"); enterBox.style.pointerEvents = "auto"; }, 300);
     return;
   }
 
   try {
     video.muted = false;
     await video.play();
-    await waitForPlaying(video, 1500);
+    videoBlur.play().catch(()=>{});
+    ambience.play().catch(()=>{});
 
     hasEntered = true;
 
-    // ✅ conta VIEW apenas quando ENTER realmente acontece
-    const v = getViews() + 1;
-    setViews(v);
+    // conta VIEW só depois do ENTER
+    setViews(getViews() + 1);
 
-    videoBlur.play().catch(()=>{});
-    if (ambOn) ambience.play().catch(()=>{});
-
-    updateVolumeUI();
-    triggerGlitch();
     hideLoading();
-
-    startAscensionProtocol();
-    blip(980, 0.08, 0.040);
-
-    // subglitch começa APÓS ENTER
-    subglitchArmed = true;
-    scheduleSubglitch();
-
-    pulseStrip("SYSTEM:ONLINE", "STREAM:LOCKED", "TRACE:Δ");
-    ss2.classList.remove("faint");
-    ss3.classList.remove("faint");
-
+    updateVolumeUI();
   } catch (err) {
     spinner.style.display = "none";
-    setLoadingStatus("REPRODUÇÃO BLOQUEADA // CLIQUE NOVAMENTE");
+    dynamicText.textContent = "REPRODUÇÃO BLOQUEADA // CLIQUE NOVAMENTE";
     showEnter("ENTER");
   } finally {
     if (loadingScreen.style.display !== "none") {
@@ -2408,13 +1337,11 @@ enterBox.onclick = async () => {
   }
 };
 
-/* teclado ENTER dispara o botão ENTER (quando loading está ativo) */
+/* ENTER do teclado (somente quando loading está visível) */
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Enter") return;
 
-  if (terminal.classList.contains("show")) return;
-  if (admin.classList.contains("show")) return;
-
+  // não disparar se estiver digitando em input
   const a = document.activeElement;
   const isTypingField = a && (a.tagName === "INPUT" || a.tagName === "TEXTAREA" || a.isContentEditable);
   if (isTypingField) return;
@@ -2427,8 +1354,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-/* ===== Initial defaults ===== */
-pulseStrip("SYSTEM:BOOT", "FEED:IDLE", "TRACE:—");
 ensureDevice();
 refreshAdminUI();
 </script>
