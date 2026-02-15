@@ -451,172 +451,116 @@ body.entered #enterFooterLeft{ display:none; }
   .linkPill{padding:0 10px;}
 }
 
-/* ===== V5: ROUTES NODE (icons abaixo do botão LINKS) ===== */
-/* ===== V5: ROUTES NODE (VERTICAL MENU abaixo do botão LINKS) ===== */
+/* ===== V5: ROUTES NODE (VERTICAL DOCK) ===== */
 #routesNode{
   position:fixed;
   top:56px;
   right:18px;
   z-index:26;
   display:none;
-  transform-origin: top right;
 }
 #routesNode.show{display:block;}
 
-/* animação do painel */
-#routesNode .routesBox{
-  opacity:0;
-  transform: translateY(-10px) scale(.98);
-  transition: .18s ease;
-}
-#routesNode.show .routesBox{
-  opacity:1;
-  transform: translateY(0) scale(1);
-}
-
 .routesBox{
-  width:260px;
-  border-radius:16px;
-  border:1px solid rgba(170,240,255,.24);
+  width:74px;                 /* dock estreito */
+  padding:10px 8px;
+  border-radius:18px;
+  border:1px solid rgba(170,240,255,.22);
   background:
-    radial-gradient(circle at 20% 10%, rgba(170,240,255,.10), transparent 55%),
-    linear-gradient(180deg, rgba(10,20,35,.55), rgba(0,0,0,.35));
+    radial-gradient(circle at 30% 15%, rgba(170,240,255,.12), transparent 55%),
+    linear-gradient(180deg, rgba(10,20,35,.45), rgba(0,0,0,.28));
   backdrop-filter: blur(22px);
   box-shadow:0 18px 60px rgba(0,0,0,.45);
-  overflow:hidden;
-}
-
-.routesHeader{
-  display:flex;
-  justify-content:space-between;
-  padding:10px 12px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.85;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.routesHeader .dim{opacity:.55}
-
-/* agora é uma coluna */
-.routesRow{
   display:flex;
   flex-direction:column;
   gap:10px;
-  padding:12px;
 }
 
-/* botão vira “linha” */
+/* botão ícone */
 .routeBtn{
-  width:100%;
-  height:48px;
-  border-radius:14px;
-  border:1px solid rgba(170,240,255,.22);
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  border:1px solid rgba(170,240,255,.18);
   background:
-    radial-gradient(circle at 18% 50%, rgba(170,240,255,.12), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.32));
+    radial-gradient(circle at 30% 30%, rgba(170,240,255,.10), transparent 60%),
+    linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.28));
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:0 12px;
-  cursor:pointer;
-  position:relative;
-
-  opacity:0;
-  transform: translateY(-8px);
-}
-
-/* stagger anim */
-#routesNode.show .routeBtn{ animation:routeIn .22s ease forwards; }
-#routesNode.show .routeBtn:nth-child(1){animation-delay:.03s}
-#routesNode.show .routeBtn:nth-child(2){animation-delay:.07s}
-#routesNode.show .routeBtn:nth-child(3){animation-delay:.11s}
-#routesNode.show .routeBtn:nth-child(4){animation-delay:.15s}
-
-@keyframes routeIn{ to{opacity:1; transform:none;} }
-
-/* “capsula” do ícone */
-.routeIcon{
-  width:36px;
-  height:36px;
-  border-radius:12px;
-  border:1px solid rgba(170,240,255,.20);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(170,240,255,.12), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.28));
   display:grid;
   place-items:center;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  flex:0 0 auto;
-}
-.routeBtn svg{
-  width:18px;height:18px;
-  opacity:.92;
-  filter:drop-shadow(0 0 10px rgba(170,240,255,.18));
+  cursor:pointer;
+  position:relative;
+  overflow:visible;
+
+  opacity:0;
+  transform:translateY(-8px);
 }
 
-/* texto “aparece” bonito (sem poluir) */
-.routeMeta{
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  overflow:hidden;
-}
-.routeTitle{
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.92;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.routeSub{
-  font-size:9px;
-  letter-spacing:2px;
-  opacity:.55;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
+/* animação ao abrir */
+#routesNode.show .routeBtn{ animation: dockIn .22s ease forwards; }
+#routesNode.show .routeBtn:nth-child(1){animation-delay:.02s}
+#routesNode.show .routeBtn:nth-child(2){animation-delay:.06s}
+#routesNode.show .routeBtn:nth-child(3){animation-delay:.10s}
+#routesNode.show .routeBtn:nth-child(4){animation-delay:.14s}
+@keyframes dockIn{ to{opacity:1; transform:none;} }
 
-/* efeito hover */
 .routeBtn:hover{
+  border-color: rgba(170,240,255,.30);
   box-shadow:
     0 0 0 1px rgba(0,0,0,.25) inset,
     0 0 26px rgba(170,240,255,.12);
   transform: translateY(-1px);
 }
-.routeBtn:active{ transform: translateY(1px); }
 
-/* mini “tooltip” extra (opcional) */
-.routeBtn[data-tip]::after{
-  content: attr(data-tip);
+.routeIcon svg{
+  width:18px;
+  height:18px;
+  opacity:.92;
+  filter:drop-shadow(0 0 10px rgba(170,240,255,.18));
+}
+
+/* tooltip label (aparece à esquerda com animação) */
+.routeTip{
   position:absolute;
-  right:12px;
+  right: calc(100% + 10px);
   top:50%;
-  transform:translateY(-50%) translateX(6px);
+  transform:translateY(-50%) translateX(10px);
   opacity:0;
   pointer-events:none;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(170,240,255,.18);
-  background:rgba(0,0,0,.32);
-  backdrop-filter: blur(14px);
-  font-size:9px;
-  letter-spacing:2px;
-  color:rgba(225,250,255,.92);
-  transition:.16s ease;
+  transition:.18s ease;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(170,240,255,.22);
+  background:rgba(0,0,0,.38);
+  backdrop-filter: blur(16px);
+  box-shadow:0 14px 40px rgba(0,0,0,.40);
+  white-space:nowrap;
+  min-width: 190px;
 }
-.routeBtn:hover::after{
+
+.routeTip .t{
+  display:block;
+  font-size:9px;
+  letter-spacing:4px;
+  opacity:.92;
+}
+.routeTip .s{
+  display:block;
+  margin-top:3px;
+  font-size:8px;
+  letter-spacing:2px;
+  opacity:.55;
+}
+
+.routeBtn:hover .routeTip{
   opacity:1;
   transform:translateY(-50%) translateX(0);
 }
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
-  #routesNode .routesBox{transition:none;}
   #routesNode.show .routeBtn{animation:none; opacity:1; transform:none;}
+  .routeTip{transition:none;}
 }
 
 
@@ -1429,73 +1373,67 @@ body.entered #enterFooterLeft{ display:none; }
   </button>
 </div>
 
-<!-- V5: ROUTES NODE (icons row) -->
-<!-- V5: ROUTES NODE (vertical menu) -->
+
+<!-- V5: ROUTES NODE (vertical dock) -->
 <div id="routesNode" aria-hidden="true">
-  <div class="routesBox">
-    <div class="routesHeader">
-      <div>OUTBOUND NODE // ROUTES</div>
-      <div class="dim">ESC</div>
-    </div>
+  <div class="routesBox" role="navigation" aria-label="Rotas externas">
+    <button class="routeBtn" id="rSocial" type="button" aria-label="Redes sociais" data-title="REDES SOCIAIS" data-sub="Discord / Instagram">
+      <span class="routeIcon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M8 12a4 4 0 1 1 4 4" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M16 12a4 4 0 1 0-4-4" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="routeTip" aria-hidden="true">
+        <span class="t">REDES SOCIAIS</span>
+        <span class="s">Discord / Instagram</span>
+      </span>
+    </button>
 
-    <div class="routesRow" role="navigation" aria-label="Rotas externas">
-      <button class="routeBtn" id="rSocial" type="button" aria-label="Redes sociais" data-tip="SOCIAL">
-        <div class="routeIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 12a4 4 0 1 1 4 4" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
-            <path d="M16 12a4 4 0 1 0-4-4" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="routeMeta">
-          <div class="routeTitle">REDES SOCIAIS</div>
-          <div class="routeSub">Discord / Instagram</div>
-        </div>
-      </button>
+    <button class="routeBtn" id="rGames" type="button" aria-label="Jogos" data-title="JOGOS" data-sub="Destinos e nós de jogos">
+      <span class="routeIcon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 15h10l2-6a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3l2 6Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M9.2 12h2.6M10.5 10.7v2.6" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M15.5 11.2h.01M16.8 12.8h.01" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="2.2" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="routeTip" aria-hidden="true">
+        <span class="t">JOGOS</span>
+        <span class="s">Destinos e nós de jogos</span>
+      </span>
+    </button>
 
-      <button class="routeBtn" id="rGames" type="button" aria-label="Jogos" data-tip="ROUTE">
-        <div class="routeIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M7 15h10l2-6a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3l2 6Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M9.2 12h2.6M10.5 10.7v2.6" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
-            <path d="M15.5 11.2h.01M16.8 12.8h.01" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="routeMeta">
-          <div class="routeTitle">JOGOS</div>
-          <div class="routeSub">Destinos e nós (placeholder)</div>
-        </div>
-      </button>
+    <button class="routeBtn" id="rArchive" type="button" aria-label="Archive" data-title="ARCHIVE" data-sub="Galeria pessoal / imagens">
+      <span class="routeIcon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16v4H4V7Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M6 11v9h12v-9" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linejoin="round"/>
+          <path d="M10 15h4" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="routeTip" aria-hidden="true">
+        <span class="t">ARCHIVE</span>
+        <span class="s">Galeria pessoal / imagens</span>
+      </span>
+    </button>
 
-      <button class="routeBtn" id="rArchive" type="button" aria-label="Archive" data-tip="LOCAL">
-        <div class="routeIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M4 7h16v4H4V7Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M6 11v9h12v-9" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linejoin="round"/>
-            <path d="M10 15h4" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="routeMeta">
-          <div class="routeTitle">ARCHIVE</div>
-          <div class="routeSub">Galeria pessoal / prints</div>
-        </div>
-      </button>
-
-      <button class="routeBtn" id="rTx" type="button" aria-label="Transmission" data-tip="AUDIO">
-        <div class="routeIcon" aria-hidden="true">
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 4v16" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
-            <path d="M8 8a6 6 0 0 0 0 8" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
-            <path d="M16 8a6 6 0 0 1 0 8" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="routeMeta">
-          <div class="routeTitle">TRANSMISSION</div>
-          <div class="routeSub">Presença sonora / playlist</div>
-        </div>
-      </button>
-    </div>
+    <button class="routeBtn" id="rTx" type="button" aria-label="Transmission" data-title="TRANSMISSION" data-sub="Presença sonora / playlist">
+      <span class="routeIcon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 4v16" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M8 8a6 6 0 0 0 0 8" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M16 8a6 6 0 0 1 0 8" fill="none" stroke="rgba(120,220,255,.72)" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span class="routeTip" aria-hidden="true">
+        <span class="t">TRANSMISSION</span>
+        <span class="s">Presença sonora / playlist</span>
+      </span>
+    </button>
   </div>
 </div>
+
 
 
 <div id="volumeHUD" class="vol" aria-label="Controle de volume" style="--bars-w:50%; --bars-a:.55;">
