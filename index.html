@@ -298,6 +298,12 @@ body.entered #enterFooterLeft{ display:none; }
 #techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
 #techHUD .sep{opacity:.25}
 
+/* ✅ HUDs só no ENTER */
+body:not(.enter-mode) #coordsHUD,
+body:not(.enter-mode) #techHUD{
+  display:none;
+}
+
 /* ===== Status Strip (thin left micro logs) ===== */
 #statusStrip{
   position:fixed;
@@ -415,10 +421,12 @@ body.entered #enterFooterLeft{ display:none; }
 }
 #socialControl:hover{opacity:1}
 
+/* ✅ LINKS com mesmo “tamanho visual” dos ícones do dock */
 .linkPill{
-  height:28px;
-  padding:0 10px;
-  border-radius:999px;
+  width:50px;
+  height:50px;
+  padding:0;
+  border-radius:16px;
   border:1px solid rgba(170,240,255,.45);
   background:
     radial-gradient(circle at 30% 30%, rgba(170,240,255,.12), transparent 58%),
@@ -426,8 +434,10 @@ body.entered #enterFooterLeft{ display:none; }
   backdrop-filter: blur(18px);
   cursor:pointer;
   display:flex;
+  flex-direction:column;
   align-items:center;
-  gap:7px;
+  justify-content:center;
+  gap:3px;
   color:rgba(235,252,255,.96);
   letter-spacing:3px;
   font-size:8px;
@@ -442,6 +452,11 @@ body.entered #enterFooterLeft{ display:none; }
   opacity:.95;
   filter:drop-shadow(0 0 10px rgba(170,240,255,.18));
 }
+.linkPill span{
+  line-height:1;
+  transform: translateY(1px);
+  opacity:.92;
+}
 .linkPill:hover{
   box-shadow:
     0 0 0 1px rgba(255,255,255,.06) inset,
@@ -453,14 +468,13 @@ body.entered #enterFooterLeft{ display:none; }
 
 @media (max-width: 520px){
   .linkPill span{display:none;}
-  .linkPill{padding:0 9px;}
+  .linkPill{gap:0;}
 }
-
 
 /* ===== V5: ROUTES NODE (VERTICAL DOCK) ===== */
 #routesNode{
   position:fixed;
-  top:52px;         /* mais colado ao botão LINKS */
+  top:68px;         /* um pouco abaixo do botão */
   right:18px;
   z-index:26;
   display:none;
@@ -468,7 +482,7 @@ body.entered #enterFooterLeft{ display:none; }
 #routesNode.show{display:block;}
 
 .routesBox{
-  width:64px;        /* menor */
+  width:64px;
   padding:8px 7px;
   border-radius:16px;
   border:1px solid rgba(170,240,255,.20);
@@ -551,7 +565,7 @@ body.entered #enterFooterLeft{ display:none; }
   display:block;
   font-size:9px;
   letter-spacing:4px;
-  color:rgba(235,252,255,.98);   /* ✅ agora aparece */
+  color:rgba(235,252,255,.98);
   text-shadow:0 0 10px rgba(0,200,255,.20);
 }
 .routeTip .s{
@@ -559,7 +573,7 @@ body.entered #enterFooterLeft{ display:none; }
   margin-top:3px;
   font-size:8px;
   letter-spacing:2px;
-  color:rgba(170,240,255,.80);   /* ✅ azul legível */
+  color:rgba(170,240,255,.80);
   opacity:1;
 }
 
@@ -568,7 +582,100 @@ body.entered #enterFooterLeft{ display:none; }
   transform:translateY(-50%) translateX(0);
 }
 
+/* ========= NODE PANEL (painel de cada opção do dock) ========= */
+#nodePanel{
+  position:fixed;
+  inset:0;
+  z-index:28; /* abaixo do terminal(30), acima de catalog(29) e channels(28) */
+  display:none;
+  background:rgba(0,0,0,.58);
+  backdrop-filter: blur(16px);
+}
+#nodePanel.show{display:block;}
 
+.nodeBox{
+  position:absolute;
+  right:24px;
+  bottom:24px;
+  width:min(980px, calc(100vw - 48px));
+  border-radius:16px;
+  border:1px solid rgba(0,200,255,.28);
+  background:linear-gradient(180deg, rgba(10,20,35,.70), rgba(0,0,0,.58));
+  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+.nodeHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:10px 12px;
+  font-size:10px;
+  letter-spacing:3px;
+  opacity:.85;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  flex-wrap:wrap;
+}
+.nodeHeader .dim{opacity:.55}
+.nodeBody{
+  padding:14px;
+  max-height:min(60vh, 560px);
+  overflow:auto;
+}
+
+.nodeHero{
+  border-radius:16px;
+  border:1px solid rgba(0,200,255,.22);
+  background:
+    radial-gradient(circle at 25% 20%, rgba(0,200,255,.10), transparent 55%),
+    linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.36));
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+  padding:14px;
+}
+.nodeKicker{ font-size:9px; letter-spacing:3px; opacity:.55; margin-bottom:8px; }
+.nodeTitle{ font-size:18px; letter-spacing:2px; opacity:.95; margin-bottom:8px; }
+.nodeDesc{ font-size:10px; letter-spacing:1px; line-height:1.6; opacity:.82; }
+
+.nodeGrid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:12px;
+}
+@media (max-width: 900px){
+  .nodeGrid{ grid-template-columns:1fr; }
+}
+.nodeCard{
+  border-radius:14px;
+  border:1px solid rgba(170,240,255,.18);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(170,240,255,.08), transparent 55%),
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.34));
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+  padding:12px;
+}
+.nodeCard .h{ font-size:10px; letter-spacing:2px; opacity:.9; margin-bottom:6px; }
+.nodeCard .p{ font-size:9px; letter-spacing:1px; line-height:1.55; opacity:.75; }
+.nodeActions{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.nodeBtn{
+  height:34px;
+  padding:0 14px;
+  border-radius:12px;
+  border:1px solid rgba(0,200,255,.42);
+  background:linear-gradient(180deg, rgba(12,24,44,.70), rgba(0,0,0,.45));
+  color:rgba(207,239,255,.95);
+  cursor:pointer;
+  letter-spacing:3px;
+  font-size:10px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+}
+.nodeBtn:hover{ box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 20px rgba(0,200,255,.10); }
+.nodeBtn:active{ transform: translateY(1px); }
 
 /* ========= VOLUME ========= */
 #volumeHUD{
@@ -1301,7 +1408,7 @@ body.entered #enterFooterLeft{ display:none; }
 </style>
 </head>
 
-<body>
+<body class="enter-mode">
 
 <video id="videoBlur" playsinline preload="auto" muted loop>
   <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
@@ -1379,7 +1486,6 @@ body.entered #enterFooterLeft{ display:none; }
   </button>
 </div>
 
-
 <!-- V5: ROUTES NODE (vertical dock) -->
 <div id="routesNode" aria-hidden="true">
   <div class="routesBox" role="navigation" aria-label="Rotas externas">
@@ -1440,7 +1546,16 @@ body.entered #enterFooterLeft{ display:none; }
   </div>
 </div>
 
-
+<!-- ✅ Painel dos nós (Games/Archive/Transmission) -->
+<div id="nodePanel" aria-hidden="true">
+  <div class="nodeBox">
+    <div class="nodeHeader">
+      <div id="nodeHeaderTitle">NODE // —</div>
+      <div class="dim">ESC para fechar</div>
+    </div>
+    <div id="nodeBody" class="nodeBody"></div>
+  </div>
+</div>
 
 <div id="volumeHUD" class="vol" aria-label="Controle de volume" style="--bars-w:50%; --bars-a:.55;">
   <button id="volIconBtn" class="vol-btn" type="button" aria-label="Abrir controle de volume">
@@ -1691,6 +1806,11 @@ const rSocial = document.getElementById("rSocial");
 const rGames = document.getElementById("rGames");
 const rArchive = document.getElementById("rArchive");
 const rTx = document.getElementById("rTx");
+
+/* Node panel */
+const nodePanel = document.getElementById("nodePanel");
+const nodeHeaderTitle = document.getElementById("nodeHeaderTitle");
+const nodeBody = document.getElementById("nodeBody");
 
 /* Catalog filter toggles */
 const fArchived = document.getElementById("fArchived");
@@ -2338,7 +2458,7 @@ async function runLoreSequence(){
 
 /* ===== Terminal open/close ===== */
 function openTerminal(){
-  closeCatalog(); closeChannels(); closeAdmin(); closeRoutes();
+  closeCatalog(); closeChannels(); closeAdmin(); closeRoutes(); closeNodePanel();
 
   terminal.classList.add("show");
   terminal.setAttribute("aria-hidden","false");
@@ -2386,7 +2506,7 @@ btnTerm.addEventListener("click", (e) => {
 
 /* ===== Routes node (V5) ===== */
 function openRoutes(){
-  closeTerminal(); closeCatalog(); closeAdmin();
+  closeTerminal(); closeCatalog(); closeAdmin(); closeNodePanel();
   routesNode.classList.add("show");
   routesNode.setAttribute("aria-hidden","false");
   armAudioOnce();
@@ -2412,9 +2532,116 @@ btnLinks.addEventListener("click", (e) => {
 routesNode.addEventListener("click", (e) => e.stopPropagation());
 document.addEventListener("click", () => closeRoutes());
 
+/* ===== Node Panel ===== */
+function openNodePanel(kind){
+  closeTerminal(); closeCatalog(); closeChannels(); closeAdmin(); closeRoutes();
+
+  const data = NODE_PANELS[kind];
+  if (!data) return;
+
+  nodeHeaderTitle.textContent = data.header;
+  nodeBody.innerHTML = `
+    <div class="nodeHero">
+      <div class="nodeKicker">${escapeHtml(data.kicker)}</div>
+      <div class="nodeTitle">${escapeHtml(data.title)}</div>
+      <div class="nodeDesc">${escapeHtml(data.desc)}</div>
+      <div class="nodeActions">
+        ${(data.actions || []).map(a => `<button class="nodeBtn" data-action="${escapeHtml(a.id)}">${escapeHtml(a.label)}</button>`).join("")}
+      </div>
+    </div>
+
+    <div class="nodeGrid">
+      ${(data.cards || []).map(c => `
+        <div class="nodeCard">
+          <div class="h">${escapeHtml(c.h)}</div>
+          <div class="p">${escapeHtml(c.p)}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+
+  nodePanel.classList.add("show");
+  nodePanel.setAttribute("aria-hidden","false");
+
+  armAudioOnce();
+  blip(680, 0.07, 0.030);
+  pulseStrip(`NODE:${kind.toUpperCase()}`, "STATUS:OPEN", "TRACE:READY");
+  ss2.classList.remove("faint"); ss3.classList.remove("faint");
+}
+function closeNodePanel(){
+  if (!nodePanel.classList.contains("show")) return;
+  nodePanel.classList.remove("show");
+  nodePanel.setAttribute("aria-hidden","true");
+  pulseStrip("NODE:CLOSED", "FEED:STANDBY", "TRACE:—");
+}
+nodePanel.addEventListener("click", (e) => {
+  if (e.target === nodePanel) closeNodePanel();
+});
+nodePanel.addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-action]");
+  if (!btn) return;
+  const action = btn.getAttribute("data-action");
+  armAudioOnce();
+  blip(610, 0.06, 0.020);
+
+  if (action === "stub"){
+    pulseStrip("ACTION:PENDING", "STATUS:STUB", "TRACE:—");
+    ss2.classList.remove("faint"); ss3.classList.remove("faint");
+    return;
+  }
+});
+
+const NODE_PANELS = {
+  games: {
+    header: "NODE // GAMES",
+    kicker: "ROUTE TABLE // G-Σ",
+    title: "MALHA DE DESTINOS",
+    desc: "Um painel para agrupar seus jogos, contas, builds e rotas. Aqui vira um “hub” com atalhos: progresso, guias, setups e links externos (quando você quiser).",
+    actions: [
+      { id:"stub", label:"ABRIR HUB (EM BREVE)" },
+      { id:"stub", label:"ADICIONAR JOGO" }
+    ],
+    cards: [
+      { h:"ROTAS RÁPIDAS", p:"Links pra páginas internas (builds, notas, checklist) sem bagunçar a UI principal." },
+      { h:"PERFIS / CONTAS", p:"Slots pra armazenar IDs, servidores e anotações (sem expor na tela principal)." },
+      { h:"CHECKLIST", p:"Uma lista simples: dailies, semanais, objetivos e status." }
+    ]
+  },
+  archive: {
+    header: "NODE // ARCHIVE",
+    kicker: "VAULT ACCESS // A-Δ",
+    title: "ARQUIVO PESSOAL",
+    desc: "Galeria/arquivo pra você guardar imagens, prints, artes e “logs”. O objetivo é virar uma vitrine organizada — sem poluir a landing.",
+    actions: [
+      { id:"stub", label:"ABRIR ARQUIVO (EM BREVE)" },
+      { id:"stub", label:"UPLOAD / SLOT" }
+    ],
+    cards: [
+      { h:"GALERIA", p:"Grid com imagens (prints, wallpapers, arte). Pode ter tags e ‘coleções’." },
+      { h:"LOGBOOK", p:"Notas curtas: contexto do print, data, motivo, referência." },
+      { h:"CURADORIA", p:"Separar ‘publicável’ vs ‘privado’ com um toggle simples." }
+    ]
+  },
+  tx: {
+    header: "NODE // TRANSMISSION",
+    kicker: "AUDIO PRESENCE // T-Σ",
+    title: "TRANSMISSÃO / PRESENÇA",
+    desc: "Camada sonora e ‘mood’. Pode virar playlist, rádio, ou um painel de trilhas com controles. Também serve pra efeitos de UI (beeps, drones).",
+    actions: [
+      { id:"stub", label:"ABRIR PLAYLIST (EM BREVE)" },
+      { id:"stub", label:"MODO AMBIENTE" }
+    ],
+    cards: [
+      { h:"PLAYLISTS", p:"Listas por humor: focus, dark, calm, loop. Sem precisar Spotify embed agora." },
+      { h:"CONTROLE FINO", p:"Volumes independentes: vídeo, ambience, sfx (terminal/click)." },
+      { h:"SINAL / RITUAL", p:"Efeitos de entrada, glitch e variações por fase do ‘protocol’." }
+    ]
+  }
+};
+
 /* ===== Channels overlay (Redes sociais) ===== */
 function openChannels(){
-  closeTerminal(); closeCatalog(); closeAdmin(); closeRoutes();
+  closeTerminal(); closeCatalog(); closeAdmin(); closeRoutes(); closeNodePanel();
   channels.classList.add("show");
   channels.setAttribute("aria-hidden","false");
   armAudioOnce();
@@ -2434,16 +2661,9 @@ channels.addEventListener("click", (e) => {
 
 /* Routes actions */
 rSocial.addEventListener("click", () => openChannels());
-[rGames, rArchive, rTx].forEach((btn, i) => {
-  btn.addEventListener("click", () => {
-    closeRoutes();
-    armAudioOnce();
-    blip(610, 0.06, 0.018);
-    const name = i === 0 ? "GAMES" : i === 1 ? "ARCHIVE" : "TRANSMISSION";
-    pulseStrip(`ROUTE:${name}`, "STATUS:PENDING", "TRACE:—");
-    ss2.classList.remove("faint"); ss3.classList.remove("faint");
-  });
-});
+rGames.addEventListener("click", () => openNodePanel("games"));
+rArchive.addEventListener("click", () => openNodePanel("archive"));
+rTx.addEventListener("click", () => openNodePanel("tx"));
 
 /* ===== Catalog ===== */
 const CATALOG_ITEMS = [
@@ -2544,7 +2764,7 @@ renderCatalog();
 
 function openCatalog(){
   if (terminal.classList.contains("show")) closeTerminal();
-  closeRoutes(); closeChannels(); closeAdmin();
+  closeRoutes(); closeChannels(); closeAdmin(); closeNodePanel();
 
   catalog.classList.add("show");
   catalog.setAttribute("aria-hidden","false");
@@ -2629,7 +2849,7 @@ function setAdminModeDash(on){
 }
 
 function openAdmin(){
-  closeTerminal(); closeCatalog(); closeChannels(); closeRoutes();
+  closeTerminal(); closeCatalog(); closeChannels(); closeRoutes(); closeNodePanel();
   admin.classList.add("show");
   admin.setAttribute("aria-hidden","false");
 
@@ -2724,6 +2944,7 @@ document.addEventListener("keydown", (e) => {
     if (catalog.classList.contains("show")) { closeCatalog(); return; }
     if (channels.classList.contains("show")) { closeChannels(); return; }
     if (admin.classList.contains("show")) { closeAdmin(); return; }
+    if (nodePanel.classList.contains("show")) { closeNodePanel(); return; }
     if (routesNode.classList.contains("show")) { closeRoutes(); return; }
   }
 
@@ -2753,6 +2974,7 @@ function hideLoading(){
   sysSubject.textContent = "ATIVO";
   stopScanLoop();
   document.body.classList.add("entered");
+  document.body.classList.remove("enter-mode"); /* ✅ some HUDs do enter */
 }
 function waitForPlaying(el, timeoutMs=1200){
   return new Promise((resolve, reject) => {
