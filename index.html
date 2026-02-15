@@ -127,8 +127,7 @@ body.subglitch .scanlines{
   filter: contrast(1.12);
 }
 body.subglitch #coordsHUD,
-body.subglitch #techHUD,
-body.subglitch #statusStrip{
+body.subglitch #techHUD{
   animation:subglitchJitter 180ms steps(2) 1;
 }
 @keyframes subglitchJitter{
@@ -273,73 +272,6 @@ body.subglitch #statusStrip{
 #techHUD .tag{opacity:.85}
 #techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
 #techHUD .sep{opacity:.25}
-
-/* ========= STATUS STRIP (micro logs, fora do centro) ========= */
-#statusStrip{
-  position:fixed;
-  left:24px;
-  top:252px; /* abaixo do volume/techHUD */
-  width:min(280px, 44vw);
-  z-index:7;
-  opacity:.42;
-  transition:.22s ease;
-  pointer-events:none;
-  user-select:none;
-  filter: drop-shadow(0 0 18px rgba(0,200,255,.16));
-}
-#statusStrip:hover{opacity:.7;}
-.statusBox{
-  border-radius:14px;
-  border:1px solid rgba(0,200,255,.22);
-  background:
-    linear-gradient(180deg, rgba(10,20,35,.62), rgba(0,0,0,.48)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px);
-  backdrop-filter: blur(18px);
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 14px 48px rgba(0,0,0,.38);
-  overflow:hidden;
-}
-.statusHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:8px 10px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.85;
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.statusHead .dim{opacity:.55}
-.statusLines{
-  padding:8px 10px 10px 10px;
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.sLine{
-  font-size:9px;
-  letter-spacing:2px;
-  line-height:1.35;
-  opacity:.9;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.sLine .k{opacity:.6}
-.sLine .v{opacity:.95;color:rgba(207,239,255,.92)}
-.sPulse{
-  height:2px;
-  width:100%;
-  background:linear-gradient(90deg, rgba(0,200,255,.0), rgba(0,200,255,.35), rgba(0,200,255,.0));
-  opacity:0;
-}
-#statusStrip.pulse .sPulse{
-  opacity:1;
-  animation:statusPulse 420ms ease 1;
-}
-@keyframes statusPulse{
-  0%{transform:translateX(-40%)}
-  100%{transform:translateX(40%)}
-}
 
 /* ===== Top controls ===== */
 #topControls{
@@ -759,7 +691,7 @@ body.subglitch #statusStrip{
   width:100%;
   height:100%;
   object-fit:cover;
-  filter: grayscale(.35) contrast(1.05) brightness(.78) saturate(1.1);
+  filter: grayscale(.25) contrast(1.05) brightness(.78) saturate(1.1);
   transform: translateZ(0);
 }
 .catThumb::after{
@@ -774,7 +706,7 @@ body.subglitch #statusStrip{
   pointer-events:none;
 }
 
-/* ✅ carimbo dentro da thumb */
+/* carimbo dentro da thumb */
 .catStamp{
   position:absolute;
   left:10px;
@@ -831,7 +763,7 @@ body.subglitch #statusStrip{
   white-space:nowrap;
 }
 
-/* ✅ fallback clínico seguro (se imagem falhar) */
+/* fallback clínico seguro (se imagem falhar) */
 .catFallback{
   position:absolute;
   inset:0;
@@ -870,7 +802,6 @@ body.subglitch #statusStrip{
 @media (max-width: 768px){
   :root{ --blur-amount: 55px; }
   #techHUD{display:none;}
-  #statusStrip{display:none;}
 }
 </style>
 </head>
@@ -920,22 +851,6 @@ body.subglitch #statusStrip{
   <div class="termLine"><span class="tag">DIRECTIVE</span> <span class="sep">//</span> <span class="value" id="sysDirective">MONITORING</span></div>
 </div>
 
-<!-- ✅ Status Strip: micro logs (não polui o centro) -->
-<div id="statusStrip" aria-hidden="true">
-  <div class="statusBox">
-    <div class="statusHead">
-      <div>STATUS STRIP // Σ</div>
-      <div class="dim" id="statusClock">--:--</div>
-    </div>
-    <div class="sPulse"></div>
-    <div class="statusLines">
-      <div class="sLine" id="sLine0"><span class="k">SYS</span> <span class="k">//</span> <span class="v">IDLE</span></div>
-      <div class="sLine" id="sLine1"><span class="k">PROTO</span> <span class="k">//</span> <span class="v">BOOT</span></div>
-      <div class="sLine" id="sLine2"><span class="k">INDEX</span> <span class="k">//</span> <span class="v">SEALED</span></div>
-    </div>
-  </div>
-</div>
-
 <div id="topControls">
   <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
   <button class="ctrlBtn" id="btnCat" title="Catálogo">≡</button>
@@ -971,7 +886,6 @@ body.subglitch #statusStrip{
     <div class="catHeader">
       <div>EXPERIMENT CATALOG // INDEX: Σ</div>
 
-      <!-- ✅ filtros secos, clínicos (sem vibe de “botão bonitinho”) -->
       <div class="catHeaderRight">
         <div class="catFilters" aria-label="Filtros do catálogo">
           <div class="label">INDEX FILTER</div>
@@ -1053,13 +967,6 @@ const termHint = document.getElementById("termHint");
 
 const catalog = document.getElementById("catalog");
 const catGrid = document.getElementById("catGrid");
-
-/* Status strip */
-const statusStrip = document.getElementById("statusStrip");
-const statusClock = document.getElementById("statusClock");
-const sLine0 = document.getElementById("sLine0");
-const sLine1 = document.getElementById("sLine1");
-const sLine2 = document.getElementById("sLine2");
 
 /* Catalog filters */
 const filterToggles = [...document.querySelectorAll(".fToggle")];
@@ -1222,47 +1129,8 @@ volIconBtn.addEventListener("click", (e) => {
 });
 document.addEventListener("click", () => volumeHUD.classList.remove("open"));
 
-/* ===== STATUS STRIP (micro logs: 2–3 linhas, sem spam) ===== */
-function pad2(n){ return String(n).padStart(2,"0"); }
-function tickStatusClock(){
-  const d = new Date();
-  statusClock.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
-}
-setInterval(tickStatusClock, 1200);
-tickStatusClock();
-
-const Status = {
-  lines: [
-    { k:"SYS", v:"IDLE" },
-    { k:"PROTO", v:"BOOT" },
-    { k:"INDEX", v:"SEALED" }
-  ],
-  lastPushAt: 0,
-  minGapMs: 750
-};
-function renderStatusLines(){
-  sLine0.innerHTML = `<span class="k">${Status.lines[0].k}</span> <span class="k">//</span> <span class="v">${escapeHtml(Status.lines[0].v)}</span>`;
-  sLine1.innerHTML = `<span class="k">${Status.lines[1].k}</span> <span class="k">//</span> <span class="v">${escapeHtml(Status.lines[1].v)}</span>`;
-  sLine2.innerHTML = `<span class="k">${Status.lines[2].k}</span> <span class="k">//</span> <span class="v">${escapeHtml(Status.lines[2].v)}</span>`;
-}
-function pulseStatus(){
-  statusStrip.classList.remove("pulse");
-  void statusStrip.offsetWidth;
-  statusStrip.classList.add("pulse");
-  setTimeout(()=>statusStrip.classList.remove("pulse"), 520);
-}
-function pushStatus(k, v){
-  const now = performance.now();
-  if (now - Status.lastPushAt < Status.minGapMs) return; // anti-spam
-  Status.lastPushAt = now;
-  Status.lines.unshift({ k, v });
-  Status.lines.length = 3;
-  renderStatusLines();
-  pulseStatus();
-}
-renderStatusLines();
-
 /* ===== TECH HUD DYNAMIC ===== */
+function pad2(n){ return String(n).padStart(2,"0"); }
 function tickTech(){
   const d = new Date();
   sysClock.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
@@ -1300,15 +1168,12 @@ function triggerGlitch(){
 }
 
 /* ===== Ambient subglitch events (60–120s, só HUD/scanlines) ===== */
-function triggerSubGlitch(reason="SUBLEVEL DESYNC"){
+function triggerSubGlitch(){
   if (!hasEntered) return;
   document.body.classList.remove("subglitch");
   void document.body.offsetWidth;
   document.body.classList.add("subglitch");
   setTimeout(()=>document.body.classList.remove("subglitch"), 210);
-
-  // micro log (não spammar)
-  pushStatus("ANOM", reason);
 }
 function armAmbientLoopOnce(){
   if (ambientLoopArmed) return;
@@ -1316,21 +1181,10 @@ function armAmbientLoopOnce(){
 
   const loop = () => {
     if (!hasEntered) { setTimeout(loop, 3000); return; }
-    // 60–120s
     const wait = 60000 + Math.floor(Math.random()*60001);
     setTimeout(() => {
       if (!hasEntered) { loop(); return; }
-      // chance moderada: 65%
-      if (Math.random() < 0.65){
-        const reasons = [
-          "SUBLEVEL DESYNC",
-          "PACKET BLEED",
-          "FRAME DRIFT",
-          "HUD PHANTOM",
-          "SIGNAL NOISE"
-        ];
-        triggerSubGlitch(reasons[Math.floor(Math.random()*reasons.length)]);
-      }
+      if (Math.random() < 0.65) triggerSubGlitch();
       loop();
     }, wait);
   };
@@ -1416,7 +1270,7 @@ function blip(freq=820, dur=0.055, gain=0.06){
   const now = AudioFX.ctx.currentTime;
   const o = AudioFX.ctx.createOscillator();
   const g = AudioFX.ctx.createGain();
-  o.type = "triangle"; // mais cirúrgico, menos arcade
+  o.type = "triangle";
   o.frequency.setValueAtTime(freq, now);
   g.gain.setValueAtTime(0.0001, now);
   g.gain.exponentialRampToValueAtTime(gain, now + 0.012);
@@ -1444,9 +1298,6 @@ function setProtocolHUD(phase){
   sysPhase.textContent = phase.name.replace("_", " ");
   sysDirective.textContent = phase.directive;
   sysSubject.textContent = phase.subject;
-
-  // micro logs: sem flood
-  pushStatus("PROTO", `${phase.name.replace("_"," ")} // ${phase.directive}`);
 }
 function clearProtocolTimers(){
   for (const t of Protocol.timers) clearTimeout(t);
@@ -1457,13 +1308,6 @@ let termTyping = false;
 let termInteractive = false;
 let loreCompleted = false; // ✅ não reseta depois dos comandos
 let busyWarned = false;   // ✅ evita spam "BUSY"
-
-/* ===== Terminal helpers ===== */
-const LORE_SPEED = { header: 9, lang: 9, main: 13, post: 9 };
-
-function clearTerminal(){ termLog.innerHTML = ""; }
-function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
-function ensureAlive(token){ return token === termRunToken && terminal.classList.contains("show"); }
 
 function terminalAppendDimLine(text){
   const div = document.createElement("div");
@@ -1498,6 +1342,13 @@ function startAscensionProtocol(){
   }
 }
 
+/* ===== Terminal helpers ===== */
+const LORE_SPEED = { header: 9, lang: 9, main: 13, post: 9 };
+
+function clearTerminal(){ termLog.innerHTML = ""; }
+function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+function ensureAlive(token){ return token === termRunToken && terminal.classList.contains("show"); }
+
 async function typeLine(text, cls="", speed=14, token=0){
   if (!ensureAlive(token)) return;
   const div = document.createElement("div");
@@ -1508,7 +1359,6 @@ async function typeLine(text, cls="", speed=14, token=0){
     if (!ensureAlive(token)) return;
     div.textContent += text[i];
 
-    // som micro “tecla” (bem leve, com throttle)
     const now = performance.now();
     if (now - AudioFX.lastTap > 30){
       AudioFX.lastTap = now;
@@ -1572,7 +1422,6 @@ async function respond(textLines){
 async function handleCommand(raw){
   const cmd = normalizeCmd(raw);
 
-  // ✅ enquanto lore escreve: 1 aviso e silêncio (sem spam)
   if (!termInteractive || termTyping){
     if (!busyWarned){
       busyWarned = true;
@@ -1584,7 +1433,6 @@ async function handleCommand(raw){
   if (!cmd) return;
   printUserCmd(raw);
 
-  // blip de “ack”
   blip(520, 0.05, 0.030);
 
   if (cmd === "help" || cmd === "?" ){
@@ -1749,8 +1597,6 @@ async function runLoreSequence(){
 
   setTerminalAudioState("open");
   blip(440, 0.07, 0.040);
-
-  pushStatus("TERM", "READY // INPUT GRANTED");
 }
 
 /* ===== Terminal open/close behavior ===== */
@@ -1762,8 +1608,6 @@ function openTerminal(){
 
   armAudioOnce();
   blip(860, 0.08, 0.040);
-
-  pushStatus("TERM", "OPEN // CHANNEL ACTIVE");
 
   if (loreCompleted && !termTyping){
     termInteractive = true;
@@ -1793,7 +1637,6 @@ function closeTerminal(){
   }
 
   setTerminalAudioState("off");
-  pushStatus("TERM", "CLOSED // CHANNEL MUTED");
 }
 
 btnTerm.addEventListener("click", (e) => {
@@ -1803,40 +1646,34 @@ btnTerm.addEventListener("click", (e) => {
 });
 
 /* ===== Catalog ===== */
-/*
-  ✅ Imagens “Genshin-coded”:
-  - Eu NÃO vou hotlinkar asset oficial do jogo aqui (copyright / instabilidade).
-  - Use paths seus (assets/...) ou links seus (catbox/github/raw/CDN).
-  - Se faltar imagem, o fallback clínico entra automaticamente.
-*/
 const CATALOG_ITEMS = [
   {
     ref: "Σ-01 / SEGMENT",
     status: "ARCHIVED",
     title: "PROJETO SEGMENTO // DUPLICAÇÃO CONTROLADA",
-    desc: "Instâncias funcionais. Personalidade dispensável. Continuidade garantida por redundância. Você chama isso de monstruoso porque pensa como indivíduo.",
-    img: "assets/experiments/dottore_segment.jpg"
+    desc: "Instâncias funcionais. Personalidade dispensável. Continuidade garantida por redundância.",
+    img: "https://files.catbox.moe/sc2vn9"
   },
   {
     ref: "Σ-07 / DELUSION",
     status: "ACTIVE",
     title: "PROTOCOLO DELUSION // POTÊNCIA SEM PERMISSÃO",
     desc: "Energia emprestada. Corpo como recipiente. O custo é inevitável — a única variável é quem escolhe pagar.",
-    img: "assets/experiments/delusion_vial.jpg"
+    img: "https://files.catbox.moe/z5b43n.jpg"
   },
   {
     ref: "Δ-12 / RUIN",
     status: "SEALED",
     title: "NÚCLEO DE RUIN // MÁQUINA COM MEMÓRIA",
     desc: "Integração de circuito antigo com tecido novo. O passado sempre volta — às vezes em forma de servo.",
-    img: "assets/experiments/ruin_core.jpg"
+    img: "https://files.catbox.moe/aon2r8.webp"
   },
   {
     ref: "K-03 / FATUI",
     status: "ARCHIVED",
     title: "INSTALAÇÃO FATUI // LABORATÓRIO DE CAMPO",
-    desc: "Ambiente esterilizado para decisões sujas. A diferença entre ciência e crueldade é apenas o vocabulário usado para justificar o resultado.",
-    img: "assets/experiments/fatui_lab.jpg"
+    desc: "Ambiente esterilizado para decisões sujas. A diferença entre ciência e crueldade é apenas o vocabulário usado.",
+    img: "https://files.catbox.moe/a13jar.jpg"
   }
 ];
 
@@ -1877,7 +1714,6 @@ function renderCatalog(){
       </div>
     `;
     catGrid.appendChild(empty);
-    pushStatus("INDEX", "FILTER EMPTY");
     return;
   }
 
@@ -1914,8 +1750,6 @@ function renderCatalog(){
 
     catGrid.appendChild(card);
   }
-
-  pushStatus("INDEX", `RENDER // ${filtered.length} ITEM(S)`);
 }
 renderCatalog();
 
@@ -1940,7 +1774,6 @@ for (const t of filterToggles){
     renderCatalog();
     armAudioOnce();
     blip(640, 0.05, 0.022);
-    pushStatus("INDEX", `FILTER ${st} // ${CatalogFilter.enabled.has(st) ? "ON" : "OFF"}`);
   });
 }
 
@@ -1951,14 +1784,11 @@ function openCatalog(){
   catalog.setAttribute("aria-hidden","false");
   armAudioOnce();
   blip(640, 0.07, 0.032);
-
-  pushStatus("INDEX", "OPEN // BROWSING");
 }
 function closeCatalog(){
   if (!catalog.classList.contains("show")) return;
   catalog.classList.remove("show");
   catalog.setAttribute("aria-hidden","true");
-  pushStatus("INDEX", "CLOSED");
 }
 btnCat.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -2005,8 +1835,6 @@ function hideLoading(){
   clearInterval(msgTimer);
   sysSubject.textContent = "ATIVO";
   stopScanLoop();
-
-  pushStatus("SYS", "ONLINE // FEED LIVE");
 }
 function waitForPlaying(el, timeoutMs=1200){
   return new Promise((resolve, reject) => {
@@ -2027,7 +1855,7 @@ function waitForPlaying(el, timeoutMs=1200){
 /* ===== ENTER / RETRY ===== */
 enterBox.onclick = async () => {
   enterBox.style.pointerEvents = "none";
-  armAudioOnce(); // ✅ garante áudio liberado no primeiro gesto
+  armAudioOnce();
 
   if (enterBox.textContent === "RETRY") {
     spinner.style.display = "";
@@ -2055,7 +1883,6 @@ enterBox.onclick = async () => {
     await video.play();
     await waitForPlaying(video, 1500);
 
-    // ✅ agora liberou geral
     hasEntered = true;
 
     videoBlur.play().catch(()=>{});
@@ -2068,8 +1895,7 @@ enterBox.onclick = async () => {
     startAscensionProtocol();
     blip(980, 0.08, 0.040);
 
-    pushStatus("ACCESS", "GRANTED // ENTER CONFIRMED");
-    armAmbientLoopOnce(); // ✅ só depois do ENTER
+    armAmbientLoopOnce();
 
   } catch (err) {
     spinner.style.display = "none";
@@ -2116,7 +1942,6 @@ setProtocolHUD(Protocol.phases[0]);
   if (low){
     root.style.setProperty("--blur-amount", "55px");
     videoBlur.style.filter = "blur(55px) brightness(.5) saturate(1.35)";
-    pushStatus("PERF", "BLUR REDUCED");
   }
 })();
 </script>
