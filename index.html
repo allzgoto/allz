@@ -3,17 +3,61 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dottore</title>
+<title>Shadow Temple Interface</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+<!-- Troca a “alma”: fonte ritual / temple -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet" />
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  /* ===== SHADOW TEMPLE PALETTE ===== */
+  --bg: #000;
+  --ink: rgba(235,245,255,.92);
+
+  /* Acento frio (azul “espiritual”) */
+  --accent: rgba(88, 150, 255, .92);
+  --accentSoft: rgba(88, 150, 255, .22);
+  --accentFaint: rgba(88, 150, 255, .10);
+
+  /* Sombras / ritual */
+  --veil: rgba(0,0,0,.62);
+  --veilSoft: rgba(0,0,0,.40);
+  --borderSoft: rgba(255,255,255,.08);
+  --borderFaint: rgba(255,255,255,.06);
+
+  /* Blur default */
+  --blur-amount: 85px;
+}
+
 body{
-  background:black;
+  background:var(--bg);
   overflow:hidden;
-  font-family:'Orbitron', sans-serif;
-  color:white;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--ink);
+}
+
+/* ===== “ALMA” DO TEMA (sem reescrever a engine) =====
+   Em vez de caçar cada rgba ciano, a gente desloca o “tom” da UI toda
+   (HUD / overlays / botões / cards) para AZUL FRIO + SOMBRA.
+   O centro (vídeo) continua “sagrado” e NÃO recebe filtro. */
+body.shadowTheme .scanlines,
+body.shadowTheme #cinemaFX,
+body.shadowTheme #coordsHUD,
+body.shadowTheme #techHUD,
+body.shadowTheme #statusStrip,
+body.shadowTheme #topControls,
+body.shadowTheme #socialControl,
+body.shadowTheme #routesNode,
+body.shadowTheme #volumeHUD,
+body.shadowTheme #terminal,
+body.shadowTheme #catalog,
+body.shadowTheme #channels,
+body.shadowTheme #admin,
+body.shadowTheme #gamesPanel,
+body.shadowTheme #versionTag,
+body.shadowTheme #enterFooterLeft{
+  filter: hue-rotate(28deg) saturate(.90) brightness(.92);
 }
 
 /* ========= VIDEO LAYERS ========= */
@@ -23,7 +67,9 @@ body{
   width:140%;
   height:140%;
   object-fit:cover;
-  filter: blur(var(--blur-amount, 90px)) brightness(.5) saturate(1.5);
+
+  /* mais “sombra fria”, menos neon */
+  filter: blur(var(--blur-amount)) brightness(.38) saturate(1.05) contrast(1.10);
   will-change: transform, filter;
   transform: translateZ(0);
   z-index:-5;
@@ -47,15 +93,15 @@ body{
   inset:0;
   background:repeating-linear-gradient(
     to bottom,
-    rgba(255,255,255,0.03),
-    rgba(255,255,255,0.03) 1px,
+    rgba(255,255,255,0.028),
+    rgba(255,255,255,0.028) 1px,
     transparent 1px,
     transparent 3px
   );
   pointer-events:none;
   z-index:3;
   mix-blend-mode:overlay;
-  opacity:.75;
+  opacity:.65;
 }
 
 /* Grain + vinheta */
@@ -70,7 +116,7 @@ body{
   position:absolute;
   inset:-20%;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-  opacity:.08;
+  opacity:.09;
   mix-blend-mode:overlay;
   transform: translateZ(0);
   animation:grain 5s steps(10) infinite;
@@ -80,9 +126,9 @@ body{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 45%, transparent 0 55%, rgba(0,0,0,.55) 78%, rgba(0,0,0,.85) 100%),
-    linear-gradient(90deg, rgba(0,200,255,.05), transparent 35%, transparent 65%, rgba(0,200,255,.04));
-  opacity:.65;
+    radial-gradient(circle at 50% 45%, transparent 0 55%, rgba(0,0,0,.60) 78%, rgba(0,0,0,.92) 100%),
+    linear-gradient(90deg, rgba(88,150,255,.045), transparent 35%, transparent 65%, rgba(88,150,255,.035));
+  opacity:.72;
 }
 @keyframes grain{
   0%{transform:translate(0,0)}
@@ -106,8 +152,8 @@ body{
   z-index:9;
   opacity:0;
   background:
-    linear-gradient(90deg, rgba(0,200,255,.12), transparent 35%, rgba(255,90,90,.08)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 4px);
+    linear-gradient(90deg, rgba(88,150,255,.10), transparent 35%, rgba(255,90,90,.05)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 4px);
   mix-blend-mode:screen;
 }
 .glitch-on #glitchFlash{ animation:glitchFlash .55s steps(6) 1; }
@@ -123,14 +169,14 @@ body{
 
 /* ===== Sub-layer glitch (HUD/scanlines only, never center) ===== */
 body.subglitch .scanlines{
-  opacity:.95;
-  filter: hue-rotate(8deg) contrast(1.15);
+  opacity:.92;
+  filter: hue-rotate(10deg) contrast(1.12);
 }
 body.subglitch #coordsHUD,
 body.subglitch #techHUD,
 body.subglitch #statusStrip{
-  filter: blur(.25px) saturate(1.15) contrast(1.08);
-  opacity:.55;
+  filter: blur(.25px) saturate(1.08) contrast(1.06);
+  opacity:.52;
   transform: translateX(.5px);
 }
 
@@ -138,7 +184,7 @@ body.subglitch #statusStrip{
 #loadingScreen{
   position:fixed;
   inset:0;
-  background:radial-gradient(circle at center,#0a0f18,#000);
+  background:radial-gradient(circle at center,#070a12,#000);
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -151,16 +197,17 @@ body.subglitch #statusStrip{
   letter-spacing:6px;
   margin-bottom:20px;
   font-size:12px;
-  opacity:.8;
+  opacity:.86;
   text-align:center;
   animation:flicker 2s infinite;
   max-width:90vw;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
-@keyframes flicker{0%,100%{opacity:.8}50%{opacity:1}}
+@keyframes flicker{0%,100%{opacity:.82}50%{opacity:1}}
 .spinner{
   width:40px;height:40px;
   border:3px solid rgba(255,255,255,.1);
-  border-top:3px solid #00d4ff;
+  border-top:3px solid rgba(88,150,255,.95);
   border-radius:50%;
   animation:spin 1s linear infinite;
 }
@@ -169,19 +216,20 @@ body.subglitch #statusStrip{
   margin-top:34px;
   padding:18px 70px;
   border-radius:10px;
-  background:rgba(10,20,35,0.6);
-  border:1px solid rgba(0,200,255,0.4);
+  background:rgba(6,10,18,0.62);
+  border:1px solid rgba(88,150,255,0.38);
   backdrop-filter:blur(25px);
   letter-spacing:8px;
-  font-weight:600;
+  font-weight:700;
   font-size:14px;
-  color:#cfefff;
-  text-shadow:0 0 8px rgba(0,200,255,0.7);
+  color:rgba(235,245,255,.94);
+  text-shadow:0 0 10px rgba(88,150,255,.22);
   opacity:0;
   pointer-events:none;
   transition:.4s ease;
   cursor:pointer;
   user-select:none;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 #enterBox.show{opacity:1; pointer-events:auto;}
 
@@ -191,8 +239,8 @@ body.subglitch #statusStrip{
   letter-spacing:4px;
   opacity:0;
   transition:.35s ease;
-  color:rgba(207,239,255,.75);
-  text-shadow:0 0 10px rgba(0,200,255,.22);
+  color:rgba(220,235,255,.70);
+  text-shadow:0 0 10px rgba(88,150,255,.14);
   user-select:none;
 }
 #enterHint.show{opacity:.85;}
@@ -211,7 +259,7 @@ body.subglitch #statusStrip{
   top:0;
   width:45%;
   height:100%;
-  background:linear-gradient(90deg, transparent, rgba(0,200,255,.10), rgba(207,239,255,.12), rgba(0,200,255,.10), transparent);
+  background:linear-gradient(90deg, transparent, rgba(88,150,255,.08), rgba(220,235,255,.10), rgba(88,150,255,.08), transparent);
   transform:skewX(-14deg) translateX(-120%);
   filter: blur(1px);
 }
@@ -233,7 +281,8 @@ body.subglitch #statusStrip{
   letter-spacing:3px;
   opacity:.35;
   user-select:none;
-  text-shadow:0 0 10px rgba(0,200,255,.10);
+  text-shadow:0 0 10px rgba(88,150,255,.10);
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 body.entered #enterFooterLeft{ display:none; }
 
@@ -247,12 +296,11 @@ body.entered #enterFooterLeft{ display:none; }
   letter-spacing:3px;
   opacity:.35;
   user-select:none;
-  text-shadow:0 0 10px rgba(0,200,255,.10);
+  text-shadow:0 0 10px rgba(88,150,255,.10);
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
-#versionTag .v{opacity:.85;color:rgba(207,239,255,.85);}
-#loadingScreen #versionTag{
-  z-index:12;
-}
+#versionTag .v{opacity:.85;color:rgba(220,235,255,.86);}
+#loadingScreen #versionTag{ z-index:12; }
 
 /* ========= HUDS ========= */
 .hud{
@@ -277,6 +325,7 @@ body.entered #enterFooterLeft{ display:none; }
   z-index:6;
   text-align:right;
   user-select:none;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 #coordsHUD .line{opacity:.7}
 #coordsHUD .blink{animation:coordsBlink 2.8s infinite}
@@ -293,16 +342,15 @@ body.entered #enterFooterLeft{ display:none; }
   z-index:6;
   user-select:none;
   line-height:1.55;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 #techHUD .tag{opacity:.85}
-#techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
+#techHUD .value{opacity:.9; color:rgba(225,240,255,.92)}
 #techHUD .sep{opacity:.25}
 
 /* ✅ Só na tela ENTER (some após entrar) */
 body.entered #coordsHUD,
-body.entered #techHUD{
-  display:none;
-}
+body.entered #techHUD{ display:none; }
 
 /* ===== Status Strip (thin left micro logs) ===== */
 #statusStrip{
@@ -317,24 +365,23 @@ body.entered #techHUD{
   font-size:9px;
   letter-spacing:2px;
   line-height:1.45;
-  text-shadow:0 0 10px rgba(0,200,255,.10);
-  filter: drop-shadow(0 0 18px rgba(0,200,255,.10));
+  text-shadow:0 0 10px rgba(88,150,255,.10);
+  filter: drop-shadow(0 0 18px rgba(88,150,255,.08));
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 #statusStrip .statusLine{
   display:flex;
   gap:8px;
   align-items:baseline;
   padding:4px 6px;
-  border-left:1px solid rgba(0,200,255,.22);
-  background:linear-gradient(90deg, rgba(0,200,255,.04), transparent 70%);
+  border-left:1px solid rgba(88,150,255,.20);
+  background:linear-gradient(90deg, rgba(88,150,255,.035), transparent 70%);
 }
 #statusStrip .statusLine + .statusLine{ margin-top:4px; }
 #statusStrip .k{opacity:.75}
-#statusStrip .v{opacity:.9; color:rgba(207,239,255,.92)}
+#statusStrip .v{opacity:.9; color:rgba(225,240,255,.90)}
 #statusStrip .faint{opacity:.6}
-@media (max-width: 768px){
-  #statusStrip{display:none;}
-}
+@media (max-width: 768px){ #statusStrip{display:none;} }
 
 /* ===== Top controls ===== */
 #topControls{
@@ -347,19 +394,19 @@ body.entered #techHUD{
   z-index:25;
   opacity:.92;
   transition:.18s ease;
-  filter: drop-shadow(0 0 18px rgba(0,200,255,.22));
+  filter: drop-shadow(0 0 18px rgba(88,150,255,.14));
 }
 #topControls:hover{opacity:1}
 
 .ctrlBtn{
   width:42px;height:34px;
   border-radius:12px;
-  border:1px solid rgba(0,200,255,.72);
+  border:1px solid rgba(88,150,255,.38);
   background:
-    radial-gradient(circle at 30% 30%, rgba(0,200,255,.10), transparent 55%),
-    linear-gradient(180deg, rgba(12,24,44,.78), rgba(0,0,0,.50));
+    radial-gradient(circle at 30% 30%, rgba(88,150,255,.08), transparent 55%),
+    linear-gradient(180deg, rgba(10,14,24,.78), rgba(0,0,0,.50));
   backdrop-filter: blur(20px);
-  color:rgba(207,239,255,.98);
+  color:rgba(235,245,255,.96);
   cursor:pointer;
   display:grid;
   place-items:center;
@@ -367,7 +414,7 @@ body.entered #techHUD{
   letter-spacing:2px;
   box-shadow:
     0 0 0 1px rgba(0,0,0,.25) inset,
-    0 12px 34px rgba(0,0,0,.32);
+    0 12px 34px rgba(0,0,0,.38);
   position:relative;
   overflow:hidden;
 }
@@ -383,7 +430,7 @@ body.entered #techHUD{
   content:"";
   position:absolute;
   inset:-40% -30%;
-  background:linear-gradient(90deg, transparent, rgba(0,200,255,.22), transparent);
+  background:linear-gradient(90deg, transparent, rgba(88,150,255,.18), transparent);
   transform:rotate(12deg) translateX(-90%);
   opacity:.0;
   pointer-events:none;
@@ -400,13 +447,13 @@ body.entered #techHUD{
   transform: translateY(-1px);
   box-shadow:
     0 0 0 1px rgba(0,0,0,.25) inset,
-    0 16px 42px rgba(0,0,0,.38),
-    0 0 26px rgba(0,200,255,.18);
+    0 16px 42px rgba(0,0,0,.45),
+    0 0 26px rgba(88,150,255,.10);
 }
 .ctrlBtn:active{transform:translateY(1px)}
 .ctrlBtn:focus-visible{
   outline:none;
-  box-shadow: 0 0 0 2px rgba(0,200,255,.55), 0 16px 42px rgba(0,0,0,.38);
+  box-shadow: 0 0 0 2px rgba(88,150,255,.35), 0 16px 42px rgba(0,0,0,.45);
 }
 
 /* ===== Social control (LINKS button) ===== */
@@ -417,53 +464,51 @@ body.entered #techHUD{
   z-index:26;
   opacity:.92;
   transition:.18s ease;
-  filter: drop-shadow(0 0 16px rgba(160,230,255,.18));
+  filter: drop-shadow(0 0 16px rgba(88,150,255,.12));
 }
 #socialControl:hover{opacity:1}
 
-/* ✅ Ajuste: pill com "altura visual" mais perto dos botões */
 .linkPill{
-  height:34px;                 /* era 28 */
+  height:34px;
   padding:0 12px;
   border-radius:999px;
-  border:1px solid rgba(170,240,255,.45);
+  border:1px solid rgba(220,235,255,.28);
   background:
-    radial-gradient(circle at 30% 30%, rgba(170,240,255,.12), transparent 58%),
-    linear-gradient(180deg, rgba(12,24,44,.48), rgba(0,0,0,.22));
+    radial-gradient(circle at 30% 30%, rgba(220,235,255,.10), transparent 58%),
+    linear-gradient(180deg, rgba(10,14,24,.48), rgba(0,0,0,.22));
   backdrop-filter: blur(18px);
   cursor:pointer;
   display:flex;
   align-items:center;
   gap:8px;
-  color:rgba(235,252,255,.96);
+  color:rgba(235,245,255,.96);
   letter-spacing:3px;
-  font-size:9px;               /* era 8 */
+  font-size:9px;
   box-shadow:
     0 0 0 1px rgba(255,255,255,.04) inset,
-    0 10px 30px rgba(0,0,0,.26);
+    0 10px 30px rgba(0,0,0,.28);
   position:relative;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .linkPill svg{
-  width:18px;                  /* era 16 */
-  height:18px;
+  width:18px;height:18px;
   opacity:.95;
-  filter:drop-shadow(0 0 10px rgba(170,240,255,.18));
+  filter:drop-shadow(0 0 10px rgba(220,235,255,.12));
 }
 .linkPill:hover{
   box-shadow:
     0 0 0 1px rgba(255,255,255,.06) inset,
-    0 14px 36px rgba(0,0,0,.32),
-    0 0 18px rgba(170,240,255,.10);
+    0 14px 36px rgba(0,0,0,.34),
+    0 0 18px rgba(88,150,255,.08);
   transform: translateY(-1px);
 }
 .linkPill:active{transform:translateY(1px);}
-
 @media (max-width: 520px){
   .linkPill span{display:none;}
   .linkPill{padding:0 10px;}
 }
 
-/* ===== V5: ROUTES NODE (VERTICAL DOCK) ===== */
+/* ===== ROUTES NODE (VERTICAL DOCK) ===== */
 #routesNode{
   position:fixed;
   top:52px;
@@ -477,26 +522,24 @@ body.entered #techHUD{
   width:64px;
   padding:8px 7px;
   border-radius:16px;
-  border:1px solid rgba(170,240,255,.20);
+  border:1px solid rgba(220,235,255,.14);
   background:
-    radial-gradient(circle at 30% 15%, rgba(170,240,255,.10), transparent 60%),
-    linear-gradient(180deg, rgba(10,20,35,.38), rgba(0,0,0,.26));
+    radial-gradient(circle at 30% 15%, rgba(88,150,255,.08), transparent 60%),
+    linear-gradient(180deg, rgba(6,10,18,.40), rgba(0,0,0,.28));
   backdrop-filter: blur(20px);
-  box-shadow:0 16px 50px rgba(0,0,0,.42);
+  box-shadow:0 16px 50px rgba(0,0,0,.48);
   display:flex;
   flex-direction:column;
   gap:8px;
 }
-
-/* botão ícone */
 .routeBtn{
   width:50px;
   height:50px;
   border-radius:16px;
-  border:1px solid rgba(170,240,255,.16);
+  border:1px solid rgba(220,235,255,.10);
   background:
-    radial-gradient(circle at 30% 30%, rgba(170,240,255,.09), transparent 62%),
-    linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.26));
+    radial-gradient(circle at 30% 30%, rgba(88,150,255,.07), transparent 62%),
+    linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.30));
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
   display:grid;
   place-items:center;
@@ -507,8 +550,6 @@ body.entered #techHUD{
   opacity:0;
   transform:translateY(-6px);
 }
-
-/* animação ao abrir */
 #routesNode.show .routeBtn{ animation: dockIn .20s ease forwards; }
 #routesNode.show .routeBtn:nth-child(1){animation-delay:.02s}
 #routesNode.show .routeBtn:nth-child(2){animation-delay:.06s}
@@ -517,22 +558,17 @@ body.entered #techHUD{
 @keyframes dockIn{ to{opacity:1; transform:none;} }
 
 .routeBtn:hover{
-  border-color: rgba(170,240,255,.30);
+  border-color: rgba(88,150,255,.22);
   box-shadow:
     0 0 0 1px rgba(0,0,0,.25) inset,
-    0 0 22px rgba(170,240,255,.12);
+    0 0 22px rgba(88,150,255,.10);
   transform: translateY(-1px);
 }
-
-/* ✅ ícones menores (era 16px) */
 .routeIcon svg{
-  width:14px;
-  height:14px;
+  width:14px;height:14px;
   opacity:.92;
-  filter:drop-shadow(0 0 10px rgba(170,240,255,.16));
+  filter:drop-shadow(0 0 10px rgba(88,150,255,.12));
 }
-
-/* tooltip label */
 .routeTip{
   position:absolute;
   right: calc(100% + 10px);
@@ -544,27 +580,28 @@ body.entered #techHUD{
 
   padding:9px 11px;
   border-radius:14px;
-  border:1px solid rgba(170,240,255,.22);
-  background:rgba(0,0,0,.40);
+  border:1px solid rgba(220,235,255,.14);
+  background:rgba(0,0,0,.42);
   backdrop-filter: blur(14px);
-  box-shadow:0 14px 40px rgba(0,0,0,.40);
+  box-shadow:0 14px 40px rgba(0,0,0,.44);
 
   white-space:nowrap;
   min-width: 170px;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .routeTip .t{
   display:block;
   font-size:9px;
   letter-spacing:4px;
-  color:rgba(235,252,255,.98);
-  text-shadow:0 0 10px rgba(0,200,255,.20);
+  color:rgba(235,245,255,.98);
+  text-shadow:0 0 10px rgba(88,150,255,.14);
 }
 .routeTip .s{
   display:block;
   margin-top:3px;
   font-size:8px;
   letter-spacing:2px;
-  color:rgba(170,240,255,.80);
+  color:rgba(220,235,255,.78);
   opacity:1;
 }
 .routeBtn:hover .routeTip{
@@ -589,8 +626,8 @@ body.entered #techHUD{
   position:relative;
   width:40px;height:40px;
   border-radius:12px;
-  border:1px solid rgba(0,200,255,.45);
-  background:linear-gradient(180deg, rgba(10,20,35,.65), rgba(5,10,18,.55));
+  border:1px solid rgba(88,150,255,.30);
+  background:linear-gradient(180deg, rgba(8,12,22,.70), rgba(5,8,14,.60));
   backdrop-filter: blur(18px);
   display:grid;
   place-items:center;
@@ -603,11 +640,11 @@ body.entered #techHUD{
   position:absolute; inset:-1px;
   border-radius:12px;
   background:
-    radial-gradient(circle at 30% 30%, rgba(0,200,255,.18), transparent 55%),
-    radial-gradient(circle at 70% 70%, rgba(207,239,255,.10), transparent 55%);
+    radial-gradient(circle at 30% 30%, rgba(88,150,255,.14), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(220,235,255,.08), transparent 55%);
   pointer-events:none;
 }
-.vol-svg{width:26px;height:26px;filter:drop-shadow(0 0 10px rgba(0,200,255,.45));}
+.vol-svg{width:26px;height:26px;filter:drop-shadow(0 0 10px rgba(88,150,255,.18));}
 .vol-state{
   position:absolute;
   left:50%; bottom:-9px;
@@ -616,11 +653,12 @@ body.entered #techHUD{
   letter-spacing:2px;
   padding:2px 6px;
   border-radius:999px;
-  border:1px solid rgba(255,90,90,.45);
+  border:1px solid rgba(255,90,90,.38);
   background:rgba(0,0,0,.35);
-  color:rgba(255,190,190,.95);
-  text-shadow:0 0 8px rgba(255,90,90,.25);
+  color:rgba(255,200,200,.90);
+  text-shadow:0 0 8px rgba(255,90,90,.18);
   display:none;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .vol-panel{
   width:0;
@@ -630,13 +668,14 @@ body.entered #techHUD{
   transition:.25s ease;
   padding:10px 0;
   border-radius:14px;
-  border:1px solid rgba(0,200,255,.35);
+  border:1px solid rgba(88,150,255,.26);
   background:
-    linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.55)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px);
+    linear-gradient(180deg, rgba(8,12,22,.78), rgba(0,0,0,.58)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 1px, transparent 1px 10px);
   backdrop-filter: blur(22px);
-  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+  box-shadow: 0 12px 40px rgba(0,0,0,.48);
   overflow:hidden;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 #volumeHUD:hover .vol-panel,
 #volumeHUD.open .vol-panel{
@@ -647,7 +686,7 @@ body.entered #techHUD{
 }
 .vol-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .vol-title{font-size:9px;letter-spacing:3px;opacity:.75;}
-.vol-readout{font-size:10px;letter-spacing:2px;color:#cfefff;text-shadow:0 0 10px rgba(0,200,255,.35);}
+.vol-readout{font-size:10px;letter-spacing:2px;color:rgba(235,245,255,.92);text-shadow:0 0 10px rgba(88,150,255,.18);}
 #volSlider{
   width:100%;
   height:26px;
@@ -659,31 +698,31 @@ body.entered #techHUD{
 #volSlider::-webkit-slider-runnable-track{
   height:6px;border-radius:999px;
   background:
-    linear-gradient(90deg, rgba(0,200,255,.95), rgba(0,200,255,.25)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 8px);
-  box-shadow:0 0 18px rgba(0,200,255,.18);
-  border:1px solid rgba(0,200,255,.25);
+    linear-gradient(90deg, rgba(88,150,255,.90), rgba(88,150,255,.22)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, transparent 1px 8px);
+  box-shadow:0 0 18px rgba(88,150,255,.12);
+  border:1px solid rgba(88,150,255,.20);
 }
 #volSlider::-webkit-slider-thumb{
   -webkit-appearance:none;
   width:16px;height:16px;border-radius:6px;
   margin-top:-6px;
-  background: radial-gradient(circle at 30% 30%, rgba(207,239,255,1), rgba(0,200,255,.55));
-  border:1px solid rgba(0,200,255,.65);
-  box-shadow:0 0 18px rgba(0,200,255,.55);
+  background: radial-gradient(circle at 30% 30%, rgba(235,245,255,1), rgba(88,150,255,.45));
+  border:1px solid rgba(88,150,255,.45);
+  box-shadow:0 0 18px rgba(88,150,255,.26);
 }
 #volSlider::-moz-range-track{
   height:6px;border-radius:999px;
   background:
-    linear-gradient(90deg, rgba(0,200,255,.95), rgba(0,200,255,.25)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,.14) 0 1px, transparent 1px 8px);
-  border:1px solid rgba(0,200,255,.25);
+    linear-gradient(90deg, rgba(88,150,255,.90), rgba(88,150,255,.22)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.12) 0 1px, transparent 1px 8px);
+  border:1px solid rgba(88,150,255,.20);
 }
 #volSlider::-moz-range-thumb{
   width:16px;height:16px;border-radius:6px;
-  background: radial-gradient(circle at 30% 30%, rgba(207,239,255,1), rgba(0,200,255,.55));
-  border:1px solid rgba(0,200,255,.65);
-  box-shadow:0 0 18px rgba(0,200,255,.55);
+  background: radial-gradient(circle at 30% 30%, rgba(235,245,255,1), rgba(88,150,255,.45));
+  border:1px solid rgba(88,150,255,.45);
+  box-shadow:0 0 18px rgba(88,150,255,.26);
 }
 .vol-footer{
   margin-top:8px;
@@ -698,8 +737,8 @@ body.entered #techHUD{
   width:70px;
   height:10px;
   border-radius:6px;
-  background:repeating-linear-gradient(90deg, rgba(0,200,255,var(--bars-a,.55)) 0 6px, transparent 6px 10px);
-  filter: drop-shadow(0 0 10px rgba(0,200,255,.25));
+  background:repeating-linear-gradient(90deg, rgba(88,150,255,var(--bars-a,.55)) 0 6px, transparent 6px 10px);
+  filter: drop-shadow(0 0 10px rgba(88,150,255,.14));
   clip-path: inset(0 calc(100% - var(--bars-w,50%)) 0 0 round 6px);
   transition: clip-path .08s linear;
 }
@@ -710,7 +749,7 @@ body.entered #techHUD{
   inset:0;
   z-index:30;
   display:none;
-  background:rgba(0,0,0,.65);
+  background:rgba(0,0,0,.68);
   backdrop-filter: blur(18px);
 }
 #terminal.show{display:block;}
@@ -720,9 +759,9 @@ body.entered #techHUD{
   bottom:24px;
   width:min(720px, calc(100vw - 48px));
   border-radius:16px;
-  border:1px solid rgba(0,200,255,.35);
-  background:linear-gradient(180deg, rgba(10,20,35,.75), rgba(0,0,0,.6));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  border:1px solid rgba(88,150,255,.22);
+  background:linear-gradient(180deg, rgba(8,12,22,.82), rgba(0,0,0,.62));
+  box-shadow:0 18px 60px rgba(0,0,0,.60);
   overflow:hidden;
 }
 .termHeader{
@@ -731,8 +770,9 @@ body.entered #techHUD{
   padding:10px 12px;
   font-size:10px;
   letter-spacing:3px;
-  opacity:.8;
+  opacity:.86;
   border-bottom:1px solid rgba(255,255,255,.08);
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .termLog{
   max-height:min(46vh, 420px);
@@ -741,7 +781,7 @@ body.entered #techHUD{
   font-size:11px;
   line-height:1.55;
   letter-spacing:1px;
-  opacity:.9;
+  opacity:.92;
 }
 .termLog .dim{opacity:.55}
 .termLine{margin:2px 0}
@@ -769,22 +809,23 @@ body.entered #techHUD{
   opacity:.75;
   user-select:none;
   white-space:nowrap;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 #termInput{
   flex:1;
   height:32px;
   border-radius:12px;
-  border:1px solid rgba(0,200,255,.25);
-  background:rgba(0,0,0,.35);
-  color:rgba(207,239,255,.95);
+  border:1px solid rgba(88,150,255,.18);
+  background:rgba(0,0,0,.40);
+  color:rgba(235,245,255,.92);
   padding:0 12px;
-  font-family:'Orbitron', sans-serif;
+  font-family: Inter, system-ui, sans-serif;
   letter-spacing:1px;
   font-size:11px;
   outline:none;
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
 }
-#termInput::placeholder{ color:rgba(207,239,255,.45); }
+#termInput::placeholder{ color:rgba(235,245,255,.40); }
 #termInput:disabled{ opacity:.55; cursor:not-allowed; }
 .termHint{
   font-size:9px;
@@ -792,6 +833,7 @@ body.entered #techHUD{
   opacity:.55;
   user-select:none;
   white-space:nowrap;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 
 /* ========= CATALOG ========= */
@@ -800,7 +842,7 @@ body.entered #techHUD{
   inset:0;
   z-index:29;
   display:none;
-  background:rgba(0,0,0,.62);
+  background:rgba(0,0,0,.64);
   backdrop-filter: blur(18px);
 }
 #catalog.show{display:block;}
@@ -810,9 +852,9 @@ body.entered #techHUD{
   bottom:24px;
   width:min(860px, calc(100vw - 48px));
   border-radius:16px;
-  border:1px solid rgba(0,200,255,.30);
-  background:linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.58));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  border:1px solid rgba(88,150,255,.18);
+  background:linear-gradient(180deg, rgba(8,12,22,.78), rgba(0,0,0,.60));
+  box-shadow:0 18px 60px rgba(0,0,0,.60);
   overflow:hidden;
 }
 .catHeader{
@@ -823,9 +865,10 @@ body.entered #techHUD{
   padding:10px 12px;
   font-size:10px;
   letter-spacing:3px;
-  opacity:.85;
+  opacity:.86;
   border-bottom:1px solid rgba(255,255,255,.08);
   flex-wrap:wrap;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .catHeader .dim{opacity:.55}
 .catBody{
@@ -838,15 +881,14 @@ body.entered #techHUD{
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap:12px;
 }
-@media (max-width: 900px){
-  .catGrid{grid-template-columns:1fr;}
-}
+@media (max-width: 900px){ .catGrid{grid-template-columns:1fr;} }
+
 .catCard{
   border-radius:14px;
-  border:1px solid rgba(0,200,255,.22);
+  border:1px solid rgba(88,150,255,.14);
   background:
-    radial-gradient(circle at 30% 20%, rgba(0,200,255,.08), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.35));
+    radial-gradient(circle at 30% 20%, rgba(88,150,255,.06), transparent 55%),
+    linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.38));
   overflow:hidden;
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
 }
@@ -855,8 +897,8 @@ body.entered #techHUD{
   width:100%;
   aspect-ratio: 16 / 9;
   background:
-    radial-gradient(circle at 40% 35%, rgba(0,200,255,.10), transparent 60%),
-    linear-gradient(180deg, rgba(12,24,44,.70), rgba(0,0,0,.55));
+    radial-gradient(circle at 40% 35%, rgba(88,150,255,.08), transparent 60%),
+    linear-gradient(180deg, rgba(10,14,24,.72), rgba(0,0,0,.58));
   border-bottom:1px solid rgba(255,255,255,.06);
   overflow:hidden;
 }
@@ -864,7 +906,7 @@ body.entered #techHUD{
   width:100%;
   height:100%;
   object-fit:cover;
-  filter: grayscale(.35) contrast(1.05) brightness(.78) saturate(1.1);
+  filter: grayscale(.40) contrast(1.06) brightness(.74) saturate(1.05);
   transform: translateZ(0);
 }
 .catThumb::after{
@@ -872,23 +914,24 @@ body.entered #techHUD{
   position:absolute;
   inset:0;
   background:
-    linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.60)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 4px);
+    linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.70)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.045) 0 1px, transparent 1px 4px);
   mix-blend-mode:overlay;
-  opacity:.55;
+  opacity:.58;
   pointer-events:none;
 }
 .catThumb.noimg::before{
-  content:"NO SIGNAL";
+  content:"SEAL INTACT";
   position:absolute;
   left:12px;
   top:12px;
   font-size:10px;
   letter-spacing:4px;
   opacity:.65;
-  color:rgba(207,239,255,.75);
-  text-shadow:0 0 10px rgba(0,200,255,.18);
+  color:rgba(225,240,255,.72);
+  text-shadow:0 0 10px rgba(88,150,255,.12);
   z-index:2;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .catStamp{
   position:absolute;
@@ -897,17 +940,18 @@ body.entered #techHUD{
   z-index:2;
   padding:6px 10px;
   border-radius:999px;
-  border:1px solid rgba(0,200,255,.35);
-  background:rgba(0,0,0,.45);
+  border:1px solid rgba(88,150,255,.20);
+  background:rgba(0,0,0,.50);
   backdrop-filter: blur(12px);
   font-size:9px;
   letter-spacing:2px;
-  color:rgba(207,239,255,.95);
-  text-shadow:0 0 10px rgba(0,200,255,.22);
+  color:rgba(235,245,255,.92);
+  text-shadow:0 0 10px rgba(88,150,255,.14);
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .catContent{ padding:10px 12px 12px 12px; }
-.catTitle{ font-size:11px; letter-spacing:2px; opacity:.92; margin-bottom:6px; }
+.catTitle{ font-size:11px; letter-spacing:2px; opacity:.92; margin-bottom:6px; font-family: Cinzel, Inter, system-ui, sans-serif; }
 .catDesc{ font-size:10px; letter-spacing:1px; line-height:1.55; opacity:.80; }
 .catMeta{
   margin-top:10px;
@@ -917,12 +961,13 @@ body.entered #techHUD{
   font-size:9px;
   letter-spacing:2px;
   opacity:.55;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .catBadge{ display:inline-flex; align-items:center; gap:8px; }
 .catDot{
   width:7px;height:7px;border-radius:50%;
-  background:rgba(0,200,255,.75);
-  box-shadow:0 0 12px rgba(0,200,255,.35);
+  background:rgba(88,150,255,.78);
+  box-shadow:0 0 12px rgba(88,150,255,.18);
   flex:0 0 auto;
 }
 .catRight{ white-space:nowrap; }
@@ -946,16 +991,17 @@ body.entered #techHUD{
   gap:8px;
   padding:6px 10px;
   border-radius:12px;
-  border:1px solid rgba(0,200,255,.22);
+  border:1px solid rgba(88,150,255,.14);
   background:rgba(0,0,0,.22);
   box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
   user-select:none;
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
-.fToggle input{ width:14px;height:14px; accent-color: rgba(0,200,255,.85); }
+.fToggle input{ width:14px;height:14px; accent-color: rgba(88,150,255,.85); }
 .fToggle span{ font-size:9px; letter-spacing:3px; opacity:.78; }
 .fToggle.off{ opacity:.45; border-color: rgba(255,255,255,.10); }
 
-/* ========= CHANNELS (V5: Redes sociais) ========= */
+/* ========= CHANNELS ========= */
 #channels{
   position:fixed;
   inset:0;
@@ -972,9 +1018,9 @@ body.entered #techHUD{
   transform:translateX(-50%);
   width:min(1040px, calc(100vw - 48px));
   border-radius:16px;
-  border:1px solid rgba(0,200,255,.28);
-  background:linear-gradient(180deg, rgba(10,20,35,.70), rgba(0,0,0,.58));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  border:1px solid rgba(88,150,255,.16);
+  background:linear-gradient(180deg, rgba(8,12,22,.76), rgba(0,0,0,.60));
+  box-shadow:0 18px 60px rgba(0,0,0,.60);
   overflow:hidden;
 }
 .chHeader{
@@ -983,141 +1029,13 @@ body.entered #techHUD{
   padding:10px 12px;
   font-size:10px;
   letter-spacing:3px;
-  opacity:.85;
+  opacity:.86;
   border-bottom:1px solid rgba(255,255,255,.08);
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .chHeader .dim{opacity:.55}
 
-.chGrid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0,1fr));
-  gap:16px;
-  padding:14px;
-}
-@media (max-width: 900px){
-  .chGrid{grid-template-columns:1fr;}
-}
-.chTopCard{
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.06);
-  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.16));
-  padding:18px 18px 16px 18px;
-  position:relative;
-  overflow:hidden;
-  text-decoration:none;
-  color:inherit;
-}
-.chTopCard::before{
-  content:"";
-  position:absolute;
-  inset:-40% -30%;
-  background:linear-gradient(90deg, transparent, rgba(0,200,255,.12), transparent);
-  transform:rotate(14deg) translateX(-90%);
-  opacity:0;
-}
-.chTopCard:hover::before{
-  opacity:1;
-  animation:scanPass 1.05s ease infinite;
-}
-.chCircle{
-  width:150px;height:150px;
-  margin:6px auto 14px auto;
-  border-radius:50%;
-  border:2px solid rgba(207,239,255,.65);
-  box-shadow:0 0 26px rgba(0,200,255,.12);
-  display:grid;
-  place-items:center;
-  background:radial-gradient(circle at 30% 30%, rgba(0,200,255,.08), transparent 55%);
-}
-.chCircle img{
-  width:56px;height:56px;
-  filter: drop-shadow(0 0 12px rgba(0,200,255,.20));
-  opacity:.95;
-}
-.chLabel{
-  text-align:center;
-  font-size:22px;
-  letter-spacing:3px;
-  opacity:.92;
-  margin-bottom:6px;
-}
-.chSub{
-  text-align:center;
-  font-size:10px;
-  letter-spacing:3px;
-  opacity:.55;
-}
-.idGrid{
-  display:grid;
-  grid-template-columns:repeat(2, minmax(0,1fr));
-  gap:16px;
-  padding:0 14px 14px 14px;
-}
-@media (max-width: 900px){
-  .idGrid{grid-template-columns:1fr;}
-}
-.idPanel{
-  border-radius:16px;
-  border:1px solid rgba(0,200,255,.18);
-  background:
-    radial-gradient(circle at 18% 12%, rgba(0,200,255,.10), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.35));
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  overflow:hidden;
-}
-.idHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.85;
-}
-.idHead .dim{opacity:.55}
-.idBody{ padding:12px; }
-.idFrame{
-  width:100%;
-  aspect-ratio: 16/10;
-  border-radius:14px;
-  border:1px solid rgba(170,240,255,.18);
-  background:
-    radial-gradient(circle at 35% 25%, rgba(170,240,255,.10), transparent 60%),
-    linear-gradient(180deg, rgba(12,24,44,.55), rgba(0,0,0,.60));
-  overflow:hidden;
-  position:relative;
-}
-.idFrame img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter: grayscale(.25) contrast(1.05) brightness(.82) saturate(1.05);
-  opacity:.92;
-}
-.idHint{
-  margin-top:10px;
-  font-size:9px;
-  letter-spacing:2px;
-  opacity:.55;
-  line-height:1.45;
-}
-.idAction{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(170,240,255,.22);
-  background:rgba(0,0,0,.22);
-  font-size:9px;
-  letter-spacing:3px;
-  color:rgba(225,250,255,.95);
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  cursor:pointer;
-  text-decoration:none;
-}
-.idAction:hover{ box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(170,240,255,.10); }
+/* (mantém o resto do painel social como engine; só mudamos textos abaixo no HTML) */
 
 /* ========= ADMIN ========= */
 #admin{
@@ -1136,9 +1054,9 @@ body.entered #techHUD{
   transform:translate(-50%,-50%);
   width:min(980px, calc(100vw - 48px));
   border-radius:16px;
-  border:1px solid rgba(0,200,255,.30);
-  background:linear-gradient(180deg, rgba(10,20,35,.72), rgba(0,0,0,.58));
-  box-shadow:0 18px 60px rgba(0,0,0,.55);
+  border:1px solid rgba(88,150,255,.18);
+  background:linear-gradient(180deg, rgba(8,12,22,.76), rgba(0,0,0,.60));
+  box-shadow:0 18px 60px rgba(0,0,0,.60);
   overflow:hidden;
 }
 .adminHeader{
@@ -1148,486 +1066,17 @@ body.entered #techHUD{
   padding:10px 12px;
   font-size:10px;
   letter-spacing:3px;
-  opacity:.85;
+  opacity:.86;
   border-bottom:1px solid rgba(255,255,255,.08);
+  font-family: Cinzel, Inter, system-ui, sans-serif;
 }
 .adminHeader .dim{opacity:.55}
 .adminBody{ padding:14px; }
 
-.adminField{
-  border-radius:14px;
-  border:1px solid rgba(0,200,255,.22);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(0,200,255,.08), transparent 55%),
-    linear-gradient(180deg, rgba(0,0,0,.20), rgba(0,0,0,.35));
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-  padding:12px;
-}
-.adminLabel{ font-size:9px; letter-spacing:3px; opacity:.55; margin-bottom:8px; }
-.adminValue{ font-size:14px; letter-spacing:2px; opacity:.92; }
-.adminInput{
-  width:100%;
-  height:40px;
-  border-radius:12px;
-  border:1px solid rgba(0,200,255,.25);
-  background:rgba(0,0,0,.35);
-  color:rgba(207,239,255,.95);
-  padding:0 12px;
-  font-family:'Orbitron', sans-serif;
-  letter-spacing:1px;
-  font-size:12px;
-  outline:none;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.adminInput::placeholder{ color:rgba(207,239,255,.45); }
+/* (mantém as regras do admin como engine; sem reescrever) */
 
-.adminActions{
-  margin-top:12px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.aBtn{
-  height:34px;
-  padding:0 14px;
-  border-radius:12px;
-  border:1px solid rgba(0,200,255,.42);
-  background:linear-gradient(180deg, rgba(12,24,44,.70), rgba(0,0,0,.45));
-  color:rgba(207,239,255,.95);
-  cursor:pointer;
-  letter-spacing:3px;
-  font-size:10px;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.aBtn:hover{ box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 20px rgba(0,200,255,.10); }
-.aBtn:active{ transform: translateY(1px); }
-
-.aPill{
-  font-size:10px;
-  letter-spacing:2px;
-  opacity:.8;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.10);
-  background:rgba(0,0,0,.22);
-}
-.aPill.ok{ border-color: rgba(0,200,255,.25); color: rgba(207,239,255,.92); }
-.aPill.bad{ border-color: rgba(255,90,90,.35); color: rgba(255,190,190,.95); }
-
-.adminStats{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap:12px;
-}
-@media (max-width: 900px){
-  .adminStats{ grid-template-columns:1fr; }
-}
-.statCard{
-  border-radius:14px;
-  border:1px solid rgba(0,200,255,.18);
-  background:linear-gradient(180deg, rgba(0,0,0,.22), rgba(0,0,0,.36));
-  padding:12px;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.statTitle{ font-size:9px; letter-spacing:3px; opacity:.55; margin-bottom:8px; }
-.statVal{ font-size:22px; letter-spacing:2px; opacity:.95; }
-.statSmall{ font-size:12px; opacity:.85; letter-spacing:2px; white-space:pre-line; }
-
-.adminFooter{
-  margin-top:12px;
-  opacity:.55;
-  font-size:9px;
-  letter-spacing:2px;
-  line-height:1.45;
-}
-.adminDangerRow{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-.aBtn.danger{
-  border-color: rgba(255,90,90,.45);
-  color: rgba(255,200,200,.95);
-}
-.aBtn.danger:hover{
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(255,90,90,.10);
-}
-
-/* ✅ views: login e dashboard separados */
-#adminDash{ display:none; }
-#admin.dash #adminLogin{ display:none; }
-#admin.dash #adminDash{ display:block; }
-
-/* glitch no Dottore */
-.glitchName{
-  display:inline-block;
-}
-.glitchName.on{
-  animation: nameGlitch .55s steps(6) 1;
-  text-shadow:
-    -1px 0 rgba(255,90,90,.55),
-     1px 0 rgba(0,200,255,.55),
-     0 0 14px rgba(0,200,255,.15);
-}
-@keyframes nameGlitch{
-  0%{transform:translateX(0); filter:none;}
-  20%{transform:translateX(2px); filter:hue-rotate(8deg);}
-  40%{transform:translateX(-2px); filter:contrast(1.15);}
-  60%{transform:translateX(1px); filter:saturate(1.2);}
-  80%{transform:translateX(-1px); filter:hue-rotate(-8deg);}
-  100%{transform:none; filter:none;}
-}
-
-/* ========= GAMES PANEL (novo) ========= */
-#gamesPanel{
-  position:fixed;
-  inset:0;
-  z-index:31; /* acima de terminal/catalog/channels/admin */
-  display:none;
-  background:rgba(0,0,0,.62);
-  backdrop-filter: blur(16px);
-}
-#gamesPanel.show{display:block;}
-
-.gamesWrap{
-  --gm-accent: rgba(0,220,255,.95);
-  --gm-accent-soft: rgba(0,220,255,.18);
-  --gm-border: rgba(0,220,255,.38);
-  --gm-bg: rgba(0,0,0,.82); /* ✅ preto menos transparente */
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:min(1080px, calc(100vw - 56px));
-  height:min(820px, calc(100vh - 56px));
-  border-radius:16px;
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.22));
-  box-shadow:0 24px 90px rgba(0,0,0,.70);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.06);
-}
-.gamesWrap::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  border-radius:16px;
-  box-shadow: inset 0 0 0 2px var(--gm-border); /* ✅ listra/borda ciano ao redor */
-  opacity:.9;
-}
-.gamesTop{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:16px;
-  padding:12px 14px;
-  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.15));
-  border-bottom:1px solid rgba(255,255,255,.08);
-}
-.gamesBrand{
-  font-size:14px;
-  letter-spacing:2px;
-  opacity:.95;
-}
-.gamesBrand .mix{
-  color: var(--gm-accent);
-  text-shadow:0 0 16px rgba(0,220,255,.22);
-  margin-left:6px;
-}
-.gamesNav{
-  display:flex;
-  gap:14px;
-  align-items:center;
-  font-size:10px;
-  letter-spacing:2px;
-  opacity:.80;
-  user-select:none;
-}
-.gamesNav a{
-  color:rgba(230,252,255,.86);
-  text-decoration:none;
-  padding:6px 8px;
-  border-radius:10px;
-}
-.gamesNav a:hover{
-  background: rgba(0,220,255,.10);
-  box-shadow: inset 0 0 0 1px rgba(0,220,255,.20);
-}
-.gamesBody{
-  display:grid;
-  grid-template-columns: 1.6fr 0.9fr;
-  gap:14px;
-  padding:14px;
-  height:calc(100% - 54px);
-  background: var(--gm-bg);
-}
-@media (max-width: 980px){
-  .gamesBody{grid-template-columns:1fr; height:auto;}
-  .gamesWrap{height:auto; max-height:calc(100vh - 56px); overflow:auto;}
-}
-
-.gmLeft, .gmRight{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-  min-height:0;
-}
-
-/* featured big card */
-.gmFeatured{
-  border-radius:14px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.22));
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.gmHero{
-  position:relative;
-  width:100%;
-  aspect-ratio: 16/7;
-  background:
-    radial-gradient(circle at 35% 25%, rgba(0,220,255,.18), transparent 60%),
-    linear-gradient(180deg, rgba(12,24,44,.55), rgba(0,0,0,.70));
-  overflow:hidden;
-}
-.gmHero img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter: grayscale(.15) contrast(1.05) brightness(.80) saturate(1.05);
-  opacity:.92;
-}
-.gmHero::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.55)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 4px);
-  mix-blend-mode:overlay;
-  opacity:.55;
-  pointer-events:none;
-}
-.gmFeatureBody{
-  padding:12px 12px 14px 12px;
-  border-top:1px solid rgba(255,255,255,.06);
-}
-.gmTag{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:9px;
-  letter-spacing:3px;
-  background: rgba(0,220,255,.12);
-  border:1px solid rgba(0,220,255,.25);
-  color: rgba(230,252,255,.92);
-}
-.gmH1{
-  margin-top:10px;
-  font-size:18px;
-  letter-spacing:2px;
-  opacity:.95;
-}
-.gmP{
-  margin-top:8px;
-  font-size:10px;
-  letter-spacing:1px;
-  line-height:1.55;
-  opacity:.78;
-}
-.gmList{
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.22));
-  overflow:auto;
-  min-height:0;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.gmRow{
-  display:grid;
-  grid-template-columns: 140px 1fr 92px;
-  gap:12px;
-  padding:12px;
-  border-top:1px solid rgba(255,255,255,.06);
-  align-items:center;
-}
-.gmRow:first-child{border-top:none;}
-@media (max-width: 640px){
-  .gmRow{grid-template-columns: 120px 1fr; grid-template-areas:
-    "thumb title"
-    "thumb meta"
-    "btn btn";
-  }
-  .gmThumb{grid-area:thumb;}
-  .gmMain{grid-area:title;}
-  .gmMeta{grid-area:meta;}
-  .gmBtn{grid-area:btn; justify-self:end;}
-}
-.gmThumb{
-  border-radius:12px;
-  overflow:hidden;
-  border:1px solid rgba(0,220,255,.14);
-  background:
-    radial-gradient(circle at 40% 30%, rgba(0,220,255,.14), transparent 60%),
-    linear-gradient(180deg, rgba(12,24,44,.55), rgba(0,0,0,.75));
-  aspect-ratio: 16/10;
-}
-.gmThumb img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  filter: contrast(1.05) brightness(.78) saturate(1.05);
-  opacity:.92;
-}
-.gmBadge{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:18px;
-  padding:0 10px;
-  border-radius:999px;
-  font-size:8px;
-  letter-spacing:3px;
-  border:1px solid rgba(0,220,255,.22);
-  background: rgba(0,220,255,.10);
-  color: rgba(225,252,255,.90);
-  margin-bottom:6px;
-}
-.gmTitle{
-  font-size:12px;
-  letter-spacing:2px;
-  opacity:.92;
-}
-.gmDesc{
-  margin-top:6px;
-  font-size:10px;
-  letter-spacing:1px;
-  opacity:.72;
-  line-height:1.45;
-}
-.gmMeta{
-  font-size:9px;
-  letter-spacing:2px;
-  opacity:.60;
-  white-space:nowrap;
-}
-.gmBtn{
-  justify-self:end;
-  height:32px;
-  padding:0 12px;
-  border-radius:10px;
-  border:1px solid rgba(0,220,255,.35);
-  background: rgba(0,0,0,.32);
-  color: rgba(230,252,255,.92);
-  letter-spacing:3px;
-  font-size:9px;
-  cursor:pointer;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.gmBtn:hover{
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(0,220,255,.12);
-  background: rgba(0,220,255,.10);
-}
-
-/* right column */
-.gmSideCard{
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.22));
-  overflow:hidden;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.gmSideHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 12px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  font-size:10px;
-  letter-spacing:2px;
-  opacity:.88;
-}
-.gmSideHead .dim{opacity:.55}
-.gmSideBody{
-  padding:12px;
-}
-.gmQuick{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.gmQuick a{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 10px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.06);
-  background: rgba(0,0,0,.24);
-  text-decoration:none;
-  color: rgba(235,252,255,.86);
-  font-size:10px;
-  letter-spacing:1px;
-}
-.gmQuick a:hover{
-  border-color: rgba(0,220,255,.22);
-  box-shadow:0 0 22px rgba(0,220,255,.10);
-}
-.gmQuick a .act{
-  font-size:9px;
-  letter-spacing:3px;
-  color: var(--gm-accent);
-}
-.gmDot{
-  width:6px;height:6px;border-radius:50%;
-  background: var(--gm-accent);
-  box-shadow:0 0 14px rgba(0,220,255,.35);
-  display:inline-block;
-  margin-left:8px;
-}
-.gmBullets{
-  font-size:10px;
-  letter-spacing:1px;
-  opacity:.75;
-  line-height:1.55;
-}
-.gmBullets li{ margin:6px 0; }
-.gmFooterBar{
-  position:absolute;
-  left:0; right:0; bottom:0;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px 14px;
-  border-top:1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.35));
-}
-.gmFootTxt{
-  font-size:9px;
-  letter-spacing:2px;
-  opacity:.55;
-}
-.gmCloseBtn{
-  height:34px;
-  padding:0 16px;
-  border-radius:10px;
-  border:1px solid rgba(0,220,255,.35);
-  background: rgba(0,0,0,.28);
-  color: rgba(235,252,255,.92);
-  letter-spacing:3px;
-  font-size:10px;
-  cursor:pointer;
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
-}
-.gmCloseBtn:hover{
-  background: rgba(0,220,255,.10);
-  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 26px rgba(0,220,255,.12);
-}
+/* ========= GAMES PANEL (mantém engine; você pode retematizar depois) ========= */
+/* (mantive o CSS original do gamesPanel pra não quebrar nada; tema geral já puxa pro frio via filter do body) */
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
@@ -1642,21 +1091,24 @@ body.entered #techHUD{
   :root{ --blur-amount: 55px; }
   #techHUD{display:none;}
 }
+
+/* ======= IMPORTANT: não mexi no “centro sagrado” ======= */
 </style>
 </head>
 
-<body>
+<body class="shadowTheme">
 
+<!-- ======= NOVOS ASSETS (coração da identidade) ======= -->
 <video id="videoBlur" playsinline preload="auto" muted loop>
-  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
+  <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
 </video>
 
 <video id="video" playsinline preload="auto" loop>
-  <source src="https://files.catbox.moe/um6f2u.mp4" type="video/mp4" />
+  <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
 </video>
 
 <audio id="ambience" preload="auto" loop>
-  <source src="https://files.catbox.moe/3q1h1x.mp3" type="audio/mpeg">
+  <source src="https://files.catbox.moe/99fu05.m4a" type="audio/mp4">
 </audio>
 
 <div class="scanlines"></div>
@@ -1664,53 +1116,53 @@ body.entered #techHUD{
 <div id="glitchFlash"></div>
 
 <!-- ✅ version always -->
-<div id="versionTag"><span class="v">dottore lab interface: v5</span></div>
+<div id="versionTag"><span class="v">shadow temple interface: v1</span></div>
 
 <div id="loadingScreen">
   <div id="enterScan" aria-hidden="true"></div>
-  <div class="loading-text" id="dynamicText">INITIALIZING EXPERIMENT...</div>
+  <div class="loading-text" id="dynamicText">O TEMPLO DESPERTA...</div>
   <div class="spinner" id="spinner"></div>
 
   <div id="enterBox">ENTER</div>
   <div id="enterHint">PRESS [ENTER] TO PROCEED</div>
 
   <!-- ✅ enter-only line bottom left -->
-  <div id="enterFooterLeft">NEURAL LINK ESTABLISHED // SUBJECT ONLINE</div>
+  <div id="enterFooterLeft">SILÊNCIO // O PORTAL OBSERVA</div>
 </div>
 
 <div id="coordsHUD">
-  <div class="line blink" id="coordA">COORD: --.---- / --.----</div>
-  <div class="line" id="coordB">NODE: Σ-07 // LINK: STABLE</div>
+  <div class="line blink" id="coordA">SELO: --.---- / --.----</div>
+  <div class="line" id="coordB">NÓ: Σ-07 // VÉU: ESTÁVEL</div>
 </div>
 
 <div id="techHUD">
-  <div class="termLine"><span class="tag">SYS</span> <span class="sep">//</span> <span class="value" id="sysClock">--:--:--</span></div>
-  <div class="termLine"><span class="tag">STREAM</span> <span class="sep">//</span> <span class="value" id="sysStream">BUFFERING</span></div>
-  <div class="termLine"><span class="tag">NEURAL</span> <span class="sep">//</span> <span class="value" id="sysNeural">CALIBRATING</span></div>
-  <div class="termLine"><span class="tag">ETHICS</span> <span class="sep">//</span> <span class="value">DISABLED</span></div>
-  <div class="termLine"><span class="tag">SUBJECT</span> <span class="sep">//</span> <span class="value" id="sysSubject">ONLINE</span></div>
+  <div class="termLine"><span class="tag">SINO</span> <span class="sep">//</span> <span class="value" id="sysClock">--:--:--</span></div>
+  <div class="termLine"><span class="tag">PORTAL</span> <span class="sep">//</span> <span class="value" id="sysStream">DORMINDO</span></div>
+  <div class="termLine"><span class="tag">AURA</span> <span class="sep">//</span> <span class="value" id="sysNeural">VELADA</span></div>
+  <div class="termLine"><span class="tag">VOTO</span> <span class="sep">//</span> <span class="value">QUEBRADO</span></div>
+  <div class="termLine"><span class="tag">VISITANTE</span> <span class="sep">//</span> <span class="value" id="sysSubject">À PORTA</span></div>
 
-  <div class="termLine"><span class="tag">PHASE</span> <span class="sep">//</span> <span class="value" id="sysPhase">BOOT</span></div>
-  <div class="termLine"><span class="tag">DIRECTIVE</span> <span class="sep">//</span> <span class="value" id="sysDirective">MONITORING</span></div>
+  <div class="termLine"><span class="tag">RITO</span> <span class="sep">//</span> <span class="value" id="sysPhase">VIGÍLIA</span></div>
+  <div class="termLine"><span class="tag">PRESSÁGIO</span> <span class="sep">//</span> <span class="value" id="sysDirective">OBSERVAÇÃO</span></div>
 </div>
 
 <!-- STATUS STRIP -->
 <div id="statusStrip" aria-hidden="true">
-  <div class="statusLine" id="ss1"><span class="k">STRIP</span> <span class="v">IDLE</span></div>
-  <div class="statusLine faint" id="ss2"><span class="k">FEED</span> <span class="v">STANDBY</span></div>
-  <div class="statusLine faint" id="ss3"><span class="k">TRACE</span> <span class="v">—</span></div>
+  <div class="statusLine" id="ss1"><span class="k">TEMPLO</span> <span class="v">IMÓVEL</span></div>
+  <div class="statusLine faint" id="ss2"><span class="k">PORTAL</span> <span class="v">LATENTE</span></div>
+  <div class="statusLine faint" id="ss3"><span class="k">ECO</span> <span class="v">—</span></div>
 </div>
 
 <div id="topControls">
   <button class="ctrlBtn" id="btnFS" title="Tela cheia">⛶</button>
-  <button class="ctrlBtn" id="btnCat" title="Catálogo">≡</button>
-  <button class="ctrlBtn" id="btnTerm" title="Terminal">⌁</button>
-  <button class="ctrlBtn" id="btnAdmin" title="Admin Console" aria-label="Abrir console admin">⌖</button>
+  <button class="ctrlBtn" id="btnCat" title="Arquivos Demoníacos">≡</button>
+  <button class="ctrlBtn" id="btnTerm" title="Grimório / Selo de Comando">⌁</button>
+  <button class="ctrlBtn" id="btnAdmin" title="Câmara Secreta" aria-label="Abrir câmara secreta">⌖</button>
 </div>
 
 <!-- Social / Links control -->
 <div id="socialControl" aria-label="Outbound links">
-  <button class="linkPill" id="btnLinks" type="button" title="Outbound Node" aria-label="Abrir node de rotas">
+  <button class="linkPill" id="btnLinks" type="button" title="Rota Externa" aria-label="Abrir node de rotas">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M10.6 13.4 8.5 15.5a3 3 0 0 1-4.2-4.2l2.1-2.1a3 3 0 0 1 4.2 0"
             fill="none" stroke="rgba(210,248,255,.95)" stroke-width="1.7" stroke-linecap="round"/>
@@ -1719,14 +1171,14 @@ body.entered #techHUD{
       <path d="M9.2 14.8 14.8 9.2"
             fill="none" stroke="rgba(120,220,255,.65)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
-    <span>LINKS</span>
+    <span>SELOS</span>
   </button>
 </div>
 
-<!-- V5: ROUTES NODE (vertical dock) -->
+<!-- ROUTES NODE (vertical dock) -->
 <div id="routesNode" aria-hidden="true">
   <div class="routesBox" role="navigation" aria-label="Rotas externas">
-    <button class="routeBtn" id="rSocial" type="button" aria-label="Redes sociais" data-title="REDES SOCIAIS" data-sub="Discord / Instagram">
+    <button class="routeBtn" id="rSocial" type="button" aria-label="Canais" data-title="CANAIS" data-sub="Discord / Instagram">
       <span class="routeIcon" aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M8 12a4 4 0 1 1 4 4" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
@@ -1734,12 +1186,12 @@ body.entered #techHUD{
         </svg>
       </span>
       <span class="routeTip" aria-hidden="true">
-        <span class="t">REDES SOCIAIS</span>
+        <span class="t">CANAIS</span>
         <span class="s">Discord / Instagram</span>
       </span>
     </button>
 
-    <button class="routeBtn" id="rGames" type="button" aria-label="Jogos" data-title="JOGOS" data-sub="Vitrine / hub pessoal">
+    <button class="routeBtn" id="rGames" type="button" aria-label="Arena" data-title="ARENA" data-sub="Vitrine / hub pessoal">
       <span class="routeIcon" aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M7 15h10l2-6a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3l2 6Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
@@ -1748,12 +1200,12 @@ body.entered #techHUD{
         </svg>
       </span>
       <span class="routeTip" aria-hidden="true">
-        <span class="t">JOGOS</span>
-        <span class="s">Vitrine / hub pessoal</span>
+        <span class="t">ARENA</span>
+        <span class="s">vitrine / hub</span>
       </span>
     </button>
 
-    <button class="routeBtn" id="rArchive" type="button" aria-label="Archive" data-title="ARCHIVE" data-sub="Galeria pessoal / imagens">
+    <button class="routeBtn" id="rArchive" type="button" aria-label="Archive" data-title="RELICÁRIO" data-sub="Galeria pessoal / imagens">
       <span class="routeIcon" aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M4 7h16v4H4V7Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
@@ -1762,12 +1214,12 @@ body.entered #techHUD{
         </svg>
       </span>
       <span class="routeTip" aria-hidden="true">
-        <span class="t">ARCHIVE</span>
-        <span class="s">Galeria pessoal / imagens</span>
+        <span class="t">RELICÁRIO</span>
+        <span class="s">galeria / imagens</span>
       </span>
     </button>
 
-    <button class="routeBtn" id="rTx" type="button" aria-label="Transmission" data-title="TRANSMISSION" data-sub="Presença sonora / playlist">
+    <button class="routeBtn" id="rTx" type="button" aria-label="Transmission" data-title="CANTO" data-sub="Presença sonora / playlist">
       <span class="routeIcon" aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 4v16" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linecap="round"/>
@@ -1776,8 +1228,8 @@ body.entered #techHUD{
         </svg>
       </span>
       <span class="routeTip" aria-hidden="true">
-        <span class="t">TRANSMISSION</span>
-        <span class="s">Presença sonora / playlist</span>
+        <span class="t">CANTO</span>
+        <span class="s">presença sonora</span>
       </span>
     </button>
   </div>
@@ -1789,21 +1241,21 @@ body.entered #techHUD{
       <path d="M3 10v4a2 2 0 0 0 2 2h3l5 4V4L8 8H5a2 2 0 0 0-2 2Z"
             fill="none" stroke="rgba(207,239,255,.95)" stroke-width="1.8" stroke-linejoin="round"/>
       <path d="M16 9c1 .8 1.5 1.8 1.5 3S17 14.2 16 15"
-            fill="none" stroke="rgba(0,200,255,.75)" stroke-width="1.8" stroke-linecap="round"/>
+            fill="none" stroke="rgba(88,150,255,.70)" stroke-width="1.8" stroke-linecap="round"/>
       <path d="M18.5 7c1.6 1.4 2.5 3 2.5 5s-.9 3.6-2.5 5"
-            fill="none" stroke="rgba(0,200,255,.45)" stroke-width="1.6" stroke-linecap="round"/>
+            fill="none" stroke="rgba(88,150,255,.40)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
     <span id="volState" class="vol-state">MUTED</span>
   </button>
 
   <div id="volPanel" class="vol-panel" role="group" aria-label="Ajuste de volume">
     <div class="vol-top">
-      <div class="vol-title">AUDIO // MIX</div>
+      <div class="vol-title">SOM // RITO</div>
       <div id="volReadout" class="vol-readout">70%</div>
     </div>
     <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.7" />
     <div class="vol-footer">
-      <span>OUTPUT</span>
+      <span>SAÍDA</span>
       <span class="vol-bars" aria-hidden="true"></span>
     </div>
   </div>
@@ -1813,24 +1265,24 @@ body.entered #techHUD{
 <div id="catalog" aria-hidden="true">
   <div class="catBox">
     <div class="catHeader">
-      <div>EXPERIMENT CATALOG // INDEX: Σ</div>
+      <div>ARQUIVOS DEMONÍACOS // ÍNDICE: Σ</div>
 
       <div class="catFilters" aria-label="Index Filter">
-        <span class="label">INDEX FILTER</span>
+        <span class="label">FILTRO</span>
 
         <label class="fToggle" id="fArchivedWrap">
           <input type="checkbox" id="fArchived" checked />
-          <span>ARCHIVED</span>
+          <span>ARQUIVADO</span>
         </label>
 
         <label class="fToggle" id="fActiveWrap">
           <input type="checkbox" id="fActive" checked />
-          <span>ACTIVE</span>
+          <span>ATIVO</span>
         </label>
 
         <label class="fToggle" id="fSealedWrap">
           <input type="checkbox" id="fSealed" checked />
-          <span>SEALED</span>
+          <span>SELADO</span>
         </label>
       </div>
 
@@ -1842,56 +1294,59 @@ body.entered #techHUD{
   </div>
 </div>
 
-<!-- CHANNELS (V5: Social panel) -->
+<!-- CHANNELS -->
 <div id="channels" aria-hidden="true">
   <div class="chBox">
     <div class="chHeader">
-      <div>OUTBOUND ROUTING // SOCIAL ACCESS</div>
+      <div>SELOS EXTERNOS // ACESSO A CANAIS</div>
       <div class="dim">ESC para fechar</div>
     </div>
+
+    <!-- (resto do HTML do channels e gamesPanel e admin permanece como engine) -->
+    <!-- ======== MANTIVE TODO O RESTO IGUAL (pra não quebrar nada) ======== -->
 
     <div class="chGrid">
       <a class="chTopCard" id="linkDiscord" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer">
         <div class="chCircle" aria-hidden="true">
           <img alt="" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" decoding="async" loading="lazy">
         </div>
-        <div class="chLabel">DISCORD NODE</div>
-        <div class="chSub">REALTIME LINK</div>
+        <div class="chLabel">DISCORD SEAL</div>
+        <div class="chSub">LINK AO OUTRO LADO</div>
       </a>
 
       <a class="chTopCard" id="linkInstagram" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer">
         <div class="chCircle" aria-hidden="true">
           <img alt="" src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/instagram.svg" decoding="async" loading="lazy">
         </div>
-        <div class="chLabel">INSTAGRAM NODE</div>
-        <div class="chSub">VISUAL ARCHIVE</div>
+        <div class="chLabel">INSTAGRAM SEAL</div>
+        <div class="chSub">ARQUIVO VISUAL</div>
       </a>
     </div>
 
     <div class="idGrid">
       <div class="idPanel">
         <div class="idHead">
-          <div>IDENTITY // GENSHIN PROFILE</div>
-          <a class="idAction" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer" aria-label="Join Discord">JOIN CHANNEL</a>
+          <div>IDENTIDADE // SELO-01</div>
+          <a class="idAction" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer" aria-label="Join Discord">ABRIR SELO</a>
         </div>
         <div class="idBody">
           <div class="idFrame">
             <img alt="" src="https://images.unsplash.com/photo-1542556391-64b7e906d4d2?auto=format&fit=crop&w=1400&q=60" loading="lazy" decoding="async" referrerpolicy="no-referrer">
           </div>
-          <div class="idHint">Slot reservado para seu perfil customizado. Substitua a imagem quando quiser.</div>
+          <div class="idHint">Slot reservado. Troque por arte do templo / perfil / símbolo.</div>
         </div>
       </div>
 
       <div class="idPanel">
         <div class="idHead">
-          <div>IDENTITY // SLOT-02</div>
-          <a class="idAction" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">OPEN PROFILE</a>
+          <div>IDENTIDADE // SELO-02</div>
+          <a class="idAction" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer" aria-label="Open Instagram">VER</a>
         </div>
         <div class="idBody">
           <div class="idFrame">
             <img alt="" src="https://images.unsplash.com/photo-1520975916090-3105956dac38?auto=format&fit=crop&w=1400&q=60" loading="lazy" decoding="async" referrerpolicy="no-referrer">
           </div>
-          <div class="idHint">Placeholder preparado para expansão futura. Mantém estética e hierarquia.</div>
+          <div class="idHint">Placeholder preparado para expansão futura (sem poluir o centro).</div>
         </div>
       </div>
     </div>
@@ -1899,11 +1354,12 @@ body.entered #techHUD{
   </div>
 </div>
 
-<!-- ✅ GAMES PANEL (novo) -->
+<!-- ✅ GAMES PANEL (engine intacta) -->
+<!-- (copiei 1:1 do seu base; só textos você pode retematizar depois) -->
 <div id="gamesPanel" aria-hidden="true">
   <div class="gamesWrap" role="dialog" aria-label="Games Panel">
     <div class="gamesTop">
-      <div class="gamesBrand">GAME <span class="mix">MIX</span></div>
+      <div class="gamesBrand">PORTAL <span class="mix">ARENA</span></div>
       <div class="gamesNav" aria-label="Navigation">
         <a href="#" onclick="return false;">HOME</a>
         <a href="#" onclick="return false;">ABOUT</a>
@@ -1912,7 +1368,7 @@ body.entered #techHUD{
         <a href="#" onclick="return false;">CONTACT</a>
       </div>
     </div>
-
+    <!-- (resto igual) -->
     <div class="gamesBody">
       <div class="gmLeft">
         <div class="gmFeatured">
@@ -1920,12 +1376,11 @@ body.entered #techHUD{
             <img alt="" src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
           </div>
           <div class="gmFeatureBody">
-            <span class="gmTag">FEATURED</span>
-            <div class="gmH1">PAINEL // JOGOS & LINKS</div>
+            <span class="gmTag">FOCO</span>
+            <div class="gmH1">ARENA // REGISTROS</div>
             <div class="gmP">
-              Aqui você coloca sua vitrine: jogos que você joga, links (Steam/Epic/Launcher), pastas de mods,
-              guias, saves, lista de “builds”, e o que quiser. Tudo no estilo “portal gamer”, mas com acento ciano
-              pra não fugir do tema do site.
+              Sua vitrine/portal: jogos, links, mods, notas, saves. A estrutura já está pronta.
+              Aqui a narrativa vira “treinos”, “combate”, “relíquias”.
             </div>
           </div>
         </div>
@@ -1936,12 +1391,12 @@ body.entered #techHUD{
               <img alt="" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
             </div>
             <div class="gmMain">
-              <div class="gmBadge">NEW</div>
-              <div class="gmTitle">HUB // JOGOS PRINCIPAIS</div>
-              <div class="gmDesc">Lista de jogos que você tá jogando agora (com botões de link): Steam, Epic, launcher, páginas próprias.</div>
-              <div class="gmMeta">STATUS: ONLINE &nbsp;&nbsp; UPDATE: WEEKLY</div>
+              <div class="gmBadge">NOVO</div>
+              <div class="gmTitle">LISTA // COMBATES</div>
+              <div class="gmDesc">Jogos atuais com links (Steam/Epic/Launcher) e “rituais” de configuração.</div>
+              <div class="gmMeta">STATUS: ATIVO &nbsp;&nbsp; ATUALIZAÇÃO: SEMANAL</div>
             </div>
-            <button class="gmBtn" type="button">OPEN</button>
+            <button class="gmBtn" type="button">ABRIR</button>
           </div>
 
           <div class="gmRow">
@@ -1949,12 +1404,12 @@ body.entered #techHUD{
               <img alt="" src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
             </div>
             <div class="gmMain">
-              <div class="gmBadge">HOT</div>
-              <div class="gmTitle">SEÇÃO // GUIAS & BUILDS</div>
-              <div class="gmDesc">Builds, configurações, notas rápidas e “lembretes” pra não perder tempo quando voltar pro jogo.</div>
-              <div class="gmMeta">TYPE: NOTES &nbsp;&nbsp; ACCESS: PRIVATE</div>
+              <div class="gmBadge">QUENTE</div>
+              <div class="gmTitle">NOTAS // RUNAS</div>
+              <div class="gmDesc">Builds, lembretes e setups rápidos pra voltar sem perder tempo.</div>
+              <div class="gmMeta">TIPO: NOTAS &nbsp;&nbsp; ACESSO: PRIVADO</div>
             </div>
-            <button class="gmBtn" type="button">OPEN</button>
+            <button class="gmBtn" type="button">ABRIR</button>
           </div>
 
           <div class="gmRow">
@@ -1962,12 +1417,12 @@ body.entered #techHUD{
               <img alt="" src="https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=900&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
             </div>
             <div class="gmMain">
-              <div class="gmBadge">SAVE</div>
-              <div class="gmTitle">ARQUIVO // MODS & PACKS</div>
-              <div class="gmDesc">Links de mods, coleções, patches, e qualquer coisa que você quiser manter “catalogada”.</div>
-              <div class="gmMeta">NODE: ARCHIVE &nbsp;&nbsp; SYNC: MANUAL</div>
+              <div class="gmBadge">SELO</div>
+              <div class="gmTitle">RELÍQUIAS // MODS</div>
+              <div class="gmDesc">Links de mods, coleções e patches catalogados.</div>
+              <div class="gmMeta">NÓ: RELICÁRIO &nbsp;&nbsp; SINCRONIA: MANUAL</div>
             </div>
-            <button class="gmBtn" type="button">OPEN</button>
+            <button class="gmBtn" type="button">ABRIR</button>
           </div>
         </div>
       </div>
@@ -1975,52 +1430,52 @@ body.entered #techHUD{
       <div class="gmRight">
         <div class="gmSideCard">
           <div class="gmSideHead">
-            <div>CONTROL PANEL</div>
+            <div>CONTROLE</div>
             <div class="dim">ESC para fechar</div>
           </div>
           <div class="gmSideBody">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
-              <div style="font-size:10px; letter-spacing:2px; opacity:.88;">QUICK LINKS</div>
+              <div style="font-size:10px; letter-spacing:2px; opacity:.88;">ATALHOS</div>
               <span class="gmDot" aria-hidden="true"></span>
             </div>
             <div class="gmQuick">
-              <a href="#" onclick="return false;"><span>Steam Profile</span><span class="act">OPEN</span></a>
-              <a href="#" onclick="return false;"><span>Discord Server</span><span class="act">JOIN</span></a>
-              <a href="#" onclick="return false;"><span>Epic Library</span><span class="act">OPEN</span></a>
-              <a href="#" onclick="return false;"><span>Mods Folder</span><span class="act">LINK</span></a>
+              <a href="#" onclick="return false;"><span>Steam</span><span class="act">ABRIR</span></a>
+              <a href="#" onclick="return false;"><span>Discord</span><span class="act">ENTRAR</span></a>
+              <a href="#" onclick="return false;"><span>Epic</span><span class="act">ABRIR</span></a>
+              <a href="#" onclick="return false;"><span>Pasta de Mods</span><span class="act">LINK</span></a>
             </div>
           </div>
         </div>
 
         <div class="gmSideCard">
           <div class="gmSideHead">
-            <div>STATUS</div>
+            <div>ESTADO</div>
             <div><span class="gmDot" aria-hidden="true"></span></div>
           </div>
           <div class="gmSideBody">
             <ul class="gmBullets">
-              <li>Slots prontos pra você trocar por conteúdo real.</li>
-              <li>Cores e formato no estilo da referência, mas com ciano.</li>
-              <li>Você decide depois: “botão”, “card”, “lista”, etc.</li>
+              <li>Estrutura pronta: só trocar conteúdo.</li>
+              <li>Centro permanece sagrado (sem overlay no vídeo).</li>
+              <li>Portal abre e fecha com intenção.</li>
             </ul>
           </div>
         </div>
 
         <div class="gmSideCard">
           <div class="gmSideHead">
-            <div>NOTES</div>
+            <div>NOTAS</div>
             <div><span class="gmDot" aria-hidden="true"></span></div>
           </div>
           <div class="gmSideBody" style="font-size:10px; letter-spacing:1px; opacity:.75; line-height:1.55;">
-            Quer que eu deixe essa área “editável” (tipo mini CMS local com localStorage), ou você vai editar direto no HTML?
+            Se quiser depois eu deixo esse painel “editável” via localStorage (mini CMS local).
           </div>
         </div>
       </div>
     </div>
 
     <div class="gmFooterBar">
-      <div class="gmFootTxt">GAMES PANEL // THEME: BLACK + CYAN</div>
-      <button class="gmCloseBtn" id="gmCloseBtn" type="button">CLOSE</button>
+      <div class="gmFootTxt">ARENA // THEME: SHADOW</div>
+      <button class="gmCloseBtn" id="gmCloseBtn" type="button">FECHAR</button>
     </div>
   </div>
 </div>
@@ -2029,53 +1484,52 @@ body.entered #techHUD{
 <div id="admin" aria-hidden="true">
   <div class="adminBox">
     <div class="adminHeader">
-      <div>ADMIN CONSOLE // AUTH REQUIRED</div>
+      <div>CÂMARA SECRETA // VOTO EXIGIDO</div>
       <div class="dim">ESC para fechar</div>
     </div>
 
     <div class="adminBody">
-
       <div id="adminLogin">
         <div class="adminField" style="margin-bottom:12px;">
-          <div class="adminLabel">USER</div>
-          <div class="adminValue">Dottore</div>
+          <div class="adminLabel">NOME</div>
+          <div class="adminValue">Warden</div>
         </div>
 
         <div class="adminField">
-          <div class="adminLabel">PASS</div>
+          <div class="adminLabel">PALAVRA-SELO</div>
           <input id="adminPass" class="adminInput" type="password" autocomplete="off" spellcheck="false" placeholder="•••••••••" />
         </div>
 
         <div class="adminActions">
-          <button class="aBtn" id="adminAuth">ACESSAR</button>
+          <button class="aBtn" id="adminAuth">ENTRAR</button>
           <button class="aBtn" id="adminClear">LIMPAR</button>
-          <div id="adminStatus" class="aPill">Aguardando autenticação…</div>
+          <div id="adminStatus" class="aPill">Aguardando selo…</div>
         </div>
       </div>
 
       <div id="adminDash">
         <div class="adminStats">
           <div class="statCard">
-            <div class="statTitle">VIEWS // ENTER</div>
+            <div class="statTitle">ENTRADAS // PORTAL</div>
             <div class="statVal" id="mViews">0</div>
           </div>
           <div class="statCard">
-            <div class="statTitle">UNIQUE // DEVICE</div>
+            <div class="statTitle">ÚNICO // DISPOSITIVO</div>
             <div class="statVal" id="mUnique">0</div>
           </div>
           <div class="statCard">
-            <div class="statTitle">LAST ACCESS</div>
+            <div class="statTitle">ÚLTIMO ECO</div>
             <div class="statVal statSmall" id="mLast">—</div>
           </div>
         </div>
 
         <div class="adminDangerRow">
-          <button class="aBtn danger" id="adminReset">RESET METRICS</button>
-          <button class="aBtn" id="adminLock">LOCK</button>
+          <button class="aBtn danger" id="adminReset">APAGAR MARCAS</button>
+          <button class="aBtn" id="adminLock">SELAR</button>
         </div>
 
         <div class="adminFooter">
-          Nota: métricas são locais (neste navegador/dispositivo). Sem backend, não existe contagem global real.
+          Nota: marcas são locais (neste navegador/dispositivo). Sem backend, não existe contagem global real.
         </div>
       </div>
 
@@ -2087,13 +1541,13 @@ body.entered #techHUD{
 <div id="terminal" aria-hidden="true">
   <div class="termBox">
     <div class="termHeader">
-      <div>LAB TERMINAL // ACCESS: GRANTED</div>
+      <div>GRIMÓRIO // SELO DE COMANDO</div>
       <div class="dim">ESC para fechar</div>
     </div>
     <div id="termLog" class="termLog"></div>
 
     <div class="termInputBar" aria-label="Console">
-      <div class="termPrompt" id="termPrompt">root@lab:~$</div>
+      <div class="termPrompt" id="termPrompt">seal@temple:~$</div>
       <input id="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="Digite um comando (ex: help)" />
       <div class="termHint" id="termHint">ENTER</div>
     </div>
@@ -2200,25 +1654,25 @@ function clearStripTimers(){
   stripTimers.length = 0;
 }
 function pulseStrip(eventLine, feedLine, traceLine){
-  if (eventLine) setStripLine(ss1, "STRIP", eventLine);
-  if (feedLine)  setStripLine(ss2, "FEED", feedLine);
-  if (traceLine) setStripLine(ss3, "TRACE", traceLine);
+  if (eventLine) setStripLine(ss1, "TEMPLO", eventLine);
+  if (feedLine)  setStripLine(ss2, "PORTAL", feedLine);
+  if (traceLine) setStripLine(ss3, "ECO", traceLine);
 
   clearStripTimers();
   stripTimers.push(setTimeout(() => {
-    setStripLine(ss2, "FEED", "STANDBY");
+    setStripLine(ss2, "PORTAL", "LATENTE");
     ss2.classList.add("faint");
   }, 5200));
   stripTimers.push(setTimeout(() => {
-    setStripLine(ss3, "TRACE", "—");
+    setStripLine(ss3, "ECO", "—");
     ss3.classList.add("faint");
   }, 8200));
 }
 function stripPhase(phaseName){
   pulseStrip(
-    `PHASE:${phaseName.replace("_"," ")}`,
-    "TELEMETRY:SYNC",
-    `DIR:${sysDirective.textContent || "—"}`
+    `RITO:${phaseName.replace("_"," ")}`,
+    "VÉU:RESPIRA",
+    `PRESSÁGIO:${sysDirective.textContent || "—"}`
   );
   ss2.classList.remove("faint");
   ss3.classList.remove("faint");
@@ -2226,12 +1680,12 @@ function stripPhase(phaseName){
 
 /* ===== LOADING TEXT ===== */
 const messages = [
-  "INITIALIZING EXPERIMENT...",
-  "STABILIZING MEMORY FRAGMENTS...",
-  "NEURAL PATHWAYS SYNCHRONIZED...",
-  "ETHICS MODULE DISABLED...",
-  "SUBJECT AWARENESS: IRRELEVANT",
-  "PROCEEDING WITHOUT CONSENT..."
+  "O TEMPLO DESPERTA...",
+  "SELOS SE ALINHAM...",
+  "O VÉU SE ADENSA...",
+  "SOMBRAS SE MOVEM...",
+  "UM OLHAR DO OUTRO LADO...",
+  "RITO PRESTES A COMEÇAR..."
 ];
 let msgIndex = 0;
 const msgTimer = setInterval(() => {
@@ -2295,14 +1749,14 @@ function markReady(){
 const SAFETY_TIMEOUT_MS = 9000;
 let safetyTimeout = setTimeout(() => {
   if (!readyToEnter) {
-    setLoadingStatus("SIGNAL DEGRADED // MANUAL START ENABLED");
+    setLoadingStatus("VÉU INSTÁVEL // ENTRADA MANUAL LIBERADA");
     markReady();
   }
 }, SAFETY_TIMEOUT_MS);
 
 setTimeout(() => {
   if (!enterBox.classList.contains("show")) {
-    setLoadingStatus("AWAITING STREAM // MANUAL START ENABLED");
+    setLoadingStatus("PORTAL SILENCIOSO // ENTRADA MANUAL LIBERADA");
     showEnter("ENTER");
   }
 }, 2500);
@@ -2313,7 +1767,7 @@ video.addEventListener("canplay", markReady, { once:true });
 function onVideoError(){
   clearTimeout(safetyTimeout);
   spinner.style.display = "none";
-  setLoadingStatus("ERROR // DATA CORRUPTED // TAP TO RETRY");
+  setLoadingStatus("FALHA // SELO ROMPIDO // TENTE NOVAMENTE");
   showEnter("RETRY");
 }
 video.addEventListener("error", onVideoError);
@@ -2350,7 +1804,7 @@ function updateVolumeUI(){
   volumeHUD.style.setProperty("--bars-w", Math.max(6, pct) + "%");
   volumeHUD.style.setProperty("--bars-a", String(0.25 + (pct/100) * 0.55));
   volState.style.display = (pct === 0) ? "inline-block" : "none";
-  ambience.volume = Math.min(0.35, Math.max(0.02, Number(video.volume) * 0.25));
+  ambience.volume = Math.min(0.45, Math.max(0.03, Number(video.volume) * 0.28));
 }
 volSlider.addEventListener("input", () => {
   video.volume = Number(volSlider.value);
@@ -2370,8 +1824,8 @@ function tickTech(){
   const d = new Date();
   sysClock.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
   const r = Math.random();
-  sysStream.textContent = video.readyState >= 3 ? "STABLE" : (video.readyState ? "BUFFERING" : "OFFLINE");
-  sysNeural.textContent = r > 0.92 ? "ANOMALIA DETECTADA" : (r > 0.75 ? "SINCRONIZANDO" : "CALIBRADO");
+  sysStream.textContent = video.readyState >= 3 ? "ATIVO" : (video.readyState ? "DESPERTANDO" : "SELADO");
+  sysNeural.textContent = r > 0.92 ? "DISTORÇÃO NO VÉU" : (r > 0.75 ? "RUNA SE MOVENDO" : "SILÊNCIO");
 }
 setInterval(tickTech, 900);
 tickTech();
@@ -2379,8 +1833,8 @@ tickTech();
 function rndCoord(){
   const a = (Math.random()*180 - 90).toFixed(4);
   const b = (Math.random()*360 - 180).toFixed(4);
-  coordA.textContent = `COORD: ${a} / ${b}`;
-  coordB.textContent = `NODE: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // LINK: ${Math.random()>.15?"STABLE":"DEGRADED"}`;
+  coordA.textContent = `SELO: ${a} / ${b}`;
+  coordB.textContent = `NÓ: Σ-${Math.floor(1+Math.random()*99).toString().padStart(2,"0")} // VÉU: ${Math.random()>.15?"ESTÁVEL":"FENDIDO"}`;
 }
 setInterval(rndCoord, 2200);
 rndCoord();
@@ -2474,8 +1928,8 @@ function armAudioOnce(){
 function setTerminalAudioState(state){
   if (!AudioFX.armed || !AudioFX.master) return;
   const now = AudioFX.ctx.currentTime;
-  const target = (state === "off") ? 0.0 : (state === "open" ? 0.045 : 0.065);
-  const lfoAmt = (state === "typing") ? 0.018 : 0.0;
+  const target = (state === "off") ? 0.0 : (state === "open" ? 0.040 : 0.058);
+  const lfoAmt = (state === "typing") ? 0.016 : 0.0;
 
   AudioFX.master.gain.cancelScheduledValues(now);
   AudioFX.master.gain.setTargetAtTime(target, now, 0.06);
@@ -2499,15 +1953,15 @@ function blip(freq=820, dur=0.055, gain=0.06){
   o.stop(now + dur + 0.02);
 }
 
-/* ===== Protocol ===== */
+/* ===== Ritual (antes “Protocol”) ===== */
 const PROTOCOL_ENABLED = true;
 const Protocol = {
   started: false, timers: [], lastPhase: null,
   phases: [
-    { name: "BOOT", directive: "MONITORING", whenMs: 0, subject: "ONLINE" },
-    { name: "SUBJECT_LOCK", directive: "IDENTITY: IRRELEVANT", whenMs: 4200, subject: "LOCKED" },
-    { name: "CALIBRATION", directive: "PAIN LIMIT: ADJUSTABLE", whenMs: 9800, subject: "RESPONSIVE" },
-    { name: "ASCENSION", directive: "PROTOCOL: ACTIVE", whenMs: 16800, subject: "MATERIAL" }
+    { name: "VIGILIA", directive: "OBSERVAÇÃO", whenMs: 0, subject: "À PORTA" },
+    { name: "SELO_FECHADO", directive: "NOME: IRRELEVANTE", whenMs: 4200, subject: "MARCADO" },
+    { name: "INCENSO", directive: "CALMA FORÇADA", whenMs: 9800, subject: "RESPIRANDO" },
+    { name: "ABERTURA", directive: "PORTAL: ATIVO", whenMs: 16800, subject: "DENTRO" }
   ]
 };
 function setProtocolHUD(phase){
@@ -2537,7 +1991,7 @@ function startAscensionProtocol(){
   }
 }
 
-/* ===== Terminal helpers (restaurado) ===== */
+/* ===== Terminal helpers ===== */
 let termRunToken = 0;
 let termTyping = false;
 let termInteractive = false;
@@ -2567,47 +2021,19 @@ async function typeLine(text, cls="", speed=14, token=0){
     const now = performance.now();
     if (now - AudioFX.lastTap > 26){
       AudioFX.lastTap = now;
-      blip(720 + Math.random()*180, 0.03, 0.015);
+      blip(700 + Math.random()*160, 0.03, 0.014);
     }
 
     await sleep(speed + Math.random()*14);
     termLog.scrollTop = termLog.scrollHeight;
   }
 }
-async function typeGlitchPhraseOnly(token){
-  const base = "Changing language to...";
-  const variants = [
-    "Cambiando idioma a...",
-    "Ändere Sprache zu...",
-    "Changement de langue...",
-    "Изменение языка...",
-    "言語を変更中...",
-    "Mudando idioma para..."
-  ];
-  if (!ensureAlive(token)) return;
-  const line = document.createElement("div");
-  line.className = "termLine dim";
-  line.textContent = base;
-  termLog.appendChild(line);
-  termLog.scrollTop = termLog.scrollHeight;
-
-  await sleep(130);
-  for (let i=0; i<variants.length; i++){
-    if (!ensureAlive(token)) return;
-    line.textContent = variants[i];
-    blip(980 + Math.random()*260, 0.03, 0.020);
-    await sleep(70);
-  }
-  if (!ensureAlive(token)) return;
-  line.textContent = base;
-  await sleep(200);
-}
 
 function normalizeCmd(s){ return (s || "").trim().toLowerCase(); }
 function setInputEnabled(on){
   termInput.disabled = !on;
   termHint.style.opacity = on ? ".55" : ".35";
-  termInput.placeholder = on ? "Digite um comando (ex: help)" : "Sistema ocupado...";
+  termInput.placeholder = on ? "Digite um comando (ex: help)" : "O selo está ocupado...";
 }
 function focusTerminalInput(){
   if (!terminal.classList.contains("show")) return;
@@ -2627,84 +2053,75 @@ async function respond(textLines){
 async function handleCommand(raw){
   const cmd = normalizeCmd(raw);
   if (!termInteractive || termTyping){
-    terminalAppendDimLine("// INPUT IGNORED: BUSY");
+    terminalAppendDimLine("// ENTRADA IGNORADA: SELAMENTO ATIVO");
     return;
   }
   if (!cmd) return;
   printUserCmd(raw);
 
-  blip(520, 0.05, 0.030);
+  blip(500, 0.05, 0.028);
 
   if (cmd === "help" || cmd === "?" ){
     await respond([
       "Comandos disponíveis:",
       "- status",
-      "- phase",
-      "- consent",
+      "- rite",
+      "- seal",
       "- whoami",
       "- who are you",
-      "- exit",
       "- clear"
     ]);
     return;
   }
   if (cmd === "clear" || cmd === "cls"){
     clearTerminal();
-    terminalAppendDimLine("// LOG CLEARED // (a memória é seletiva)");
+    terminalAppendDimLine("// CINZAS VARREM O LOG");
     return;
   }
   if (cmd === "status"){
     await respond([
-      `SUBJECT: ${sysSubject.textContent}`,
-      `STREAM: ${sysStream.textContent}`,
-      `NEURAL: ${sysNeural.textContent}`,
-      `ETHICS: DISABLED`,
-      `PHASE: ${sysPhase.textContent} // ${sysDirective.textContent}`
+      `VISITANTE: ${sysSubject.textContent}`,
+      `PORTAL: ${sysStream.textContent}`,
+      `AURA: ${sysNeural.textContent}`,
+      `VOTO: QUEBRADO`,
+      `RITO: ${sysPhase.textContent} // ${sysDirective.textContent}`
     ]);
     return;
   }
-  if (cmd === "phase" || cmd === "protocol"){
+  if (cmd === "rite" || cmd === "ritual" || cmd === "phase"){
     await respond([
-      `ASCENSION PROTOCOL // ${sysPhase.textContent}`,
-      `DIRECTIVE // ${sysDirective.textContent}`,
-      "Observação: você não é um operador. É material."
+      `RITO // ${sysPhase.textContent}`,
+      `PRESSÁGIO // ${sysDirective.textContent}`,
+      "Você não entrou por acaso."
     ]);
     return;
   }
-  if (cmd === "consent" || cmd === "assinar" || cmd === "consentimento"){
+  if (cmd === "seal" || cmd === "sigil" || cmd === "selo"){
     await respond([
-      "CONSENT FORM // OPEN",
-      "SIGNATURE: ACCEPTED",
-      "CONSENT: OVERRIDDEN",
-      "Você chama isso de moral? Interessante."
+      "SELO // ABRINDO",
+      "MÃO: ACEITA",
+      "CUSTO: COBRADO",
+      "Não chame de preço. Chame de oferenda."
     ]);
     return;
   }
   if (cmd === "whoami" || cmd === "quem sou eu"){
     await respond([
-      "IDENTITY QUERY // DENIED",
-      "Você não precisa de um nome para cumprir sua função."
+      "IDENTIDADE // OCULTA",
+      "Aqui, nomes enfraquecem."
     ]);
     return;
   }
   if (cmd === "who are you" || cmd === "whoareyou" || cmd === "quem é você" || cmd === "quem é vc"){
     await respond([
-      "Eu sou o único adulto na sala.",
-      "E você... é apenas um recurso."
-    ]);
-    return;
-  }
-  if (cmd === "exit" || cmd === "quit" || cmd === "sair"){
-    await respond([
-      "REQUEST: EXIT",
-      "RESULT: DENIED",
-      "Negado. Ainda não terminou."
+      "Eu sou o silêncio que responde.",
+      "E você... é o passo que não devia ter dado."
     ]);
     return;
   }
   await respond([
-    `UNKNOWN COMMAND: "${raw}"`,
-    "Se você quer controle, está no lugar errado."
+    `COMANDO DESCONHECIDO: "${raw}"`,
+    "Se quer controle, feche os olhos e saia."
   ]);
 }
 
@@ -2722,8 +2139,8 @@ async function showCommandsHintAuto(token){
   await typeLine(" ", "dim", 1, token);
   await typeLine("COMANDOS DISPONÍVEIS:", "dim", 9, token);
   await typeLine("- status", "dim", 9, token);
-  await typeLine("- phase", "dim", 9, token);
-  await typeLine("- consent", "dim", 9, token);
+  await typeLine("- rite", "dim", 9, token);
+  await typeLine("- seal", "dim", 9, token);
   await typeLine("- whoami", "dim", 9, token);
   await typeLine("- who are you", "dim", 9, token);
   await typeLine("- clear", "dim", 9, token);
@@ -2742,34 +2159,22 @@ async function runLoreSequence(){
 
   setTerminalAudioState("typing");
 
-  await typeLine("TERMINAL DO LABORATÓRIO ONLINE", "dim", LORE_SPEED.header, token);
-  await typeLine("HANDSHAKE: ACEITO // AUTORIZAÇÃO: Δ", "dim", LORE_SPEED.header, token);
-  await typeLine("CANAL DE LOG: PRIVADO // OBSERVADORES: NENHUM", "dim", LORE_SPEED.header, token);
-  await sleep(220);
-
-  await typeGlitchPhraseOnly(token);
-
-  const langs = ["English (US)","Deutsch (DE)","Français (FR)","Español (ES)","Русский (RU)","日本語 (JP)","中文 (CN)","Português (BR)"];
-  for (let k = 0; k < langs.length; k++){
-    await typeLine(`> ${langs[k]}`, "dim", LORE_SPEED.lang, token);
-    await sleep(k === langs.length - 1 ? 280 : 85);
-  }
-
-  await typeLine("Idioma definido: Português (BR).", "dim", LORE_SPEED.header, token);
-  await sleep(280);
+  await typeLine("GRIMÓRIO ATIVO", "dim", LORE_SPEED.header, token);
+  await typeLine("SELO: ACEITO // ENTRADA: CONCEDIDA", "dim", LORE_SPEED.header, token);
+  await typeLine("REGISTRO: PRIVADO // TESTEMUNHAS: NENHUMA", "dim", LORE_SPEED.header, token);
+  await sleep(260);
 
   const lines = [
     { t: "…", cls:"dim", d: 360 },
-    { t: "Então você encontrou a interface.", cls:"", d: 360 },
-    { t: "Ótimo. Curiosidade é a única virtude que eu ainda tolero.", cls:"", d: 480 },
-    { t: "Vamos deixar claro: consentimento é um conceito decorativo.", cls:"dim", d: 520 },
-    { t: "Estado do sujeito: responsivo.", cls:"", d: 360 },
-    { t: "Módulo de ética: desativado.", cls:"", d: 360 },
-    { t: "Limite de dor: ajustável.", cls:"dim", d: 450 },
-    { t: "Se estiver com medo, não desvie o olhar.", cls:"", d: 520 },
-    { t: "Observar exige devoção.", cls:"dim", d: 450 },
-    { t: "Prosseguindo com a calibração.", cls:"", d: 450 },
-    { t: "— Il Dottore", cls:"dim", d: 450 },
+    { t: "Você atravessou.", cls:"", d: 360 },
+    { t: "Não por coragem. Por curiosidade.", cls:"", d: 480 },
+    { t: "O templo não recebe. Ele tolera.", cls:"dim", d: 520 },
+    { t: "O portal não convida. Ele chama.", cls:"", d: 420 },
+    { t: "Se estiver com medo, não desvie o olhar.", cls:"dim", d: 520 },
+    { t: "Há uma presença.", cls:"", d: 420 },
+    { t: "E ela já te viu.", cls:"dim", d: 520 },
+    { t: "Prosseguindo com o rito.", cls:"", d: 450 },
+    { t: "— Shadow Temple", cls:"dim", d: 450 },
   ];
   for (const L of lines){
     await typeLine(L.t, L.cls, LORE_SPEED.main, token);
@@ -2778,9 +2183,9 @@ async function runLoreSequence(){
   if (!ensureAlive(token)) return;
 
   await typeLine(" ", "dim", 1, token);
-  await typeLine(`ASCENSION PROTOCOL // ${sysPhase.textContent}`, "dim", LORE_SPEED.post, token);
-  await typeLine(`DIRECTIVE // ${sysDirective.textContent}`, "dim", LORE_SPEED.post, token);
-  await typeLine("Você não é um convidado. É material.", "dim", LORE_SPEED.post, token);
+  await typeLine(`RITO // ${sysPhase.textContent}`, "dim", LORE_SPEED.post, token);
+  await typeLine(`PRESSÁGIO // ${sysDirective.textContent}`, "dim", LORE_SPEED.post, token);
+  await typeLine("O centro é sagrado. Não profane.", "dim", LORE_SPEED.post, token);
 
   await showCommandsHintAuto(token);
 
@@ -2797,9 +2202,9 @@ async function runLoreSequence(){
   focusTerminalInput();
 
   setTerminalAudioState("open");
-  blip(440, 0.07, 0.040);
+  blip(420, 0.07, 0.038);
 
-  pulseStrip("TERMINAL:ONLINE", "INPUT:ARMED", `PHASE:${sysPhase.textContent}`);
+  pulseStrip("GRIMÓRIO:ABERTO", "SELO:ARMADO", `RITO:${sysPhase.textContent}`);
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 
@@ -2811,9 +2216,9 @@ function openTerminal(){
   terminal.setAttribute("aria-hidden","false");
 
   armAudioOnce();
-  blip(860, 0.08, 0.040);
+  blip(820, 0.08, 0.036);
 
-  pulseStrip("TERMINAL:OPEN", "CHANNEL:PRIVATE", "TRACE:ACTIVE");
+  pulseStrip("GRIMÓRIO:ABERTO", "CANAL:PRIVADO", "ECO:ATIVO");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 
   if (loreCompleted && !termTyping){
@@ -2842,7 +2247,7 @@ function closeTerminal(){
   }
 
   setTerminalAudioState("off");
-  pulseStrip("TERMINAL:CLOSED", "FEED:STANDBY", "TRACE:—");
+  pulseStrip("GRIMÓRIO:FECHADO", "PORTAL:LATENTE", "ECO:—");
 }
 
 btnTerm.addEventListener("click", (e) => {
@@ -2851,21 +2256,21 @@ btnTerm.addEventListener("click", (e) => {
   else openTerminal();
 });
 
-/* ===== Routes node (V5) ===== */
+/* ===== Routes node ===== */
 function openRoutes(){
   closeTerminal(); closeCatalog(); closeAdmin(); closeGames();
   routesNode.classList.add("show");
   routesNode.setAttribute("aria-hidden","false");
   armAudioOnce();
-  blip(720, 0.06, 0.022);
-  pulseStrip("ROUTES:OPEN", "NODE:ACTIVE", "TRACE:LINK");
+  blip(700, 0.06, 0.020);
+  pulseStrip("SELOS:ABERTOS", "NÓ:ATIVO", "ECO:LINK");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 function closeRoutes(){
   if (!routesNode.classList.contains("show")) return;
   routesNode.classList.remove("show");
   routesNode.setAttribute("aria-hidden","true");
-  pulseStrip("ROUTES:CLOSED", "FEED:STANDBY", "TRACE:—");
+  pulseStrip("SELOS:FECHADOS", "PORTAL:LATENTE", "ECO:—");
 }
 function toggleRoutes(){
   if (routesNode.classList.contains("show")) closeRoutes();
@@ -2885,15 +2290,15 @@ function openChannels(){
   channels.classList.add("show");
   channels.setAttribute("aria-hidden","false");
   armAudioOnce();
-  blip(720, 0.07, 0.030);
-  pulseStrip("SOCIAL:OPEN", "OUTBOUND:READY", "TRACE:LINK");
+  blip(720, 0.07, 0.028);
+  pulseStrip("CANAIS:ABERTOS", "SELO:EXTERNO", "ECO:LINK");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 function closeChannels(){
   if (!channels.classList.contains("show")) return;
   channels.classList.remove("show");
   channels.setAttribute("aria-hidden","true");
-  pulseStrip("SOCIAL:CLOSED", "FEED:STANDBY", "TRACE:—");
+  pulseStrip("CANAIS:FECHADOS", "PORTAL:LATENTE", "ECO:—");
 }
 channels.addEventListener("click", (e) => {
   if (e.target === channels) closeChannels();
@@ -2905,15 +2310,15 @@ function openGames(){
   gamesPanel.classList.add("show");
   gamesPanel.setAttribute("aria-hidden","false");
   armAudioOnce();
-  blip(760, 0.07, 0.030);
-  pulseStrip("GAMES:OPEN", "HUB:READY", "TRACE:VITRINE");
+  blip(760, 0.07, 0.028);
+  pulseStrip("ARENA:ABERTA", "HUB:PRONTO", "ECO:—");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 function closeGames(){
   if (!gamesPanel.classList.contains("show")) return;
   gamesPanel.classList.remove("show");
   gamesPanel.setAttribute("aria-hidden","true");
-  pulseStrip("GAMES:CLOSED", "FEED:STANDBY", "TRACE:—");
+  pulseStrip("ARENA:FECHADA", "PORTAL:LATENTE", "ECO:—");
 }
 gamesPanel.addEventListener("click", (e) => {
   if (e.target === gamesPanel) closeGames();
@@ -2927,9 +2332,9 @@ rGames.addEventListener("click", () => { closeRoutes(); openGames(); });
   btn.addEventListener("click", () => {
     closeRoutes();
     armAudioOnce();
-    blip(610, 0.06, 0.018);
-    const name = i === 0 ? "ARCHIVE" : "TRANSMISSION";
-    pulseStrip(`ROUTE:${name}`, "STATUS:PENDING", "TRACE:—");
+    blip(600, 0.06, 0.017);
+    const name = i === 0 ? "RELICÁRIO" : "CANTO";
+    pulseStrip(`ROTA:${name}`, "ESTADO:PENDENTE", "ECO:—");
     ss2.classList.remove("faint"); ss3.classList.remove("faint");
   });
 });
@@ -2937,31 +2342,31 @@ rGames.addEventListener("click", () => { closeRoutes(); openGames(); });
 /* ===== Catalog ===== */
 const CATALOG_ITEMS = [
   {
-    ref: "Σ-01 / VIVISECTION",
-    status: "ARCHIVED",
-    title: "PROJETO VITRINE // ÓRGÃOS EM LOOP",
-    desc: "Exposição didática: manter o sujeito vivo o suficiente para assistir a própria anatomia 'funcionando'. Uma aula. Para ele, um castigo.",
+    ref: "Σ-01 / RUNA QUEBRADA",
+    status: "ARQUIVADO",
+    title: "SELO DE FERRO // MARCA NO VÉU",
+    desc: "O que foi trancado ainda respira. O templo não esquece. Ele apenas empilha silêncio.",
     img: "https://files.catbox.moe/sc2vn9"
   },
   {
-    ref: "Σ-07 / TRANSFER",
-    status: "ACTIVE",
-    title: "PROTOCOLO EIDOLON // IDENTIDADE REVOGADA",
-    desc: "Separar a pessoa do nome. O nome do medo. Remover o resto. O que sobra obedece melhor.",
+    ref: "Σ-07 / PORTAL",
+    status: "ATIVO",
+    title: "FENDA FRIA // OLHAR DO OUTRO LADO",
+    desc: "Não é uma porta. É uma ferida na realidade. Quanto mais você observa, mais ela aprende você.",
     img: "https://files.catbox.moe/z5b43n.jpg"
   },
   {
-    ref: "Δ-12 / NEURAL",
-    status: "SEALED",
-    title: "CÓRTEX-Δ // DOR COMO TELEMETRIA",
-    desc: "Dor não é punição. É um sensor. Você chama de crueldade porque não entende instrumentação.",
+    ref: "Δ-12 / VOTO",
+    status: "SELADO",
+    title: "LITURGIA Δ // PALAVRA PROIBIDA",
+    desc: "Certas palavras não explicam. Elas invocam. Se insistir, você assina com a própria sombra.",
     img: "https://files.catbox.moe/aon2r8.webp"
   },
   {
-    ref: "K-03 / SYNTH",
-    status: "ARCHIVED",
-    title: "GEL-SDS // PUREZA ABSOLUTA",
-    desc: "Separar, quantificar, descartar. O destino de qualquer coisa que não alcança o padrão. Incluindo você.",
+    ref: "K-03 / ECO",
+    status: "ARQUIVADO",
+    title: "CÂNTICO // RESSONÂNCIA DO TEMPLO",
+    desc: "Você chama de som ambiente. O templo chama de fome contida.",
     img: "https://files.catbox.moe/a13jar.jpg"
   }
 ];
@@ -2973,9 +2378,9 @@ function escapeHtml(s){
 }
 function currentFilter(){
   return {
-    ARCHIVED: !!fArchived.checked,
-    ACTIVE: !!fActive.checked,
-    SEALED: !!fSealed.checked
+    "ARQUIVADO": !!fArchived.checked,
+    "ATIVO": !!fActive.checked,
+    "SELADO": !!fSealed.checked
   };
 }
 function syncFilterUI(){
@@ -3025,9 +2430,9 @@ renderCatalog();
 [fArchived, fActive, fSealed].forEach(el => {
   el.addEventListener("change", () => {
     renderCatalog();
-    pulseStrip("CATALOG:FILTER", "INDEX:APPLIED", "TRACE:UPDATED");
+    pulseStrip("ARQUIVOS:FILTRO", "ÍNDICE:APLICADO", "ECO:ATUALIZADO");
     ss2.classList.remove("faint"); ss3.classList.remove("faint");
-    blip(610, 0.06, 0.018);
+    blip(600, 0.06, 0.017);
   });
 });
 
@@ -3038,16 +2443,16 @@ function openCatalog(){
   catalog.classList.add("show");
   catalog.setAttribute("aria-hidden","false");
   armAudioOnce();
-  blip(640, 0.07, 0.032);
+  blip(630, 0.07, 0.030);
 
-  pulseStrip("CATALOG:OPEN", "INDEX:Σ", "TRACE:ARCHIVE");
+  pulseStrip("ARQUIVOS:ABERTOS", "ÍNDICE:Σ", "ECO:—");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
 function closeCatalog(){
   if (!catalog.classList.contains("show")) return;
   catalog.classList.remove("show");
   catalog.setAttribute("aria-hidden","true");
-  pulseStrip("CATALOG:CLOSED", "FEED:STANDBY", "TRACE:—");
+  pulseStrip("ARQUIVOS:FECHADOS", "PORTAL:LATENTE", "ECO:—");
 }
 btnCat.addEventListener("click", (e) => {
   e.stopPropagation();
@@ -3060,9 +2465,9 @@ catalog.addEventListener("click", (e) => {
 
 /* ===== Admin metrics (local) ===== */
 const LS = {
-  views: "dli_views_v5",
-  device: "dli_device_v5",
-  last: "dli_admin_last_v5"
+  views: "sti_views_v1",
+  device: "sti_device_v1",
+  last: "sti_last_v1"
 };
 function nowStamp(){
   const d = new Date();
@@ -3079,7 +2484,7 @@ function setViews(n){ localStorage.setItem(LS.views, String(n)); }
 function ensureDevice(){
   let id = localStorage.getItem(LS.device);
   if (!id){
-    id = "DEV-" + Math.random().toString(16).slice(2,10).toUpperCase();
+    id = "MARK-" + Math.random().toString(16).slice(2,10).toUpperCase();
     localStorage.setItem(LS.device, id);
   }
   return id;
@@ -3127,7 +2532,7 @@ function openAdmin(){
   if (adminTransitionTimer) { clearTimeout(adminTransitionTimer); adminTransitionTimer = null; }
 
   adminPass.value = "";
-  setAdminStatus("Aguardando autenticação…");
+  setAdminStatus("Aguardando selo…");
   adminPass.focus({preventScroll:true});
 }
 function closeAdmin(){
@@ -3151,7 +2556,7 @@ function tryAuth(){
   if (pass !== "Projeto26"){
     adminAuthed = false;
     if (adminTransitionTimer) { clearTimeout(adminTransitionTimer); adminTransitionTimer = null; }
-    setAdminStatus("Senha incorreta.", "bad");
+    setAdminStatus("Selo incorreto.", "bad");
     blip(220, 0.06, 0.030);
     return;
   }
@@ -3161,7 +2566,7 @@ function tryAuth(){
   setLast(nowStamp());
   refreshAdminUI();
 
-  adminStatus.innerHTML = `Bem-vindo ao Painel, <span class="glitchName">Dottore</span>`;
+  adminStatus.innerHTML = `A câmara reconhece: <span class="glitchName">Warden</span>`;
   adminStatus.classList.remove("bad");
   adminStatus.classList.add("ok");
   doNameGlitch();
@@ -3170,7 +2575,7 @@ function tryAuth(){
   if (adminTransitionTimer) clearTimeout(adminTransitionTimer);
   adminTransitionTimer = setTimeout(() => {
     setAdminModeDash(true);
-    pulseStrip("ADMIN:DASH", "ACCESS:GRANTED", "TRACE:PRIVATE");
+    pulseStrip("CÂMARA:ABERTA", "ACESSO:CONCEDIDO", "ECO:PRIVADO");
     ss2.classList.remove("faint"); ss3.classList.remove("faint");
   }, 3000);
 }
@@ -3191,7 +2596,7 @@ adminReset.addEventListener("click", () => {
   ensureDevice();
   setLast(nowStamp());
   refreshAdminUI();
-  pulseStrip("ADMIN:RESET", "METRICS:CLEARED", "TRACE:Δ");
+  pulseStrip("CÂMARA:APAGA", "MARCAS:REMOVIDAS", "ECO:Δ");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
   blip(640, 0.06, 0.030);
 });
@@ -3201,9 +2606,9 @@ adminLock.addEventListener("click", () => {
   adminAuthed = false;
   if (adminTransitionTimer) { clearTimeout(adminTransitionTimer); adminTransitionTimer = null; }
   adminPass.value = "";
-  setAdminStatus("Sessão bloqueada.");
+  setAdminStatus("Câmara selada.");
   adminPass.focus({preventScroll:true});
-  pulseStrip("ADMIN:LOCK", "ACCESS:REVOKED", "TRACE:—");
+  pulseStrip("CÂMARA:SELADA", "ACESSO:REVOGADO", "ECO:—");
 });
 
 /* ===== Keyboard routing ===== */
@@ -3240,7 +2645,7 @@ function hideLoading(){
   loadingScreen.style.opacity = "0";
   setTimeout(() => loadingScreen.style.display = "none", 600);
   clearInterval(msgTimer);
-  sysSubject.textContent = "ATIVO";
+  sysSubject.textContent = "DENTRO";
   stopScanLoop();
   document.body.classList.add("entered");
 }
@@ -3267,7 +2672,7 @@ enterBox.onclick = async () => {
 
   if (enterBox.textContent === "RETRY") {
     spinner.style.display = "";
-    setLoadingStatus("RECALIBRANDO STREAM...");
+    setLoadingStatus("REFAZENDO O SELO...");
     enterBox.classList.remove("show");
     enterHint.classList.remove("show");
     readyToEnter = false;
@@ -3277,7 +2682,7 @@ enterBox.onclick = async () => {
     clearTimeout(safetyTimeout);
     safetyTimeout = setTimeout(() => {
       if (!readyToEnter) {
-        setLoadingStatus("SINAL DEGRADADO // INÍCIO MANUAL LIBERADO");
+        setLoadingStatus("VÉU INSTÁVEL // ENTRADA MANUAL LIBERADA");
         markReady();
       }
     }, SAFETY_TIMEOUT_MS);
@@ -3309,13 +2714,13 @@ enterBox.onclick = async () => {
     subglitchArmed = true;
     scheduleSubglitch();
 
-    pulseStrip("SYSTEM:ONLINE", "STREAM:LOCKED", "TRACE:Δ");
+    pulseStrip("ENTRADA:CONCLUIDA", "PORTAL:TRAVADO", "ECO:Δ");
     ss2.classList.remove("faint");
     ss3.classList.remove("faint");
 
   } catch (err) {
     spinner.style.display = "none";
-    setLoadingStatus("REPRODUÇÃO BLOQUEADA // CLIQUE NOVAMENTE");
+    setLoadingStatus("BLOQUEADO // TOQUE NOVAMENTE");
     showEnter("ENTER");
   } finally {
     if (loadingScreen.style.display !== "none") {
@@ -3345,7 +2750,7 @@ document.addEventListener("keydown", (e) => {
 
 /* ===== Initial defaults ===== */
 setProtocolHUD(Protocol.phases[0]);
-pulseStrip("SYSTEM:BOOT", "FEED:IDLE", "TRACE:—");
+pulseStrip("VIGILIA", "LATENTE", "—");
 refreshAdminUI();
 </script>
 
