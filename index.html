@@ -250,7 +250,9 @@ body.entered #enterFooterLeft{ display:none; }
   text-shadow:0 0 10px rgba(0,200,255,.10);
 }
 #versionTag .v{opacity:.85;color:rgba(207,239,255,.85);}
-#loadingScreen #versionTag{ z-index:12; }
+#loadingScreen #versionTag{
+  z-index:12;
+}
 
 /* ========= HUDS ========= */
 .hud{
@@ -296,9 +298,11 @@ body.entered #enterFooterLeft{ display:none; }
 #techHUD .value{opacity:.9; color:rgba(207,239,255,.95)}
 #techHUD .sep{opacity:.25}
 
-/* ✅ agora: COORD + SYS só no ENTER */
+/* ✅ Só na tela ENTER (some após entrar) */
 body.entered #coordsHUD,
-body.entered #techHUD{ display:none; }
+body.entered #techHUD{
+  display:none;
+}
 
 /* ===== Status Strip (thin left micro logs) ===== */
 #statusStrip{
@@ -417,30 +421,31 @@ body.entered #techHUD{ display:none; }
 }
 #socialControl:hover{opacity:1}
 
+/* ✅ Ajuste: pill com "altura visual" mais perto dos botões */
 .linkPill{
-  height:28px;
-  padding:0 10px;
+  height:34px;                 /* era 28 */
+  padding:0 12px;
   border-radius:999px;
   border:1px solid rgba(170,240,255,.45);
   background:
     radial-gradient(circle at 30% 30%, rgba(170,240,255,.12), transparent 58%),
-    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.10));
+    linear-gradient(180deg, rgba(12,24,44,.48), rgba(0,0,0,.22));
   backdrop-filter: blur(18px);
   cursor:pointer;
   display:flex;
   align-items:center;
-  gap:7px;
+  gap:8px;
   color:rgba(235,252,255,.96);
   letter-spacing:3px;
-  font-size:8px;
+  font-size:9px;               /* era 8 */
   box-shadow:
     0 0 0 1px rgba(255,255,255,.04) inset,
     0 10px 30px rgba(0,0,0,.26);
   position:relative;
 }
 .linkPill svg{
-  width:16px;
-  height:16px;
+  width:18px;                  /* era 16 */
+  height:18px;
   opacity:.95;
   filter:drop-shadow(0 0 10px rgba(170,240,255,.18));
 }
@@ -455,7 +460,7 @@ body.entered #techHUD{ display:none; }
 
 @media (max-width: 520px){
   .linkPill span{display:none;}
-  .linkPill{padding:0 9px;}
+  .linkPill{padding:0 10px;}
 }
 
 /* ===== V5: ROUTES NODE (VERTICAL DOCK) ===== */
@@ -519,7 +524,7 @@ body.entered #techHUD{ display:none; }
   transform: translateY(-1px);
 }
 
-/* ✅ ícones do menu menores */
+/* ✅ ícones menores (era 16px) */
 .routeIcon svg{
   width:14px;
   height:14px;
@@ -527,7 +532,7 @@ body.entered #techHUD{ display:none; }
   filter:drop-shadow(0 0 10px rgba(170,240,255,.16));
 }
 
-/* tooltip label (legível: branco/azul) */
+/* tooltip label */
 .routeTip{
   position:absolute;
   right: calc(100% + 10px);
@@ -547,7 +552,6 @@ body.entered #techHUD{ display:none; }
   white-space:nowrap;
   min-width: 170px;
 }
-
 .routeTip .t{
   display:block;
   font-size:9px;
@@ -563,7 +567,6 @@ body.entered #techHUD{ display:none; }
   color:rgba(170,240,255,.80);
   opacity:1;
 }
-
 .routeBtn:hover .routeTip{
   opacity:1;
   transform:translateY(-50%) translateX(0);
@@ -617,7 +620,7 @@ body.entered #techHUD{ display:none; }
   background:rgba(0,0,0,.35);
   color:rgba(255,190,190,.95);
   text-shadow:0 0 8px rgba(255,90,90,.25);
-  display:none; /* ✅ só MUTED */
+  display:none;
 }
 .vol-panel{
   width:0;
@@ -994,8 +997,6 @@ body.entered #techHUD{ display:none; }
 @media (max-width: 900px){
   .chGrid{grid-template-columns:1fr;}
 }
-
-/* Top cards */
 .chTopCard{
   border-radius:16px;
   border:1px solid rgba(255,255,255,.06);
@@ -1046,8 +1047,6 @@ body.entered #techHUD{ display:none; }
   letter-spacing:3px;
   opacity:.55;
 }
-
-/* Bottom identity panels */
 .idGrid{
   display:grid;
   grid-template-columns:repeat(2, minmax(0,1fr));
@@ -1263,7 +1262,9 @@ body.entered #techHUD{ display:none; }
 #admin.dash #adminDash{ display:block; }
 
 /* glitch no Dottore */
-.glitchName{ display:inline-block; }
+.glitchName{
+  display:inline-block;
+}
 .glitchName.on{
   animation: nameGlitch .55s steps(6) 1;
   text-shadow:
@@ -1280,345 +1281,353 @@ body.entered #techHUD{ display:none; }
   100%{transform:none; filter:none;}
 }
 
-/* ========= GAMES PANEL (GameMix vibe: cinza + laranja) ========= */
-#games{
+/* ========= GAMES PANEL (novo) ========= */
+#gamesPanel{
   position:fixed;
   inset:0;
-  z-index:28; /* abaixo do terminal (30) e catalog (29), mas acima do resto */
+  z-index:31; /* acima de terminal/catalog/channels/admin */
   display:none;
-  background:rgba(0,0,0,.66);
-  backdrop-filter: blur(10px);
+  background:rgba(0,0,0,.62);
+  backdrop-filter: blur(16px);
 }
-#games.show{ display:block; }
+#gamesPanel.show{display:block;}
 
-.gmWrap{
+.gamesWrap{
+  --gm-accent: rgba(0,220,255,.95);
+  --gm-accent-soft: rgba(0,220,255,.18);
+  --gm-border: rgba(0,220,255,.38);
+  --gm-bg: rgba(0,0,0,.82); /* ✅ preto menos transparente */
   position:absolute;
   left:50%;
   top:50%;
   transform:translate(-50%,-50%);
-  width:min(980px, calc(100vw - 48px));
-  max-height: calc(100vh - 48px);
-  overflow:auto;
-
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, rgba(40,40,40,.92), rgba(22,22,22,.92));
-  box-shadow:0 22px 70px rgba(0,0,0,.65);
-  font-family: Arial, sans-serif; /* painel “fora do padrão” do site, igual tu pediu */
+  width:min(1080px, calc(100vw - 56px));
+  height:min(820px, calc(100vh - 56px));
+  border-radius:16px;
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.22));
+  box-shadow:0 24px 90px rgba(0,0,0,.70);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.06);
 }
-
-.gmTop{
+.gamesWrap::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  border-radius:16px;
+  box-shadow: inset 0 0 0 2px var(--gm-border); /* ✅ listra/borda ciano ao redor */
+  opacity:.9;
+}
+.gamesTop{
   display:flex;
-  align-items:center;
   justify-content:space-between;
-  padding:10px 12px;
+  align-items:center;
+  gap:16px;
+  padding:12px 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.15));
   border-bottom:1px solid rgba(255,255,255,.08);
-  background: linear-gradient(180deg, rgba(55,55,55,.92), rgba(28,28,28,.92));
 }
-.gmBrand{
-  display:flex;
-  align-items:baseline;
-  gap:6px;
-  font-weight:700;
-  letter-spacing:.5px;
+.gamesBrand{
+  font-size:14px;
+  letter-spacing:2px;
+  opacity:.95;
 }
-.gmBrand .a{ color:#ffffff; font-size:14px; }
-.gmBrand .b{ color:#ff7a00; font-size:14px; }
-.gmNav{
+.gamesBrand .mix{
+  color: var(--gm-accent);
+  text-shadow:0 0 16px rgba(0,220,255,.22);
+  margin-left:6px;
+}
+.gamesNav{
   display:flex;
   gap:14px;
   align-items:center;
-  flex-wrap:wrap;
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.80;
+  user-select:none;
 }
-.gmNav a{
+.gamesNav a{
+  color:rgba(230,252,255,.86);
   text-decoration:none;
-  color:rgba(240,240,240,.88);
-  font-size:11px;
-  letter-spacing:.8px;
-  text-transform:uppercase;
+  padding:6px 8px;
+  border-radius:10px;
 }
-.gmNav a:hover{ color:#ffffff; }
-.gmNav a.active{
-  color:#ff7a00;
-  text-shadow:0 0 14px rgba(255,122,0,.20);
+.gamesNav a:hover{
+  background: rgba(0,220,255,.10);
+  box-shadow: inset 0 0 0 1px rgba(0,220,255,.20);
 }
-
-.gmBody{
+.gamesBody{
   display:grid;
-  grid-template-columns: 1.35fr .85fr;
+  grid-template-columns: 1.6fr 0.9fr;
   gap:14px;
   padding:14px;
+  height:calc(100% - 54px);
+  background: var(--gm-bg);
 }
-@media (max-width: 900px){
-  .gmBody{ grid-template-columns:1fr; }
+@media (max-width: 980px){
+  .gamesBody{grid-template-columns:1fr; height:auto;}
+  .gamesWrap{height:auto; max-height:calc(100vh - 56px); overflow:auto;}
 }
 
-.gmHero{
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;
+.gmLeft, .gmRight{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  min-height:0;
+}
+
+/* featured big card */
+.gmFeatured{
+  border-radius:14px;
   overflow:hidden;
-  background:#1b1b1b;
+  border:1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.22));
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
 }
-.gmHero .heroImg{
-  width:100%;
-  aspect-ratio: 16/7.8;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.55)),
-    url("https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=70");
-  background-size:cover;
-  background-position:center;
+.gmHero{
   position:relative;
+  width:100%;
+  aspect-ratio: 16/7;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(0,220,255,.18), transparent 60%),
+    linear-gradient(180deg, rgba(12,24,44,.55), rgba(0,0,0,.70));
+  overflow:hidden;
 }
-.gmHero .heroImg::after{
+.gmHero img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter: grayscale(.15) contrast(1.05) brightness(.80) saturate(1.05);
+  opacity:.92;
+}
+.gmHero::after{
   content:"";
   position:absolute;
   inset:0;
   background:
-    linear-gradient(90deg, rgba(0,0,0,.80), rgba(0,0,0,.12) 55%, rgba(0,0,0,.70));
-  opacity:.85;
+    linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.55)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 4px);
+  mix-blend-mode:overlay;
+  opacity:.55;
+  pointer-events:none;
 }
-.gmHero .heroText{
-  position:relative;
-  padding:12px;
-  margin-top:-2px;
+.gmFeatureBody{
+  padding:12px 12px 14px 12px;
+  border-top:1px solid rgba(255,255,255,.06);
 }
 .gmTag{
-  display:inline-block;
-  padding:3px 8px;
-  border-radius:3px;
-  background:#ff7a00;
-  color:#111;
-  font-weight:700;
-  font-size:10px;
-  letter-spacing:.6px;
-  text-transform:uppercase;
-}
-.gmTitle{
-  margin-top:8px;
-  font-size:16px;
-  color:#f2f2f2;
-  font-weight:700;
-}
-.gmSub{
-  margin-top:6px;
-  font-size:12px;
-  line-height:1.4;
-  color:rgba(235,235,235,.78);
-}
-
-.gmGrid{
-  margin-top:12px;
-  display:grid;
-  grid-template-columns: 1fr;
-  gap:10px;
-}
-.gmRow{
-  display:grid;
-  grid-template-columns: 150px 1fr;
-  gap:10px;
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;
-  overflow:hidden;
-  background:rgba(0,0,0,.20);
-}
-@media (max-width: 520px){
-  .gmRow{ grid-template-columns: 1fr; }
-}
-.gmThumb{
-  min-height:92px;
-  background:#222;
-  position:relative;
-  overflow:hidden;
-}
-.gmThumb::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.65)),
-    url("https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=70");
-  background-size:cover;
-  background-position:center;
-  filter: saturate(.95) contrast(1.05) brightness(.85);
-}
-.gmThumb.alt::before{
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.70)),
-    url("https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=70");
-  background-size:cover;
-  background-position:center;
-}
-.gmThumb.alt2::before{
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.70)),
-    url("https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?auto=format&fit=crop&w=800&q=70");
-  background-size:cover;
-  background-position:center;
-}
-.gmStampSmall{
-  position:absolute;
-  left:8px;
-  top:8px;
-  padding:3px 7px;
-  border-radius:3px;
-  background:#ff7a00;
-  color:#111;
-  font-weight:700;
-  font-size:9px;
-  letter-spacing:.4px;
-  text-transform:uppercase;
-  z-index:2;
-}
-.gmRowBody{
-  padding:10px 10px 10px 0;
-}
-@media (max-width: 520px){
-  .gmRowBody{ padding:10px; }
-}
-.gmRowTitle{
-  font-size:13px;
-  font-weight:700;
-  color:#f2f2f2;
-}
-.gmRowDesc{
-  margin-top:6px;
-  font-size:12px;
-  color:rgba(235,235,235,.75);
-  line-height:1.45;
-}
-.gmRowMeta{
-  margin-top:8px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  align-items:center;
-  font-size:11px;
-  color:rgba(235,235,235,.6);
-}
-.gmBtn{
-  margin-left:auto;
   display:inline-flex;
   align-items:center;
   gap:8px;
-  padding:6px 10px;
-  border-radius:6px;
-  border:1px solid rgba(255,122,0,.55);
-  background:rgba(255,122,0,.12);
-  color:#ffb47a;
-  font-weight:700;
-  text-decoration:none;
-  text-transform:uppercase;
-  letter-spacing:.5px;
+  padding:4px 10px;
+  border-radius:999px;
+  font-size:9px;
+  letter-spacing:3px;
+  background: rgba(0,220,255,.12);
+  border:1px solid rgba(0,220,255,.25);
+  color: rgba(230,252,255,.92);
+}
+.gmH1{
+  margin-top:10px;
+  font-size:18px;
+  letter-spacing:2px;
+  opacity:.95;
+}
+.gmP{
+  margin-top:8px;
   font-size:10px;
-}
-.gmBtn:hover{ background:rgba(255,122,0,.18); }
-
-.gmSide{
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;
-  background:rgba(0,0,0,.18);
-  overflow:hidden;
-}
-.gmSideHead{
-  padding:10px 12px;
-  font-size:12px;
-  font-weight:700;
-  color:#f0f0f0;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  background:linear-gradient(180deg, rgba(45,45,45,.95), rgba(20,20,20,.95));
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.gmSideHead .dim{ font-size:11px; color:rgba(235,235,235,.55); font-weight:400; }
-.gmSideBody{
-  padding:12px;
-  display:grid;
-  gap:10px;
-}
-.gmWidget{
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:8px;
-  background:rgba(0,0,0,.22);
-  overflow:hidden;
-}
-.gmWidget .wHead{
-  padding:8px 10px;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  font-size:11px;
-  color:#f0f0f0;
-  font-weight:700;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.gmWidget .wHead .dot{
-  width:6px;height:6px;border-radius:50%;
-  background:#ff7a00;
-  box-shadow:0 0 12px rgba(255,122,0,.35);
-}
-.gmWidget .wBody{
-  padding:10px;
-  font-size:12px;
-  color:rgba(235,235,235,.72);
-  line-height:1.45;
+  letter-spacing:1px;
+  line-height:1.55;
+  opacity:.78;
 }
 .gmList{
-  margin-top:6px;
-  display:grid;
-  gap:8px;
-}
-.gmList a{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  text-decoration:none;
-  color:rgba(235,235,235,.78);
-  font-size:12px;
-  padding:7px 8px;
-  border-radius:6px;
+  border-radius:14px;
   border:1px solid rgba(255,255,255,.08);
-  background:rgba(0,0,0,.18);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.22));
+  overflow:auto;
+  min-height:0;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
 }
-.gmList a:hover{
-  color:#fff;
-  border-color: rgba(255,122,0,.35);
-  box-shadow:0 0 18px rgba(255,122,0,.08);
+.gmRow{
+  display:grid;
+  grid-template-columns: 140px 1fr 92px;
+  gap:12px;
+  padding:12px;
+  border-top:1px solid rgba(255,255,255,.06);
+  align-items:center;
 }
-.gmList a .tag{
-  color:#ffb47a;
-  font-weight:700;
-  font-size:11px;
+.gmRow:first-child{border-top:none;}
+@media (max-width: 640px){
+  .gmRow{grid-template-columns: 120px 1fr; grid-template-areas:
+    "thumb title"
+    "thumb meta"
+    "btn btn";
+  }
+  .gmThumb{grid-area:thumb;}
+  .gmMain{grid-area:title;}
+  .gmMeta{grid-area:meta;}
+  .gmBtn{grid-area:btn; justify-self:end;}
+}
+.gmThumb{
+  border-radius:12px;
+  overflow:hidden;
+  border:1px solid rgba(0,220,255,.14);
+  background:
+    radial-gradient(circle at 40% 30%, rgba(0,220,255,.14), transparent 60%),
+    linear-gradient(180deg, rgba(12,24,44,.55), rgba(0,0,0,.75));
+  aspect-ratio: 16/10;
+}
+.gmThumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter: contrast(1.05) brightness(.78) saturate(1.05);
+  opacity:.92;
+}
+.gmBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:18px;
+  padding:0 10px;
+  border-radius:999px;
+  font-size:8px;
+  letter-spacing:3px;
+  border:1px solid rgba(0,220,255,.22);
+  background: rgba(0,220,255,.10);
+  color: rgba(225,252,255,.90);
+  margin-bottom:6px;
+}
+.gmTitle{
+  font-size:12px;
+  letter-spacing:2px;
+  opacity:.92;
+}
+.gmDesc{
+  margin-top:6px;
+  font-size:10px;
+  letter-spacing:1px;
+  opacity:.72;
+  line-height:1.45;
+}
+.gmMeta{
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.60;
+  white-space:nowrap;
+}
+.gmBtn{
+  justify-self:end;
+  height:32px;
+  padding:0 12px;
+  border-radius:10px;
+  border:1px solid rgba(0,220,255,.35);
+  background: rgba(0,0,0,.32);
+  color: rgba(230,252,255,.92);
+  letter-spacing:3px;
+  font-size:9px;
+  cursor:pointer;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+}
+.gmBtn:hover{
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 22px rgba(0,220,255,.12);
+  background: rgba(0,220,255,.10);
 }
 
-.gmFooter{
-  padding:10px 12px 12px 12px;
-  border-top:1px solid rgba(255,255,255,.08);
+/* right column */
+.gmSideCard{
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.22));
+  overflow:hidden;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
+}
+.gmSideHead{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  background:rgba(0,0,0,.18);
+  padding:10px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.88;
 }
-.gmFooter .hint{
-  font-size:11px;
-  color:rgba(235,235,235,.55);
+.gmSideHead .dim{opacity:.55}
+.gmSideBody{
+  padding:12px;
 }
-.gmClose{
-  height:30px;
-  padding:0 12px;
-  border-radius:6px;
-  border:1px solid rgba(255,122,0,.55);
-  background:rgba(255,122,0,.12);
-  color:#ffb47a;
-  font-weight:700;
+.gmQuick{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.gmQuick a{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.06);
+  background: rgba(0,0,0,.24);
+  text-decoration:none;
+  color: rgba(235,252,255,.86);
+  font-size:10px;
+  letter-spacing:1px;
+}
+.gmQuick a:hover{
+  border-color: rgba(0,220,255,.22);
+  box-shadow:0 0 22px rgba(0,220,255,.10);
+}
+.gmQuick a .act{
+  font-size:9px;
+  letter-spacing:3px;
+  color: var(--gm-accent);
+}
+.gmDot{
+  width:6px;height:6px;border-radius:50%;
+  background: var(--gm-accent);
+  box-shadow:0 0 14px rgba(0,220,255,.35);
+  display:inline-block;
+  margin-left:8px;
+}
+.gmBullets{
+  font-size:10px;
+  letter-spacing:1px;
+  opacity:.75;
+  line-height:1.55;
+}
+.gmBullets li{ margin:6px 0; }
+.gmFooterBar{
+  position:absolute;
+  left:0; right:0; bottom:0;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  border-top:1px solid rgba(255,255,255,.08);
+  background: linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.35));
+}
+.gmFootTxt{
+  font-size:9px;
+  letter-spacing:2px;
+  opacity:.55;
+}
+.gmCloseBtn{
+  height:34px;
+  padding:0 16px;
+  border-radius:10px;
+  border:1px solid rgba(0,220,255,.35);
+  background: rgba(0,0,0,.28);
+  color: rgba(235,252,255,.92);
+  letter-spacing:3px;
   font-size:10px;
   cursor:pointer;
-  text-transform:uppercase;
-  letter-spacing:.5px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset;
 }
-.gmClose:hover{ background:rgba(255,122,0,.18); }
+.gmCloseBtn:hover{
+  background: rgba(0,220,255,.10);
+  box-shadow:0 0 0 1px rgba(0,0,0,.25) inset, 0 0 26px rgba(0,220,255,.12);
+}
 
 /* reduced motion */
 @media (prefers-reduced-motion: reduce){
@@ -1730,7 +1739,7 @@ body.entered #techHUD{ display:none; }
       </span>
     </button>
 
-    <button class="routeBtn" id="rGames" type="button" aria-label="Jogos" data-title="JOGOS" data-sub="Painel estilo portal">
+    <button class="routeBtn" id="rGames" type="button" aria-label="Jogos" data-title="JOGOS" data-sub="Vitrine / hub pessoal">
       <span class="routeIcon" aria-hidden="true">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M7 15h10l2-6a3 3 0 0 0-3-3H8a3 3 0 0 0-3 3l2 6Z" fill="none" stroke="rgba(210,248,255,.92)" stroke-width="1.7" stroke-linejoin="round"/>
@@ -1740,7 +1749,7 @@ body.entered #techHUD{ display:none; }
       </span>
       <span class="routeTip" aria-hidden="true">
         <span class="t">JOGOS</span>
-        <span class="s">Painel estilo portal</span>
+        <span class="s">Vitrine / hub pessoal</span>
       </span>
     </button>
 
@@ -1890,131 +1899,128 @@ body.entered #techHUD{ display:none; }
   </div>
 </div>
 
-<!-- ✅ GAMES PANEL -->
-<div id="games" aria-hidden="true">
-  <div class="gmWrap" role="dialog" aria-label="Painel de Jogos">
-    <div class="gmTop">
-      <div class="gmBrand">
-        <span class="a">GAME</span><span class="b">MIX</span>
+<!-- ✅ GAMES PANEL (novo) -->
+<div id="gamesPanel" aria-hidden="true">
+  <div class="gamesWrap" role="dialog" aria-label="Games Panel">
+    <div class="gamesTop">
+      <div class="gamesBrand">GAME <span class="mix">MIX</span></div>
+      <div class="gamesNav" aria-label="Navigation">
+        <a href="#" onclick="return false;">HOME</a>
+        <a href="#" onclick="return false;">ABOUT</a>
+        <a href="#" onclick="return false;">BOYS</a>
+        <a href="#" onclick="return false;">GALLERY</a>
+        <a href="#" onclick="return false;">CONTACT</a>
       </div>
-      <nav class="gmNav" aria-label="Menu do painel">
-        <a href="#" class="active" data-gm="home">HOME</a>
-        <a href="#" data-gm="about">ABOUT</a>
-        <a href="#" data-gm="boys">BOYS</a>
-        <a href="#" data-gm="gallery">GALLERY</a>
-        <a href="#" data-gm="contact">CONTACT</a>
-      </nav>
     </div>
 
-    <div class="gmBody">
-      <div>
-        <section class="gmHero" aria-label="Destaque">
-          <div class="heroImg" aria-hidden="true"></div>
-          <div class="heroText">
-            <span class="gmTag">Featured</span>
-            <div class="gmTitle">PAINEL // JOGOS & LINKS</div>
-            <div class="gmSub">
-              Aqui você pode colocar: links dos jogos, categorias (PC/PS/Xbox/Mobile), listas de mods, guias, saves e o que quiser.
-              O layout tá no estilo “portal gamer” (cinza + laranja), separado do padrão do site.
+    <div class="gamesBody">
+      <div class="gmLeft">
+        <div class="gmFeatured">
+          <div class="gmHero">
+            <img alt="" src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1600&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+          </div>
+          <div class="gmFeatureBody">
+            <span class="gmTag">FEATURED</span>
+            <div class="gmH1">PAINEL // JOGOS & LINKS</div>
+            <div class="gmP">
+              Aqui você coloca sua vitrine: jogos que você joga, links (Steam/Epic/Launcher), pastas de mods,
+              guias, saves, lista de “builds”, e o que quiser. Tudo no estilo “portal gamer”, mas com acento ciano
+              pra não fugir do tema do site.
             </div>
           </div>
-        </section>
+        </div>
 
-        <div class="gmGrid" aria-label="Lista">
-          <article class="gmRow">
+        <div class="gmList" aria-label="Games list">
+          <div class="gmRow">
             <div class="gmThumb">
-              <div class="gmStampSmall">NEW</div>
+              <img alt="" src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=900&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
             </div>
-            <div class="gmRowBody">
-              <div class="gmRowTitle">HUB // JOGOS PRINCIPAIS</div>
-              <div class="gmRowDesc">
-                Lista dos jogos que você joga (com botões de link): Steam, Epic, launcher, ou páginas próprias.
-              </div>
-              <div class="gmRowMeta">
-                <span>STATUS: ONLINE</span>
-                <span>UPDATE: WEEKLY</span>
-                <a class="gmBtn" href="#" onclick="return false;">OPEN</a>
-              </div>
+            <div class="gmMain">
+              <div class="gmBadge">NEW</div>
+              <div class="gmTitle">HUB // JOGOS PRINCIPAIS</div>
+              <div class="gmDesc">Lista de jogos que você tá jogando agora (com botões de link): Steam, Epic, launcher, páginas próprias.</div>
+              <div class="gmMeta">STATUS: ONLINE &nbsp;&nbsp; UPDATE: WEEKLY</div>
             </div>
-          </article>
+            <button class="gmBtn" type="button">OPEN</button>
+          </div>
 
-          <article class="gmRow">
-            <div class="gmThumb alt">
-              <div class="gmStampSmall">HOT</div>
+          <div class="gmRow">
+            <div class="gmThumb">
+              <img alt="" src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=900&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
             </div>
-            <div class="gmRowBody">
-              <div class="gmRowTitle">SEÇÃO // GUIAS & BUILDS</div>
-              <div class="gmRowDesc">
-                Builds, configurações, notas rápidas e “lembretes” pra não perder tempo quando voltar pro jogo.
-              </div>
-              <div class="gmRowMeta">
-                <span>TYPE: NOTES</span>
-                <span>ACCESS: PRIVATE</span>
-                <a class="gmBtn" href="#" onclick="return false;">OPEN</a>
-              </div>
+            <div class="gmMain">
+              <div class="gmBadge">HOT</div>
+              <div class="gmTitle">SEÇÃO // GUIAS & BUILDS</div>
+              <div class="gmDesc">Builds, configurações, notas rápidas e “lembretes” pra não perder tempo quando voltar pro jogo.</div>
+              <div class="gmMeta">TYPE: NOTES &nbsp;&nbsp; ACCESS: PRIVATE</div>
             </div>
-          </article>
+            <button class="gmBtn" type="button">OPEN</button>
+          </div>
 
-          <article class="gmRow">
-            <div class="gmThumb alt2">
-              <div class="gmStampSmall">SAVE</div>
+          <div class="gmRow">
+            <div class="gmThumb">
+              <img alt="" src="https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=900&q=70" loading="lazy" decoding="async" referrerpolicy="no-referrer">
             </div>
-            <div class="gmRowBody">
-              <div class="gmRowTitle">ARQUIVO // MODS & PACKS</div>
-              <div class="gmRowDesc">
-                Links de mods, coleções, patches, e qualquer coisa que você quiser manter “catalogada”.
-              </div>
-              <div class="gmRowMeta">
-                <span>NODE: ARCHIVE</span>
-                <span>SYNC: MANUAL</span>
-                <a class="gmBtn" href="#" onclick="return false;">OPEN</a>
-              </div>
+            <div class="gmMain">
+              <div class="gmBadge">SAVE</div>
+              <div class="gmTitle">ARQUIVO // MODS & PACKS</div>
+              <div class="gmDesc">Links de mods, coleções, patches, e qualquer coisa que você quiser manter “catalogada”.</div>
+              <div class="gmMeta">NODE: ARCHIVE &nbsp;&nbsp; SYNC: MANUAL</div>
             </div>
-          </article>
+            <button class="gmBtn" type="button">OPEN</button>
+          </div>
         </div>
       </div>
 
-      <aside class="gmSide" aria-label="Sidebar">
-        <div class="gmSideHead">
-          <span>CONTROL PANEL</span>
-          <span class="dim">ESC para fechar</span>
-        </div>
-
-        <div class="gmSideBody">
-          <div class="gmWidget">
-            <div class="wHead"><span>QUICK LINKS</span><span class="dot" aria-hidden="true"></span></div>
-            <div class="wBody">
-              <div class="gmList">
-                <a href="#" onclick="return false;"><span>Steam Profile</span><span class="tag">OPEN</span></a>
-                <a href="#" onclick="return false;"><span>Discord Server</span><span class="tag">JOIN</span></a>
-                <a href="#" onclick="return false;"><span>Epic Library</span><span class="tag">OPEN</span></a>
-                <a href="#" onclick="return false;"><span>Mods Folder</span><span class="tag">LINK</span></a>
-              </div>
-            </div>
+      <div class="gmRight">
+        <div class="gmSideCard">
+          <div class="gmSideHead">
+            <div>CONTROL PANEL</div>
+            <div class="dim">ESC para fechar</div>
           </div>
-
-          <div class="gmWidget">
-            <div class="wHead"><span>STATUS</span><span class="dot" aria-hidden="true"></span></div>
-            <div class="wBody">
-              <div>• Slots prontos pra você trocar por conteúdo real.</div>
-              <div>• Cores e formato no estilo da referência.</div>
-              <div>• Você decide depois o que vira “botão”, “card”, “lista”.</div>
+          <div class="gmSideBody">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;">
+              <div style="font-size:10px; letter-spacing:2px; opacity:.88;">QUICK LINKS</div>
+              <span class="gmDot" aria-hidden="true"></span>
             </div>
-          </div>
-
-          <div class="gmWidget">
-            <div class="wHead"><span>NOTES</span><span class="dot" aria-hidden="true"></span></div>
-            <div class="wBody">
-              Quer que eu deixe essa área “editável” (tipo mini CMS local com localStorage), ou você vai editar direto no HTML?
+            <div class="gmQuick">
+              <a href="#" onclick="return false;"><span>Steam Profile</span><span class="act">OPEN</span></a>
+              <a href="#" onclick="return false;"><span>Discord Server</span><span class="act">JOIN</span></a>
+              <a href="#" onclick="return false;"><span>Epic Library</span><span class="act">OPEN</span></a>
+              <a href="#" onclick="return false;"><span>Mods Folder</span><span class="act">LINK</span></a>
             </div>
           </div>
         </div>
-      </aside>
+
+        <div class="gmSideCard">
+          <div class="gmSideHead">
+            <div>STATUS</div>
+            <div><span class="gmDot" aria-hidden="true"></span></div>
+          </div>
+          <div class="gmSideBody">
+            <ul class="gmBullets">
+              <li>Slots prontos pra você trocar por conteúdo real.</li>
+              <li>Cores e formato no estilo da referência, mas com ciano.</li>
+              <li>Você decide depois: “botão”, “card”, “lista”, etc.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="gmSideCard">
+          <div class="gmSideHead">
+            <div>NOTES</div>
+            <div><span class="gmDot" aria-hidden="true"></span></div>
+          </div>
+          <div class="gmSideBody" style="font-size:10px; letter-spacing:1px; opacity:.75; line-height:1.55;">
+            Quer que eu deixe essa área “editável” (tipo mini CMS local com localStorage), ou você vai editar direto no HTML?
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="gmFooter">
-      <div class="hint">GAMES PANEL // THEME: GRAPHITE + ORANGE</div>
-      <button class="gmClose" id="gmCloseBtn" type="button">CLOSE</button>
+    <div class="gmFooterBar">
+      <div class="gmFootTxt">GAMES PANEL // THEME: BLACK + CYAN</div>
+      <button class="gmCloseBtn" id="gmCloseBtn" type="button">CLOSE</button>
     </div>
   </div>
 </div>
@@ -2029,7 +2035,6 @@ body.entered #techHUD{ display:none; }
 
     <div class="adminBody">
 
-      <!-- LOGIN VIEW -->
       <div id="adminLogin">
         <div class="adminField" style="margin-bottom:12px;">
           <div class="adminLabel">USER</div>
@@ -2048,7 +2053,6 @@ body.entered #techHUD{ display:none; }
         </div>
       </div>
 
-      <!-- DASH VIEW -->
       <div id="adminDash">
         <div class="adminStats">
           <div class="statCard">
@@ -2145,7 +2149,7 @@ const channels = document.getElementById("channels");
 const admin = document.getElementById("admin");
 
 /* ✅ Games panel */
-const games = document.getElementById("games");
+const gamesPanel = document.getElementById("gamesPanel");
 const gmCloseBtn = document.getElementById("gmCloseBtn");
 
 /* V5 routes node */
@@ -2526,7 +2530,9 @@ function startAscensionProtocol(){
   Protocol.lastPhase = first.name;
   for (let i = 1; i < Protocol.phases.length; i++){
     const ph = Protocol.phases[i];
-    const timer = setTimeout(() => { setProtocolHUD(ph); }, ph.whenMs);
+    const timer = setTimeout(() => {
+      setProtocolHUD(ph);
+    }, ph.whenMs);
     Protocol.timers.push(timer);
   }
 }
@@ -2766,7 +2772,7 @@ async function runLoreSequence(){
     { t: "— Il Dottore", cls:"dim", d: 450 },
   ];
   for (const L of lines){
-    await typeLine(L.t, LORE_SPEED.main ? L.cls : L.cls, LORE_SPEED.main, token);
+    await typeLine(L.t, L.cls, LORE_SPEED.main, token);
     await sleep(L.d);
   }
   if (!ensureAlive(token)) return;
@@ -2798,7 +2804,6 @@ async function runLoreSequence(){
 }
 
 /* ===== Terminal open/close ===== */
-function closeGames(){ if (games.classList.contains("show")){ games.classList.remove("show"); games.setAttribute("aria-hidden","true"); } }
 function openTerminal(){
   closeCatalog(); closeChannels(); closeAdmin(); closeRoutes(); closeGames();
 
@@ -2874,7 +2879,7 @@ btnLinks.addEventListener("click", (e) => {
 routesNode.addEventListener("click", (e) => e.stopPropagation());
 document.addEventListener("click", () => closeRoutes());
 
-/* ===== Channels overlay (Redes sociais) ===== */
+/* ===== Channels overlay ===== */
 function openChannels(){
   closeTerminal(); closeCatalog(); closeAdmin(); closeRoutes(); closeGames();
   channels.classList.add("show");
@@ -2890,25 +2895,34 @@ function closeChannels(){
   channels.setAttribute("aria-hidden","true");
   pulseStrip("SOCIAL:CLOSED", "FEED:STANDBY", "TRACE:—");
 }
-channels.addEventListener("click", (e) => { if (e.target === channels) closeChannels(); });
+channels.addEventListener("click", (e) => {
+  if (e.target === channels) closeChannels();
+});
 
-/* ===== Games overlay (novo) ===== */
+/* ✅ Games panel open/close */
 function openGames(){
   closeTerminal(); closeCatalog(); closeChannels(); closeAdmin(); closeRoutes();
-  games.classList.add("show");
-  games.setAttribute("aria-hidden","false");
+  gamesPanel.classList.add("show");
+  gamesPanel.setAttribute("aria-hidden","false");
   armAudioOnce();
-  blip(740, 0.07, 0.030);
-  pulseStrip("GAMES:OPEN", "PANEL:GRAPHITE", "TRACE:ORANGE");
+  blip(760, 0.07, 0.030);
+  pulseStrip("GAMES:OPEN", "HUB:READY", "TRACE:VITRINE");
   ss2.classList.remove("faint"); ss3.classList.remove("faint");
 }
-games.addEventListener("click", (e) => { if (e.target === games) closeGames(); });
-gmCloseBtn.addEventListener("click", () => closeGames());
+function closeGames(){
+  if (!gamesPanel.classList.contains("show")) return;
+  gamesPanel.classList.remove("show");
+  gamesPanel.setAttribute("aria-hidden","true");
+  pulseStrip("GAMES:CLOSED", "FEED:STANDBY", "TRACE:—");
+}
+gamesPanel.addEventListener("click", (e) => {
+  if (e.target === gamesPanel) closeGames();
+});
+gmCloseBtn.addEventListener("click", closeGames);
 
 /* Routes actions */
 rSocial.addEventListener("click", () => openChannels());
 rGames.addEventListener("click", () => { closeRoutes(); openGames(); });
-
 [rArchive, rTx].forEach((btn, i) => {
   btn.addEventListener("click", () => {
     closeRoutes();
@@ -2922,17 +2936,47 @@ rGames.addEventListener("click", () => { closeRoutes(); openGames(); });
 
 /* ===== Catalog ===== */
 const CATALOG_ITEMS = [
-  { ref:"Σ-01 / VIVISECTION", status:"ARCHIVED", title:"PROJETO VITRINE // ÓRGÃOS EM LOOP", desc:"Exposição didática: manter o sujeito vivo o suficiente para assistir a própria anatomia 'funcionando'. Uma aula. Para ele, um castigo.", img:"https://files.catbox.moe/sc2vn9" },
-  { ref:"Σ-07 / TRANSFER", status:"ACTIVE", title:"PROTOCOLO EIDOLON // IDENTIDADE REVOGADA", desc:"Separar a pessoa do nome. O nome do medo. Remover o resto. O que sobra obedece melhor.", img:"https://files.catbox.moe/z5b43n.jpg" },
-  { ref:"Δ-12 / NEURAL", status:"SEALED", title:"CÓRTEX-Δ // DOR COMO TELEMETRIA", desc:"Dor não é punição. É um sensor. Você chama de crueldade porque não entende instrumentação.", img:"https://files.catbox.moe/aon2r8.webp" },
-  { ref:"K-03 / SYNTH", status:"ARCHIVED", title:"GEL-SDS // PUREZA ABSOLUTA", desc:"Separar, quantificar, descartar. O destino de qualquer coisa que não alcança o padrão. Incluindo você.", img:"https://files.catbox.moe/a13jar.jpg" }
+  {
+    ref: "Σ-01 / VIVISECTION",
+    status: "ARCHIVED",
+    title: "PROJETO VITRINE // ÓRGÃOS EM LOOP",
+    desc: "Exposição didática: manter o sujeito vivo o suficiente para assistir a própria anatomia 'funcionando'. Uma aula. Para ele, um castigo.",
+    img: "https://files.catbox.moe/sc2vn9"
+  },
+  {
+    ref: "Σ-07 / TRANSFER",
+    status: "ACTIVE",
+    title: "PROTOCOLO EIDOLON // IDENTIDADE REVOGADA",
+    desc: "Separar a pessoa do nome. O nome do medo. Remover o resto. O que sobra obedece melhor.",
+    img: "https://files.catbox.moe/z5b43n.jpg"
+  },
+  {
+    ref: "Δ-12 / NEURAL",
+    status: "SEALED",
+    title: "CÓRTEX-Δ // DOR COMO TELEMETRIA",
+    desc: "Dor não é punição. É um sensor. Você chama de crueldade porque não entende instrumentação.",
+    img: "https://files.catbox.moe/aon2r8.webp"
+  },
+  {
+    ref: "K-03 / SYNTH",
+    status: "ARCHIVED",
+    title: "GEL-SDS // PUREZA ABSOLUTA",
+    desc: "Separar, quantificar, descartar. O destino de qualquer coisa que não alcança o padrão. Incluindo você.",
+    img: "https://files.catbox.moe/a13jar.jpg"
+  }
 ];
 
 function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, (m) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+  return String(s).replace(/[&<>"']/g, (m) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
 }
 function currentFilter(){
-  return { ARCHIVED: !!fArchived.checked, ACTIVE: !!fActive.checked, SEALED: !!fSealed.checked };
+  return {
+    ARCHIVED: !!fArchived.checked,
+    ACTIVE: !!fActive.checked,
+    SEALED: !!fSealed.checked
+  };
 }
 function syncFilterUI(){
   fArchivedWrap.classList.toggle("off", !fArchived.checked);
@@ -2951,7 +2995,8 @@ function renderCatalog(){
     card.className = "catCard";
     card.innerHTML = `
       <div class="catThumb">
-        <img src="${escapeHtml(it.img)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" crossorigin="anonymous" />
+        <img src="${escapeHtml(it.img)}" alt="" loading="lazy" decoding="async"
+             referrerpolicy="no-referrer" crossorigin="anonymous" />
         <div class="catStamp">${escapeHtml(it.ref)}</div>
       </div>
       <div class="catContent">
@@ -2963,8 +3008,10 @@ function renderCatalog(){
         </div>
       </div>
     `;
+
     const thumb = card.querySelector(".catThumb");
     const img = card.querySelector("img");
+
     img.addEventListener("error", () => {
       try{ img.style.display = "none"; }catch(e){}
       thumb.classList.add("noimg");
@@ -3007,10 +3054,16 @@ btnCat.addEventListener("click", (e) => {
   if (catalog.classList.contains("show")) closeCatalog();
   else openCatalog();
 });
-catalog.addEventListener("click", (e) => { if (e.target === catalog) closeCatalog(); });
+catalog.addEventListener("click", (e) => {
+  if (e.target === catalog) closeCatalog();
+});
 
 /* ===== Admin metrics (local) ===== */
-const LS = { views: "dli_views_v5", device: "dli_device_v5", last: "dli_admin_last_v5" };
+const LS = {
+  views: "dli_views_v5",
+  device: "dli_device_v5",
+  last: "dli_admin_last_v5"
+};
 function nowStamp(){
   const d = new Date();
   const yyyy = d.getFullYear();
@@ -3089,7 +3142,9 @@ btnAdmin.addEventListener("click", (e) => {
   if (admin.classList.contains("show")) closeAdmin();
   else openAdmin();
 });
-admin.addEventListener("click", (e) => { if (e.target === admin) closeAdmin(); });
+admin.addEventListener("click", (e) => {
+  if (e.target === admin) closeAdmin();
+});
 
 function tryAuth(){
   const pass = (adminPass.value || "").trim();
@@ -3154,12 +3209,12 @@ adminLock.addEventListener("click", () => {
 /* ===== Keyboard routing ===== */
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape"){
+    if (gamesPanel.classList.contains("show")) { closeGames(); return; }
     if (terminal.classList.contains("show")) { closeTerminal(); return; }
     if (catalog.classList.contains("show")) { closeCatalog(); return; }
     if (channels.classList.contains("show")) { closeChannels(); return; }
     if (admin.classList.contains("show")) { closeAdmin(); return; }
     if (routesNode.classList.contains("show")) { closeRoutes(); return; }
-    if (games.classList.contains("show")) { closeGames(); return; }
   }
 
   const isToggleKey = (e.key === "`" || e.key.toLowerCase() === "t");
