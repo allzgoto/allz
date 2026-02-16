@@ -3,54 +3,45 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Temple Interface — Ink Mode</title>
+<title>Shadow Temple Interface</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
 
 <style>
 :root{
-  --ink:#05060a;
+  --ink:#07080b;
   --coal:#0b0d12;
 
-  --bone: rgba(245,238,220,.86);
-  --bone2: rgba(245,238,220,.62);
+  /* Shadow Fight vibe: frio + vermelho contido */
+  --a: rgba(200,60,60,.70);
+  --a2: rgba(200,60,60,.18);
+  --a3: rgba(200,60,60,.10);
 
-  --red: rgba(200,60,60,.55);
-  --red2: rgba(200,60,60,.18);
+  --blue: rgba(120,170,255,.55);
 
-  --line: rgba(255,255,255,.07);
-
+  --line: rgba(255,255,255,.08);
   --txt: rgba(245,248,255,.92);
   --dim: rgba(245,248,255,.62);
 
   --blur-amount: 26px;
-
-  --shadowA: 0 18px 58px rgba(0,0,0,.58);
-  --shadowB: 0 22px 70px rgba(0,0,0,.64);
-  --shadowC: 0 12px 44px rgba(0,0,0,.45);
-
-  --radius-lg: 18px;
-  --radius-md: 14px;
 }
 
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{height:100%}
+*{margin:0;padding:0;box-sizing:border-box;}
 body{
   background:var(--ink);
+  overflow:hidden;
   color:var(--txt);
   font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  overflow:hidden;
 }
-::selection{background:rgba(200,60,60,.22);}
 
-/* ================= VIDEO ================= */
+/* ========= VIDEO LAYERS ========= */
 #videoBlur{
   position:fixed;
   inset:-20%;
   width:140%;
   height:140%;
   object-fit:cover;
-  filter: blur(var(--blur-amount)) brightness(.46) saturate(1.02) contrast(1.06);
+  filter: blur(var(--blur-amount)) brightness(.50) saturate(1.05) contrast(1.08);
   transform: translateZ(0);
   z-index:-5;
 }
@@ -64,7 +55,7 @@ body{
   background:black;
 }
 
-/* ================= OVERLAYS ================= */
+/* ========= FX ========= */
 .scanlines{
   position:fixed;
   inset:0;
@@ -78,8 +69,10 @@ body{
   pointer-events:none;
   z-index:3;
   mix-blend-mode:overlay;
-  opacity:.42;
+  opacity:.55;
 }
+
+/* Vinheta suave (sem blush pesado) */
 #cinemaFX{
   position:fixed;
   inset:0;
@@ -91,8 +84,9 @@ body{
   position:absolute;
   inset:-20%;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
-  opacity:.07;
+  opacity:.06;
   mix-blend-mode:overlay;
+  transform: translateZ(0);
   animation:grain 6s steps(10) infinite;
 }
 #cinemaFX::after{
@@ -100,9 +94,9 @@ body{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 48%, transparent 0 62%, rgba(0,0,0,.48) 82%, rgba(0,0,0,.78) 100%),
-    radial-gradient(circle at 55% 55%, rgba(200,60,60,.04), transparent 55%);
-  opacity:.66;
+    radial-gradient(circle at 50% 48%, transparent 0 62%, rgba(0,0,0,.44) 82%, rgba(0,0,0,.72) 100%),
+    radial-gradient(circle at 55% 55%, rgba(200,60,60,.05), transparent 55%);
+  opacity:.72;
 }
 @keyframes grain{
   0%{transform:translate(0,0)}
@@ -118,6 +112,7 @@ body{
   100%{transform:translate(0,0)}
 }
 
+/* Flash “ruptura” */
 #glitchFlash{
   position:fixed;
   inset:0;
@@ -125,8 +120,7 @@ body{
   z-index:60;
   opacity:0;
   background:
-    radial-gradient(circle at 50% 50%, rgba(255,255,255,.10), transparent 55%),
-    radial-gradient(circle at 50% 55%, rgba(200,60,60,.12), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(200,60,60,.14), transparent 55%),
     repeating-linear-gradient(0deg, rgba(255,255,255,.05) 0 1px, transparent 1px 5px);
   mix-blend-mode:screen;
 }
@@ -141,52 +135,16 @@ body{
   100%{opacity:0; transform:none}
 }
 
-/* ================= PANELS ================= */
-.hudPanel, .inkPanel{
-  border:1px solid rgba(245,238,220,.10);
-  background:
-    radial-gradient(circle at 18% 12%, rgba(245,238,220,.08), transparent 55%),
-    linear-gradient(180deg, rgba(10,8,7,.62), rgba(0,0,0,.38));
-  box-shadow: var(--shadowA), 0 0 0 1px rgba(0,0,0,.30) inset;
-  backdrop-filter: blur(14px);
-  position:relative;
-  overflow:hidden;
-}
-.hudPanel::after, .inkPanel::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 6px);
-  opacity:.35;
-  mix-blend-mode:overlay;
-}
-.stamp{
-  position:absolute;
-  right:10px;
-  top:10px;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(200,60,60,.28);
-  background:rgba(0,0,0,.34);
-  font-family:Cinzel, serif;
-  font-size:9px;
-  letter-spacing:4px;
-  color:rgba(245,238,220,.82);
-  transform:rotate(-3deg);
-  opacity:.82;
-}
-
-/* ================= ENTER ================= */
+/* ========= LOADING ========= */
 #loadingScreen{
   position:fixed;
   inset:0;
-  background:radial-gradient(circle at center,#090a0e,#000);
+  background:radial-gradient(circle at center,#0a0c12,#000);
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
-  z-index:90;
+  z-index:70;
   transition:opacity .6s ease;
   overflow:hidden;
 }
@@ -204,93 +162,54 @@ body{
 .spinner{
   width:40px;height:40px;
   border:3px solid rgba(255,255,255,.08);
-  border-top:3px solid rgba(200,60,60,.55);
+  border-top:3px solid rgba(200,60,60,.70);
   border-radius:50%;
   animation:spin 1s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
+
 #enterBox{
   margin-top:34px;
   padding:18px 70px;
   border-radius:12px;
-  background:rgba(10,8,7,0.62);
-  border:1px solid rgba(200,60,60,0.28);
-  backdrop-filter:blur(14px);
+  background:rgba(10,12,16,0.62);
+  border:1px solid rgba(200,60,60,0.36);
+  backdrop-filter:blur(18px);
   letter-spacing:8px;
   font-weight:700;
   font-size:13px;
-  color:rgba(245,238,220,.92);
+  color:rgba(245,248,255,.92);
+  text-shadow:0 0 16px rgba(200,60,60,.16);
   opacity:0;
   pointer-events:none;
   transition:.4s ease;
   cursor:pointer;
   user-select:none;
   font-family:Cinzel, serif;
-  position:relative;
-  overflow:hidden;
-}
-#enterBox::before{
-  content:"";
-  position:absolute;
-  inset:-40% -30%;
-  background:linear-gradient(90deg, transparent, rgba(245,238,220,.10), transparent);
-  transform:rotate(14deg) translateX(-90%);
-  opacity:0;
 }
 #enterBox.show{opacity:1; pointer-events:auto;}
-#enterBox.show::before{
-  opacity:.6;
-  animation:scanPass 1.2s ease infinite;
-}
-@keyframes scanPass{
-  0%{transform:rotate(14deg) translateX(-90%);}
-  100%{transform:rotate(14deg) translateX(90%);}
-}
 #enterHint{
   margin-top:12px;
   font-size:9px;
   letter-spacing:4px;
   opacity:0;
   transition:.35s ease;
-  color:rgba(245,238,220,.70);
+  color:rgba(245,248,255,.72);
+  text-shadow:0 0 14px rgba(200,60,60,.10);
   user-select:none;
-  font-family:Cinzel, serif;
 }
 #enterHint.show{opacity:.88;}
-#enterScan{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  opacity:0;
-  z-index:0;
-}
-#enterScan::before{
-  content:"";
-  position:absolute;
-  left:-40%;
-  top:0;
-  width:45%;
-  height:100%;
-  background:linear-gradient(90deg, transparent, rgba(200,60,60,.10), rgba(245,238,220,.12), rgba(200,60,60,.10), transparent);
-  transform:skewX(-14deg) translateX(-120%);
-  filter: blur(1px);
-}
-#loadingScreen.scan-on #enterScan{ opacity:1; }
-#loadingScreen.scan-on #enterScan::before{ animation: enterScanPass .85s ease 1; }
-@keyframes enterScanPass{
-  0%{transform:skewX(-14deg) translateX(-120%); opacity:0}
-  15%{opacity:1}
-  100%{transform:skewX(-14deg) translateX(380%); opacity:0}
-}
+
 #enterFooterLeft{
   position:fixed;
   left:18px;
   bottom:12px;
-  z-index:91;
+  z-index:71;
   font-size:9px;
   letter-spacing:3px;
-  opacity:.30;
+  opacity:.32;
   user-select:none;
+  text-shadow:0 0 12px rgba(200,60,60,.08);
   font-family:Cinzel, serif;
 }
 body.entered #enterFooterLeft{ display:none; }
@@ -299,107 +218,207 @@ body.entered #enterFooterLeft{ display:none; }
   position:fixed;
   right:18px;
   bottom:12px;
-  z-index:10;
+  z-index:8;
   font-size:9px;
   letter-spacing:3px;
-  opacity:.30;
+  opacity:.33;
   user-select:none;
+  text-shadow:0 0 12px rgba(200,60,60,.08);
   font-family:Cinzel, serif;
 }
-#versionTag .v{opacity:.88;color:rgba(245,238,220,.70);}
+#versionTag .v{opacity:.88;color:rgba(245,248,255,.80);}
 
-/* ================= HUD ENTER ONLY ================= */
-#coordsHUD{
-  position:fixed;
-  top:16px;
-  right:18px;
-  z-index:12;
-  padding:10px 12px;
-  border-radius:14px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.78;
-  user-select:none;
-  font-family:Cinzel, serif;
-  border-left:2px solid rgba(200,60,60,.18);
-}
-#coordsHUD .line{opacity:.86}
-#coordsHUD .blink{animation:coordsBlink 3.2s infinite}
-@keyframes coordsBlink{0%,100%{opacity:.75}50%{opacity:.28}}
-
-#techHUD{
-  position:fixed;
-  top:78px;
-  left:18px;
-  z-index:12;
-  width:min(360px, 44vw);
-  padding:10px 12px;
-  border-radius:14px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.70;
-  user-select:none;
-  line-height:1.65;
-  font-family:Cinzel, serif;
-  border-left:2px solid rgba(200,60,60,.16);
-}
-#techHUD .tag{opacity:.78}
-#techHUD .value{opacity:.92; color:rgba(245,238,220,.86)}
-#techHUD .sep{opacity:.22}
-
-#statusStrip{
-  position:fixed;
-  left:18px;
-  top:198px;
-  width:min(240px, 34vw);
-  z-index:12;
-  opacity:.72;
-  user-select:none;
-  pointer-events:none;
-  font-size:9px;
-  letter-spacing:2px;
-  line-height:1.45;
-  font-family:Cinzel, serif;
-}
-#statusStrip .statusLine{
-  display:flex;
-  gap:8px;
-  align-items:baseline;
-  padding:7px 10px;
-  border-radius:14px;
-  margin-bottom:8px;
-  background:linear-gradient(180deg, rgba(10,8,7,.62), rgba(0,0,0,.35));
-  border:1px solid rgba(245,238,220,.08);
-  border-left:2px solid rgba(200,60,60,.14);
-  box-shadow: var(--shadowC);
-}
-#statusStrip .k{opacity:.70}
-#statusStrip .v{opacity:.92; color:rgba(245,238,220,.82)}
-#statusStrip .faint{opacity:.55}
-
-body.entered #coordsHUD,
-body.entered #techHUD,
-body.entered #statusStrip{ display:none; }
-
-@media (max-width: 768px){
-  :root{ --blur-amount: 22px; }
-  #techHUD, #statusStrip{display:none;}
-}
-
-/* ================= TOP CONTROLS (SÓ 3) ================= */
+/* ========= TOP CONTROLS (tela normal) ========= */
+/* Só: Fullscreen + Pergaminho + Admin */
 #topControls{
   position:fixed;
-  top:14px;
+  top:16px;
   left:50%;
   transform:translateX(-50%);
   display:flex;
   gap:10px;
   z-index:40;
-  opacity:.95;
+  opacity:.94;
   transition:.18s ease;
+  filter: drop-shadow(0 0 18px rgba(0,0,0,.35));
 }
 #topControls:hover{opacity:1}
+
 .ctrlBtn{
+  width:44px;height:36px;
+  border-radius:14px;
+  border:1px solid rgba(245,238,220,.10);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(245,238,220,.06), transparent 58%),
+    linear-gradient(180deg, rgba(10,12,16,.72), rgba(0,0,0,.55));
+  backdrop-filter: blur(16px);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.30) inset,
+    0 14px 38px rgba(0,0,0,.46);
+  position:relative;
+  overflow:hidden;
+  color:rgba(245,248,255,.92);
+}
+.ctrlBtn:hover{transform: translateY(-1px)}
+.ctrlBtn:active{transform: translateY(1px)}
+.ctrlBtn svg{width:18px;height:18px;opacity:.92;filter: drop-shadow(0 0 10px rgba(0,0,0,.40));}
+
+/* ========= SELOS (menu externo) ========= */
+#socialControl{
+  position:fixed;
+  top:14px;
+  right:18px;
+  z-index:45;
+  opacity:.93;
+  transition:.18s ease;
+}
+#socialControl:hover{opacity:1}
+.linkPill{
+  height:36px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid rgba(245,238,220,.10);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(245,238,220,.06), transparent 60%),
+    linear-gradient(180deg, rgba(10,12,16,.62), rgba(0,0,0,.38));
+  backdrop-filter: blur(16px);
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:rgba(245,248,255,.90);
+  letter-spacing:4px;
+  font-size:9px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 12px 34px rgba(0,0,0,.38);
+  font-family:Cinzel, serif;
+}
+.linkPill svg{width:18px;height:18px;opacity:.92;}
+.linkPill:hover{transform: translateY(-1px)}
+.linkPill:active{transform: translateY(1px)}
+@media (max-width: 520px){
+  .linkPill span{display:none;}
+  .linkPill{padding:0 10px;}
+}
+
+/* Node de selos */
+#routesNode{
+  position:fixed;
+  top:52px;
+  right:18px;
+  z-index:46;
+  display:none;
+}
+#routesNode.show{display:block;}
+.routesBox{
+  width:76px;
+  padding:10px 8px;
+  border-radius:16px;
+  border:1px solid rgba(245,238,220,.10);
+  background:linear-gradient(180deg, rgba(10,12,16,.54), rgba(0,0,0,.36));
+  backdrop-filter: blur(18px);
+  box-shadow:0 18px 54px rgba(0,0,0,.55);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.routeBtn{
+  width:58px;
+  height:58px;
+  border-radius:18px;
+  border:1px solid rgba(245,238,220,.10);
+  background:linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.34));
+  box-shadow:0 0 0 1px rgba(0,0,0,.32) inset;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  position:relative;
+  opacity:0;
+  transform:translateY(-6px);
+}
+#routesNode.show .routeBtn{ animation: dockIn .20s ease forwards; }
+#routesNode.show .routeBtn:nth-child(1){animation-delay:.02s}
+#routesNode.show .routeBtn:nth-child(2){animation-delay:.06s}
+#routesNode.show .routeBtn:nth-child(3){animation-delay:.10s}
+#routesNode.show .routeBtn:nth-child(4){animation-delay:.14s}
+@keyframes dockIn{ to{opacity:1; transform:none;} }
+.routeBtn:hover{transform:translateY(-1px)}
+.routeBtn:active{transform:translateY(1px)}
+.routeBtn svg{width:18px;height:18px;opacity:.92}
+
+.routeTip{
+  position:absolute;
+  right: calc(100% + 10px);
+  top:50%;
+  transform:translateY(-50%) translateX(10px);
+  opacity:0;
+  pointer-events:none;
+  transition:.18s ease;
+  padding:9px 11px;
+  border-radius:14px;
+  border:1px solid rgba(245,238,220,.10);
+  background:rgba(0,0,0,.46);
+  backdrop-filter: blur(12px);
+  box-shadow:0 14px 40px rgba(0,0,0,.50);
+  white-space:nowrap;
+  min-width: 180px;
+  font-family:Cinzel, serif;
+}
+.routeTip .t{display:block;font-size:9px;letter-spacing:4px;color:rgba(245,248,255,.92);}
+.routeTip .s{display:block;margin-top:3px;font-size:8px;letter-spacing:2px;color:rgba(245,248,255,.70);}
+.routeBtn:hover .routeTip{opacity:1; transform:translateY(-50%) translateX(0);}
+
+/* ========= MODAL BASE ========= */
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:80;
+  display:none;
+}
+.modal.show{display:block;}
+.backdropClose{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.58);
+  backdrop-filter: blur(14px);
+}
+
+/* ========= PILL BUTTONS ========= */
+.pill{
+  height:34px;
+  padding:0 14px;
+  border-radius:999px;
+  border:1px solid rgba(245,238,220,.12);
+  background:rgba(0,0,0,.30);
+  color:rgba(245,248,255,.90);
+  cursor:pointer;
+  letter-spacing:3px;
+  font-size:10px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.34) inset;
+  font-family:Cinzel, serif;
+}
+.pill:hover{transform: translateY(-1px)}
+.pill:active{transform: translateY(1px)}
+.pill.danger{border-color: rgba(200,60,60,.22); color: rgba(255,230,230,.92);}
+
+/* ========= VOLUME (ícone voltou + slider oculto) ========= */
+#volumeControl{
+  position:fixed;
+  left:14px;
+  bottom:14px;
+  z-index:42;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  opacity:.92;
+  transition:.18s ease;
+}
+#volumeControl:hover{opacity:1}
+.volBtn{
   width:46px;height:38px;
   border-radius:14px;
   border:1px solid rgba(245,238,220,.10);
@@ -410,369 +429,130 @@ body.entered #statusStrip{ display:none; }
   cursor:pointer;
   display:grid;
   place-items:center;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.32) inset,
-    0 18px 54px rgba(0,0,0,.50);
-  position:relative;
-  overflow:hidden;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.32) inset, 0 18px 54px rgba(0,0,0,.50);
   color:rgba(245,238,220,.92);
   user-select:none;
 }
-.ctrlBtn::after{
-  content:"";
-  position:absolute;
-  inset:-40% -30%;
-  background:linear-gradient(90deg, transparent, rgba(200,60,60,.10), transparent);
-  transform:rotate(16deg) translateX(-90%);
-  opacity:0;
-  pointer-events:none;
-}
-#topControls:hover .ctrlBtn::after{
-  opacity:1;
-  animation:scanPass2 1.25s ease infinite;
-}
-@keyframes scanPass2{
-  0%{transform:rotate(16deg) translateX(-90%);}
-  100%{transform:rotate(16deg) translateX(90%);}
-}
-.ctrlBtn:hover{
-  transform: translateY(-1px);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.32) inset,
-    0 22px 62px rgba(0,0,0,.60),
-    0 0 24px rgba(200,60,60,.07);
-}
-.ctrlBtn:active{transform:translateY(1px)}
-.ctrlBtn svg{
-  width:20px;height:20px;
-  opacity:.92;
-  filter: url(#ink) drop-shadow(0 0 10px rgba(0,0,0,.35));
-}
+.volBtn svg{width:20px;height:20px;opacity:.92;filter: drop-shadow(0 0 10px rgba(0,0,0,.35));}
+.volBtn:hover{transform:translateY(-1px)}
+.volBtn:active{transform:translateY(1px)}
 
-/* ================= SELOS BUTTON (UNICO LOCAL DE ROTAS) ================= */
-#socialControl{
-  position:fixed;
-  top:12px;
-  right:14px;
-  z-index:41;
-  opacity:.95;
-  transition:.18s ease;
-}
-#socialControl:hover{opacity:1}
-.linkPill{
+.volPanel{
   height:38px;
   padding:0 12px;
   border-radius:999px;
   border:1px solid rgba(245,238,220,.10);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(245,238,220,.06), transparent 60%),
-    linear-gradient(180deg, rgba(10,8,7,.62), rgba(0,0,0,.40));
+  background:rgba(0,0,0,.34);
   backdrop-filter: blur(14px);
-  cursor:pointer;
   display:flex;
   align-items:center;
-  gap:8px;
-  color:rgba(245,238,220,.90);
-  letter-spacing:4px;
-  font-size:9px;
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.03) inset,
-    0 16px 50px rgba(0,0,0,.46);
-  position:relative;
-  font-family:Cinzel, serif;
-  user-select:none;
-}
-.linkPill svg{
-  width:18px;height:18px;
-  opacity:.92;
-  filter: url(#ink) drop-shadow(0 0 10px rgba(0,0,0,.35));
-}
-.linkPill:hover{transform: translateY(-1px);}
-.linkPill:active{transform:translateY(1px);}
-@media (max-width: 520px){
-  .linkPill span{display:none;}
-  .linkPill{padding:0 10px;}
-}
-
-/* ================= ROUTES NODE (SELOS) ================= */
-#routesNode{
-  position:fixed;
-  top:54px;
-  right:14px;
-  z-index:80;
-  display:none;
-  pointer-events:none;
-}
-#routesNode.show{display:block; pointer-events:auto;}
-.routesBox{
-  width:86px;
-  padding:10px;
-  border-radius:18px;
-  border:1px solid rgba(245,238,220,.10);
-  background:
-    radial-gradient(circle at 35% 20%, rgba(245,238,220,.06), transparent 62%),
-    linear-gradient(180deg, rgba(10,8,7,.70), rgba(0,0,0,.46));
-  backdrop-filter: blur(14px);
-  box-shadow: var(--shadowB);
-  display:flex;
-  flex-direction:column;
   gap:10px;
-  position:relative;
-}
-.routeBtn{
-  width:62px;
-  height:62px;
-  border-radius:18px;
-  border:1px solid rgba(245,238,220,.10);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(245,238,220,.05), transparent 64%),
-    linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,.34));
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.34) inset,
-    0 14px 40px rgba(0,0,0,.38);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  position:relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.03) inset, 0 16px 50px rgba(0,0,0,.46);
+  transform-origin:left center;
+  transform:scaleX(0.0);
   opacity:0;
-  transform:translateY(-10px) scale(.96);
-  overflow:hidden;
+  pointer-events:none;
+  transition:.18s ease;
 }
-#routesNode.show .routeBtn{ animation: sealPop .22s ease forwards; }
-#routesNode.show .routeBtn:nth-child(2){animation-delay:.06s}
-#routesNode.show .routeBtn:nth-child(3){animation-delay:.12s}
-#routesNode.show .routeBtn:nth-child(4){animation-delay:.18s}
-#routesNode.show .routeBtn:nth-child(5){animation-delay:.24s}
-#routesNode.show .routeBtn:nth-child(6){animation-delay:.30s}
-@keyframes sealPop{
-  0%{opacity:0; transform:translateY(-10px) scale(.94); filter: blur(.6px);}
-  70%{opacity:1; transform:translateY(1px) scale(1.02); filter:none;}
-  100%{opacity:1; transform:translateY(0) scale(1.0);}
+#volumeControl.open .volPanel{
+  transform:scaleX(1);
+  opacity:1;
+  pointer-events:auto;
 }
-.routeBtn:hover{transform: translateY(-1px);}
-
-/* ================= KEY HELP ================= */
-#keyHelp{
-  position:fixed;
-  left:50%;
-  bottom:14px;
-  transform:translateX(-50%);
-  z-index:20;
-  padding:10px 12px;
-  border-radius:999px;
-  border:1px solid rgba(245,238,220,.10);
-  background:rgba(0,0,0,.32);
-  backdrop-filter: blur(14px);
+.volLabel{
   font-family:Cinzel, serif;
   font-size:9px;
   letter-spacing:4px;
   color:rgba(245,238,220,.78);
-  opacity:0;
-  transition:.25s ease;
-  user-select:none;
+}
+#volRange{width:160px}
+#volNum{
+  font-family:Cinzel, serif;
+  font-size:9px;
+  letter-spacing:3px;
+  color:rgba(245,238,220,.78);
+  min-width:34px;
+  text-align:right;
+}
+
+/* ========= PERGAMINHO REAL + ANIMAÇÃO ========= */
+#modalParchment .modalShell{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
   pointer-events:none;
 }
-body.entered #keyHelp{opacity:.82;}
-@media (max-width: 768px){ #keyHelp{display:none;} }
+#modalParchment.show .modalShell{pointer-events:auto;}
 
-/* ================= MODAL SYSTEM ================= */
-.modal{
-  position:fixed;
-  inset:0;
-  display:none;
-  z-index:70;
-  background:rgba(0,0,0,.62);
-  backdrop-filter: blur(14px);
-}
-.modal.show{display:block;}
-.modal .backdropClose{position:absolute; inset:0; cursor:pointer;}
-
-.modalShell{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:min(980px, 92vw);
-  height:min(640px, 84vh);
-  border-radius:22px;
-  border:1px solid rgba(245,238,220,.12);
-  background:
-    radial-gradient(circle at 18% 12%, rgba(245,238,220,.08), transparent 58%),
-    linear-gradient(180deg, rgba(10,8,7,.72), rgba(0,0,0,.52));
-  box-shadow: var(--shadowB);
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-}
-.modalHeader{
-  position:relative;
-  z-index:2;
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  border-bottom:1px solid rgba(245,238,220,.08);
-}
-.modalTitle{
-  display:flex;
-  align-items:baseline;
-  gap:10px;
-  font-family:Cinzel, serif;
-  letter-spacing:5px;
-  color:rgba(245,238,220,.90);
-}
-.modalTitle small{
-  letter-spacing:3px;
-  opacity:.62;
-  font-family:Inter, sans-serif;
-}
-.modalActions{display:flex;gap:10px;align-items:center;}
-.pill{
-  height:34px;
-  padding:0 12px;
-  border-radius:999px;
-  border:1px solid rgba(245,238,220,.10);
-  background:rgba(0,0,0,.30);
-  color:rgba(245,238,220,.86);
-  font-family:Cinzel, serif;
-  font-size:9px;
-  letter-spacing:4px;
-  cursor:pointer;
-  user-select:none;
-}
-.pill.danger{border-color:rgba(200,60,60,.22);}
-.modalBody{
-  position:relative;
-  z-index:2;
-  flex:1;
-  display:flex;
-  overflow:hidden;
-}
-.rail{
-  width:260px;
-  border-right:1px solid rgba(245,238,220,.08);
-  padding:12px;
-  overflow:auto;
-}
-.content{flex:1; padding:14px; overflow:auto;}
-
-.railBtn{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:10px 12px;
-  border-radius: var(--radius-md);
-  border:1px solid rgba(245,238,220,.10);
-  background:linear-gradient(180deg, rgba(10,8,7,.55), rgba(0,0,0,.30));
-  color:rgba(245,238,220,.86);
-  cursor:pointer;
-  user-select:none;
-  font-family:Cinzel, serif;
-  letter-spacing:4px;
-  font-size:9px;
-  margin-bottom:8px;
-}
-
-/* ================= GRIMÓRIO (MODAL “terminal antigo” dentro dos selos) ================= */
-.terminalWrap{
-  border:1px solid rgba(245,238,220,.10);
-  border-radius:22px;
-  background:
-    radial-gradient(circle at 22% 12%, rgba(245,238,220,.06), transparent 58%),
-    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.42));
-  box-shadow: var(--shadowA);
-  overflow:hidden;
-  position:relative;
-  min-height: 520px;
-}
-.terminalTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:12px 14px;
-  border-bottom:1px solid rgba(245,238,220,.08);
-}
-.terminalTop .label{
-  font-family:Cinzel, serif;
-  letter-spacing:5px;
-  font-size:11px;
-  color:rgba(245,238,220,.90);
-}
-.terminalTop .sub{font-size:11px; opacity:.70; letter-spacing:2px;}
-.termBody{
-  padding:14px;
-  height: 520px;
-  overflow:auto;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  line-height:1.55;
-  color:rgba(245,238,220,.88);
-}
-.termLine{margin-bottom:8px; opacity:.92;}
-.termLine .prompt{color:rgba(200,60,60,.42)}
-.termLine .mut{opacity:.68}
-.termLine .ok{color:rgba(245,238,220,.92)}
-.termLine .warn{color:rgba(245,238,220,.80)}
-.cursor{
-  display:inline-block;
-  width:10px;
-  height:14px;
-  background:rgba(245,238,220,.58);
-  margin-left:6px;
-  transform:translateY(2px);
-  animation:blink 1.05s steps(2) infinite;
-  border-radius:2px;
-}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
-
-/* ================= PERGAMINHO (BOTÃO DA TELA NORMAL) ================= */
-/* modal com aparência de pergaminho + animação de abrir */
-#modalParchment .modalShell{
-  background: transparent;
-  border:none;
-  box-shadow:none;
-  overflow:visible;
-}
 .parchmentShell{
   width:min(980px, 92vw);
-  height:min(640px, 84vh);
-  margin:auto;
+  height:min(680px, 86vh);
   position:relative;
-  transform-origin: top center;
-  transform: translateY(6px) scale(.96);
+  transform-origin:center top;
   opacity:0;
-  filter: blur(.4px);
+  transform:translateY(14px) scale(.94);
+  filter: blur(.35px);
 }
 #modalParchment.show .parchmentShell{
-  animation: parchOpen .38s ease forwards;
+  animation: scrollOpen .45s cubic-bezier(.2,.9,.22,1) forwards;
 }
-@keyframes parchOpen{
-  0%{opacity:0; transform: translateY(10px) scale(.93) rotateX(6deg);}
-  70%{opacity:1; transform: translateY(-2px) scale(1.01) rotateX(0deg);}
-  100%{opacity:1; transform: translateY(0px) scale(1.0) rotateX(0deg); filter:none;}
+@keyframes scrollOpen{
+  0%{opacity:0; transform:translateY(18px) scale(.90) rotateX(8deg);}
+  60%{opacity:1; transform:translateY(-4px) scale(1.01) rotateX(0deg);}
+  100%{opacity:1; transform:translateY(0) scale(1.0) rotateX(0deg); filter:none;}
+}
+.scrollRoll{
+  position:absolute;
+  top:50%;
+  width:34px;
+  height: calc(100% - 40px);
+  transform:translateY(-50%);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(245,238,220,.16), rgba(0,0,0,.24)),
+    radial-gradient(circle at 50% 20%, rgba(245,238,220,.18), transparent 60%);
+  border:1px solid rgba(245,238,220,.10);
+  box-shadow: 0 16px 48px rgba(0,0,0,.62);
+  opacity:0;
+}
+.scrollRoll.left{left:-14px}
+.scrollRoll.right{right:-14px}
+#modalParchment.show .scrollRoll{ animation: rollIn .42s ease forwards; }
+#modalParchment.show .scrollRoll.right{animation-delay:.06s}
+@keyframes rollIn{
+  0%{opacity:0; transform:translateY(-50%) scaleX(.1);}
+  60%{opacity:.92; transform:translateY(-50%) scaleX(1.04);}
+  100%{opacity:.78; transform:translateY(-50%) scaleX(1.0);}
 }
 
 .parchment{
   position:absolute;
   inset:0;
   border-radius: 26px;
-  border:1px solid rgba(245,238,220,.18);
-  box-shadow: var(--shadowB);
+  border:1px solid rgba(245,238,220,.20);
+  box-shadow: 0 28px 88px rgba(0,0,0,.68);
   overflow:hidden;
+
   background:
-    radial-gradient(circle at 18% 12%, rgba(245,238,220,.22), transparent 55%),
-    radial-gradient(circle at 76% 84%, rgba(200,60,60,.12), transparent 60%),
-    linear-gradient(180deg, rgba(30,24,18,.84), rgba(12,10,9,.78));
+    radial-gradient(circle at 22% 18%, rgba(245,238,220,.42), transparent 52%),
+    radial-gradient(circle at 75% 78%, rgba(200,60,60,.16), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(245,238,220,.12), transparent 66%),
+    linear-gradient(180deg, rgba(68,52,34,.94), rgba(20,16,12,.86));
+
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Cpath d='M70 35c55-30 110 8 170 2 60-6 80-25 140-17 60 8 120 30 175 20 55-10 110-30 155 5 30 25 25 70 45 115 20 45 35 95 20 150-15 55-35 90-45 135-10 45 10 95-25 130-35 35-95 15-150 30-55 15-110 55-170 30-60-25-95-45-155-35-60 10-120 45-170 10-50-35-30-90-55-140-25-50-70-95-60-155 10-60 50-95 55-145 5-50-35-110 20-145Z' fill='%23000'/%3E%3C/svg%3E");
+  -webkit-mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Cpath d='M70 35c55-30 110 8 170 2 60-6 80-25 140-17 60 8 120 30 175 20 55-10 110-30 155 5 30 25 25 70 45 115 20 45 35 95 20 150-15 55-35 90-45 135-10 45 10 95-25 130-35 35-95 15-150 30-55 15-110 55-170 30-60-25-95-45-155-35-60 10-120 45-170 10-50-35-30-90-55-140-25-50-70-95-60-155 10-60 50-95 55-145 5-50-35-110 20-145Z' fill='%23000'/%3E%3C/svg%3E");
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
 }
 .parchment::before{
   content:"";
   position:absolute;
-  inset:-20%;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-  opacity:.20;
+  inset:-25%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.55' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.85'/%3E%3C/svg%3E");
+  opacity:.18;
   mix-blend-mode:overlay;
   pointer-events:none;
 }
@@ -781,28 +561,27 @@ body.entered #keyHelp{opacity:.82;}
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(0,0,0,.48) 84%, rgba(0,0,0,.75) 100%),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 7px);
-  opacity:.30;
-  mix-blend-mode:overlay;
+    radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(0,0,0,.52) 84%, rgba(0,0,0,.84) 100%);
+  opacity:.72;
   pointer-events:none;
 }
 
 .parchHeader{
   position:relative;
   z-index:2;
-  padding:16px 18px;
+  padding:16px 18px 12px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
-  border-bottom:1px solid rgba(245,238,220,.12);
+  border-bottom:1px solid rgba(245,238,220,.14);
 }
 .parchTitle{
   font-family:Cinzel, serif;
-  letter-spacing:6px;
+  letter-spacing:7px;
   font-size:12px;
   color:rgba(245,238,220,.92);
+  text-shadow: 0 18px 44px rgba(0,0,0,.65);
 }
 .parchTitle small{
   margin-left:10px;
@@ -815,64 +594,219 @@ body.entered #keyHelp{opacity:.82;}
 .parchBody{
   position:relative;
   z-index:2;
-  padding:16px 18px;
+  padding:18px 22px;
   height: calc(100% - 58px);
   overflow:auto;
-  color:rgba(245,238,220,.90);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
-  font-size:12.5px;
-  line-height:1.65;
-  text-shadow:0 0 12px rgba(0,0,0,.55);
+  color:rgba(245,238,220,.92);
+  font-family:Cinzel, serif;
+  font-size:16px;
+  line-height:1.85;
+  letter-spacing:1px;
+  text-align:center;
+  text-shadow: 0 12px 32px rgba(0,0,0,.70);
 }
-.parchLine{margin-bottom:10px; opacity:.94;}
-.parchPrompt{color:rgba(200,60,60,.45)}
-.parchSoft{opacity:.72}
-.parchOk{color:rgba(245,238,220,.94)}
-.parchWarn{color:rgba(245,238,220,.80)}
+.parchBody .verse{
+  margin: 18px auto;
+  max-width: 760px;
+  opacity:.92;
+}
+.parchBody .verse.dim{opacity:.78}
+.parchBody .sig{
+  margin-top:26px;
+  font-size:11px;
+  letter-spacing:6px;
+  opacity:.62;
+}
 
-/* “rolos” decorativos */
-.roll{
+/* ========= ADMIN (modal simples) ========= */
+.adminBox{
   position:absolute;
+  left:50%;
   top:50%;
-  width:26px;
-  height: calc(100% - 34px);
-  transform:translateY(-50%);
-  border-radius: 18px;
-  background:linear-gradient(180deg, rgba(245,238,220,.10), rgba(0,0,0,.25));
+  transform:translate(-50%,-50%);
+  width:min(980px, calc(100vw - 48px));
+  border-radius:16px;
   border:1px solid rgba(245,238,220,.10);
-  box-shadow: 0 14px 44px rgba(0,0,0,.55);
+  background:linear-gradient(180deg, rgba(10,12,16,.78), rgba(0,0,0,.62));
+  box-shadow:0 18px 66px rgba(0,0,0,.62);
+  overflow:hidden;
+}
+.adminHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  font-size:10px;
+  letter-spacing:4px;
+  opacity:.88;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-family:Cinzel, serif;
+}
+.adminHeader .dim{opacity:.55}
+.adminBody{ padding:14px; }
+
+.adminField{
+  border-radius:14px;
+  border:1px solid rgba(245,238,220,.10);
+  background:linear-gradient(180deg, rgba(0,0,0,.16), rgba(0,0,0,.28));
+  box-shadow:0 0 0 1px rgba(0,0,0,.28) inset;
+  padding:12px;
+}
+.adminLabel{ font-size:9px; letter-spacing:3px; opacity:.55; margin-bottom:8px; font-family:Cinzel, serif;}
+.adminValue{ font-size:14px; letter-spacing:2px; opacity:.92; font-family:Cinzel, serif;}
+.adminInput{
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(245,238,220,.10);
+  background:rgba(0,0,0,.35);
+  color:rgba(245,248,255,.92);
+  padding:0 12px;
+  font-family:Inter, system-ui, sans-serif;
+  letter-spacing:.5px;
+  font-size:12px;
+  outline:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.28) inset;
+}
+.adminActions{
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.aPill{
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:.82;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.22);
+  font-family:Cinzel, serif;
+}
+.aPill.ok{ border-color: rgba(245,238,220,.12); }
+.aPill.bad{ border-color: rgba(200,60,60,.22); color: rgba(255,220,220,.92); }
+
+/* ========= SELOS MODALS (terminal / arquivos / social / arena) ========= */
+.modalBox{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:min(980px, calc(100vw - 48px));
+  max-height: min(78vh, 820px);
+  border-radius:16px;
+  border:1px solid rgba(245,238,220,.10);
+  background:linear-gradient(180deg, rgba(10,12,16,.78), rgba(0,0,0,.62));
+  box-shadow:0 18px 66px rgba(0,0,0,.62);
+  overflow:hidden;
+}
+.modalHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 12px;
+  font-size:10px;
+  letter-spacing:4px;
+  opacity:.88;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  font-family:Cinzel, serif;
+}
+.modalHeader .dim{opacity:.55}
+.modalBody{ padding:14px; overflow:auto; max-height: calc(min(78vh, 820px) - 48px); }
+
+/* Terminal (GRIMÓRIO dentro de SELOS) */
+.termLog{
+  background:rgba(0,0,0,.28);
+  border:1px solid rgba(245,238,220,.10);
+  border-radius:14px;
+  padding:12px;
+  min-height:220px;
+  max-height:44vh;
+  overflow:auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size:12px;
+  line-height:1.55;
+  color:rgba(245,248,255,.90);
+}
+.termInputRow{
+  margin-top:10px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.termPrompt{
+  font-family:Cinzel, serif;
+  letter-spacing:3px;
+  font-size:10px;
   opacity:.75;
 }
-.roll.left{left:-10px}
-.roll.right{right:-10px}
+.termInput{
+  flex:1;
+  height:36px;
+  border-radius:12px;
+  border:1px solid rgba(245,238,220,.10);
+  background:rgba(0,0,0,.35);
+  color:rgba(245,248,255,.92);
+  padding:0 12px;
+  outline:none;
+}
 
+/* Cartões simples */
+.grid2{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:12px;
+}
+@media (max-width: 900px){ .grid2{grid-template-columns:1fr;} }
+
+.card{
+  border-radius:14px;
+  border:1px solid rgba(245,238,220,.10);
+  background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.22));
+  padding:14px;
+  box-shadow:0 0 0 1px rgba(0,0,0,.28) inset;
+}
+.card h3{
+  font-family:Cinzel, serif;
+  letter-spacing:4px;
+  font-size:12px;
+  margin-bottom:8px;
+}
+.card p{opacity:.78; font-size:11px; line-height:1.55;}
+.card a{
+  display:inline-flex;
+  margin-top:10px;
+  text-decoration:none;
+  color:rgba(245,248,255,.92);
+}
+
+@media (max-width: 560px){
+  #volRange{width:120px;}
+  .parchBody{font-size:14px; padding:14px 14px;}
+}
+
+/* reduced motion */
 @media (prefers-reduced-motion: reduce){
+  .spinner{animation:none}
   #cinemaFX::before{animation:none}
-  #modalParchment.show .parchmentShell{animation:none; opacity:1; transform:none;}
+  #routesNode.show .routeBtn{animation:none; opacity:1; transform:none;}
 }
 </style>
 </head>
 <body>
 
-<!-- SVG defs: filtro INK pros ícones -->
-<svg width="0" height="0" style="position:absolute">
-  <defs>
-    <filter id="ink">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="2" result="noise"/>
-      <feDisplacementMap in="SourceGraphic" in2="noise" scale="0.8" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </defs>
-</svg>
-
-<!-- BACKGROUND VIDEO -->
+<!-- VIDEO -->
 <video id="videoBlur" playsinline preload="auto" muted loop>
   <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
 </video>
+
 <video id="video" playsinline preload="auto" loop>
   <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
 </video>
 
-<!-- AUDIO -->
+<!-- ÁUDIO AMBIENTE -->
 <audio id="ambience" preload="auto" loop>
   <source src="https://files.catbox.moe/99fu05.m4a" type="audio/mp4">
 </audio>
@@ -881,404 +815,392 @@ body.entered #keyHelp{opacity:.82;}
 <div id="cinemaFX"></div>
 <div id="glitchFlash"></div>
 
-<div id="versionTag"><span class="v">shadow temple interface: v4.1 (seals-only routes)</span></div>
-<div id="keyHelp">ESC FECHA // P PERGAMINHO // A ADM // S SELOS</div>
+<!-- version -->
+<div id="versionTag"><span class="v">shadow temple interface: v2</span></div>
 
-<!-- ENTER -->
+<!-- LOADING / ENTER -->
 <div id="loadingScreen">
-  <div id="enterScan" aria-hidden="true"></div>
   <div class="loading-text" id="dynamicText">O TEMPLO OBSERVA…</div>
   <div class="spinner" id="spinner"></div>
+
   <div id="enterBox">ENTRAR</div>
   <div id="enterHint">PRESSIONE [ENTER] PARA PROSSEGUIR</div>
+
   <div id="enterFooterLeft">SELO ATIVO // PASSO PROIBIDO</div>
 </div>
 
-<!-- HUD ENTER -->
-<div id="coordsHUD" class="hudPanel">
-  <div class="line blink" id="coordA">SELO: — — —</div>
-  <div class="line" id="coordB">PORTAL: LATENTE // VIGIA: PRESENTE</div>
-</div>
-
-<div id="techHUD" class="hudPanel">
-  <div class="termLine"><span class="tag">RITO</span> <span class="sep">//</span> <span class="value" id="sysClock">--:--:--</span></div>
-  <div class="termLine"><span class="tag">PORTAL</span> <span class="sep">//</span> <span class="value" id="sysStream">DORMENTE</span></div>
-  <div class="termLine"><span class="tag">ECO</span> <span class="sep">//</span> <span class="value" id="sysNeural">SILÊNCIO</span></div>
-  <div class="termLine"><span class="tag">VISITANTE</span> <span class="sep">//</span> <span class="value" id="sysSubject">À PORTA</span></div>
-  <div class="termLine"><span class="tag">FASE</span> <span class="sep">//</span> <span class="value" id="sysPhase">DESPERTAR</span></div>
-  <div class="termLine"><span class="tag">JURAMENTO</span> <span class="sep">//</span> <span class="value" id="sysDirective">OBSERVAR</span></div>
-</div>
-
-<div id="statusStrip">
-  <div class="statusLine" id="ss1"><span class="k">TEMPLO</span> <span class="v">IMÓVEL</span></div>
-  <div class="statusLine faint" id="ss2"><span class="k">PORTAL</span> <span class="v">LATENTE</span></div>
-  <div class="statusLine faint" id="ss3"><span class="k">ECO</span> <span class="v">—</span></div>
-</div>
-
-<!-- TOP CONTROLS (SÓ 3) -->
-<div id="topControls">
-  <!-- Fullscreen -->
-  <button class="ctrlBtn" id="btnFS" title="Ritual: Tela Cheia" aria-label="Tela cheia">
+<!-- TOP CONTROLS (tela normal) -->
+<div id="topControls" aria-label="Controles">
+  <!-- FULLSCREEN -->
+  <button class="ctrlBtn" id="btnFS" title="Tela Cheia" aria-label="Tela cheia">
+    <!-- “portal frame” (menos tech) -->
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 3H5a2 2 0 0 0-2 2v2M17 3h2a2 2 0 0 1 2 2v2M7 21H5a2 2 0 0 1-2-2v-2M17 21h2a2 2 0 0 0 2-2v-2"
-        fill="none" stroke="rgba(245,238,220,.90)" stroke-width="2.2" stroke-linecap="round"/>
-      <path d="M9 7h6M9 17h6" fill="none" stroke="rgba(200,60,60,.35)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M7 4H5a2 2 0 0 0-2 2v2M17 4h2a2 2 0 0 1 2 2v2M7 20H5a2 2 0 0 1-2-2v-2M17 20h2a2 2 0 0 0 2-2v-2"
+        fill="none" stroke="rgba(245,238,220,.90)" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M9 9c2-2 4-2 6 0M9 15c2 2 4 2 6 0"
+        fill="none" stroke="rgba(200,60,60,.65)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
   </button>
 
-  <!-- Pergaminho (NOVO) -->
-  <button class="ctrlBtn" id="btnParch" title="Pergaminho (console ritual)" aria-label="Pergaminho">
+  <!-- PERGAMINHO (novo) -->
+  <button class="ctrlBtn" id="btnParch" title="Pergaminho" aria-label="Pergaminho">
+    <!-- “scroll” -->
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5Z"
-        fill="none" stroke="rgba(245,238,220,.88)" stroke-width="2.0" stroke-linejoin="round"/>
-      <path d="M9 8h8M9 11h8M9 14h6" fill="none" stroke="rgba(200,60,60,.24)" stroke-width="1.8" stroke-linecap="round"/>
-      <path d="M7 5c0 0 0 0 0 0" fill="none"/>
+      <path d="M7 5h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9"
+        fill="none" stroke="rgba(245,238,220,.88)" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M7 5v12a2 2 0 0 0 2 2h0"
+        fill="none" stroke="rgba(245,238,220,.70)" stroke-width="1.7" stroke-linecap="round"/>
+      <path d="M10 9h6M10 12h6M10 15h5"
+        fill="none" stroke="rgba(200,60,60,.60)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
   </button>
 
-  <!-- ADM -->
-  <button class="ctrlBtn" id="btnAdmin" title="Painel ADM" aria-label="Painel ADM">
+  <!-- ADMIN -->
+  <button class="ctrlBtn" id="btnAdmin" title="Câmara" aria-label="Câmara">
+    <!-- “mask” -->
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3c5 0 8.5 2.9 8.5 7.9 0 7.3-5.6 10.9-8.5 10.9S3.5 18.2 3.5 10.9C3.5 5.9 7 3 12 3Z"
-        fill="none" stroke="rgba(245,238,220,.88)" stroke-width="2.0" stroke-linejoin="round"/>
-      <path d="M8.6 11c1.0-1.3 2.5-1.0 3.6 0m2.6 0c1.0-1.3 2.5-1.0 3.6 0"
-        fill="none" stroke="rgba(245,238,220,.62)" stroke-width="2.0" stroke-linecap="round"/>
-      <path d="M9 15.2c1.1.9 2.1 1.0 3 1.0s1.9-.1 3-1.0"
-        fill="none" stroke="rgba(200,60,60,.26)" stroke-width="1.9" stroke-linecap="round"/>
+      <path d="M12 3c4.5 0 8 2.6 8 7.5 0 7-5.2 10.5-8 10.5S4 17.5 4 10.5C4 5.6 7.5 3 12 3Z"
+        fill="none" stroke="rgba(245,238,220,.86)" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M9 11.2c.8-1.1 2-.9 3 0m3 0c.8-1.1 2-.9 3 0"
+        fill="none" stroke="rgba(200,60,60,.58)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M9.2 15.2c1 .8 2 .9 2.8.9s1.8-.1 2.8-.9"
+        fill="none" stroke="rgba(245,238,220,.62)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
   </button>
 </div>
 
-<!-- SELOS (ÚNICO LUGAR DE ROTAS: discord/arquivo/canais/arena/grimório antigo) -->
+<!-- SELOS (menu) -->
 <div id="socialControl" aria-label="Selos">
   <button class="linkPill" id="btnLinks" type="button" title="SELOS" aria-label="Abrir selos">
+    <!-- “sigil” -->
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M9 14.5 7.2 16.3a3.2 3.2 0 1 1-4.5-4.5L4.6 10a3.2 3.2 0 0 1 4.5 0"
-        fill="none" stroke="rgba(245,238,220,.86)" stroke-width="2.1" stroke-linecap="round"/>
-      <path d="M15 9.5 16.8 7.7a3.2 3.2 0 0 1 4.5 4.5L19.4 14a3.2 3.2 0 0 1-4.5 0"
-        fill="none" stroke="rgba(245,238,220,.70)" stroke-width="2.1" stroke-linecap="round"/>
-      <path d="M8.8 15.2 15.2 8.8"
-        fill="none" stroke="rgba(200,60,60,.28)" stroke-width="2.0" stroke-linecap="round"/>
+      <path d="M12 3.7 19 8v8l-7 4.3L5 16V8l7-4.3Z"
+        fill="none" stroke="rgba(245,238,220,.88)" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M12 7v10M8.5 10.2 12 12l3.5-1.8"
+        fill="none" stroke="rgba(200,60,60,.62)" stroke-width="1.6" stroke-linecap="round"/>
     </svg>
     <span>SELOS</span>
   </button>
 </div>
 
-<!-- ROUTES NODE -->
+<!-- ROUTES NODE (itens ficam AQUI dentro do SELOS) -->
 <div id="routesNode" aria-hidden="true">
-  <div class="routesBox" role="navigation" aria-label="Selos / Rotas">
-
-    <!-- SOCIAL (discord/insta) -->
-    <button class="routeBtn" id="rSocial" type="button" aria-label="Social">
-      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;opacity:.92;filter:url(#ink)">
-        <path d="M12 3.6 19.2 8v8L12 20.4 4.8 16V8L12 3.6Z" fill="none" stroke="rgba(245,238,220,.82)" stroke-width="2.0" stroke-linejoin="round"/>
-        <path d="M12 7.2v9.6M8.7 10.5 12 12.2l3.3-1.7" fill="none" stroke="rgba(200,60,60,.24)" stroke-width="1.8" stroke-linecap="round"/>
+  <div class="routesBox" role="navigation" aria-label="Selos externos">
+    <button class="routeBtn" id="rSocial" type="button" aria-label="Sociais">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 12a4 4 0 1 1 0-8h2M16 12a4 4 0 1 0 0-8h-2"
+          fill="none" stroke="rgba(245,238,220,.86)" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M10 12h4"
+          fill="none" stroke="rgba(200,60,60,.70)" stroke-width="1.8" stroke-linecap="round"/>
       </svg>
+      <span class="routeTip" aria-hidden="true"><span class="t">SOCIAIS</span><span class="s">Discord / Instagram</span></span>
     </button>
 
-    <!-- ARENA -->
-    <button class="routeBtn" id="rGames" type="button" aria-label="Arena">
-      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;opacity:.92;filter:url(#ink)">
-        <path d="M4 20l6-2 10-10-4-4L6 14l-2 6Z" fill="none" stroke="rgba(245,238,220,.82)" stroke-width="2.0" stroke-linejoin="round"/>
-        <path d="M13.6 6.4l4 4" fill="none" stroke="rgba(200,60,60,.24)" stroke-width="1.8" stroke-linecap="round"/>
+    <button class="routeBtn" id="rFiles" type="button" aria-label="Arquivos">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M6 7h12v4H6V7Z" fill="none" stroke="rgba(245,238,220,.86)" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M7 11v9h10v-9" fill="none" stroke="rgba(245,238,220,.70)" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M10 15h4" fill="none" stroke="rgba(200,60,60,.65)" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
+      <span class="routeTip" aria-hidden="true"><span class="t">ARQUIVOS</span><span class="s">Índice selado</span></span>
     </button>
 
-    <!-- ARQUIVO -->
-    <button class="routeBtn" id="rArchive" type="button" aria-label="Arquivo">
-      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;opacity:.92;filter:url(#ink)">
-        <path d="M6 7h12v4H6V7Z" fill="none" stroke="rgba(245,238,220,.82)" stroke-width="2.0" stroke-linejoin="round"/>
-        <path d="M7 11v9h10v-9" fill="none" stroke="rgba(245,238,220,.62)" stroke-width="2.0" stroke-linejoin="round"/>
-        <path d="M10 15h4" fill="none" stroke="rgba(200,60,60,.22)" stroke-width="1.8" stroke-linecap="round"/>
+    <button class="routeBtn" id="rGrimoire" type="button" aria-label="Grimório (Terminal)">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.2" fill="none" stroke="rgba(245,238,220,.86)" stroke-width="1.6"/>
+        <path d="M12 7.5v9M7.5 12h9"
+          fill="none" stroke="rgba(200,60,60,.65)" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
+      <span class="routeTip" aria-hidden="true"><span class="t">GRIMÓRIO</span><span class="s">Terminal antigo</span></span>
     </button>
 
-    <!-- CANAIS -->
-    <button class="routeBtn" id="rChannels" type="button" aria-label="Canais">
-      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;opacity:.92;filter:url(#ink)">
-        <path d="M4 7h16M4 12h10M4 17h16" fill="none" stroke="rgba(245,238,220,.86)" stroke-width="2.2" stroke-linecap="round"/>
-        <path d="M17 11l3 1-3 1" fill="none" stroke="rgba(200,60,60,.28)" stroke-width="2.0" stroke-linecap="round" stroke-linejoin="round"/>
+    <button class="routeBtn" id="rArena" type="button" aria-label="Arena">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 20l6-2 10-10-4-4L6 14l-2 6Z" fill="none" stroke="rgba(245,238,220,.86)" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M14 6l4 4" fill="none" stroke="rgba(200,60,60,.55)" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
+      <span class="routeTip" aria-hidden="true"><span class="t">ARENA</span><span class="s">Hub / vitrine</span></span>
     </button>
-
-    <!-- GRIMÓRIO ANTIGO (terminal modal tradicional) -->
-    <button class="routeBtn" id="rGrimoire" type="button" aria-label="Grimório">
-      <svg viewBox="0 0 24 24" aria-hidden="true" style="width:18px;height:18px;opacity:.92;filter:url(#ink)">
-        <path d="M12 3.8c4.8 0 8.4 3.2 8.4 8.2S16.8 20.2 12 20.2 3.6 17 3.6 12 7.2 3.8 12 3.8Z"
-          fill="none" stroke="rgba(245,238,220,.86)" stroke-width="2.0" stroke-linejoin="round"/>
-        <path d="M12 7.2v9.6M7.2 12h9.6" fill="none" stroke="rgba(200,60,60,.30)" stroke-width="1.8" stroke-linecap="round"/>
-      </svg>
-    </button>
-
   </div>
 </div>
 
-<!-- ================= MODAIS ================= -->
+<!-- VOLUME (vol inicial 45% — no JS) -->
+<div id="volumeControl" aria-label="Volume">
+  <button class="volBtn" id="btnVol" type="button" aria-label="Abrir volume">
+    <!-- ícone “sino/war drum” (shadow vibe) -->
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 4c3 0 5 2.2 5 5v2c0 1.8.7 3 1.7 4l.3.3H5l.3-.3C6.3 14 7 12.8 7 11V9c0-2.8 2-5 5-5Z"
+        fill="none" stroke="rgba(245,238,220,.90)" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M10 18.6c.4 1 1.1 1.6 2 1.6s1.6-.6 2-1.6"
+        fill="none" stroke="rgba(200,60,60,.65)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M12 6.2v2.2"
+        fill="none" stroke="rgba(245,238,220,.60)" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </button>
 
-<!-- PERGAMINHO (NOVO - tela normal) -->
-<div class="modal" id="modalParchment" aria-hidden="true">
-  <div class="backdropClose" data-close="modalParchment"></div>
-  <div class="parchmentShell">
-    <div class="parchment">
-      <div class="roll left" aria-hidden="true"></div>
-      <div class="roll right" aria-hidden="true"></div>
-
-      <div class="parchHeader">
-        <div class="parchTitle">PERGAMINHO <small>// escrito em tinta</small></div>
-        <div class="parchActions">
-          <button class="pill" id="parchRun">INICIAR</button>
-          <button class="pill danger" data-close="modalParchment">FECHAR</button>
-        </div>
-      </div>
-
-      <div class="parchBody" id="parchBody"></div>
-    </div>
+  <div class="volPanel" id="volPanel" role="group" aria-label="Ajuste de volume">
+    <div class="volLabel">ECO</div>
+    <input id="volRange" type="range" min="0" max="1" step="0.01" value="0.45" />
+    <div id="volNum">45%</div>
   </div>
 </div>
 
-<!-- GRIMÓRIO (antigo) - fica só nos SELOS -->
-<div class="modal" id="modalTerminal" aria-hidden="true">
-  <div class="backdropClose" data-close="modalTerminal"></div>
+<!-- ========= MODAL: PERGAMINHO ========= -->
+<div id="modalParchment" class="modal" aria-hidden="true">
+  <div class="backdropClose" data-close="parchment"></div>
+
   <div class="modalShell">
-    <div class="modalHeader">
-      <div class="modalTitle">GRIMÓRIO <small>// console ritual</small></div>
-      <div class="modalActions">
-        <button class="pill" id="termRun">INICIAR RITO</button>
-        <button class="pill danger" data-close="modalTerminal">FECHAR</button>
-      </div>
-    </div>
-    <div class="modalBody">
-      <div class="rail">
-        <button class="railBtn" data-cmd="status"><span>STATUS</span><span>•</span></button>
-        <button class="railBtn" data-cmd="seal"><span>QUEBRAR SELO</span><span>•</span></button>
-        <button class="railBtn" data-cmd="summon"><span>INVOKE</span><span>•</span></button>
-        <button class="railBtn" data-cmd="clear"><span>LIMPAR</span><span>•</span></button>
-      </div>
-      <div class="content">
-        <div class="terminalWrap">
-          <div class="terminalTop">
-            <div>
-              <div class="label">SHELL // INK</div>
-              <div class="sub" id="termSub">conectando ao véu…</div>
-            </div>
+    <div class="parchmentShell" role="dialog" aria-label="Pergaminho">
+      <div class="scrollRoll left" aria-hidden="true"></div>
+      <div class="scrollRoll right" aria-hidden="true"></div>
+
+      <div class="parchment">
+        <div class="parchHeader">
+          <div class="parchTitle">PERGAMINHO <small>// ESC fecha</small></div>
+          <div class="parchActions">
+            <button class="pill" id="parchRupture" type="button">RUPTURA</button>
+            <button class="pill danger" id="parchClose" type="button">FECHAR</button>
           </div>
-          <div class="termBody" id="termBody"></div>
+        </div>
+
+        <div class="parchBody" id="parchBody">
+          <div class="verse">NO INÍCIO, O TEMPLO RESPIRAVA EM SILÊNCIO.</div>
+          <div class="verse dim">E A SOMBRA CAMINHAVA SEM ROSTO, SEM NOME, SEM LUZ.</div>
+          <div class="verse">O PORTAL TREMEU. O SELO RACHOU.</div>
+          <div class="verse dim">E A ARENA PEDIA SANGUE, FERRO E DISCIPLINA.</div>
+          <div class="verse">SE VOCÊ ABRIR ISTO, NÃO VOLTA IGUAL.</div>
+
+          <div class="sig">Σ  Δ  Ψ  //  JURAMENTO DO SOMBRA</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ARENA -->
-<div class="modal" id="modalArena" aria-hidden="true">
-  <div class="backdropClose" data-close="modalArena"></div>
-  <div class="modalShell">
-    <div class="modalHeader">
-      <div class="modalTitle">ARENA <small>// game OS</small></div>
-      <div class="modalActions">
-        <button class="pill" id="arenaShuffle">MUDAR ORÁCULO</button>
-        <button class="pill danger" data-close="modalArena">FECHAR</button>
-      </div>
-    </div>
-    <div class="modalBody">
-      <div class="content" id="arenaContent" style="width:100%;">
-        <!-- (conteúdo da arena será injetado no JS, igual antes) -->
-        <div id="arenaMount"></div>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- ========= MODAL: ADMIN ========= -->
+<div id="modalAdmin" class="modal" aria-hidden="true">
+  <div class="backdropClose" data-close="admin"></div>
 
-<!-- ARQUIVO -->
-<div class="modal" id="modalArchive" aria-hidden="true">
-  <div class="backdropClose" data-close="modalArchive"></div>
-  <div class="modalShell">
-    <div class="modalHeader">
-      <div class="modalTitle">ARQUIVO <small>// memórias</small></div>
-      <div class="modalActions">
-        <input id="archiveSearch" placeholder="buscar..." style="height:34px;border-radius:999px;border:1px solid rgba(245,238,220,.12);background:rgba(0,0,0,.28);color:rgba(245,238,220,.88);padding:0 12px;outline:none;">
-        <button class="pill danger" data-close="modalArchive">FECHAR</button>
-      </div>
+  <div class="adminBox" role="dialog" aria-label="Admin">
+    <div class="adminHeader">
+      <div>CÂMARA // CHAVE NECESSÁRIA</div>
+      <div class="dim">ESC para fechar</div>
     </div>
-    <div class="modalBody">
-      <div class="content">
-        <div id="archiveGrid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- CANAIS (Discord/Insta etc) -->
-<div class="modal" id="modalChannels" aria-hidden="true">
-  <div class="backdropClose" data-close="modalChannels"></div>
-  <div class="modalShell">
-    <div class="modalHeader">
-      <div class="modalTitle">CANAIS <small>// social & rotas</small></div>
-      <div class="modalActions">
-        <button class="pill" id="channelsPing">PULSAR</button>
-        <button class="pill danger" data-close="modalChannels">FECHAR</button>
+    <div class="adminBody">
+      <div id="adminLogin">
+        <div class="adminField" style="margin-bottom:12px;">
+          <div class="adminLabel">PORTADOR</div>
+          <div class="adminValue">SOMBRA</div>
+        </div>
+
+        <div class="adminField">
+          <div class="adminLabel">CHAVE</div>
+          <input id="adminPass" class="adminInput" type="password" autocomplete="off" spellcheck="false" placeholder="•••••••••" />
+        </div>
+
+        <div class="adminActions">
+          <button class="pill" id="adminAuth" type="button">ABRIR</button>
+          <button class="pill" id="adminClear" type="button">LIMPAR</button>
+          <div id="adminStatus" class="aPill">Aguardando…</div>
+        </div>
       </div>
-    </div>
-    <div class="modalBody">
-      <div class="content">
-        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
-          <div class="inkPanel" style="border-radius:22px;padding:14px;position:relative;">
-            <div class="stamp">SOCIAL</div>
-            <div style="font-family:Cinzel,serif;letter-spacing:6px;color:rgba(245,238,220,.92);">DISCORD</div>
-            <div style="margin-top:8px;opacity:.72;">call, stream, bio, link.</div>
-            <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="pill" id="openDiscord">ABRIR</button>
-              <button class="pill" id="copyBio">COPIAR BIO</button>
-              <button class="pill danger" id="copyLink">COPIAR LINK</button>
-            </div>
+
+      <div id="adminDash" style="display:none;">
+        <div class="adminField" style="margin-bottom:12px;">
+          <div class="adminLabel">MÉTRICAS (LOCAL)</div>
+          <div class="adminValue">
+            ENTRADAS: <span id="mViews">0</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            DISPOSITIVO: <span id="mUnique">0</span> &nbsp;&nbsp;|&nbsp;&nbsp;
+            ÚLTIMO: <span id="mLast">—</span>
           </div>
-          <div class="inkPanel" style="border-radius:22px;padding:14px;position:relative;">
-            <div class="stamp">SELO</div>
-            <div style="font-family:Cinzel,serif;letter-spacing:6px;color:rgba(245,238,220,.92);">INSTAGRAM</div>
-            <div style="margin-top:8px;opacity:.72;">marca pública / vitrine.</div>
-            <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="pill" id="openInsta">ABRIR</button>
-              <button class="pill danger" id="copyInsta">COPIAR</button>
-            </div>
-          </div>
+        </div>
+
+        <div class="adminActions">
+          <button class="pill danger" id="adminReset" type="button">ZERAR</button>
+          <button class="pill" id="adminLock" type="button">SELAR</button>
+          <div class="aPill ok">SEM BACKEND</div>
+        </div>
+
+        <div style="margin-top:10px; opacity:.65; font-size:11px; line-height:1.5;">
+          Nota: isso conta só neste navegador. Sem servidor, não existe contagem global real.
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ADMIN (permanece na tela normal pelo botão ADM) -->
-<div class="modal" id="modalAdmin" aria-hidden="true">
-  <div class="backdropClose" data-close="modalAdmin"></div>
-  <div class="modalShell">
+<!-- ========= MODAL: SOCIAIS ========= -->
+<div id="modalSocial" class="modal" aria-hidden="true">
+  <div class="backdropClose" data-close="social"></div>
+  <div class="modalBox" role="dialog" aria-label="Sociais">
     <div class="modalHeader">
-      <div class="modalTitle">PAINEL ADM <small>// ajustes</small></div>
-      <div class="modalActions">
-        <button class="pill" id="triggerGlitch">QUEBRAR SELO</button>
-        <button class="pill danger" data-close="modalAdmin">FECHAR</button>
-      </div>
+      <div>SELOS SOCIAIS</div>
+      <div class="dim">ESC para fechar</div>
     </div>
     <div class="modalBody">
-      <div class="content">
-        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
-          <div class="inkPanel" style="border-radius:22px;padding:14px;position:relative;">
-            <div class="stamp">VÉU</div>
-            <div style="font-family:Cinzel,serif;letter-spacing:6px;color:rgba(245,238,220,.92);">BLUR</div>
-            <div style="margin-top:10px;">
-              <input type="range" id="blurRange" min="10" max="46" step="1" value="26" style="width:100%;">
-              <div style="margin-top:8px;opacity:.72;" id="blurRead">BLUR: 26</div>
-            </div>
-          </div>
-
-          <div class="inkPanel" style="border-radius:22px;padding:14px;position:relative;">
-            <div class="stamp">OVERLAYS</div>
-            <div style="font-family:Cinzel,serif;letter-spacing:6px;color:rgba(245,238,220,.92);">GRAIN / SCAN</div>
-            <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-              <button class="pill" id="toggleGrain">TOGGLE GRAIN</button>
-              <button class="pill" id="toggleScan">TOGGLE SCAN</button>
-              <button class="pill danger" id="hardReset">RESET</button>
-            </div>
-          </div>
+      <div class="grid2">
+        <div class="card">
+          <h3>DISCORD</h3>
+          <p>Porta de comunicação. Troque o link depois.</p>
+          <a class="pill" href="https://discord.gg/example" target="_blank" rel="noopener noreferrer">ABRIR</a>
+        </div>
+        <div class="card">
+          <h3>INSTAGRAM</h3>
+          <p>Arquivo visual. Troque o link depois.</p>
+          <a class="pill" href="https://instagram.com/example" target="_blank" rel="noopener noreferrer">ABRIR</a>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- ========= MODAL: ARQUIVOS ========= -->
+<div id="modalFiles" class="modal" aria-hidden="true">
+  <div class="backdropClose" data-close="files"></div>
+  <div class="modalBox" role="dialog" aria-label="Arquivos">
+    <div class="modalHeader">
+      <div>ARQUIVOS // ÍNDICE SELADO</div>
+      <div class="dim">ESC para fechar</div>
+    </div>
+    <div class="modalBody">
+      <div class="grid2">
+        <div class="card">
+          <h3>IMAGENS</h3>
+          <p>Galeria / prints / referências. (placeholder)</p>
+          <button class="pill" type="button" onclick="triggerGlitch()">TESTAR RUPTURA</button>
+        </div>
+        <div class="card">
+          <h3>MODS & PACKS</h3>
+          <p>Links e arquivos externos. (placeholder)</p>
+          <button class="pill" type="button" onclick="triggerGlitch()">ABRIR SELO</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= MODAL: GRIMÓRIO (terminal antigo dentro de SELOS) ========= -->
+<div id="modalGrimoire" class="modal" aria-hidden="true">
+  <div class="backdropClose" data-close="grimoire"></div>
+  <div class="modalBox" role="dialog" aria-label="Grimório">
+    <div class="modalHeader">
+      <div>GRIMÓRIO // CONSOLE</div>
+      <div class="dim">ESC para fechar</div>
+    </div>
+    <div class="modalBody">
+      <div id="termLog" class="termLog"></div>
+      <div class="termInputRow">
+        <div class="termPrompt" id="termPrompt">shadow@temple:~$</div>
+        <input id="termInput" class="termInput" type="text" autocomplete="off" spellcheck="false" placeholder="Digite um comando (help)" />
+        <button class="pill" id="termSend" type="button">ENVIAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= MODAL: ARENA (placeholder) ========= -->
+<div id="modalArena" class="modal" aria-hidden="true">
+  <div class="backdropClose" data-close="arena"></div>
+  <div class="modalBox" role="dialog" aria-label="Arena">
+    <div class="modalHeader">
+      <div>ARENA</div>
+      <div class="dim">ESC para fechar</div>
+    </div>
+    <div class="modalBody">
+      <div class="card">
+        <h3>HUB</h3>
+        <p>Placeholder. Depois a gente troca isso pelo layout do teu “GAME OS”.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========= SCRIPT (PARTE 3 vem agora) ========= -->
 <script>
+/* =========================
+   PARTE 3/3 — JAVASCRIPT
+   (cola exatamente onde terminou: depois do "<script>")
+========================= */
+
+/* ===== ELEMENTS ===== */
 const video = document.getElementById("video");
 const videoBlur = document.getElementById("videoBlur");
 const ambience = document.getElementById("ambience");
 
-const enterBox = document.getElementById("enterBox");
-const enterHint = document.getElementById("enterHint");
 const loadingScreen = document.getElementById("loadingScreen");
 const dynamicText = document.getElementById("dynamicText");
 const spinner = document.getElementById("spinner");
+const enterBox = document.getElementById("enterBox");
+const enterHint = document.getElementById("enterHint");
 
-const coordA = document.getElementById("coordA");
-const coordB = document.getElementById("coordB");
-
-const sysClock = document.getElementById("sysClock");
-const sysStream = document.getElementById("sysStream");
-const sysNeural = document.getElementById("sysNeural");
-const sysSubject = document.getElementById("sysSubject");
-const sysPhase = document.getElementById("sysPhase");
-const sysDirective = document.getElementById("sysDirective");
-
+/* Top buttons */
 const btnFS = document.getElementById("btnFS");
 const btnParch = document.getElementById("btnParch");
 const btnAdmin = document.getElementById("btnAdmin");
-const btnLinks = document.getElementById("btnLinks");
 
+/* SELOS */
+const btnLinks = document.getElementById("btnLinks");
 const routesNode = document.getElementById("routesNode");
 const rSocial = document.getElementById("rSocial");
-const rGames = document.getElementById("rGames");
-const rArchive = document.getElementById("rArchive");
-const rChannels = document.getElementById("rChannels");
+const rFiles = document.getElementById("rFiles");
 const rGrimoire = document.getElementById("rGrimoire");
+const rArena = document.getElementById("rArena");
 
-/* MODAIS */
-const modalParchment = document.getElementById("modalParchment");
-const modalAdmin = document.getElementById("modalAdmin");
-const modalTerminal = document.getElementById("modalTerminal");
-const modalArena = document.getElementById("modalArena");
-const modalArchive = document.getElementById("modalArchive");
-const modalChannels = document.getElementById("modalChannels");
+/* Volume */
+const btnVol = document.getElementById("btnVol");
+const volPanel = document.getElementById("volPanel");
+const volRange = document.getElementById("volRange");
+const volNum = document.getElementById("volNum");
 
 /* Pergaminho */
-const parchBody = document.getElementById("parchBody");
-const parchRun = document.getElementById("parchRun");
-
-/* Grimório antigo */
-const termBody = document.getElementById("termBody");
-const termSub = document.getElementById("termSub");
-const termRun = document.getElementById("termRun");
-
-/* Archive */
-const archiveGrid = document.getElementById("archiveGrid");
-const archiveSearch = document.getElementById("archiveSearch");
-
-/* Channels */
-const openDiscord = document.getElementById("openDiscord");
-const copyBio = document.getElementById("copyBio");
-const copyLink = document.getElementById("copyLink");
-const openInsta = document.getElementById("openInsta");
-const copyInsta = document.getElementById("copyInsta");
-const channelsPing = document.getElementById("channelsPing");
+const modalParchment = document.getElementById("modalParchment");
+const parchClose = document.getElementById("parchClose");
+const parchRupture = document.getElementById("parchRupture");
 
 /* Admin */
-const toggleGrain = document.getElementById("toggleGrain");
-const toggleScan = document.getElementById("toggleScan");
-const triggerGlitchBtn = document.getElementById("triggerGlitch");
-const blurRange = document.getElementById("blurRange");
-const blurRead = document.getElementById("blurRead");
-const hardReset = document.getElementById("hardReset");
+const modalAdmin = document.getElementById("modalAdmin");
+const adminLogin = document.getElementById("adminLogin");
+const adminDash = document.getElementById("adminDash");
+const adminPass = document.getElementById("adminPass");
+const adminAuth = document.getElementById("adminAuth");
+const adminClear = document.getElementById("adminClear");
+const adminStatus = document.getElementById("adminStatus");
+const adminReset = document.getElementById("adminReset");
+const adminLock = document.getElementById("adminLock");
+const mViews = document.getElementById("mViews");
+const mUnique = document.getElementById("mUnique");
+const mLast = document.getElementById("mLast");
 
+/* Modais do SELOS */
+const modalSocial = document.getElementById("modalSocial");
+const modalFiles = document.getElementById("modalFiles");
+const modalGrimoire = document.getElementById("modalGrimoire");
+const modalArena = document.getElementById("modalArena");
+
+/* Terminal (Grimório dentro do SELOS) */
+const termLog = document.getElementById("termLog");
+const termInput = document.getElementById("termInput");
+const termPrompt = document.getElementById("termPrompt");
+const termSend = document.getElementById("termSend");
+
+/* ===== FLAGS ===== */
 let hasEntered = false;
 let readyToEnter = false;
-let sealsOpen = false;
 
-let grainOn = true;
-let scanOn = true;
-
-function pad2(n){ return String(n).padStart(2,"0"); }
-
-function triggerGlitch(){
-  document.body.classList.remove("glitch-on");
-  void document.body.offsetWidth;
-  document.body.classList.add("glitch-on");
-  setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
-}
-
+/* =========================
+   MEDIA SAFE START
+========================= */
 function hardStopMediaIfNotEntered(){
   if (hasEntered) return;
-  try{ video.pause(); video.currentTime = 0; }catch(e){}
-  try{ videoBlur.pause(); videoBlur.currentTime = 0; }catch(e){}
-  try{ ambience.pause(); ambience.currentTime = 0; }catch(e){}
+  try { video.pause(); video.currentTime = 0; } catch(e){}
+  try { videoBlur.pause(); videoBlur.currentTime = 0; } catch(e){}
+  try { ambience.pause(); ambience.currentTime = 0; } catch(e){}
 }
+document.addEventListener("DOMContentLoaded", hardStopMediaIfNotEntered);
+window.addEventListener("pageshow", hardStopMediaIfNotEntered);
 
-/* ================= ENTER FLOW ================= */
+/* ===== LOADING TEXT ROTATE ===== */
 const messages = [
   "O TEMPLO OBSERVA…",
   "SELOS SE FECHAM…",
@@ -1289,477 +1211,349 @@ const messages = [
 ];
 let msgIndex = 0;
 setInterval(() => {
+  if (hasEntered) return;
   msgIndex = (msgIndex + 1) % messages.length;
   dynamicText.textContent = messages[msgIndex];
 }, 2200);
 
-function showEnter(){
-  enterBox.classList.add("show");
-  enterHint.classList.add("show");
-  loadingScreen.classList.add("scan-on");
-  setTimeout(()=>loadingScreen.classList.remove("scan-on"), 1200);
-}
+/* ===== READY / SAFETY ===== */
 function markReady(){
   if (readyToEnter) return;
   readyToEnter = true;
-  showEnter();
+  enterBox.classList.add("show");
+  enterHint.classList.add("show");
 }
+video.addEventListener("loadeddata", markReady, { once:true });
+video.addEventListener("canplay", markReady, { once:true });
 
 setTimeout(() => {
-  if (!readyToEnter) {
+  if (!readyToEnter){
     dynamicText.textContent = "SINAL FRACO // ENTRADA MANUAL LIBERADA";
     markReady();
   }
 }, 9000);
 
-video.addEventListener("loadeddata", markReady, { once:true });
-video.addEventListener("canplay", markReady, { once:true });
-
-function doEnter(){
-  if (!readyToEnter || hasEntered) return;
+/* ===== ENTER ACTION ===== */
+async function doEnter(){
+  if (hasEntered) return;
   hasEntered = true;
-
-  loadingScreen.style.opacity = "0";
-  setTimeout(()=>{ loadingScreen.style.display = "none"; }, 650);
-
   document.body.classList.add("entered");
 
-  video.currentTime = 0;
-  videoBlur.currentTime = 0;
-  video.play().catch(()=>{});
-  videoBlur.play().catch(()=>{});
-  ambience.currentTime = 0;
-  ambience.play().catch(()=>{});
+  // some loading
+  loadingScreen.style.opacity = "0";
+  setTimeout(() => { loadingScreen.style.display = "none"; }, 600);
 
-  triggerGlitch();
+  // volumes (pedido: vídeo 45%)
+  video.volume = 0.45;
+  volRange.value = "0.45";
+  updateVolUI();
+
+  // play
+  try { await video.play(); } catch(e){}
+  try { await videoBlur.play(); } catch(e){}
+  try { await ambience.play(); } catch(e){}
+
+  // métricas
+  bumpMetrics();
 }
 enterBox.addEventListener("click", doEnter);
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !hasEntered) doEnter();
+  if (!hasEntered && e.key === "Enter") doEnter();
 });
 
-document.addEventListener("DOMContentLoaded", hardStopMediaIfNotEntered);
-window.addEventListener("pageshow", () => hardStopMediaIfNotEntered());
+/* ===== Visibility pause ===== */
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden){
+    try{ video.pause(); }catch(e){}
+    try{ videoBlur.pause(); }catch(e){}
+    try{ ambience.pause(); }catch(e){}
+    return;
+  }
+  if (!hasEntered){
+    hardStopMediaIfNotEntered();
+    return;
+  }
+  video.play().catch(()=>{});
+  videoBlur.play().catch(()=>{});
+  ambience.play().catch(()=>{});
+});
 
-/* ================= HUD DYNAMIC ================= */
-function tickTech(){
-  const d = new Date();
-  sysClock.textContent = `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-  const r = Math.random();
-  sysStream.textContent = video.readyState >= 3 ? "VIVO" : (video.readyState ? "LATENTE" : "DORMENTE");
-  sysNeural.textContent = r > 0.92 ? "SUSSURROS" : (r > 0.75 ? "ECO" : "SILÊNCIO");
-  sysSubject.textContent = hasEntered ? "NO TEMPLO" : "À PORTA";
-}
-setInterval(tickTech, 900);
-tickTech();
-
-function rndSeal(){
-  const rune = ["Σ","Δ","Ψ","Λ","Ω","ϟ","⟡","⟁","⧫","⟟"][Math.floor(Math.random()*10)];
-  const n = Math.floor(1+Math.random()*99).toString().padStart(2,"0");
-  coordA.textContent = `SELO: ${rune}-${n} // CORROMP: ${Math.random()>.18?"BAIXA":"ALTA"}`;
-  coordB.textContent = `PORTAL: ${Math.random()>.25?"LATENTE":"ABERTO"} // VIGIA: ${Math.random()>.15?"PRESENTE":"ATENTO"}`;
-}
-setInterval(rndSeal, 2200);
-rndSeal();
-
-/* ================= FULLSCREEN ================= */
+/* =========================
+   FULLSCREEN
+========================= */
 async function toggleFullscreen(){
   try{
     if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
     else await document.exitFullscreen();
-  } catch(e){}
+  }catch(e){}
 }
 btnFS.addEventListener("click", toggleFullscreen);
 
-/* ================= MODAL ENGINE ================= */
-const allModals = [modalParchment, modalAdmin, modalTerminal, modalArena, modalArchive, modalChannels];
-function closeAllModals(){ allModals.forEach(m => m.classList.remove("show")); }
-function openModal(modal){
-  closeAllModals();
-  modal.classList.add("show");
-  triggerGlitch();
+/* =========================
+   GLITCH / RUPTURA
+========================= */
+function triggerGlitch(){
+  document.body.classList.remove("glitch-on");
+  void document.body.offsetWidth;
+  document.body.classList.add("glitch-on");
+  setTimeout(()=>document.body.classList.remove("glitch-on"), 700);
 }
-function toggleModal(modal){
-  if (modal.classList.contains("show")) modal.classList.remove("show");
-  else openModal(modal);
+window.triggerGlitch = triggerGlitch;
+
+/* =========================
+   VOLUME UI (45% default)
+========================= */
+function updateVolUI(){
+  const pct = Math.round(Number(video.volume) * 100);
+  volNum.textContent = pct + "%";
+  // amb menor
+  ambience.volume = Math.min(0.28, Math.max(0.02, Number(video.volume) * 0.18));
+}
+updateVolUI();
+
+btnVol.addEventListener("click", (e) => {
+  e.stopPropagation();
+  volPanel.classList.toggle("open");
+});
+document.addEventListener("click", () => volPanel.classList.remove("open"));
+volRange.addEventListener("input", () => {
+  video.volume = Number(volRange.value);
+  updateVolUI();
+});
+
+/* =========================
+   MODAL HELPERS
+========================= */
+function openModal(el){
+  if (!el) return;
+  el.classList.add("show");
+  el.setAttribute("aria-hidden", "false");
+}
+function closeModal(el){
+  if (!el) return;
+  el.classList.remove("show");
+  el.setAttribute("aria-hidden", "true");
 }
 
-/* close by dataset */
-document.addEventListener("click", (e) => {
-  const t = e.target;
-  if (t && t.dataset && t.dataset.close){
-    const el = document.getElementById(t.dataset.close);
-    if (el) el.classList.remove("show");
-  }
-  if (t && t.classList && t.classList.contains("backdropClose")){
-    const el = document.getElementById(t.dataset.close);
-    if (el) el.classList.remove("show");
-  }
+/* backdrop click */
+document.querySelectorAll(".backdropClose").forEach(bg => {
+  bg.addEventListener("click", () => {
+    const key = bg.getAttribute("data-close");
+    if (key === "parchment") closeModal(modalParchment);
+    if (key === "admin") closeModal(modalAdmin);
+    if (key === "social") closeModal(modalSocial);
+    if (key === "files") closeModal(modalFiles);
+    if (key === "grimoire") closeModal(modalGrimoire);
+    if (key === "arena") closeModal(modalArena);
+  });
 });
 
 /* ESC fecha tudo */
 document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape"){
-    closeAllModals();
-    closeSeals();
+  if (e.key !== "Escape") return;
+
+  // fecha SELOS node
+  routesNode.classList.remove("show");
+
+  // fecha modais
+  [modalParchment, modalAdmin, modalSocial, modalFiles, modalGrimoire, modalArena]
+    .forEach(closeModal);
+
+  // fecha volume
+  volPanel.classList.remove("open");
+});
+
+/* =========================
+   SELOS MENU (somente por botão)
+========================= */
+btnLinks.addEventListener("click", (e) => {
+  e.stopPropagation();
+  routesNode.classList.toggle("show");
+});
+document.addEventListener("click", () => routesNode.classList.remove("show"));
+
+/* Rotas do SELOS */
+rSocial.addEventListener("click", () => { routesNode.classList.remove("show"); openModal(modalSocial); });
+rFiles.addEventListener("click", () => { routesNode.classList.remove("show"); openModal(modalFiles); });
+rGrimoire.addEventListener("click", () => { routesNode.classList.remove("show"); openModal(modalGrimoire); seedTerminal(); });
+rArena.addEventListener("click", () => { routesNode.classList.remove("show"); openModal(modalArena); });
+
+/* =========================
+   PERGAMINHO (tela normal)
+========================= */
+btnParch.addEventListener("click", () => {
+  openModal(modalParchment);
+  // animação de abrir (CSS já faz)
+  triggerGlitch();
+});
+parchClose.addEventListener("click", () => closeModal(modalParchment));
+parchRupture.addEventListener("click", () => triggerGlitch());
+
+/* =========================
+   ADMIN (tela normal)
+========================= */
+btnAdmin.addEventListener("click", () => openModal(modalAdmin));
+
+/* =========================
+   ADMIN MÉTRICAS (localStorage)
+========================= */
+const KEY = {
+  views: "st_views",
+  uniq: "st_uniq",
+  last: "st_last",
+  lock: "st_lock"
+};
+function nowStamp(){
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2,"0");
+  return `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function getOrSetUnique(){
+  const uKey = "st_unique_id";
+  let id = localStorage.getItem(uKey);
+  if (!id){
+    id = "u_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
+    localStorage.setItem(uKey, id);
+  }
+  return id;
+}
+function bumpMetrics(){
+  // views
+  const v = Number(localStorage.getItem(KEY.views) || "0") + 1;
+  localStorage.setItem(KEY.views, String(v));
+  localStorage.setItem(KEY.last, nowStamp());
+
+  // uniq (por navegador)
+  getOrSetUnique();
+  localStorage.setItem(KEY.uniq, "1");
+
+  renderMetrics();
+}
+function renderMetrics(){
+  mViews.textContent = localStorage.getItem(KEY.views) || "0";
+  mUnique.textContent = localStorage.getItem(KEY.uniq) || "0";
+  mLast.textContent = localStorage.getItem(KEY.last) || "—";
+}
+renderMetrics();
+
+/* Auth simples (local) */
+function setAdminStatus(text, cls){
+  adminStatus.textContent = text;
+  adminStatus.classList.remove("ok","bad");
+  if (cls) adminStatus.classList.add(cls);
+}
+adminAuth.addEventListener("click", () => {
+  const pass = (adminPass.value || "").trim();
+  if (!pass){
+    setAdminStatus("Digite a chave.", "bad");
+    return;
+  }
+  // chave simples (troca depois)
+  if (pass === "shadow"){
+    adminLogin.style.display = "none";
+    adminDash.style.display = "block";
+    setAdminStatus("ABERTO", "ok");
+    renderMetrics();
+  } else {
+    setAdminStatus("CHAVE INVÁLIDA", "bad");
+  }
+});
+adminClear.addEventListener("click", () => {
+  adminPass.value = "";
+  setAdminStatus("Aguardando…");
+});
+adminReset.addEventListener("click", () => {
+  localStorage.setItem(KEY.views, "0");
+  localStorage.setItem(KEY.last, "—");
+  renderMetrics();
+  setAdminStatus("ZERADO", "ok");
+});
+adminLock.addEventListener("click", () => {
+  // só fecha modal
+  closeModal(modalAdmin);
+});
+
+/* =========================
+   TERMINAL (GRIMÓRIO — dentro do SELOS)
+========================= */
+function logLine(html){
+  const div = document.createElement("div");
+  div.className = "termLine";
+  div.innerHTML = html;
+  termLog.appendChild(div);
+  termLog.scrollTop = termLog.scrollHeight;
+}
+function seedTerminal(){
+  if (termLog.dataset.seeded === "1") return;
+  termLog.dataset.seeded = "1";
+  logLine("<span class='dim'>[SISTEMA]</span> Grimório acordado.");
+  logLine("<span class='dim'>[DICA]</span> Digite <b>help</b>, <b>seal</b>, <b>arena</b>, <b>rupture</b>.");
+}
+function handleCmd(cmdRaw){
+  const cmd = (cmdRaw || "").trim().toLowerCase();
+  if (!cmd) return;
+
+  logLine(`<span class="dim">${termPrompt.textContent}</span> ${escapeHtml(cmdRaw)}`);
+
+  if (cmd === "help"){
+    logLine("Comandos: <b>help</b>, <b>seal</b>, <b>arena</b>, <b>rupture</b>, <b>clear</b>");
+    return;
+  }
+  if (cmd === "seal"){
+    logLine("Selos: <span class='dim'>SOCIAIS / ARQUIVOS / GRIMÓRIO / ARENA</span>");
+    return;
+  }
+  if (cmd === "arena"){
+    logLine("Abrindo ARENA…");
+    openModal(modalArena);
+    return;
+  }
+  if (cmd === "rupture"){
+    logLine("RUPTURA disparada.");
+    triggerGlitch();
+    return;
+  }
+  if (cmd === "clear"){
+    termLog.innerHTML = "";
+    termLog.dataset.seeded = "1";
+    logLine("<span class='dim'>[SISTEMA]</span> Registro apagado.");
+    return;
+  }
+  logLine("<span class='dim'>Comando não reconhecido.</span>");
+}
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+termSend.addEventListener("click", () => {
+  handleCmd(termInput.value);
+  termInput.value = "";
+  termInput.focus();
+});
+termInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter"){
+    handleCmd(termInput.value);
+    termInput.value = "";
   }
 });
 
-/* ================= SELOS NODE ================= */
-function openSeals(){
-  sealsOpen = true;
-  routesNode.classList.add("show");
-  triggerGlitch();
-}
-function closeSeals(){
-  sealsOpen = false;
-  routesNode.classList.remove("show");
-}
-function toggleSeals(){ sealsOpen ? closeSeals() : openSeals(); }
+/* =========================
+   FIX: não deixar nada “abrir sozinho”
+========================= */
+closeModal(modalParchment);
+closeModal(modalAdmin);
+closeModal(modalSocial);
+closeModal(modalFiles);
+closeModal(modalGrimoire);
+closeModal(modalArena);
+routesNode.classList.remove("show");
+volPanel.classList.remove("open");
 
-btnLinks.addEventListener("click", (e) => { e.stopPropagation(); toggleSeals(); });
-document.addEventListener("click", (e) => {
-  const within = routesNode.contains(e.target) || btnLinks.contains(e.target);
-  if (!within) closeSeals();
-});
-
-/* Rotas dentro dos SELOS */
-rSocial.addEventListener("click", (e)=>{ e.stopPropagation(); openModal(modalChannels); closeSeals(); });
-rGames.addEventListener("click", (e)=>{ e.stopPropagation(); openModal(modalArena); closeSeals(); });
-rArchive.addEventListener("click", (e)=>{ e.stopPropagation(); openModal(modalArchive); closeSeals(); });
-rChannels.addEventListener("click", (e)=>{ e.stopPropagation(); openModal(modalChannels); closeSeals(); });
-rGrimoire.addEventListener("click", (e)=>{ e.stopPropagation(); openModal(modalTerminal); closeSeals(); });
-
-/* ================= BOTÕES DA TELA NORMAL ================= */
-btnParch.addEventListener("click", ()=>toggleModal(modalParchment));
-btnAdmin.addEventListener("click", ()=>toggleModal(modalAdmin));
-
-/* atalhos */
-document.addEventListener("keydown", (e) => {
-  if (!hasEntered) return;
-  if (["INPUT","TEXTAREA"].includes(document.activeElement?.tagName)) return;
-
-  if (e.key.toLowerCase() === "p") toggleModal(modalParchment);
-  if (e.key.toLowerCase() === "a") toggleModal(modalAdmin);
-  if (e.key.toLowerCase() === "s") toggleSeals();
-});
-
-/* ================= PERGAMINHO (console próprio) ================= */
-let parchSeeded = false;
-let parchBusy = false;
-
-function parchPrint(html, cls=""){
-  const div = document.createElement("div");
-  div.className = "parchLine " + cls;
-  div.innerHTML = html;
-  parchBody.appendChild(div);
-  parchBody.scrollTop = parchBody.scrollHeight;
-}
-
-function parchClear(){
-  parchBody.innerHTML = "";
-}
-
-function seedParchment(){
-  if (parchSeeded) return;
-  parchSeeded = true;
-  parchPrint(`<span class="parchPrompt">[tinta]</span> <span class="parchSoft">pergaminho aberto…</span>`);
-  parchPrint(`<span class="parchPrompt">[tinta]</span> <span class="parchSoft">aguardando juramento…</span>`);
-}
-
-async function typeParch(text, cls=""){
-  return new Promise((resolve)=>{
-    const div = document.createElement("div");
-    div.className = "parchLine " + cls;
-    const span = document.createElement("span");
-    div.appendChild(span);
-    parchBody.appendChild(div);
-
-    let i = 0;
-    const speed = 10 + Math.floor(Math.random()*18);
-    const timer = setInterval(()=>{
-      i++;
-      span.textContent = text.slice(0,i);
-      parchBody.scrollTop = parchBody.scrollHeight;
-      if (i >= text.length){
-        clearInterval(timer);
-        resolve();
-      }
-    }, speed);
-  });
-}
-
-async function parchRitual(){
-  if (parchBusy) return;
-  parchBusy = true;
-
-  parchPrint(`<span class="parchPrompt">[rito]</span> <span class="parchSoft">iniciando…</span>`);
-  await typeParch("Rasgando o silêncio…");
-  await typeParch("Molhando a pena…");
-  await typeParch("Carimbando intenção…");
-
-  const ok = Math.random() > 0.16;
-  await typeParch(ok ? "Voto aceito. A tinta obedece." : "Voto instável. Reescreva com calma.", ok ? "parchOk":"parchWarn");
-  parchPrint(`<span class="parchPrompt">[estado]</span> <span class="parchSoft">portal:</span> <span class="parchOk">${sysStream.textContent}</span> <span class="parchSoft">eco:</span> <span class="parchOk">${sysNeural.textContent}</span>`);
-  parchPrint(`<span class="parchPrompt">[visitante]</span> <span class="parchOk">${sysSubject.textContent}</span>`);
-
-  triggerGlitch();
-  parchBusy = false;
-}
-
-parchRun.addEventListener("click", parchRitual);
-
-/* quando abrir o modal do pergaminho, semear */
-const parchObs = new MutationObserver(()=>{
-  if (modalParchment.classList.contains("show")) seedParchment();
-});
-parchObs.observe(modalParchment, {attributes:true, attributeFilter:["class"]});
-
-/* ================= GRIMÓRIO ANTIGO (terminal modal) ================= */
-let termBusy = false;
-
-function termPrint(line, cls=""){
-  const div = document.createElement("div");
-  div.className = "termLine " + cls;
-  div.innerHTML = line;
-  termBody.appendChild(div);
-  termBody.scrollTop = termBody.scrollHeight;
-}
-
-function termCursor(on=true){
-  const cur = document.createElement("span");
-  cur.className = "cursor";
-  if (on) termBody.appendChild(cur);
-  termBody.scrollTop = termBody.scrollHeight;
-  return cur;
-}
-
-async function typeLine(text, cls=""){
-  return new Promise((resolve)=>{
-    const div = document.createElement("div");
-    div.className = "termLine " + cls;
-    const span = document.createElement("span");
-    div.appendChild(span);
-    termBody.appendChild(div);
-
-    let i = 0;
-    const speed = 10 + Math.floor(Math.random()*18);
-    const timer = setInterval(()=>{
-      i++;
-      span.textContent = text.slice(0,i);
-      termBody.scrollTop = termBody.scrollHeight;
-      if (i >= text.length){
-        clearInterval(timer);
-        resolve();
-      }
-    }, speed);
-  });
-}
-
-function termClear(){ termBody.innerHTML = ""; }
-
-async function termRitual(){
-  if (termBusy) return;
-  termBusy = true;
-  termSub.textContent = "o véu responde…";
-
-  termPrint(`<span class="prompt">[templo]</span> <span class="mut">invocando logs…</span>`);
-  await typeLine("Ligando runas…");
-  await typeLine("Afiando o silêncio…");
-  await typeLine("Abrindo pergaminho de execução…");
-
-  const r = Math.random();
-  await typeLine(r > 0.18 ? "Voto aceito. Entrada concedida." : "Voto instável. Ajuste sua intenção.", r > 0.18 ? "ok":"warn");
-
-  termPrint(`<span class="prompt">[cmd]</span> <span class="ok">status</span>`);
-  termPrint(`<span class="mut">portal:</span> <span class="ok">${sysStream.textContent}</span>  <span class="mut">eco:</span> <span class="ok">${sysNeural.textContent}</span>`);
-  termPrint(`<span class="mut">visitante:</span> <span class="ok">${sysSubject.textContent}</span>`);
-
-  const cur = termCursor(true);
-  setTimeout(()=>{ try{cur.remove();}catch(e){} }, 1600);
-
-  termSub.textContent = "conectado.";
-  triggerGlitch();
-  termBusy = false;
-}
-
-termRun.addEventListener("click", termRitual);
-
-function terminalSeed(){
-  if (termBody.dataset.seeded) return;
-  termBody.dataset.seeded = "1";
-  termPrint(`<span class="prompt">[templo]</span> <span class="mut">arquivo de cinzas carregado</span>`);
-  termPrint(`<span class="prompt">[templo]</span> <span class="mut">aguardando comando…</span>`);
-  termCursor(true);
-}
-const termObs = new MutationObserver(()=>{
-  if (modalTerminal.classList.contains("show")) terminalSeed();
-});
-termObs.observe(modalTerminal, {attributes:true, attributeFilter:["class"]});
-
-document.querySelectorAll("#modalTerminal .railBtn").forEach(btn=>{
-  btn.addEventListener("click", async ()=>{
-    const cmd = btn.dataset.cmd;
-    if (!cmd) return;
-
-    if (cmd === "clear"){ termClear(); termPrint(`<span class="prompt">[cmd]</span> limpar`); return; }
-    if (cmd === "status"){
-      termPrint(`<span class="prompt">[cmd]</span> status`);
-      termPrint(`<span class="mut">portal:</span> <span class="ok">${sysStream.textContent}</span>  <span class="mut">eco:</span> <span class="ok">${sysNeural.textContent}</span>`);
-      return;
-    }
-    if (cmd === "seal"){
-      termPrint(`<span class="prompt">[cmd]</span> quebrar_selo`);
-      triggerGlitch();
-      await typeLine("… rachadura detectada.");
-      await typeLine("… tinta escorrendo.", "warn");
-      return;
-    }
-    if (cmd === "summon"){
-      termPrint(`<span class="prompt">[cmd]</span> invoke`);
-      await typeLine("Chamando a entidade: DOITTORE…");
-      await typeLine("Resultado: presença parcial. Risos no escuro.", "ok");
-    }
-  });
-});
-
-/* ================= ARENA (simples mount) ================= */
-const arenaMount = document.getElementById("arenaMount");
-const arenaShuffle = document.getElementById("arenaShuffle");
-
-const gamePool = [
-  { game:"VALORANT", goal:"AIM + CONSISTÊNCIA", prog:"14% // “subindo o véu”", note:"“controle antes do caos”" },
-  { game:"CYBERPUNK 2077", goal:"IMERSÃO + HISTÓRIA", prog:"33% // “cidade sangra”", note:"“aperta o gatilho e some”" },
-  { game:"ELDEN RING", goal:"BOSS + DISCIPLINA", prog:"48% // “voto quebrado”", note:"“um golpe por vez”" },
-];
-let currentArena = 0;
-
-function renderArena(){
-  const a = gamePool[currentArena];
-  arenaMount.innerHTML = `
-    <div class="inkPanel" style="border-radius:22px;padding:14px;position:relative;">
-      <div class="stamp">ATIVO</div>
-      <div style="font-family:Cinzel,serif;letter-spacing:6px;color:rgba(245,238,220,.92);font-size:14px;">JOGANDO AGORA</div>
-      <div style="margin-top:10px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;">
-        <div class="inkPanel" style="border-radius:18px;padding:12px;background:rgba(0,0,0,.20);box-shadow:0 0 0 1px rgba(0,0,0,.35) inset;">
-          <div style="font-family:Cinzel,serif;letter-spacing:5px;font-size:9px;opacity:.74;">JOGO</div>
-          <div style="margin-top:6px;letter-spacing:2px;opacity:.9;">${a.game}</div>
-        </div>
-        <div class="inkPanel" style="border-radius:18px;padding:12px;background:rgba(0,0,0,.20);box-shadow:0 0 0 1px rgba(0,0,0,.35) inset;">
-          <div style="font-family:Cinzel,serif;letter-spacing:5px;font-size:9px;opacity:.74;">META</div>
-          <div style="margin-top:6px;letter-spacing:2px;opacity:.9;">${a.goal}</div>
-        </div>
-        <div class="inkPanel" style="border-radius:18px;padding:12px;background:rgba(0,0,0,.20);box-shadow:0 0 0 1px rgba(0,0,0,.35) inset;">
-          <div style="font-family:Cinzel,serif;letter-spacing:5px;font-size:9px;opacity:.74;">PROGRESSO</div>
-          <div style="margin-top:6px;letter-spacing:2px;opacity:.9;">${a.prog}</div>
-        </div>
-        <div class="inkPanel" style="border-radius:18px;padding:12px;background:rgba(0,0,0,.20);box-shadow:0 0 0 1px rgba(0,0,0,.35) inset;">
-          <div style="font-family:Cinzel,serif;letter-spacing:5px;font-size:9px;opacity:.74;">NOTA</div>
-          <div style="margin-top:6px;letter-spacing:2px;opacity:.9;">${a.note}</div>
-        </div>
-      </div>
-      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-        <button class="pill">ABRIR PORTAL</button>
-        <button class="pill">NOTAS</button>
-        <button class="pill danger">BUILD</button>
-      </div>
-    </div>
-  `;
-}
-renderArena();
-arenaShuffle.addEventListener("click", ()=>{
-  currentArena = (currentArena + 1) % gamePool.length;
-  renderArena();
-  triggerGlitch();
-});
-
-/* ================= ARCHIVE DATA ================= */
-const archiveItems = [
-  {cat:"prints", title:"PRINT // 01", desc:"carimbo de batalha."},
-  {cat:"builds", title:"BUILD // 01", desc:"setup do corte."},
-  {cat:"notes", title:"NOTA // 01", desc:"juramento escrito."},
-  {cat:"mods", title:"MOD // 01", desc:"tinta no UI."},
-];
-let archiveCat = null;
-
-function renderArchive(){
-  const q = (archiveSearch.value || "").trim().toLowerCase();
-  archiveGrid.innerHTML = "";
-  archiveItems
-    .filter(it => !archiveCat || it.cat === archiveCat)
-    .filter(it => !q || (it.title.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q)))
-    .forEach((it)=>{
-      const c = document.createElement("div");
-      c.className = "inkPanel";
-      c.style.borderRadius = "22px";
-      c.style.padding = "14px";
-      c.style.position = "relative";
-      c.innerHTML = `
-        <div class="stamp">${it.cat.toUpperCase()}</div>
-        <div style="font-family:Cinzel,serif;letter-spacing:6px;color:rgba(245,238,220,.92);font-size:11px;">${it.title}</div>
-        <div style="margin-top:8px;opacity:.72;">${it.desc}</div>
-        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="pill">ABRIR</button>
-          <button class="pill">RENOMEAR</button>
-          <button class="pill danger">APAGAR</button>
-        </div>
-      `;
-      archiveGrid.appendChild(c);
-    });
-}
-archiveSearch.addEventListener("input", renderArchive);
-renderArchive();
-
-/* ================= CHANNELS ACTIONS ================= */
-const SOCIAL = {
-  discordUrl: "https://discord.com/app",
-  instaUrl: "https://instagram.com/"
-};
-function copyText(t){
-  navigator.clipboard?.writeText(t).then(()=>triggerGlitch()).catch(()=>{});
-}
-openDiscord.addEventListener("click", ()=> window.open(SOCIAL.discordUrl, "_blank", "noopener,noreferrer"));
-openInsta.addEventListener("click", ()=> window.open(SOCIAL.instaUrl, "_blank", "noopener,noreferrer"));
-copyBio.addEventListener("click", ()=> copyText("Sistema ativo. Jogador online. // DOITTORE observa."));
-copyLink.addEventListener("click", ()=> copyText(SOCIAL.discordUrl));
-copyInsta.addEventListener("click", ()=> copyText(SOCIAL.instaUrl));
-channelsPing.addEventListener("click", ()=>{ triggerGlitch(); rndSeal(); });
-
-/* ================= ADMIN CONTROLS ================= */
-function applyBlur(v){
-  document.documentElement.style.setProperty("--blur-amount", v + "px");
-  blurRead.textContent = "BLUR: " + v;
-}
-applyBlur(Number(blurRange.value));
-blurRange.addEventListener("input", ()=> applyBlur(Number(blurRange.value)));
-
-toggleGrain.addEventListener("click", ()=>{
-  grainOn = !grainOn;
-  document.getElementById("cinemaFX").style.display = grainOn ? "block" : "none";
-  triggerGlitch();
-});
-toggleScan.addEventListener("click", ()=>{
-  scanOn = !scanOn;
-  const sl = document.querySelector(".scanlines");
-  if (sl) sl.style.display = scanOn ? "block" : "none";
-  triggerGlitch();
-});
-triggerGlitchBtn.addEventListener("click", triggerGlitch);
-
-hardReset.addEventListener("click", ()=>{
-  grainOn = true; scanOn = true;
-  const sl = document.querySelector(".scanlines");
-  if (sl) sl.style.display = "block";
-  document.getElementById("cinemaFX").style.display = "block";
-  blurRange.value = "26";
-  applyBlur(26);
-  closeSeals();
-  closeAllModals();
-  triggerGlitch();
-});
-
-/* ================= INITIAL ================= */
-hardStopMediaIfNotEntered();
+/* ====== FIM ====== */
 </script>
 </body>
 </html>
