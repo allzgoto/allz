@@ -9,16 +9,21 @@
 
 <style>
 :root{
-  --ink:#06070a;
-  --coal:#0b0d12;
+  --ink:#05060a;
+  --coal:#0a0c11;
+
   --txt: rgba(245,248,255,.92);
   --dim: rgba(245,248,255,.62);
 
-  --gold: rgba(205,170,90,.72);
-  --gold2: rgba(205,170,90,.22);
-  --line: rgba(255,255,255,.08);
+  /* acento mais “templo/ferro” (âmbar queimado) */
+  --gold: rgba(200, 160, 80, .95);
+  --gold2: rgba(200, 160, 80, .22);
+  --gold3: rgba(200, 160, 80, .10);
 
-  --blur-amount: 32px;
+  --line: rgba(255,255,255,.07);
+
+  --blur-amount: 26px;
+  --enter-scale: 1;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -30,18 +35,17 @@ body{
   font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ========= VIDEO ========= */
+/* ========= VIDEO LAYERS ========= */
 #videoBlur{
   position:fixed;
   inset:-20%;
   width:140%;
   height:140%;
   object-fit:cover;
-  filter: blur(var(--blur-amount)) brightness(.55) saturate(1.05) contrast(1.06);
+  filter: blur(var(--blur-amount)) brightness(.40) saturate(1.05) contrast(1.05);
   transform: translateZ(0);
   z-index:-5;
 }
-
 #video{
   position:fixed;
   inset:0;
@@ -50,310 +54,355 @@ body{
   object-fit:cover;
   z-index:-4;
   background:black;
+  filter: brightness(.40) contrast(1.02) saturate(1.0);
+  transform: translateZ(0);
+}
+
+/* quando entra: vídeo “abre” e clareia */
+body.entered #video{
+  animation: videoBloom 1.2s ease forwards;
+}
+@keyframes videoBloom{
+  0%{ filter: brightness(.40) contrast(1.02) saturate(1.0); transform: scale(1.02); }
+  100%{ filter: brightness(.88) contrast(1.06) saturate(1.05); transform: scale(1); }
 }
 
 /* ========= FX ========= */
 .scanlines{
-  position:fixed;
-  inset:0;
+  position:fixed; inset:0;
   background:repeating-linear-gradient(
     to bottom,
-    rgba(255,255,255,0.02),
-    rgba(255,255,255,0.02) 1px,
+    rgba(255,255,255,0.018),
+    rgba(255,255,255,0.018) 1px,
     transparent 1px,
-    transparent 4px
+    transparent 5px
   );
   pointer-events:none;
   z-index:3;
   mix-blend-mode:overlay;
-  opacity:.55;
+  opacity:.45;
 }
-
 #cinemaFX{
-  position:fixed;
-  inset:0;
+  position:fixed; inset:0;
   pointer-events:none;
   z-index:4;
 }
+#cinemaFX::before{
+  content:"";
+  position:absolute; inset:-20%;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+  opacity:.055;
+  mix-blend-mode:overlay;
+  animation:grain 6s steps(10) infinite;
+}
 #cinemaFX::after{
   content:"";
-  position:absolute;
-  inset:0;
+  position:absolute; inset:0;
   background:
-    radial-gradient(circle at 50% 48%, transparent 0 62%, rgba(0,0,0,.45) 82%, rgba(0,0,0,.75) 100%);
+    radial-gradient(circle at 50% 48%, transparent 0 60%, rgba(0,0,0,.55) 82%, rgba(0,0,0,.78) 100%);
+  opacity:.68;
+}
+@keyframes grain{
+  0%{transform:translate(0,0)}
+  10%{transform:translate(-2%, -3%)}
+  20%{transform:translate(-4%, 2%)}
+  30%{transform:translate(3%, -2%)}
+  40%{transform:translate(2%, 4%)}
+  50%{transform:translate(-3%, 2%)}
+  60%{transform:translate(4%, 0%)}
+  70%{transform:translate(0%, 3%)}
+  80%{transform:translate(-2%, -2%)}
+  90%{transform:translate(3%, 1%)}
+  100%{transform:translate(0,0)}
+}
+
+/* flash da ruptura */
+#ruptureFlash{
+  position:fixed; inset:0;
+  pointer-events:none;
+  z-index:12;
+  opacity:0;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(200,160,80,.18), transparent 55%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 6px);
+  mix-blend-mode:screen;
+}
+body.rupturing #ruptureFlash{ animation: flash .65s steps(6) 1; }
+@keyframes flash{
+  0%{opacity:0}
+  15%{opacity:1; transform:translateX(8px)}
+  30%{opacity:.25; transform:translateX(-10px)}
+  55%{opacity:1; transform:translateX(6px)}
+  80%{opacity:.20; transform:translateX(-6px)}
+  100%{opacity:0; transform:none}
+}
+
+/* tremor da tela */
+body.shake{
+  animation: shake .55s ease 1;
+}
+@keyframes shake{
+  0%{transform:translate(0,0)}
+  20%{transform:translate(2px,-2px)}
+  40%{transform:translate(-3px,2px)}
+  60%{transform:translate(2px,2px)}
+  80%{transform:translate(-2px,-1px)}
+  100%{transform:translate(0,0)}
+}
+</style>
+</head>
+<style>
+/* ========= INÍCIO (SELO) ========= */
+#intro{
+  position:fixed; inset:0;
+  z-index:20;
+  display:grid;
+  place-items:center;
+  background: radial-gradient(circle at 50% 50%, rgba(10,12,16,.25), rgba(0,0,0,.65));
+  transition: opacity .55s ease, transform .55s ease;
+}
+body.entered #intro{
+  opacity:0;
+  pointer-events:none;
+  transform: scale(1.01);
+}
+
+/* nada de card “grande” — só uma presença sutil */
+.introWrap{
+  width:min(680px, calc(100vw - 44px));
+  padding:28px 20px 26px 20px;
+  text-align:center;
+  position:relative;
+}
+.introTitle{
+  font-family:Cinzel, serif;
+  letter-spacing:6px;
+  font-size:11px;
+  opacity:.82;
+  text-shadow:0 0 16px rgba(0,0,0,.7);
+}
+
+/* selo central */
+.sealZone{
+  margin-top:16px;
+  display:grid;
+  place-items:center;
+  position:relative;
+}
+
+/* halo fino (não sci-fi) */
+.sealHalo{
+  position:absolute;
+  width:260px; height:260px;
+  border-radius:50%;
+  border:1px solid rgba(200,160,80,.16);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.40) inset,
+    0 0 28px rgba(200,160,80,.06);
+  opacity:.8;
+  transform: scale(var(--enter-scale));
+}
+.sealHalo::after{
+  content:"";
+  position:absolute; inset:-2px;
+  border-radius:50%;
+  border:1px dashed rgba(200,160,80,.10);
+  opacity:.75;
+}
+
+/* o SELO (imagem) */
+#sealBtn{
+  width:140px; height:140px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  position:relative;
+  display:grid;
+  place-items:center;
+  outline:none;
+  transform: translateZ(0);
+}
+#sealBtn img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter: drop-shadow(0 0 22px rgba(200,160,80,.10));
+  opacity:.95;
+  transform: scale(1);
+  transition: transform .18s ease, filter .18s ease, opacity .18s ease;
+}
+#sealBtn:hover img{
+  transform: scale(1.03);
+  filter: drop-shadow(0 0 34px rgba(200,160,80,.18));
+  opacity:1;
+}
+
+/* “respiração” do selo antes de clicar */
+body:not(.entered) #sealBtn img{
+  animation: breathe 2.8s ease-in-out infinite;
+}
+@keyframes breathe{
+  0%,100%{ transform:scale(1); filter: drop-shadow(0 0 18px rgba(200,160,80,.10)); }
+  50%{ transform:scale(1.02); filter: drop-shadow(0 0 34px rgba(200,160,80,.18)); }
+}
+
+/* rachadura/ruptura: overlay fake de cracks */
+.cracks{
+  position:absolute;
+  width:220px; height:220px;
+  border-radius:50%;
+  pointer-events:none;
+  opacity:0;
+  background:
+    repeating-linear-gradient(18deg, rgba(200,160,80,.0) 0 10px, rgba(200,160,80,.10) 10px 11px, rgba(0,0,0,0) 11px 20px),
+    repeating-linear-gradient(-22deg, rgba(200,160,80,.0) 0 12px, rgba(200,160,80,.08) 12px 13px, rgba(0,0,0,0) 13px 22px);
+  filter: blur(.2px);
+  mix-blend-mode:screen;
+}
+body.rupturing .cracks{
+  animation: crackIn .95s ease 1 forwards;
+}
+@keyframes crackIn{
+  0%{opacity:0; transform:scale(.92) rotate(0deg)}
+  35%{opacity:.55; transform:scale(1.02) rotate(8deg)}
+  70%{opacity:.22; transform:scale(1.06) rotate(-6deg)}
+  100%{opacity:0; transform:scale(1.10) rotate(0deg)}
+}
+
+.introHint{
+  margin-top:16px;
+  font-family:Cinzel, serif;
+  letter-spacing:4px;
+  font-size:9px;
+  color:rgba(245,248,255,.74);
+  opacity:.85;
+  text-shadow:0 0 18px rgba(0,0,0,.75);
+}
+.introHint .sub{
+  display:block;
+  margin-top:7px;
+  font-family:Inter, system-ui, sans-serif;
+  letter-spacing:2px;
+  font-size:10px;
   opacity:.55;
 }
 
-/* ========= LOADING (PORTÃO / SELO) ========= */
-#loadingScreen{
-  position:fixed;
-  inset:0;
-  z-index:50;
+/* rodapé discreto */
+.introFoot{
+  margin-top:18px;
   display:flex;
-  align-items:center;
-  justify-content:center;
-  background: radial-gradient(circle at 50% 45%, rgba(255,255,255,.05), rgba(0,0,0,.95));
-  overflow:hidden;
-  transition: opacity .6s ease, transform .6s ease;
-}
-
-.loadingWrap{
-  width:min(860px, calc(100vw - 56px));
-  height:min(520px, calc(100vh - 56px));
-  border-radius:18px;
-  border:1px solid rgba(205,170,90,.16);
-  background:
-    radial-gradient(circle at 30% 20%, rgba(205,170,90,.06), transparent 60%),
-    linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.28));
-  box-shadow: 0 24px 92px rgba(0,0,0,.72);
-  position:relative;
-  overflow:hidden;
-}
-
-.loadingWrap::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(90deg, rgba(0,0,0,.35), transparent 18%, transparent 82%, rgba(0,0,0,.35)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 6px);
-  opacity:.9;
-  pointer-events:none;
-}
-
-.gateSplit{
-  position:absolute;
-  inset:0;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:0;
-  pointer-events:none;
-}
-.gateSplit > div{
-  border-right:1px solid rgba(205,170,90,.08);
-  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.18));
-}
-.gateSplit > div:last-child{ border-right:none; }
-
-.loadingCenter{
-  position:absolute;
-  left:50%;
-  top:52%;
-  transform:translate(-50%,-50%);
-  text-align:center;
-  width:min(520px, 92%);
-}
-
-.loadingTitle{
-  font-family:Cinzel, serif;
-  font-size:11px;
-  letter-spacing:6px;
-  opacity:.85;
-  text-shadow: 0 0 22px rgba(205,170,90,.10);
-  margin-bottom:14px;
-}
-
-.sigilBtn{
-  display:inline-grid;
-  place-items:center;
-  width:160px;
-  height:160px;
-  border-radius:999px;
-  border:1px solid rgba(205,170,90,.22);
-  background:
-    radial-gradient(circle at 35% 30%, rgba(255,255,255,.06), transparent 60%),
-    radial-gradient(circle at 50% 55%, rgba(205,170,90,.10), transparent 62%);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.35) inset,
-    0 22px 62px rgba(0,0,0,.55);
-  cursor:pointer;
-  user-select:none;
-  position:relative;
-  overflow:hidden;
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-}
-.sigilBtn:hover{
-  transform: translateY(-2px) scale(1.01);
-  border-color: rgba(205,170,90,.32);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.35) inset,
-    0 28px 74px rgba(0,0,0,.62),
-    0 0 34px rgba(205,170,90,.10);
-}
-.sigilBtn:active{ transform: translateY(0px) scale(.99); }
-
-.sigilBtn::after{
-  content:"";
-  position:absolute;
-  inset:-40% -40%;
-  background: conic-gradient(from 0deg, transparent 0 20%, rgba(205,170,90,.12), transparent 45% 100%);
-  animation: sigilSweep 2.8s linear infinite;
-  opacity:.75;
-  filter: blur(.2px);
-}
-@keyframes sigilSweep{
-  to{ transform: rotate(360deg); }
-}
-
-.sigilImg{
-  width:92px;
-  height:92px;
-  object-fit:contain;
-  filter: drop-shadow(0 0 16px rgba(205,170,90,.18));
-  z-index:2;
-}
-
-.sigilHint{
-  margin-top:16px;
-  font-family:Cinzel, serif;
-  font-size:9px;
-  letter-spacing:4px;
-  opacity:.72;
-}
-
-.sigilHint2{
-  margin-top:8px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.45;
-  font-family:Cinzel, serif;
-}
-
-.loadingFooter{
-  position:absolute;
-  left:18px;
-  bottom:14px;
+  justify-content:space-between;
+  gap:12px;
+  opacity:.35;
   font-family:Cinzel, serif;
   font-size:9px;
   letter-spacing:3px;
-  opacity:.32;
 }
 
-.loadingFooterR{
-  position:absolute;
-  right:18px;
-  bottom:14px;
-  font-family:Cinzel, serif;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.30;
-}
-
-/* animação de abrir portões */
-body.entering #loadingScreen{ pointer-events:none; }
-body.entering .loadingWrap{
-  animation: gatePulse .55s ease 1;
-}
-@keyframes gatePulse{
-  0%{ transform:translateZ(0) scale(1); }
-  45%{ transform:translateZ(0) scale(1.012); }
-  100%{ transform:translateZ(0) scale(1); }
-}
-body.entered #loadingScreen{
-  opacity:0;
-  transform: scale(1.03);
-  pointer-events:none;
-}
-
-/* ========= HUD (top controls mínimos) ========= */
-#topControls{
+/* ========= TOP HUD (aparece só depois que entra) ========= */
+#topHUD{
   position:fixed;
-  top:16px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:10px;
+  top:14px;
+  left:14px;
   z-index:25;
-  opacity:.92;
-  filter: drop-shadow(0 0 18px rgba(205,170,90,.10));
-  transition:.18s ease;
-}
-#topControls:hover{opacity:1}
-
-.ctrlBtn{
-  width:44px;height:36px;
-  border-radius:14px;
-  border:1px solid rgba(205,170,90,.20);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.05), transparent 58%),
-    linear-gradient(180deg, rgba(10,12,16,.72), rgba(0,0,0,.55));
-  backdrop-filter: blur(16px);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.32) inset, 0 14px 38px rgba(0,0,0,.36);
-  color:rgba(245,248,255,.92);
-}
-.ctrlBtn svg{ width:18px;height:18px; opacity:.92; }
-
-/* VOLUME top-left (volta!) */
-#volumeHUD{
-  position:fixed;
-  top:16px;
-  left:18px;
-  z-index:26;
   display:flex;
   gap:10px;
-  align-items:flex-start;
-  opacity:.92;
-  filter: drop-shadow(0 0 18px rgba(205,170,90,.10));
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .35s ease, transform .35s ease;
+  transform: translateY(-6px);
 }
-.vol-btn{
-  width:42px;height:42px;
+body.entered #topHUD{
+  opacity:.92;
+  pointer-events:auto;
+  transform:none;
+}
+
+.hudBtn{
+  width:44px;height:38px;
   border-radius:14px;
-  border:1px solid rgba(205,170,90,.18);
+  border:1px solid rgba(200,160,80,.18);
   background:
     radial-gradient(circle at 30% 30%, rgba(255,255,255,.05), transparent 60%),
-    linear-gradient(180deg, rgba(10,12,16,.72), rgba(0,0,0,.55));
-  backdrop-filter: blur(16px);
+    linear-gradient(180deg, rgba(10,12,16,.62), rgba(0,0,0,.48));
+  backdrop-filter: blur(14px);
+  cursor:pointer;
   display:grid;
   place-items:center;
-  cursor:pointer;
-  box-shadow: 0 0 0 1px rgba(0,0,0,.30) inset, 0 16px 46px rgba(0,0,0,.38);
+  box-shadow:0 0 0 1px rgba(0,0,0,.35) inset, 0 14px 42px rgba(0,0,0,.42);
+  color:rgba(245,248,255,.92);
 }
-.vol-svg{ width:22px;height:22px; opacity:.92; }
+.hudBtn:hover{
+  box-shadow:0 0 0 1px rgba(0,0,0,.35) inset, 0 18px 52px rgba(0,0,0,.50), 0 0 26px rgba(200,160,80,.10);
+  transform: translateY(-1px);
+}
+.hudBtn:active{transform:translateY(1px);}
+.hudBtn svg{width:18px;height:18px;opacity:.92; filter: drop-shadow(0 0 12px rgba(200,160,80,.10));}
 
-.vol-panel{
-  width:0;
+/* mini painel volume */
+#volPanel{
+  position:absolute;
+  top:46px;
+  left:0;
+  width:240px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(200,160,80,.14);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(14px);
+  box-shadow:0 18px 60px rgba(0,0,0,.55);
   opacity:0;
   pointer-events:none;
-  transform:translateY(2px);
-  transition:.25s ease;
-  padding:10px 0;
-  border-radius:14px;
-  border:1px solid rgba(205,170,90,.14);
-  background: linear-gradient(180deg, rgba(10,12,16,.78), rgba(0,0,0,.62));
-  backdrop-filter: blur(18px);
-  box-shadow: 0 12px 44px rgba(0,0,0,.50);
-  overflow:hidden;
-  font-family:Cinzel, serif;
+  transform: translateY(-6px);
+  transition:.2s ease;
 }
-#volumeHUD.open .vol-panel{
-  width:240px;
+#volWrap.open #volPanel{
   opacity:1;
   pointer-events:auto;
-  padding:10px 12px;
+  transform:none;
 }
-.vol-top{display:flex;justify-content:space-between;margin-bottom:8px;}
-.vol-title{font-size:9px;letter-spacing:3px;opacity:.72;}
-.vol-readout{font-size:10px;letter-spacing:2px;opacity:.92;}
-#volSlider{ width:100%; cursor:pointer; }
+.volTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+  font-family:Cinzel, serif;
+  letter-spacing:3px;
+  font-size:9px;
+  opacity:.9;
+}
+#volRead{ opacity:.75; letter-spacing:2px; font-family:Inter, system-ui, sans-serif; font-size:12px;}
+#volSlider{
+  width:100%;
+  appearance:none;
+  -webkit-appearance:none;
+  height:26px;
+  background:transparent;
+  cursor:pointer;
+}
 #volSlider::-webkit-slider-runnable-track{
   height:6px;border-radius:999px;
-  background: linear-gradient(90deg, rgba(245,248,255,.70), rgba(205,170,90,.22));
-  border:1px solid rgba(205,170,90,.12);
+  background: linear-gradient(90deg, rgba(245,248,255,.70), rgba(200,160,80,.18));
+  border:1px solid rgba(200,160,80,.14);
 }
 #volSlider::-webkit-slider-thumb{
   -webkit-appearance:none;
   width:16px;height:16px;border-radius:7px;
   margin-top:-6px;
-  background: radial-gradient(circle at 30% 30%, rgba(245,248,255,1), rgba(205,170,90,.35));
-  border:1px solid rgba(205,170,90,.22);
+  background: radial-gradient(circle at 30% 30%, rgba(245,248,255,1), rgba(200,160,80,.30));
+  border:1px solid rgba(200,160,80,.22);
+}
+
+@media (max-width:520px){
+  .sealHalo{width:220px;height:220px;}
+  #sealBtn{width:124px;height:124px;}
 }
 </style>
 </head>
+
 <body>
 
+<!-- Vídeo (já existe, mas fica escuro até o selo romper) -->
 <video id="videoBlur" playsinline preload="auto" muted loop>
   <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
 </video>
@@ -368,96 +417,87 @@ body.entered #loadingScreen{
 
 <div class="scanlines"></div>
 <div id="cinemaFX"></div>
+<div id="ruptureFlash"></div>
 
-<!-- LOADING / PORTÃO -->
-<div id="loadingScreen" aria-label="Entrada">
-  <div class="loadingWrap">
-    <div class="gateSplit" aria-hidden="true">
-      <div></div><div></div>
-    </div>
+<!-- HUD topo (só depois que entra) -->
+<div id="topHUD">
+  <div id="volWrap" style="position:relative;">
+    <button class="hudBtn" id="btnVol" title="ECO" aria-label="Volume">
+      <!-- ícone “pergaminho/eco” simples -->
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 9V7a2 2 0 0 1 2-2h3l3-2v18l-3-2H9a2 2 0 0 1-2-2v-2"
+          fill="none" stroke="rgba(245,248,255,.88)" stroke-width="1.7" stroke-linejoin="round"/>
+        <path d="M17.5 9.2a4.6 4.6 0 0 1 0 5.6"
+          fill="none" stroke="rgba(245,248,255,.62)" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+    </button>
 
-    <div class="loadingCenter">
-      <div class="loadingTitle" id="loadingTitle">SELOS SE FECHAM…</div>
-
-      <!-- ✅ NOVO ENTER (imagem clicável) -->
-      <div class="sigilBtn" id="sigilBtn" role="button" tabindex="0" aria-label="Clique para entrar">
-        <img class="sigilImg" src="https://files.catbox.moe/l6h4rv.png" alt="Selo" />
+    <div id="volPanel">
+      <div class="volTop">
+        <span>ECO</span>
+        <span id="volRead">45%</span>
       </div>
-
-      <div class="sigilHint">CLIQUE NO SELO PARA ROMPER O PORTÃO</div>
-      <div class="sigilHint2">ou pressione [ENTER]</div>
+      <input id="volSlider" type="range" min="0" max="1" step="0.01" value="0.45" />
     </div>
-
-    <div class="loadingFooter">TEMPLO // VIGIA</div>
-    <div class="loadingFooterR">shadow temple interface: v1</div>
   </div>
-</div>
 
-<!-- TOP CONTROLS -->
-<div id="topControls">
-  <button class="ctrlBtn" id="btnFS" title="Tela cheia" aria-label="Tela cheia">
+  <button class="hudBtn" id="btnFS" title="Tela cheia" aria-label="Tela cheia">
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"
         fill="none" stroke="rgba(245,248,255,.88)" stroke-width="1.7" stroke-linecap="round"/>
     </svg>
   </button>
-
-  <!-- Placeholder pros outros botões que você já tinha (grimório / painel etc.)
-       A gente encaixa na V2 com o pergaminho do jeito certo. -->
-  <button class="ctrlBtn" id="btnAdmin" title="Painel" aria-label="Painel">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3c4.5 0 8 2.6 8 7.5 0 7-5.2 10.5-8 10.5S4 17.5 4 10.5C4 5.6 7.5 3 12 3Z"
-        fill="none" stroke="rgba(245,248,255,.86)" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M9 10.5c.8-1.1 2-.9 3 0m3 0c.8-1.1 2-.9 3 0"
-        fill="none" stroke="rgba(245,248,255,.68)" stroke-width="1.6" stroke-linecap="round"/>
-    </svg>
-  </button>
 </div>
 
-<!-- VOLUME (top-left) -->
-<div id="volumeHUD" class="vol" aria-label="Volume">
-  <button id="volIconBtn" class="vol-btn" type="button" aria-label="Abrir volume">
-    <!-- ícone “sino/eco” (tema ritual) -->
-    <svg class="vol-svg" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3.6c2.6 0 4.6 2 4.6 4.6v2.4c0 1.6.6 2.8 1.6 3.8l.7.7H5.1l.7-.7c1-1 1.6-2.2 1.6-3.8V8.2c0-2.6 2-4.6 4.6-4.6Z"
-        fill="none" stroke="rgba(245,248,255,.86)" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M10 18.6c.4 1 1.1 1.6 2 1.6s1.6-.6 2-1.6"
-        fill="none" stroke="rgba(245,248,255,.62)" stroke-width="1.6" stroke-linecap="round"/>
-    </svg>
-  </button>
+<!-- INÍCIO (SELO) -->
+<section id="intro" aria-label="Início">
+  <div class="introWrap">
+    <div class="introTitle">SELOS SE FECHAM…</div>
 
-  <div id="volPanel" class="vol-panel" role="group" aria-label="Ajuste de volume">
-    <div class="vol-top">
-      <div class="vol-title">ECO // MIX</div>
-      <div id="volReadout" class="vol-readout">45%</div>
+    <div class="sealZone">
+      <div class="sealHalo" aria-hidden="true"></div>
+      <div class="cracks" aria-hidden="true"></div>
+
+      <button id="sealBtn" type="button" aria-label="Romper o selo">
+        <img src="https://files.catbox.moe/l6h4rv.png" alt="Selo" />
+      </button>
     </div>
-    <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.45" />
+
+    <div class="introHint">
+      TOQUE NO SELO PARA ROMPER O PORTAL
+      <span class="sub">ou pressione [ENTER]</span>
+    </div>
+
+    <div class="introFoot">
+      <span>TEMPLO // VIGIA</span>
+      <span>SHADOW TEMPLE INTERFACE: V1</span>
+    </div>
   </div>
-</div>
+</section>
 <script>
 /* ===== ELEMENTS ===== */
 const video = document.getElementById("video");
 const videoBlur = document.getElementById("videoBlur");
 const ambience = document.getElementById("ambience");
 
-const loadingScreen = document.getElementById("loadingScreen");
-const loadingTitle = document.getElementById("loadingTitle");
-const sigilBtn = document.getElementById("sigilBtn");
+const intro = document.getElementById("intro");
+const sealBtn = document.getElementById("sealBtn");
 
 const btnFS = document.getElementById("btnFS");
-
-/* Volume */
-const volumeHUD = document.getElementById("volumeHUD");
+const btnVol = document.getElementById("btnVol");
+const volWrap = document.getElementById("volWrap");
 const volSlider = document.getElementById("volSlider");
-const volIconBtn = document.getElementById("volIconBtn");
-const volPanel = document.getElementById("volPanel");
-const volReadout = document.getElementById("volReadout");
+const volRead = document.getElementById("volRead");
 
+/* ===== STATE ===== */
 let hasEntered = false;
+let entering = false;
 
-/* ===== STOP MEDIA until enter ===== */
+/* ===== INITIAL BEHAVIOR (B) =====
+- vídeo carrega, mas fica “travado/escuro”
+- só toca após romper selo
+*/
 function hardStop(){
-  if (hasEntered) return;
   try{ video.pause(); video.currentTime = 0; }catch(e){}
   try{ videoBlur.pause(); videoBlur.currentTime = 0; }catch(e){}
   try{ ambience.pause(); ambience.currentTime = 0; }catch(e){}
@@ -465,93 +505,88 @@ function hardStop(){
 document.addEventListener("DOMContentLoaded", hardStop);
 window.addEventListener("pageshow", hardStop);
 
-/* ===== ENTER FLOW ===== */
-async function doEnter(){
-  if (hasEntered) return;
-
-  document.body.classList.add("entering");
-  loadingTitle.textContent = "SELO SE ROMPE…";
-
-  // pequena “trava ritual”
-  sigilBtn.style.transform = "translateY(-1px) scale(0.99)";
-  setTimeout(()=>sigilBtn.style.transform="", 160);
-
-  // tenta iniciar mídia (no clique funciona melhor)
-  try{ await video.play(); }catch(e){}
-  try{ await videoBlur.play(); }catch(e){}
-  try{
-    ambience.volume = 0.18;
-    await ambience.play();
-  }catch(e){}
-
-  // finaliza
-  hasEntered = true;
-  document.body.classList.remove("entering");
-  document.body.classList.add("entered");
-
-  // remove da árvore depois do fade
-  setTimeout(()=>{ loadingScreen.style.display = "none"; }, 700);
+/* ===== VOLUME DEFAULT 45% ===== */
+video.volume = 0.45;
+volSlider.value = String(video.volume);
+function updateVolUI(){
+  const pct = Math.round(video.volume * 100);
+  volRead.textContent = pct + "%";
+  // ambience sempre mais baixo que o vídeo
+  ambience.volume = Math.min(0.22, Math.max(0.02, video.volume * 0.20));
 }
+updateVolUI();
 
-sigilBtn.addEventListener("click", doEnter);
-sigilBtn.addEventListener("keydown", (e)=>{
-  if (e.key === "Enter" || e.key === " ") doEnter();
+volSlider.addEventListener("input", () => {
+  video.volume = Number(volSlider.value);
+  updateVolUI();
 });
+btnVol.addEventListener("click", (e) => {
+  e.stopPropagation();
+  volWrap.classList.toggle("open");
+});
+document.addEventListener("click", () => volWrap.classList.remove("open"));
 
-document.addEventListener("keydown", (e)=>{
-  if (e.key === "Enter" && !hasEntered) doEnter();
-});
-
-/* ===== VISIBILITY ===== */
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    try{ video.pause(); }catch(e){}
-    try{ videoBlur.pause(); }catch(e){}
-    try{ ambience.pause(); }catch(e){}
-    return;
-  }
-  if (!hasEntered) { hardStop(); return; }
-  video.play().catch(()=>{});
-  videoBlur.play().catch(()=>{});
-  ambience.play().catch(()=>{});
-});
 /* ===== FULLSCREEN ===== */
 async function toggleFullscreen(){
   try{
     if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
     else await document.exitFullscreen();
-  } catch(e){}
+  }catch(e){}
 }
 btnFS.addEventListener("click", toggleFullscreen);
 
-/* ===== VOLUME (começa em 45%) ===== */
-video.volume = 0.45;
-volSlider.value = String(video.volume);
+/* ===== ENTER RUPTURE SEQUENCE ===== */
+function doRupture(){
+  if (hasEntered || entering) return;
+  entering = true;
 
-function updateVol(){
-  const pct = Math.round(Number(video.volume) * 100);
-  volReadout.textContent = pct + "%";
-  ambience.volume = Math.min(0.28, Math.max(0.02, Number(video.volume) * 0.22));
+  // Stage A: respira + micro tremor
+  document.body.classList.add("shake");
+
+  // Stage B: rachaduras + flash
+  setTimeout(() => {
+    document.body.classList.remove("shake");
+    document.body.classList.add("rupturing");
+  }, 180);
+
+  // Stage C: libera vídeo (remove overlay, play)
+  setTimeout(async () => {
+    hasEntered = true;
+    document.body.classList.remove("rupturing");
+    document.body.classList.add("entered");
+
+    // sincroniza blur
+    try{ await videoBlur.play(); }catch(e){}
+    try{ await video.play(); }catch(e){}
+
+    // áudio ambiente entra junto (se o navegador permitir)
+    try{ await ambience.play(); }catch(e){}
+
+    // trava overlay
+    intro.style.pointerEvents = "none";
+  }, 720);
 }
-volSlider.addEventListener("input", () => {
-  video.volume = Number(volSlider.value);
-  updateVol();
-});
-updateVol();
 
-/* abre/fecha painel */
-volIconBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  volumeHUD.classList.toggle("open");
+sealBtn.addEventListener("click", doRupture);
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") doRupture();
 });
-document.addEventListener("click", () => volumeHUD.classList.remove("open"));
 
-/* ===== fallback: se o vídeo travar/der erro ===== */
-video.addEventListener("error", () => {
-  loadingTitle.textContent = "SINAL FRACO… CLIQUE PARA ENTRAR";
-});
-videoBlur.addEventListener("error", () => {
-  loadingTitle.textContent = "SINAL FRACO… CLIQUE PARA ENTRAR";
+/* ===== VISIBILITY SAFETY ===== */
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden){
+    try{ video.pause(); }catch(e){}
+    try{ videoBlur.pause(); }catch(e){}
+    try{ ambience.pause(); }catch(e){}
+    return;
+  }
+  if (!hasEntered){
+    hardStop();
+    return;
+  }
+  video.play().catch(()=>{});
+  videoBlur.play().catch(()=>{});
+  ambience.play().catch(()=>{});
 });
 </script>
 
