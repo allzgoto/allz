@@ -1351,6 +1351,71 @@ body.entering #enterScreen{ animation:enterFade 1.15s ease forwards; }
   opacity:.55;
   line-height:1.5;
 }
+  #sealScene{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#05060a;
+  z-index:100;
+  overflow:hidden;
+}
+
+#sealCore{
+  text-align:center;
+  animation:sealIdle 4s ease-in-out infinite;
+}
+
+@keyframes sealIdle{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.03)}
+  100%{transform:scale(1)}
+}
+
+#ritualSeal{
+  width:140px;
+  cursor:pointer;
+  filter:drop-shadow(0 0 25px rgba(255,180,80,.25));
+  transition:.3s;
+}
+
+#ritualSeal:hover{
+  transform:scale(1.08);
+  filter:drop-shadow(0 0 40px rgba(255,180,80,.45));
+}
+
+#ritualText{
+  margin-top:24px;
+  font-size:12px;
+  letter-spacing:5px;
+  opacity:.85;
+}
+
+#ritualHint{
+  margin-top:10px;
+  font-size:9px;
+  letter-spacing:3px;
+  opacity:.5;
+}
+
+.door{
+  position:absolute;
+  top:0;
+  width:50%;
+  height:100%;
+  background:#000;
+  z-index:2;
+  pointer-events:none;
+  transition:1.2s cubic-bezier(.8,0,.2,1);
+}
+
+.doorL{left:0;}
+.doorR{right:0;}
+
+body.entered .doorL{transform:translateX(-100%)}
+body.entered .doorR{transform:translateX(100%)}
+
 </style>
 <script>
 /* =========================================================
@@ -1983,37 +2048,59 @@ clickOutsideClose(adminModal, ".adminFrame");
 clickOutsideClose(archiveModal, ".modalBox");
 clickOutsideClose(gamesModal, ".modalBox");
 clickOutsideClose(sealsMenu, ".sealsBox");
+  const ritualSeal = document.getElementById("ritualSeal");
+
+function activateRitual(){
+  if(hasEntered) return;
+
+  hasEntered = true;
+
+  document.body.classList.add("entered");
+
+  video.play().catch(()=>{});
+  videoBlur.play().catch(()=>{});
+  ambience.play().catch(()=>{});
+
+  setTimeout(()=>{
+    loadingScreen.style.display="none";
+  },1200);
+}
+
+ritualSeal.addEventListener("click", activateRitual);
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="Enter") activateRitual();
+});
+
 </script>
-<!-- ======================================================
-  PATCH (SE PRECISAR): ENTER “SELO/PORTA”
-  Cole ISTO DENTRO do <div id="loadingScreen"> ... </div>
-  (logo abaixo do dynamicText, por exemplo)
-====================================================== -->
-<!--
-<div id="sealScene" aria-hidden="false">
-  <div id="doorL" class="door doorL"></div>
-  <div id="doorR" class="door doorR"></div>
+<div id="loadingScreen">
 
-  <div id="sealCore">
-    <div id="sealRing"></div>
-    <div id="sealGlow"></div>
+  <div id="sealScene">
 
-    <button id="enterSealBtn" type="button" aria-label="Ativar selo">
-      <span class="sealGlyph">Σ</span>
-      <span class="sealLabel">ATIVAR</span>
-    </button>
+    <div id="doorL" class="door doorL"></div>
+    <div id="doorR" class="door doorR"></div>
 
-    <div id="enterSealHint">PRESSIONE [ENTER] PARA PROSSEGUIR</div>
+    <div id="sealCore">
+
+      <img id="ritualSeal"
+           src="https://files.catbox.moe/l6h4rv.png"
+           alt="Selo"
+           draggable="false" />
+
+      <div id="ritualText">
+        TOQUE O SELO PARA ROMPER O VÉU
+      </div>
+
+      <div id="ritualHint">
+        [CLIQUE NO SÍMBOLO]
+      </div>
+
+    </div>
+
   </div>
 
-  <div id="emberFX" aria-hidden="true"></div>
 </div>
--->
 
-<!-- ======================================================
-  Se você ainda tem um spinner antigo no loading, REMOVA
-  qualquer: <div class="spinner"...> (não usamos mais)
-====================================================== -->
 
 </body>
 </html>
