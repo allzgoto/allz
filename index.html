@@ -1,717 +1,215 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Shadow Temple // V1</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Temple</title>
 
-  <style>
-    :root{
-      --bg:#050506;
-      --ink:#d6cfbf;
-      --muted:#9b927f;
-      --gold:#8b6a2b;
-      --gold2:#caa15a;
-      --glass: rgba(12,12,14,.55);
-      --stroke: rgba(202,161,90,.18);
-      --shadow: rgba(0,0,0,.72);
-    }
+<style>
+body{
+  margin:0;
+  background:#050506;
+  overflow:hidden;
+  font-family:serif;
+  color:#d6cfbf;
+}
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:
-        radial-gradient(1200px 700px at 50% 40%, rgba(120,70,20,.10), transparent 60%),
-        radial-gradient(900px 500px at 50% 70%, rgba(180,30,30,.08), transparent 55%),
-        var(--bg);
-      color:var(--ink);
-      overflow:hidden;
-      font-family: ui-serif, "Georgia", "Times New Roman", serif;
-      letter-spacing:.04em;
-    }
+/* INTRO */
+#intro{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background:#050506;
+  z-index:20;
+}
 
-    /* Vinheta + ruído leve */
-    .vignette{
-      position:fixed; inset:0;
-      pointer-events:none;
-      background:
-        radial-gradient(1200px 700px at 50% 45%, transparent 25%, rgba(0,0,0,.55) 75%),
-        radial-gradient(900px 560px at 50% 55%, rgba(0,0,0,.15), rgba(0,0,0,.78));
-      mix-blend-mode:multiply;
-      opacity:.95;
-      z-index:10;
-    }
-    .grain{
-      position:fixed; inset:-20%;
-      pointer-events:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.26'/%3E%3C/svg%3E");
-      opacity:.08;
-      transform:rotate(7deg);
-      z-index:11;
-    }
+.seal{
+  width:120px;
+  height:120px;
+  cursor:pointer;
+  border-radius:999px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.8);
+  transition:.2s;
+}
+.seal:hover{transform:scale(1.05);}
+.seal img{width:100%;height:100%;object-fit:cover;}
 
-    /* CANVAS FX (futuro: rachaduras/partículas) */
-    #fx{
-      position:fixed; inset:0;
-      z-index:9;
-      pointer-events:none;
-    }
+.prompt{
+  margin-top:18px;
+  font-size:12px;
+  letter-spacing:.2em;
+  opacity:.8;
+  text-align:center;
+}
 
-    /* Flash/impacto */
-    .impact{
-      position:fixed; inset:0;
-      background:
-        radial-gradient(600px 420px at 50% 55%, rgba(255,90,40,.22), rgba(0,0,0,0) 60%),
-        radial-gradient(900px 700px at 50% 55%, rgba(180,20,20,.16), rgba(0,0,0,0) 62%),
-        rgba(0,0,0,.15);
-      opacity:0;
-      z-index:25;
-      pointer-events:none;
-    }
-    .impact.on{ animation: impact .95s ease-out both; }
-    @keyframes impact{
-      0%{opacity:0}
-      12%{opacity:1}
-      40%{opacity:.55}
-      100%{opacity:0}
-    }
+/* VIDEO DO PORTAL */
+#portalVid{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
+  z-index:25;
+}
 
-    /* ====== TELA INÍCIO ====== */
-    .intro{
-      position:fixed; inset:0;
-      display:grid;
-      place-items:center;
-      z-index:20;
-      opacity:1;
-      transition: opacity .65s ease;
-    }
-    .intro.hidden{
-      opacity:0;
-      pointer-events:none;
-    }
+/* SITE (vídeo principal) */
+#site{
+  position:fixed;
+  inset:0;
+  opacity:0;
+  transition:opacity .8s;
+}
+#site.on{opacity:1;}
 
-    .altar{
-      position:relative;
-      width:min(760px, 92vw);
-      height:min(420px, 60vh);
-      border-radius:18px;
-      background:
-        radial-gradient(900px 520px at 50% 35%, rgba(160,90,20,.10), transparent 62%),
-        linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.20)),
-        rgba(10,10,12,.35);
-      box-shadow:
-        0 40px 120px rgba(0,0,0,.65),
-        inset 0 0 0 1px rgba(255,255,255,.05),
-        inset 0 0 0 2px rgba(202,161,90,.06);
-      overflow:hidden;
-      backdrop-filter: blur(10px);
-    }
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    /* linhas “templo” */
-    .altar::before{
-      content:"";
-      position:absolute; inset:0;
-      background:
-        linear-gradient(to right, transparent 49.8%, rgba(255,255,255,.05) 50%, transparent 50.2%),
-        radial-gradient(600px 300px at 50% 45%, rgba(202,161,90,.08), transparent 70%);
-      opacity:.65;
-      pointer-events:none;
-    }
-    .altar::after{
-      content:"";
-      position:absolute; inset:-2px;
-      border-radius:18px;
-      box-shadow: inset 0 0 0 1px var(--stroke);
-      pointer-events:none;
-    }
+/* HUD */
+.hud{
+  position:fixed;
+  top:14px;
+  left:14px;
+  z-index:50;
+  opacity:0;
+  transition:.4s;
+}
+.hud.on{opacity:1;}
 
-    .intro-top{
-      position:absolute;
-      top:34px; left:0; right:0;
-      text-align:center;
-      font-size:12px;
-      letter-spacing:.55em;
-      text-transform:uppercase;
-      color:rgba(214,207,191,.86);
-      text-shadow:0 0 18px rgba(0,0,0,.7);
-    }
-
-    .sigils{
-      position:absolute;
-      top:50%;
-      transform:translateY(-50%);
-      font-family: ui-monospace, "Consolas", monospace;
-      font-size:12px;
-      color:rgba(214,207,191,.16);
-      user-select:none;
-    }
-    .sigils.left{left:34px}
-    .sigils.right{right:34px}
-    .sigils .row{display:flex; gap:10px; margin:10px 0}
-    .sigils .g{opacity:.9}
-    .sigils .d{opacity:.6}
-    .sigils .f{opacity:.35}
-
-    /* selo */
-    .seal-wrap{
-      position:absolute;
-      left:50%; top:54%;
-      transform:translate(-50%,-50%);
-      width:210px; height:210px;
-      display:grid;
-      place-items:center;
-    }
-
-    .ring{
-      position:absolute; inset:0;
-      border-radius:999px;
-      border:1px solid rgba(202,161,90,.20);
-      box-shadow: 0 0 0 1px rgba(0,0,0,.35) inset;
-      opacity:.65;
-    }
-    .ring.inner{
-      inset:26px;
-      opacity:.35;
-      border-style:dashed;
-      border-color: rgba(202,161,90,.15);
-    }
-
-    .seal{
-      width:112px; height:112px; /* menor, como você pediu */
-      border-radius:999px;
-      overflow:hidden;
-      cursor:pointer;
-      position:relative;
-      transform:translateZ(0);
-      box-shadow:
-        0 14px 38px rgba(0,0,0,.55),
-        0 0 0 1px rgba(255,255,255,.06),
-        0 0 0 2px rgba(202,161,90,.10);
-      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
-      user-select:none;
-    }
-    .seal:hover{
-      transform: scale(1.02);
-      filter: contrast(1.06) brightness(1.05);
-      box-shadow:
-        0 18px 46px rgba(0,0,0,.62),
-        0 0 0 1px rgba(255,255,255,.08),
-        0 0 0 2px rgba(202,161,90,.14);
-    }
-    .seal:active{ transform: scale(.98); }
-
-    .seal img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      filter: saturate(.92) contrast(1.12);
-      pointer-events:none;
-    }
-
-    .prompt{
-      position:absolute;
-      left:50%; top:76%;
-      transform:translateX(-50%);
-      text-align:center;
-      width:min(560px, 92%);
-      color:rgba(214,207,191,.75);
-      font-size:12px;
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      text-shadow:0 0 18px rgba(0,0,0,.85);
-      user-select:none;
-    }
-    .prompt small{
-      display:block;
-      margin-top:8px;
-      letter-spacing:.32em;
-      color:rgba(214,207,191,.38);
-      font-size:10px;
-    }
-
-    .corner{
-      position:absolute;
-      bottom:18px;
-      font-family: ui-monospace, "Consolas", monospace;
-      font-size:10px;
-      letter-spacing:.28em;
-      color:rgba(214,207,191,.30);
-      text-transform:uppercase;
-      user-select:none;
-    }
-    .corner.left{left:18px}
-    .corner.right{right:18px}
-
-    /* tremor */
-    .shake{ animation: shake .55s linear both; }
-    @keyframes shake{
-      0%{transform:translate3d(0,0,0)}
-      10%{transform:translate3d(-4px,2px,0)}
-      20%{transform:translate3d(5px,-3px,0)}
-      30%{transform:translate3d(-6px,-2px,0)}
-      40%{transform:translate3d(7px,3px,0)}
-      50%{transform:translate3d(-5px,4px,0)}
-      60%{transform:translate3d(4px,-3px,0)}
-      70%{transform:translate3d(-3px,2px,0)}
-      80%{transform:translate3d(2px,-2px,0)}
-      90%{transform:translate3d(-2px,1px,0)}
-      100%{transform:translate3d(0,0,0)}
-    }
-
-    /* ====== TELA DO VÍDEO (SITE) ====== */
-    .site{
-      position:fixed; inset:0;
-      z-index:5;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .8s ease;
-    }
-    .site.on{
-      opacity:1;
-      pointer-events:auto;
-    }
-
-    .video-wrap{
-      position:fixed; inset:0;
-      z-index:6;
-      background:#000;
-    }
-    video{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-      background:black;
-      filter: contrast(1.05) brightness(.95) saturate(.95);
-    }
-
-    /* HUD topo (fullscreen + volume) */
-    .hud{
-      position:fixed;
-      top:14px;
-      left:14px;
-      display:flex;
-      gap:10px;
-      align-items:center;
-      z-index:60;
-      transition:.35s ease;
-    }
-    .hud.hide{
-      opacity:0;
-      pointer-events:none;
-      transform: translateY(-8px);
-    }
-
-    .btn{
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(12,12,14,.40);
-      color: rgba(214,207,191,.86);
-      border-radius:12px;
-      padding:10px 12px;
-      cursor:pointer;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(202,161,90,.06);
-      transition: transform .15s ease, border-color .15s ease, background .15s ease;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      user-select:none;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(202,161,90,.22);
-      background: rgba(12,12,14,.52);
-    }
-    .btn:active{transform: translateY(0px) scale(.99)}
-    .btn svg{width:18px;height:18px;opacity:.92}
-
-    .mono{
-      font-family: ui-monospace, Consolas, monospace;
-      font-size:11px;
-      letter-spacing:.18em;
-      text-transform:uppercase;
-      opacity:.9;
-    }
-
-    .vol{
-      position:relative;
-    }
-    .vol-panel{
-      position:absolute;
-      top:0;
-      left:calc(100% + 10px);
-      padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(12,12,14,.50);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 20px 60px rgba(0,0,0,.55);
-      display:flex;
-      align-items:center;
-      gap:10px;
-      opacity:0;
-      transform: translateX(-6px);
-      pointer-events:none;
-      transition: opacity .15s ease, transform .15s ease;
-      min-width:220px;
-    }
-    .vol.open .vol-panel{
-      opacity:1;
-      transform: translateX(0);
-      pointer-events:auto;
-    }
-    .vol-panel input[type="range"]{
-      width:160px;
-      accent-color: var(--gold2);
-    }
-    .vol-panel .lab{
-      font-family: ui-monospace, "Consolas", monospace;
-      font-size:10px;
-      letter-spacing:.22em;
-      text-transform:uppercase;
-      color:rgba(214,207,191,.62);
-      white-space:nowrap;
-    }
-
-    /* responsivo */
-    @media (max-width:520px){
-      .altar{height:min(520px, 64vh)}
-      .seal-wrap{width:200px;height:200px}
-      .seal{width:108px;height:108px}
-      .sigils{display:none}
-      .prompt{top:78%}
-    }
-  </style>
+.btn{
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.15);
+  padding:10px;
+  border-radius:12px;
+  color:#d6cfbf;
+  cursor:pointer;
+}
+</style>
 </head>
 <body>
-  <canvas id="fx"></canvas>
-  <div class="impact" id="impact"></div>
-  <div class="vignette"></div>
-  <div class="grain"></div>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shadow Temple</title>
 
-  <!-- HUD (aparece só no vídeo) -->
-  <div class="hud hide" id="hud">
-    <button class="btn" id="btnFs" title="Tela cheia">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 3H5a2 2 0 0 0-2 2v4"/>
-        <path d="M15 3h4a2 2 0 0 1 2 2v4"/>
-        <path d="M9 21H5a2 2 0 0 1-2-2v-4"/>
-        <path d="M15 21h4a2 2 0 0 0 2-2v-4"/>
-      </svg>
-      <span class="mono">fullscreen</span>
-    </button>
+<style>
+body{
+  margin:0;
+  background:#050506;
+  overflow:hidden;
+  font-family:serif;
+  color:#d6cfbf;
+}
 
-    <div class="vol" id="vol">
-      <button class="btn" id="btnVol" title="Volume">
-        <svg id="icoVol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
-          <path id="wave1" d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
-          <path id="wave2" d="M18 6a8 8 0 0 1 0 12"/>
-        </svg>
-        <span class="mono">volume</span>
-      </button>
+/* INTRO */
+#intro{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background:#050506;
+  z-index:20;
+}
 
-      <div class="vol-panel" id="volPanel">
-        <span class="lab">som</span>
-        <input id="volRange" type="range" min="0" max="100" value="45" />
-        <span class="lab" id="volPct">45%</span>
-      </div>
+.seal{
+  width:120px;
+  height:120px;
+  cursor:pointer;
+  border-radius:999px;
+  overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.8);
+  transition:.2s;
+}
+.seal:hover{transform:scale(1.05);}
+.seal img{width:100%;height:100%;object-fit:cover;}
+
+.prompt{
+  margin-top:18px;
+  font-size:12px;
+  letter-spacing:.2em;
+  opacity:.8;
+  text-align:center;
+}
+
+/* VIDEO DO PORTAL */
+#portalVid{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:none;
+  z-index:25;
+}
+
+/* SITE (vídeo principal) */
+#site{
+  position:fixed;
+  inset:0;
+  opacity:0;
+  transition:opacity .8s;
+}
+#site.on{opacity:1;}
+
+video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* HUD */
+.hud{
+  position:fixed;
+  top:14px;
+  left:14px;
+  z-index:50;
+  opacity:0;
+  transition:.4s;
+}
+.hud.on{opacity:1;}
+
+.btn{
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.15);
+  padding:10px;
+  border-radius:12px;
+  color:#d6cfbf;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+<!-- INTRO -->
+<section id="intro">
+  <div>
+    <div class="seal" id="seal">
+      <img src="https://files.catbox.moe/l6h4rv.png">
+    </div>
+    <div class="prompt">
+      CLIQUE NO SELO PARA ROMPER O PORTAL
     </div>
   </div>
+</section>
 
-  <!-- INTRO (INÍCIO) -->
-  <section class="intro" id="intro">
-    <div class="altar" id="altar">
-      <div class="intro-top">SELOS SE FECHAM…</div>
+<!-- VIDEO DO PORTAL -->
+<video id="portalVid" preload="auto">
+  <source src="https://files.catbox.moe/5ci6gd.mp4" type="video/mp4">
+</video>
 
-      <div class="sigils left" aria-hidden="true">
-        <div class="row"><span class="g">Σ</span><span class="d">Δ</span><span class="f">Ψ</span></div>
-        <div class="row"><span class="d">Λ</span><span class="g">Ω</span><span class="f">ϟ</span></div>
-        <div class="row"><span class="f">◊</span><span class="d">•</span><span class="g">Δ</span></div>
-      </div>
+<!-- SITE -->
+<section id="site">
+  <video id="bgVideo" loop autoplay muted>
+    <!-- coloque seu vídeo principal aqui -->
+  </video>
+</section>
 
-      <div class="sigils right" aria-hidden="true">
-        <div class="row"><span class="f">ϟ</span><span class="g">Ω</span><span class="d">Λ</span></div>
-        <div class="row"><span class="d">Ψ</span><span class="f">Δ</span><span class="g">Σ</span></div>
-        <div class="row"><span class="g">•</span><span class="d">◊</span><span class="f">Δ</span></div>
-      </div>
-
-      <div class="seal-wrap">
-        <div class="ring"></div>
-        <div class="ring inner"></div>
-
-        <!-- ✅ IMAGEM DO SELO (clique aqui) -->
-        <div class="seal" id="seal" role="button" aria-label="Romper o selo" tabindex="0">
-          <img src="https://files.catbox.moe/l6h4rv.png" alt="Selo" draggable="false">
-        </div>
-      </div>
-
-      <div class="prompt">
-        CLIQUE NO SELO PARA ROMPER O PORTAL
-        <small>ou pressione [ENTER]</small>
-      </div>
-
-      <div class="corner left">TEMPLO // VIGIA</div>
-      <div class="corner right">SHADOW TEMPLE INTERFACE: V1</div>
-    </div>
-  </section>
-
-  <!-- SITE (VÍDEO) -->
-  <section class="site" id="site">
-    <div class="video-wrap">
-      <video id="bgVideo" playsinline preload="metadata">
-        <!-- ✅ COLOQUE O SEU VÍDEO AQUI (exemplo): -->
-        <!-- <source src="https://files.catbox.moe/klaol5.webm" type="video/webm"> -->
-      </video>
-    </div>
-  </section>
-<script>
-  const intro = document.getElementById("intro");
-  const altar = document.getElementById("altar");
-  const seal  = document.getElementById("seal");
-  const site  = document.getElementById("site");
-  const impact = document.getElementById("impact");
-
-  const hud = document.getElementById("hud");
-  const btnFs = document.getElementById("btnFs");
-
-  const volWrap = document.getElementById("vol");
-  const btnVol = document.getElementById("btnVol");
-  const volRange = document.getElementById("volRange");
-  const volPct = document.getElementById("volPct");
-
-  const wave1 = document.getElementById("wave1");
-  const wave2 = document.getElementById("wave2");
-
-  const video = document.getElementById("bgVideo");
-
-  let entered = false;
-
-  // volume inicial 45%
-  function applyVolumeFromUI(){
-    const v = Math.max(0, Math.min(100, parseInt(volRange.value, 10) || 0));
-    const vol = v / 100;
-    video.volume = vol;
-    video.muted = (v === 0);
-    volPct.textContent = v + "%";
-
-    // ondas do ícone (feedback visual)
-    const show = (v > 0 && !video.muted);
-    wave1.style.opacity = show ? "1" : "0";
-    wave2.style.opacity = (v > 55 && show) ? "1" : (show ? ".35" : "0");
-  }
-
-  // garante volume 45 mesmo se o browser ignorar antes de user gesture
-  volRange.value = "45";
-  applyVolumeFromUI();
-
-  // abre/fecha panel volume
-  btnVol.addEventListener("click", (e) => {
-    e.stopPropagation();
-    volWrap.classList.toggle("open");
-  });
-  document.addEventListener("click", () => volWrap.classList.remove("open"));
-  volRange.addEventListener("input", applyVolumeFromUI);
-
-  function pulseImpact(){
-    impact.classList.remove("on");
-    void impact.offsetWidth;
-    impact.classList.add("on");
-  }
-
-  function enterSite(){
-    if (entered) return;
-    entered = true;
-
-    // shake + impacto
-    altar.classList.add("shake");
-    pulseImpact();
-
-    // some intro, mostra site
-    intro.classList.add("hidden");
-    site.classList.add("on");
-    hud.classList.remove("hide");
-
-    // tenta tocar vídeo
-    applyVolumeFromUI();
-    const playAttempt = video.play();
-    if (playAttempt && typeof playAttempt.catch === "function") {
-      playAttempt.catch(() => {
-        // se o browser bloquear autoplay, fica ok — usuário pode clicar no vídeo
-      });
-    }
-  }
-
-  // clique no selo
-  seal.addEventListener("click", enterSite);
-
-  // acessibilidade: Enter/Space no selo
-  seal.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      enterSite();
-    }
-  });
-
-  // Enter global (quando ainda tá na intro)
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !entered) {
-      e.preventDefault();
-      enterSite();
-    }
-  });
-
-  // fullscreen
-  btnFs.addEventListener("click", async () => {
-    try{
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch (err) {}
-  });
-
-  // clique no vídeo: play/pause (opcional — ajuda quando autoplay bloqueia)
-  video.addEventListener("click", () => {
-    if (!entered) return;
-    if (video.paused) video.play().catch(()=>{});
-    else video.pause();
-  });
-
-  // tecla M: mute toggle
-  window.addEventListener("keydown", (e) => {
-    if (!entered) return;
-    if (e.key.toLowerCase() === "m") {
-      video.muted = !video.muted;
-      applyVolumeFromUI();
-    }
-  });
-</script>
-<script>
-  const intro = document.getElementById("intro");
-  const altar = document.getElementById("altar");
-  const seal  = document.getElementById("seal");
-  const site  = document.getElementById("site");
-  const impact = document.getElementById("impact");
-
-  const hud = document.getElementById("hud");
-  const btnFs = document.getElementById("btnFs");
-
-  const volWrap = document.getElementById("vol");
-  const btnVol = document.getElementById("btnVol");
-  const volRange = document.getElementById("volRange");
-  const volPct = document.getElementById("volPct");
-
-  const wave1 = document.getElementById("wave1");
-  const wave2 = document.getElementById("wave2");
-
-  const video = document.getElementById("bgVideo");
-
-  let entered = false;
-
-  // volume inicial 45%
-  function applyVolumeFromUI(){
-    const v = Math.max(0, Math.min(100, parseInt(volRange.value, 10) || 0));
-    const vol = v / 100;
-    video.volume = vol;
-    video.muted = (v === 0);
-    volPct.textContent = v + "%";
-
-    // ondas do ícone (feedback visual)
-    const show = (v > 0 && !video.muted);
-    wave1.style.opacity = show ? "1" : "0";
-    wave2.style.opacity = (v > 55 && show) ? "1" : (show ? ".35" : "0");
-  }
-
-  // garante volume 45 mesmo se o browser ignorar antes de user gesture
-  volRange.value = "45";
-  applyVolumeFromUI();
-
-  // abre/fecha panel volume
-  btnVol.addEventListener("click", (e) => {
-    e.stopPropagation();
-    volWrap.classList.toggle("open");
-  });
-  document.addEventListener("click", () => volWrap.classList.remove("open"));
-  volRange.addEventListener("input", applyVolumeFromUI);
-
-  function pulseImpact(){
-    impact.classList.remove("on");
-    void impact.offsetWidth;
-    impact.classList.add("on");
-  }
-
-  function enterSite(){
-    if (entered) return;
-    entered = true;
-
-    // shake + impacto
-    altar.classList.add("shake");
-    pulseImpact();
-
-    // some intro, mostra site
-    intro.classList.add("hidden");
-    site.classList.add("on");
-    hud.classList.remove("hide");
-
-    // tenta tocar vídeo
-    applyVolumeFromUI();
-    const playAttempt = video.play();
-    if (playAttempt && typeof playAttempt.catch === "function") {
-      playAttempt.catch(() => {
-        // se o browser bloquear autoplay, fica ok — usuário pode clicar no vídeo
-      });
-    }
-  }
-
-  // clique no selo
-  seal.addEventListener("click", enterSite);
-
-  // acessibilidade: Enter/Space no selo
-  seal.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " "){
-      e.preventDefault();
-      enterSite();
-    }
-  });
-
-  // Enter global (quando ainda tá na intro)
-  window.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !entered) {
-      e.preventDefault();
-      enterSite();
-    }
-  });
-
-  // fullscreen
-  btnFs.addEventListener("click", async () => {
-    try{
-      if (!document.fullscreenElement) {
-        await document.documentElement.requestFullscreen();
-      } else {
-        await document.exitFullscreen();
-      }
-    } catch (err) {}
-  });
-
-  // clique no vídeo: play/pause (opcional — ajuda quando autoplay bloqueia)
-  video.addEventListener("click", () => {
-    if (!entered) return;
-    if (video.paused) video.play().catch(()=>{});
-    else video.pause();
-  });
-
-  // tecla M: mute toggle
-  window.addEventListener("keydown", (e) => {
-    if (!entered) return;
-    if (e.key.toLowerCase() === "m") {
-      video.muted = !video.muted;
-      applyVolumeFromUI();
-    }
-  });
-</script>
-</body>
-</html>
+<div class="hud" id="hud">
+  <button class="btn" id="btnFs">FULLSCREEN</button>
+</div>
