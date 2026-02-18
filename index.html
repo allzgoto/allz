@@ -1,762 +1,604 @@
-<!-- =========================
-PART 1/4 — HTML + CSS (base)
-========================= -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Temple Interface</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shadow Temple // V1</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-
-<style>
-:root{
-  --bg:#05060a;
-  --txt: rgba(245,248,255,.92);
-  --dim: rgba(245,248,255,.62);
-
-  /* âmbar sujo (Shadow Fight), nada neon */
-  --gold: rgba(210,170,95,.85);
-  --gold2: rgba(210,170,95,.22);
-  --gold3: rgba(210,170,95,.10);
-
-  --line: rgba(255,255,255,.07);
-
-  --blur-amount: 28px;
-
-  /* tamanho do selo (não gigante) */
-  --seal-size: 170px;   /* desktop */
-  --seal-ring: 280px;   /* aro externo */
-}
-
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;}
-body{
-  background:var(--bg);
-  color:var(--txt);
-  overflow:hidden;
-  font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-
-/* ========= VIDEO LAYERS ========= */
-#videoBlur{
-  position:fixed;
-  inset:-18%;
-  width:136%;
-  height:136%;
-  object-fit:cover;
-  filter: blur(var(--blur-amount)) brightness(.46) saturate(1.04) contrast(1.05);
-  transform: translateZ(0);
-  z-index:-6;
-}
-#video{
-  position:fixed;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  background:black;
-  z-index:-5;
-}
-
-/* ========= FX ========= */
-.scanlines{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:3;
-  opacity:.38;
-  background:repeating-linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.02),
-    rgba(255,255,255,0.02) 1px,
-    transparent 1px,
-    transparent 5px
-  );
-  mix-blend-mode:overlay;
-}
-
-#filmFX{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:4;
-}
-#filmFX::before{
-  content:"";
-  position:absolute;
-  inset:-20%;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.36'/%3E%3C/svg%3E");
-  opacity:.08;
-  mix-blend-mode:overlay;
-  animation:grain 6.5s steps(10) infinite;
-}
-#filmFX::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 50% 50%, transparent 0 60%, rgba(0,0,0,.48) 82%, rgba(0,0,0,.78) 100%),
-    radial-gradient(circle at 50% 55%, rgba(210,170,95,.06), transparent 60%);
-  opacity:.75;
-}
-
-@keyframes grain{
-  0%{transform:translate(0,0)}
-  10%{transform:translate(-2%, -3%)}
-  20%{transform:translate(-4%, 2%)}
-  30%{transform:translate(3%, -2%)}
-  40%{transform:translate(2%, 4%)}
-  50%{transform:translate(-3%, 2%)}
-  60%{transform:translate(4%, 0%)}
-  70%{transform:translate(0%, 3%)}
-  80%{transform:translate(-2%, -2%)}
-  90%{transform:translate(3%, 1%)}
-  100%{transform:translate(0,0)}
-}
-
-/* ========= EMBERS (orgânico, Shadow Fight) ========= */
-#embers{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:2;
-  opacity:.55;
-  overflow:hidden;
-}
-.ember{
-  position:absolute;
-  width:2px;height:2px;
-  border-radius:50%;
-  background:rgba(255,170,80,.85);
-  filter: blur(.2px);
-  box-shadow:0 0 10px rgba(255,140,50,.25);
-  animation: emberFloat linear infinite;
-  opacity:.0;
-}
-@keyframes emberFloat{
-  0%   { transform:translate3d(0,0,0) scale(.9); opacity:0; }
-  10%  { opacity:.35; }
-  40%  { opacity:.75; }
-  100% { transform:translate3d(-120px,-780px,0) scale(1.15); opacity:0; }
-}
-
-/* ========= PORTAL RUPTURE ========= */
-#ruptureFX{
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  z-index:12;
-  opacity:0;
-}
-#ruptureFX::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 50% 52%, rgba(210,170,95,.20), transparent 58%),
-    radial-gradient(circle at 50% 52%, rgba(255,210,120,.14), transparent 44%),
-    repeating-linear-gradient(0deg, rgba(255,255,255,.04) 0 1px, transparent 1px 6px);
-  mix-blend-mode:screen;
-}
-#ruptureFX::after{
-  content:"";
-  position:absolute;
-  left:50%; top:52%;
-  width:540px; height:540px;
-  transform:translate(-50%,-50%) scale(.92);
-  border-radius:50%;
-  background:
-    conic-gradient(from 210deg,
-      transparent 0 18%,
-      rgba(255,220,140,.20) 18% 22%,
-      transparent 22% 52%,
-      rgba(255,220,140,.18) 52% 57%,
-      transparent 57% 100%);
-  filter: blur(1px);
-  opacity:.0;
-}
-body.rupture #ruptureFX{
-  animation: rupPulse .75s ease-out 1 forwards;
-}
-body.rupture #ruptureFX::after{
-  animation: rupRing .75s ease-out 1 forwards;
-}
-@keyframes rupPulse{
-  0%{opacity:0}
-  15%{opacity:1}
-  70%{opacity:.35}
-  100%{opacity:0}
-}
-@keyframes rupRing{
-  0%{opacity:0; transform:translate(-50%,-50%) scale(.72) rotate(0deg)}
-  20%{opacity:.85}
-  100%{opacity:0; transform:translate(-50%,-50%) scale(1.18) rotate(18deg)}
-}
-
-/* ========= INÍCIO ========= */
-#startScreen{
-  position:fixed;
-  inset:0;
-  z-index:20;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: radial-gradient(circle at 50% 50%, rgba(10,10,14,.25), rgba(0,0,0,.78));
-  backdrop-filter: blur(10px);
-  transition: opacity .55s ease, transform .55s ease;
-}
-#startScreen.hide{
-  opacity:0;
-  transform:scale(1.02);
-  pointer-events:none;
-}
-
-.startWrap{
-  width:min(980px, calc(100vw - 56px));
-  text-align:center;
-  position:relative;
-  padding:34px 18px 24px 18px;
-}
-
-/* texto superior */
-.startTitle{
-  font-family:Cinzel, serif;
-  letter-spacing:6px;
-  font-size:11px;
-  opacity:.78;
-  text-shadow:0 0 12px rgba(0,0,0,.55);
-}
-
-/* runas laterais (bem fraco, antigo) */
-.runes{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:120px;
-  opacity:.18;
-  font-family:Cinzel, serif;
-  letter-spacing:6px;
-  font-size:12px;
-  color:rgba(255,240,210,.55);
-  text-shadow:0 0 18px rgba(0,0,0,.55);
-  user-select:none;
-}
-.runes.left{left:10px;}
-.runes.right{right:10px;}
-.runes span{display:block; margin:10px 0;}
-
-/* selo */
-.sealZone{
-  margin:18px auto 10px auto;
-  width:var(--seal-ring);
-  height:var(--seal-ring);
-  position:relative;
-  display:grid;
-  place-items:center;
-  user-select:none;
-}
-.sealRing{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  border:1px solid rgba(210,170,95,.20);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.55) inset,
-    0 0 40px rgba(0,0,0,.55);
-}
-.sealRing::before{
-  content:"";
-  position:absolute;
-  inset:10px;
-  border-radius:50%;
-  border:1px dashed rgba(210,170,95,.14);
-  opacity:.85;
-}
-.sealRing::after{
-  content:"";
-  position:absolute;
-  inset:-18px;
-  border-radius:50%;
-  background:radial-gradient(circle at 50% 50%, rgba(210,170,95,.06), transparent 62%);
-  opacity:.65;
-}
-
-#sealBtn{
-  width:var(--seal-size);
-  height:var(--seal-size);
-  border-radius:50%;
-  border:1px solid rgba(210,170,95,.18);
-  background:rgba(0,0,0,.25);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.70) inset,
-    0 18px 50px rgba(0,0,0,.70);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
-  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
-}
-#sealBtn:hover{
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.70) inset,
-    0 22px 62px rgba(0,0,0,.78),
-    0 0 24px rgba(210,170,95,.08);
-}
-#sealBtn:active{ transform: translateY(1px) scale(.99); }
-
-#sealImg{
-  width:86%;
-  height:86%;
-  object-fit:contain;
-  filter: contrast(1.02) brightness(.95) saturate(.95);
-  opacity:.95;
-}
-
-/* “sopro” por cima do selo */
-#sealBtn::after{
-  content:"";
-  position:absolute;
-  inset:-30%;
-  background:linear-gradient(90deg, transparent, rgba(210,170,95,.12), transparent);
-  transform:rotate(18deg) translateX(-90%);
-  opacity:0;
-}
-#sealBtn:hover::after{
-  opacity:1;
-  animation: sealSweep 1.25s ease infinite;
-}
-@keyframes sealSweep{
-  0%{transform:rotate(18deg) translateX(-90%)}
-  100%{transform:rotate(18deg) translateX(90%)}
-}
-
-.startHint{
-  margin-top:8px;
-  font-family:Cinzel, serif;
-  letter-spacing:4px;
-  font-size:9px;
-  opacity:.68;
-}
-.startHint b{color:rgba(255,240,210,.92); font-weight:700;}
-.startSub{
-  margin-top:6px;
-  font-size:9px;
-  letter-spacing:3px;
-  opacity:.45;
-  font-family:Cinzel, serif;
-}
-
-/* footer pequeno */
-.startFooter{
-  margin-top:22px;
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  opacity:.32;
-  font-family:Cinzel, serif;
-  letter-spacing:3px;
-  font-size:9px;
-}
-
-/* ========= CONTROLS (após entrar) ========= */
-#topControls{
-  position:fixed;
-  top:16px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:10px;
-  z-index:25;
-  opacity:0;
-  pointer-events:none;
-  transition: opacity .35s ease;
-}
-body.entered #topControls{
-  opacity:.92;
-  pointer-events:auto;
-}
-.ctrlBtn{
-  width:44px;height:36px;
-  border-radius:14px;
-  border:1px solid rgba(210,170,95,.18);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.05), transparent 60%),
-    linear-gradient(180deg, rgba(10,12,16,.62), rgba(0,0,0,.42));
-  backdrop-filter: blur(14px);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.30) inset,
-    0 16px 44px rgba(0,0,0,.40);
-  color:rgba(245,248,255,.92);
-}
-.ctrlBtn:hover{
-  transform: translateY(-1px);
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,.30) inset,
-    0 20px 56px rgba(0,0,0,.52),
-    0 0 18px rgba(210,170,95,.08);
-}
-.ctrlBtn:active{transform:translateY(1px)}
-.ctrlBtn svg{width:18px;height:18px;opacity:.92;}
-
-/* volume (top-left) */
-#volumeHUD{
-  position:fixed;
-  top:14px;
-  left:18px;
-  z-index:26;
-  opacity:0;
-  pointer-events:none;
-  transition: opacity .35s ease;
-}
-body.entered #volumeHUD{
-  opacity:.9;
-  pointer-events:auto;
-}
-.volBtn{
-  width:44px;height:40px;
-  border-radius:14px;
-  border:1px solid rgba(210,170,95,.18);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,255,255,.05), transparent 62%),
-    linear-gradient(180deg, rgba(10,12,16,.62), rgba(0,0,0,.42));
-  backdrop-filter: blur(14px);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  box-shadow:0 0 0 1px rgba(0,0,0,.30) inset, 0 16px 44px rgba(0,0,0,.40);
-}
-.volBtn svg{width:20px;height:20px;opacity:.92;}
-.volPanel{
-  margin-top:8px;
-  width:240px;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(210,170,95,.14);
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(14px);
-  box-shadow:0 18px 62px rgba(0,0,0,.58);
-  display:none;
-}
-#volumeHUD.open .volPanel{display:block;}
-.volTop{
-  display:flex; justify-content:space-between; align-items:center;
-  font-family:Cinzel, serif;
-  letter-spacing:3px;
-  font-size:9px;
-  opacity:.85;
-  margin-bottom:8px;
-}
-#volReadout{opacity:.95;}
-#volSlider{
-  width:100%;
-  appearance:none;
-  -webkit-appearance:none;
-  background:transparent;
-  cursor:pointer;
-  height:26px;
-}
-#volSlider::-webkit-slider-runnable-track{
-  height:6px;border-radius:999px;
-  background: linear-gradient(90deg, rgba(245,248,255,.72), rgba(210,170,95,.24));
-  border:1px solid rgba(210,170,95,.14);
-}
-#volSlider::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:16px;height:16px;border-radius:7px;
-  margin-top:-6px;
-  background: radial-gradient(circle at 30% 30%, rgba(245,248,255,1), rgba(210,170,95,.35));
-  border:1px solid rgba(210,170,95,.18);
-}
-#volSlider::-moz-range-track{
-  height:6px;border-radius:999px;
-  background: linear-gradient(90deg, rgba(245,248,255,.72), rgba(210,170,95,.24));
-  border:1px solid rgba(210,170,95,.14);
-}
-#volSlider::-moz-range-thumb{
-  width:16px;height:16px;border-radius:7px;
-  background: radial-gradient(circle at 30% 30%, rgba(245,248,255,1), rgba(210,170,95,.35));
-  border:1px solid rgba(210,170,95,.18);
-}
-
-/* mobile */
-@media (max-width: 520px){
-  :root{ --seal-size: 150px; --seal-ring: 250px; }
-  .runes{display:none;}
-}
-@media (prefers-reduced-motion: reduce){
-  #filmFX::before{animation:none}
-  .ember{animation:none}
-  body.rupture #ruptureFX{animation:none}
-  body.rupture #ruptureFX::after{animation:none}
-  #sealBtn:hover::after{animation:none}
-}
-</style>
-</head>
-<body>
-<!-- =========================
-PART 2/4 — HTML (estrutura)
-========================= -->
-
-<!-- vídeo (fica parado até entrar) -->
-<video id="videoBlur" playsinline preload="auto" muted loop>
-  <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
-</video>
-
-<video id="video" playsinline preload="auto" loop>
-  <source src="https://files.catbox.moe/klaol5.webm" type="video/webm" />
-</video>
-
-<!-- áudio ambiente -->
-<audio id="ambience" preload="auto" loop>
-  <source src="https://files.catbox.moe/99fu05.m4a" type="audio/mp4">
-</audio>
-
-<div id="embers" aria-hidden="true"></div>
-<div class="scanlines" aria-hidden="true"></div>
-<div id="filmFX" aria-hidden="true"></div>
-<div id="ruptureFX" aria-hidden="true"></div>
-
-<!-- INÍCIO (selo) -->
-<section id="startScreen" aria-label="Início">
-  <div class="startWrap">
-    <div class="startTitle" id="startTitle">SELOS SE FECHAM…</div>
-
-    <div class="runes left" aria-hidden="true">
-      <span>Σ Δ Ψ</span><span>Λ Ω ϟ</span><span>⟡ ⧫ ⟁</span>
-    </div>
-    <div class="runes right" aria-hidden="true">
-      <span>ϟ Ω Λ</span><span>Ψ Δ Σ</span><span>⟟ ⧫ ⟡</span>
-    </div>
-
-    <div class="sealZone">
-      <div class="sealRing" aria-hidden="true"></div>
-
-      <!-- ✅ clique no selo = entrar -->
-      <button id="sealBtn" type="button" aria-label="Romper portal">
-        <img id="sealImg" alt="Selo" src="https://files.catbox.moe/l6h4rv.png" />
-      </button>
-    </div>
-
-    <div class="startHint" id="startHint">
-      <b>CLIQUE NO SELO</b> PARA ROMPER O PORTAL<br>
-      <span style="opacity:.75">ou pressione <b>[ENTER]</b></span>
-    </div>
-    <div class="startSub" id="startSub">O TEMPLO OBSERVA. A SOMBRA RESPONDE.</div>
-
-    <div class="startFooter">
-      <div>TEMPLO // VIGIA</div>
-      <div>SHADOW TEMPLE INTERFACE: V1</div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTROLES (só depois de entrar) -->
-<div id="volumeHUD" aria-label="Volume">
-  <button class="volBtn" id="volBtn" type="button" aria-label="Abrir volume">
-    <!-- ícone “sino / pergaminho” (orgânico) -->
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3.6c2.6 0 4.6 2 4.6 4.6v2.4c0 1.6.6 2.8 1.6 3.8l.7.7H5.1l.7-.7c1-1 1.6-2.2 1.6-3.8V8.2c0-2.6 2-4.6 4.6-4.6Z"
-        fill="none" stroke="rgba(245,248,255,.86)" stroke-width="1.6" stroke-linejoin="round"/>
-      <path d="M10 18.6c.4 1 1.1 1.6 2 1.6s1.6-.6 2-1.6"
-        fill="none" stroke="rgba(245,248,255,.62)" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M12 6.2v2.2" fill="none" stroke="rgba(245,248,255,.55)" stroke-width="1.4" stroke-linecap="round"/>
-    </svg>
-  </button>
-
-  <div class="volPanel" id="volPanel" role="group" aria-label="Controle de volume">
-    <div class="volTop">
-      <div>ECO</div>
-      <div id="volReadout">45%</div>
-    </div>
-    <input type="range" id="volSlider" min="0" max="1" step="0.01" value="0.45" />
-  </div>
-</div>
-
-<div id="topControls">
-  <button class="ctrlBtn" id="btnFS" title="Tela Cheia" aria-label="Tela cheia">
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"
-        fill="none" stroke="rgba(245,248,255,.88)" stroke-width="1.7" stroke-linecap="round"/>
-    </svg>
-  </button>
-</div>
-<!-- =========================
-PART 3/4 — JS (lógica + animação)
-========================= -->
-<script>
-/* ===== ELEMENTOS ===== */
-const video = document.getElementById("video");
-const videoBlur = document.getElementById("videoBlur");
-const ambience = document.getElementById("ambience");
-
-const startScreen = document.getElementById("startScreen");
-const sealBtn = document.getElementById("sealBtn");
-
-const embers = document.getElementById("embers");
-
-const volumeHUD = document.getElementById("volumeHUD");
-const volBtn = document.getElementById("volBtn");
-const volPanel = document.getElementById("volPanel");
-const volSlider = document.getElementById("volSlider");
-const volReadout = document.getElementById("volReadout");
-
-const btnFS = document.getElementById("btnFS");
-
-/* ===== ESTADO ===== */
-let hasEntered = false;
-
-/* ===== travar mídia até entrar ===== */
-function hardStopMediaIfNotEntered(){
-  if (hasEntered) return;
-  try{ video.pause(); video.currentTime = 0; }catch(e){}
-  try{ videoBlur.pause(); videoBlur.currentTime = 0; }catch(e){}
-  try{ ambience.pause(); ambience.currentTime = 0; }catch(e){}
-}
-document.addEventListener("DOMContentLoaded", hardStopMediaIfNotEntered);
-window.addEventListener("pageshow", hardStopMediaIfNotEntered);
-
-/* ===== embers ===== */
-function spawnEmbers(){
-  // cria várias partículas simples (sem canvas)
-  const count = 24;
-  for(let i=0;i<count;i++){
-    const e = document.createElement("div");
-    e.className = "ember";
-    resetEmber(e, true);
-    embers.appendChild(e);
-  }
-}
-function resetEmber(el, first=false){
-  const w = window.innerWidth;
-  const h = window.innerHeight;
-  // nasce embaixo/direita e sobe
-  const x = (w * 0.25) + Math.random() * (w * 0.75);
-  const y = h + (Math.random() * 120);
-  el.style.left = x + "px";
-  el.style.top  = y + "px";
-
-  const dur = 5.5 + Math.random() * 5.0;
-  const delay = first ? (Math.random() * 2.5) : 0;
-  el.style.animationDuration = dur + "s";
-  el.style.animationDelay = delay + "s";
-
-  // tamanho e brilho levemente variáveis
-  const s = 1 + Math.random()*2.2;
-  el.style.width = s + "px";
-  el.style.height = s + "px";
-  el.style.opacity = "0";
-
-  // ao terminar, reseta
-  el.addEventListener("animationend", () => resetEmber(el), { once:true });
-}
-spawnEmbers();
-window.addEventListener("resize", () => {
-  // simples: limpa e recria
-  embers.innerHTML = "";
-  spawnEmbers();
-});
-
-/* ===== volume (45% padrão) ===== */
-video.volume = 0.45;
-volSlider.value = "0.45";
-
-function applyVolume(v){
-  const clamped = Math.max(0, Math.min(1, Number(v)));
-  video.volume = clamped;
-  // ambience sempre menor (só “ambiente”)
-  ambience.volume = Math.min(0.30, Math.max(0.02, clamped * 0.22));
-  volReadout.textContent = Math.round(clamped*100) + "%";
-}
-applyVolume(0.45);
-
-volSlider.addEventListener("input", () => applyVolume(volSlider.value));
-
-volBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  volumeHUD.classList.toggle("open");
-});
-document.addEventListener("click", () => volumeHUD.classList.remove("open"));
-
-/* ===== fullscreen ===== */
-async function toggleFullscreen(){
-  try{
-    if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
-    else await document.exitFullscreen();
-  }catch(e){}
-}
-btnFS.addEventListener("click", toggleFullscreen);
-
-/* ===== ruptura (flash) ===== */
-function triggerRupture(){
-  document.body.classList.remove("rupture");
-  void document.body.offsetWidth;
-  document.body.classList.add("rupture");
-  setTimeout(()=>document.body.classList.remove("rupture"), 800);
-}
-
-/* ===== entrar ===== */
-async function enterSite(){
-  if (hasEntered) return;
-  hasEntered = true;
-
-  triggerRupture();
-
-  // some a tela de início
-  startScreen.classList.add("hide");
-  document.body.classList.add("entered");
-
-  // tenta iniciar vídeo e áudio (user gesture garantida pelo clique)
-  try{
-    // videoBlur sempre mutado (só visual)
-    videoBlur.muted = true;
-
-    await video.play();
-    await videoBlur.play();
-
-    // ambience (pode falhar se o browser travar autoplay, mas com clique costuma ir)
-    await ambience.play();
-  }catch(e){
-    // se áudio falhar, fica ok; usuário ajusta no volume ou interage de novo
-  }
-
-  // se mudar aba, pausa (pra não travar)
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden){
-      try{ video.pause(); }catch(e){}
-      try{ videoBlur.pause(); }catch(e){}
-      try{ ambience.pause(); }catch(e){}
-      return;
+  <style>
+    :root{
+      --bg:#050506;
+      --ink:#d6cfbf;
+      --muted:#9b927f;
+      --gold:#8b6a2b;
+      --gold2:#caa15a;
+      --danger:#b51f1f;
+      --glass: rgba(12,12,14,.55);
+      --stroke: rgba(202,161,90,.18);
+      --stroke2: rgba(202,161,90,.10);
+      --shadow: rgba(0,0,0,.72);
     }
-    if (!hasEntered) return;
-    video.play().catch(()=>{});
-    videoBlur.play().catch(()=>{});
-    ambience.play().catch(()=>{});
-  });
-}
 
-/* clique no selo */
-sealBtn.addEventListener("click", enterSite);
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1200px 700px at 50% 40%, rgba(120,70,20,.10), transparent 60%),
+                  radial-gradient(900px 500px at 50% 70%, rgba(180,30,30,.08), transparent 55%),
+                  var(--bg);
+      color:var(--ink);
+      overflow:hidden;
+      font-family: ui-serif, "Georgia", "Times New Roman", serif;
+      letter-spacing:.04em;
+    }
 
-/* enter do teclado */
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !hasEntered){
-    e.preventDefault();
-    enterSite();
-  }
-});
+    /* Vinheta + ruído leve */
+    .vignette{
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(1200px 700px at 50% 45%, transparent 25%, rgba(0,0,0,.55) 75%),
+        radial-gradient(900px 560px at 50% 55%, rgba(0,0,0,.15), rgba(0,0,0,.78));
+      mix-blend-mode: multiply;
+      opacity:.95;
+      z-index:10;
+    }
+    .grain{
+      position:fixed; inset:-20%;
+      pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='260' height='260' filter='url(%23n)' opacity='.26'/%3E%3C/svg%3E");
+      opacity:.08;
+      transform:rotate(7deg);
+      z-index:11;
+    }
 
-/* garante que nada rode se o user voltar pro site e não tiver “entrado” */
-hardStopMediaIfNotEntered();
-</script>
-<!-- =========================
-PART 4/4 — fechar HTML
-========================= -->
+    /* CANVAS (rachaduras + partículas) */
+    #fx{
+      position:fixed; inset:0;
+      z-index:9;
+      pointer-events:none;
+    }
+
+    /* ====== TELA INÍCIO ====== */
+    .intro{
+      position:fixed; inset:0;
+      display:grid;
+      place-items:center;
+      z-index:20;
+      opacity:1;
+      transition: opacity .65s ease;
+    }
+    .intro.hidden{
+      opacity:0;
+      pointer-events:none;
+    }
+
+    .altar{
+      position:relative;
+      width:min(760px, 92vw);
+      height:min(420px, 60vh);
+      border-radius:18px;
+      background:
+        radial-gradient(900px 520px at 50% 35%, rgba(160,90,20,.10), transparent 62%),
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.20)),
+        rgba(10,10,12,.35);
+      box-shadow:
+        0 40px 120px rgba(0,0,0,.65),
+        inset 0 0 0 1px rgba(255,255,255,.05),
+        inset 0 0 0 2px rgba(202,161,90,.06);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    /* linhas “templo” */
+    .altar::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(to right, transparent 49.8%, rgba(255,255,255,.05) 50%, transparent 50.2%),
+        radial-gradient(600px 300px at 50% 45%, rgba(202,161,90,.08), transparent 70%);
+      opacity:.65;
+      pointer-events:none;
+    }
+    .altar::after{
+      content:"";
+      position:absolute; inset:-2px;
+      border-radius:18px;
+      box-shadow: inset 0 0 0 1px var(--stroke);
+      pointer-events:none;
+    }
+
+    .intro-top{
+      position:absolute;
+      top:34px; left:0; right:0;
+      text-align:center;
+      font-size:12px;
+      letter-spacing:.55em;
+      text-transform:uppercase;
+      color:rgba(214,207,191,.86);
+      text-shadow:0 0 18px rgba(0,0,0,.7);
+    }
+
+    .sigils{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      font-family: ui-monospace, "Consolas", monospace;
+      font-size:12px;
+      color:rgba(214,207,191,.16);
+      user-select:none;
+    }
+    .sigils.left{left:34px}
+    .sigils.right{right:34px}
+    .sigils .row{display:flex; gap:10px; margin:10px 0}
+    .sigils .g{opacity:.9}
+    .sigils .d{opacity:.6}
+    .sigils .f{opacity:.35}
+
+    /* selo */
+    .seal-wrap{
+      position:absolute;
+      left:50%; top:54%;
+      transform:translate(-50%,-50%);
+      width:220px; height:220px;
+      display:grid;
+      place-items:center;
+    }
+
+    .ring{
+      position:absolute; inset:0;
+      border-radius:999px;
+      border:1px solid rgba(202,161,90,.20);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,.35) inset,
+        0 0 80px rgba(200,30,30,.00);
+      opacity:.65;
+    }
+    .ring.inner{
+      inset:26px;
+      opacity:.35;
+      border-style:dashed;
+      border-color: rgba(202,161,90,.15);
+    }
+
+    .seal{
+      width:118px; height:118px;
+      border-radius:999px;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+      transform:translateZ(0);
+      box-shadow:
+        0 14px 38px rgba(0,0,0,.55),
+        0 0 0 1px rgba(255,255,255,.06),
+        0 0 0 2px rgba(202,161,90,.10);
+      transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+      user-select:none;
+    }
+    .seal:hover{
+      transform: scale(1.02);
+      filter: contrast(1.06) brightness(1.05);
+      box-shadow:
+        0 18px 46px rgba(0,0,0,.62),
+        0 0 0 1px rgba(255,255,255,.08),
+        0 0 0 2px rgba(202,161,90,.14);
+    }
+    .seal:active{
+      transform: scale(.98);
+    }
+    .seal img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter: saturate(.92) contrast(1.12);
+    }
+
+    .prompt{
+      position:absolute;
+      left:50%; top:76%;
+      transform:translateX(-50%);
+      text-align:center;
+      width:min(560px, 92%);
+      color:rgba(214,207,191,.75);
+      font-size:12px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      text-shadow:0 0 18px rgba(0,0,0,.85);
+    }
+    .prompt small{
+      display:block;
+      margin-top:8px;
+      letter-spacing:.32em;
+      color:rgba(214,207,191,.38);
+      font-size:10px;
+    }
+
+    .corner{
+      position:absolute;
+      bottom:18px;
+      font-family: ui-monospace, "Consolas", monospace;
+      font-size:10px;
+      letter-spacing:.28em;
+      color:rgba(214,207,191,.30);
+      text-transform:uppercase;
+      user-select:none;
+    }
+    .corner.left{left:18px}
+    .corner.right{right:18px}
+
+    /* tremor global no “altar” quando inicia */
+    .shake{
+      animation: shake .55s linear both;
+    }
+    @keyframes shake{
+      0%{transform:translate3d(0,0,0)}
+      10%{transform:translate3d(-4px,2px,0)}
+      20%{transform:translate3d(5px,-3px,0)}
+      30%{transform:translate3d(-6px,-2px,0)}
+      40%{transform:translate3d(7px,3px,0)}
+      50%{transform:translate3d(-5px,4px,0)}
+      60%{transform:translate3d(4px,-3px,0)}
+      70%{transform:translate3d(-3px,2px,0)}
+      80%{transform:translate3d(2px,-2px,0)}
+      90%{transform:translate3d(-2px,1px,0)}
+      100%{transform:translate3d(0,0,0)}
+    }
+
+    /* flash/impacto */
+    .impact{
+      position:fixed; inset:0;
+      background: radial-gradient(600px 420px at 50% 55%, rgba(255,90,40,.22), rgba(0,0,0,0) 60%),
+                  radial-gradient(900px 700px at 50% 55%, rgba(180,20,20,.16), rgba(0,0,0,0) 62%),
+                  rgba(0,0,0,.15);
+      opacity:0;
+      z-index:25;
+      pointer-events:none;
+    }
+    .impact.on{
+      animation: impact .95s ease-out both;
+    }
+    @keyframes impact{
+      0%{opacity:0}
+      12%{opacity:1}
+      40%{opacity:.55}
+      100%{opacity:0}
+    }
+
+    /* ====== TELA DO VÍDEO (SITE) ====== */
+    .site{
+      position:fixed; inset:0;
+      z-index:5;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .8s ease;
+    }
+    .site.on{
+      opacity:1;
+      pointer-events:auto;
+    }
+
+    .video-wrap{
+      position:fixed; inset:0;
+      z-index:6;
+      background:#000;
+    }
+    video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      filter: contrast(1.05) brightness(.95) saturate(.95);
+    }
+
+    /* HUD topo (fullscreen + volume) */
+    .hud{
+      position:fixed;
+      top:14px;
+      left:14px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      z-index:60;
+    }
+    .btn{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(12,12,14,.40);
+      color: rgba(214,207,191,.86);
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 0 0 1px rgba(202,161,90,.06);
+      transition: transform .15s ease, border-color .15s ease, background .15s ease;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(202,161,90,.22);
+      background: rgba(12,12,14,.52);
+    }
+    .btn:active{transform: translateY(0px) scale(.99)}
+    .btn svg{width:18px;height:18px;opacity:.92}
+
+    .vol{
+      position:relative;
+    }
+    .vol-panel{
+      position:absolute;
+      top:0;
+      left:calc(100% + 10px);
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(12,12,14,.50);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      gap:10px;
+      opacity:0;
+      transform: translateX(-6px);
+      pointer-events:none;
+      transition: opacity .15s ease, transform .15s ease;
+      min-width:220px;
+    }
+    .vol.open .vol-panel{
+      opacity:1;
+      transform: translateX(0);
+      pointer-events:auto;
+    }
+    .vol-panel input[type="range"]{
+      width:160px;
+      accent-color: var(--gold2);
+    }
+
+    /* texto “pergaminho” do volume (vibe) */
+    .vol-panel .lab{
+      font-family: ui-monospace, "Consolas", monospace;
+      font-size:10px;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:rgba(214,207,191,.62);
+      white-space:nowrap;
+    }
+    /* esconder HUD na intro */
+    .hud.hide{
+      opacity:0;
+      pointer-events:none;
+      transform: translateY(-8px);
+      transition: .35s ease;
+    }
+    .hud{
+      transition: .35s ease;
+    }
+
+    /* responsivo */
+    @media (max-width:520px){
+      .altar{height:min(520px, 64vh)}
+      .seal-wrap{width:200px;height:200px}
+      .seal{width:110px;height:110px}
+      .sigils{display:none}
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="fx"></canvas>
+  <div class="impact" id="impact"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+
+  <!-- HUD (aparece no vídeo) -->
+  <div class="hud hide" id="hud">
+    <button class="btn" id="btnFs" title="Tela cheia">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 3H5a2 2 0 0 0-2 2v4"/>
+        <path d="M15 3h4a2 2 0 0 1 2 2v4"/>
+        <path d="M9 21H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M15 21h4a2 2 0 0 0 2-2v-4"/>
+      </svg>
+      <span style="font-family: ui-monospace, Consolas, monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.9;">fullscreen</span>
+    </button>
+
+    <div class="vol" id="vol">
+      <button class="btn" id="btnVol" title="Volume">
+        <svg id="icoVol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+          <path id="wave1" d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
+          <path id="wave2" d="M18 6a8 8 0 0 1 0 12"/>
+        </svg>
+        <span style="font-family: ui-monospace, Consolas, monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.9;">volume</span>
+      </button>
+
+      <div class="vol-panel" id="volPanel">
+        <span class="lab">som</span>
+        <input id="volRange" type="range" min="0" max="100" value="45" />
+        <span class="lab" id="volPct">45%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO (INÍCIO) -->
+  <section class="intro" id="intro">
+    <div class="altar" id="altar">
+      <div class="intro-top">SELOS SE FECHAM…</div>
+
+      <div class="sigils left" aria-hidden="true">
+        <div class="row"><span class="g">Σ</span><span class="d">Δ</span><span class="f">Ψ</span></div>
+        <div class="row"><span class="d">Λ</span><span class="g">Ω</span><span class="f">ϟ</span></div>
+        <div class="row"><span class="f">◊</span><span class="d">•</span><span class="g">Δ</span></div>
+      </div>
+
+      <div class="sigils right" aria-hidden="true">
+        <div class="row"><span class="f">ϟ</span><span class="g">Ω</span><span class="d">Λ</span></div>
+        <div class="row"><span class="d">Ψ</span><span class="f">Δ</span><span class="g">Σ</span></div>
+        <div class="row"><span class="g">•</span><span class="d">◊</span><span class="f">Δ</span></div>
+      </div>
+
+      <div class="seal-wrap">
+        <div class="ring"></div>
+        <div class="ring inner"></div>
+
+        <!-- IMAGEM DO SELO (clique aqui) -->
+        <div class="seal" id="seal" role="button" aria-label="Romper o selo">
+          <img src="https://files.catbox.moe/l6h4rv.png" alt="Selo" draggable="false">
+        </div>
+      </div>
+
+      <div class="prompt">
+        CLIQUE NO SELO PARA ROMPER O PORTAL
+        <small>ou pressione [ENTER]</small>
+      </div>
+
+      <div class="corner left">TEMPLO // VIGIA</div>
+      <div class="corner right">SHADOW TEMPLE INTERFACE: V1</div>
+    </div>
+  </section>
+
+  <!-- SITE (VÍDEO) -->
+  <section class="site" id="site">
+    <div class="video-wrap">
+      <!-- Troque o src do vídeo abaixo pelo seu -->
+      <video id="bgVideo" playsinline preload="metadata">
+        <!-- EXEMPLO: <source src="video.mp4" type="video/mp4"> -->
+      </video>
+    </div>
+  </section>
+    /* esconder HUD na intro */
+    .hud.hide{
+      opacity:0;
+      pointer-events:none;
+      transform: translateY(-8px);
+      transition: .35s ease;
+    }
+    .hud{
+      transition: .35s ease;
+    }
+
+    /* responsivo */
+    @media (max-width:520px){
+      .altar{height:min(520px, 64vh)}
+      .seal-wrap{width:200px;height:200px}
+      .seal{width:110px;height:110px}
+      .sigils{display:none}
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="fx"></canvas>
+  <div class="impact" id="impact"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+
+  <!-- HUD (aparece no vídeo) -->
+  <div class="hud hide" id="hud">
+    <button class="btn" id="btnFs" title="Tela cheia">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 3H5a2 2 0 0 0-2 2v4"/>
+        <path d="M15 3h4a2 2 0 0 1 2 2v4"/>
+        <path d="M9 21H5a2 2 0 0 1-2-2v-4"/>
+        <path d="M15 21h4a2 2 0 0 0 2-2v-4"/>
+      </svg>
+      <span style="font-family: ui-monospace, Consolas, monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.9;">fullscreen</span>
+    </button>
+
+    <div class="vol" id="vol">
+      <button class="btn" id="btnVol" title="Volume">
+        <svg id="icoVol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 5L6 9H3v6h3l5 4V5z"/>
+          <path id="wave1" d="M15.5 8.5a4.5 4.5 0 0 1 0 7"/>
+          <path id="wave2" d="M18 6a8 8 0 0 1 0 12"/>
+        </svg>
+        <span style="font-family: ui-monospace, Consolas, monospace; font-size:11px; letter-spacing:.18em; text-transform:uppercase; opacity:.9;">volume</span>
+      </button>
+
+      <div class="vol-panel" id="volPanel">
+        <span class="lab">som</span>
+        <input id="volRange" type="range" min="0" max="100" value="45" />
+        <span class="lab" id="volPct">45%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTRO (INÍCIO) -->
+  <section class="intro" id="intro">
+    <div class="altar" id="altar">
+      <div class="intro-top">SELOS SE FECHAM…</div>
+
+      <div class="sigils left" aria-hidden="true">
+        <div class="row"><span class="g">Σ</span><span class="d">Δ</span><span class="f">Ψ</span></div>
+        <div class="row"><span class="d">Λ</span><span class="g">Ω</span><span class="f">ϟ</span></div>
+        <div class="row"><span class="f">◊</span><span class="d">•</span><span class="g">Δ</span></div>
+      </div>
+
+      <div class="sigils right" aria-hidden="true">
+        <div class="row"><span class="f">ϟ</span><span class="g">Ω</span><span class="d">Λ</span></div>
+        <div class="row"><span class="d">Ψ</span><span class="f">Δ</span><span class="g">Σ</span></div>
+        <div class="row"><span class="g">•</span><span class="d">◊</span><span class="f">Δ</span></div>
+      </div>
+
+      <div class="seal-wrap">
+        <div class="ring"></div>
+        <div class="ring inner"></div>
+
+        <!-- IMAGEM DO SELO (clique aqui) -->
+        <div class="seal" id="seal" role="button" aria-label="Romper o selo">
+          <img src="https://files.catbox.moe/l6h4rv.png" alt="Selo" draggable="false">
+        </div>
+      </div>
+
+      <div class="prompt">
+        CLIQUE NO SELO PARA ROMPER O PORTAL
+        <small>ou pressione [ENTER]</small>
+      </div>
+
+      <div class="corner left">TEMPLO // VIGIA</div>
+      <div class="corner right">SHADOW TEMPLE INTERFACE: V1</div>
+    </div>
+  </section>
+
+  <!-- SITE (VÍDEO) -->
+  <section class="site" id="site">
+    <div class="video-wrap">
+      <!-- Troque o src do vídeo abaixo pelo seu -->
+      <video id="bgVideo" playsinline preload="metadata">
+        <!-- EXEMPLO: <source src="video.mp4" type="video/mp4"> -->
+      </video>
+    </div>
+  </section>
+    // Evita “Enter” rolar página no mobile
+    window.addEventListener('keypress', (e)=>{
+      if(e.key === 'Enter') e.preventDefault();
+    });
+
+    // Se não tiver vídeo setado, você ainda vai entrar e ver fundo preto.
+    // DICA: coloque o source assim:
+    // <video id="bgVideo" ...>
+    //   <source src="seu-video.mp4" type="video/mp4">
+    // </video>
+
+    // Se quiser que o clique no vídeo pause/retome (opcional)
+    video.addEventListener('click', ()=>{
+      if(video.paused) video.play().catch(()=>{});
+      else video.pause();
+    });
+
+    // Atualiza ícone conforme mute via teclado (M)
+    window.addEventListener('keydown', (e)=>{
+      if(e.key.toLowerCase() === 'm' && site.classList.contains('on')){
+        video.muted = !video.muted;
+        const v = parseInt(volRange.value,10);
+        const show = (v > 0 && !video.muted);
+        wave1.style.opacity = show ? '1' : '0';
+        wave2.style.opacity = v > 55 ? '1' : (show ? '.35' : '0');
+      }
+    });
+
+  </script>
 </body>
 </html>
