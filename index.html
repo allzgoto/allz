@@ -3,20 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Fight — Cut Entry</title>
+<title>Shadow Fight 2 — Entry</title>
 
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;overflow:hidden;background:#000}
+
   :root{
-    --ember: rgba(255,140,70,0.85);
-    --emberSoft: rgba(255,170,110,0.25);
+    --ember: rgba(255,140,70,0.9);
+    --ember2: rgba(255,190,120,0.25);
     --gold: rgba(210,170,80,0.22);
-    --paper1: #0b0a08;
-    --paper2: #050505;
   }
 
-  /* Vídeo principal */
+  /* vídeo principal */
   #mainVideo{
     position:fixed; inset:0;
     width:100%; height:100%;
@@ -28,7 +27,7 @@
   }
   body.entered #mainVideo{opacity:1}
 
-  /* ENTRY */
+  /* entry */
   #entry{
     position:fixed; inset:0;
     z-index:10;
@@ -36,17 +35,17 @@
     place-items:center;
     cursor:pointer;
     user-select:none;
-    background:linear-gradient(to bottom, var(--paper1), var(--paper2));
+    background:linear-gradient(to bottom, #0b0a08, #050505);
   }
 
-  /* Pergaminho sujo (sem imagem) */
+  /* “pergaminho” sujo */
   #entry::before{
     content:"";
-    position:absolute; inset:-60px;
+    position:absolute; inset:-70px;
     background:
       radial-gradient(circle at 20% 30%, rgba(255,255,255,0.05), transparent 55%),
       radial-gradient(circle at 75% 55%, rgba(255,255,255,0.035), transparent 58%),
-      radial-gradient(circle at 50% 85%, rgba(255,140,70,0.03), transparent 55%),
+      radial-gradient(circle at 50% 88%, rgba(255,140,70,0.03), transparent 55%),
       repeating-linear-gradient(100deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 18px),
       repeating-linear-gradient(0deg, rgba(0,0,0,0.42) 0 1px, transparent 1px 5px);
     opacity:.95;
@@ -54,162 +53,89 @@
     pointer-events:none;
   }
 
-  /* Vinheta pesada */
+  /* vinheta pesada */
   #entry::after{
     content:"";
     position:absolute; inset:0;
-    background:
-      radial-gradient(circle at center, rgba(0,0,0,0.10) 20%, rgba(0,0,0,0.92) 100%);
+    background:radial-gradient(circle at center, rgba(0,0,0,0.08) 20%, rgba(0,0,0,0.92) 100%);
     pointer-events:none;
   }
 
-  /* Partículas/poeira */
-  #dust{
-    position:absolute; inset:0;
-    z-index:1;
-    pointer-events:none;
-  }
+  /* partículas */
+  #fx{ position:absolute; inset:0; z-index:1; pointer-events:none; }
 
-  /* “chão” laranja queimado bem fraco */
-  .ground-glow{
-    position:absolute;
-    left:0; right:0; bottom:-18%;
+  /* glow baixo (brasas no chão) */
+  .ground{
+    position:absolute; left:0; right:0; bottom:-18%;
     height:55%;
     z-index:2;
     background:radial-gradient(circle at 50% 90%, rgba(255,140,70,0.10), transparent 62%);
     filter:blur(12px);
     pointer-events:none;
-    opacity:.9;
   }
 
-  /* Container principal */
-  .stage{
+  /* centro */
+  .center{
     position:relative;
-    width:min(980px, 94vw);
-    height:min(620px, 82vh);
+    width:min(520px, 86vw);
+    height:min(520px, 86vw);
     display:grid;
     place-items:center;
     z-index:5;
   }
 
-  /* Silhueta do guerreiro (shape simples, mas funciona MUITO) */
-  .shadow{
-    position:relative;
-    width:min(360px, 46vw);
-    aspect-ratio: 1/1.25;
-    filter:drop-shadow(0 0 22px rgba(255,140,70,0.06));
+  /* selo de tinta pincelada (SVG) */
+  .seal{
+    width:min(320px, 62vw);
+    aspect-ratio:1/1;
+    filter:drop-shadow(0 0 24px rgba(255,140,70,0.10));
     opacity:.95;
-    transform:translateY(10px);
-    transition:transform 700ms cubic-bezier(.2,.9,.2,1), opacity 700ms ease;
+    transform:translateY(6px);
+    transition:transform 520ms cubic-bezier(.2,.9,.2,1), opacity 520ms ease;
   }
 
-  /* Corpo */
-  .shadow .body{
-    position:absolute;
-    left:50%; top:55%;
-    width:32%;
-    height:42%;
-    transform:translate(-50%,-50%);
-    background:#000;
-    border-radius:22px;
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,0.03);
+  .seal .ink{
+    stroke:rgba(255,170,110,0.20);
+    stroke-width:10;
+    fill:none;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    opacity:.95;
   }
 
-  /* Cabeça */
-  .shadow .head{
-    position:absolute;
-    left:50%; top:28%;
-    width:18%;
-    height:18%;
-    transform:translate(-50%,-50%);
-    background:#000;
-    border-radius:50%;
+  .seal .ink2{
+    stroke:rgba(255,255,255,0.07);
+    stroke-width:4;
+    fill:none;
+    stroke-linecap:round;
+    opacity:.9;
   }
 
-  /* Ombros */
-  .shadow .shoulder{
-    position:absolute;
-    top:42%;
-    width:26%;
-    height:18%;
-    background:#000;
-    border-radius:28px;
+  .seal .smoke-ring{
+    stroke:rgba(255,140,70,0.10);
+    stroke-width:2;
+    fill:none;
+    opacity:.7;
+    stroke-dasharray:10 14;
+    animation:drift 12s linear infinite;
+    transform-origin:50% 50%;
   }
-  .shadow .shoulder.left{ left:34%; transform:rotate(-12deg); }
-  .shadow .shoulder.right{ right:34%; transform:rotate(12deg); }
+  @keyframes drift{to{transform:rotate(360deg)}}
 
-  /* Pernas */
-  .shadow .leg{
-    position:absolute;
-    top:70%;
-    width:14%;
-    height:30%;
-    background:#000;
-    border-radius:18px;
+  /* pulsa MUITO sutil */
+  .seal-wrap{
+    position:relative;
+    animation:pulse 2.8s ease-in-out infinite;
   }
-  .shadow .leg.left{ left:44%; transform:rotate(8deg); transform-origin:top; }
-  .shadow .leg.right{ right:44%; transform:rotate(-10deg); transform-origin:top; }
-
-  /* Espada (silhueta) */
-  .shadow .sword{
-    position:absolute;
-    left:62%;
-    top:42%;
-    width:46%;
-    height:8%;
-    transform:translate(-50%,-50%) rotate(-18deg);
-    transform-origin:18% 50%;
-    transition:transform 620ms cubic-bezier(.2,.9,.2,1);
-  }
-  .shadow .sword::before{
-    content:"";
-    position:absolute;
-    left:0; top:50%;
-    width:78%;
-    height:28%;
-    transform:translateY(-50%);
-    background:#000;
-    border-radius:10px;
-  }
-  .shadow .sword::after{
-    content:"";
-    position:absolute;
-    left:68%;
-    top:50%;
-    width:26%;
-    height:18%;
-    transform:translateY(-50%);
-    background:#000;
-    border-radius:8px;
+  @keyframes pulse{
+    0%,100%{transform:scale(0.99)}
+    50%{transform:scale(1.01)}
   }
 
-  /* Texto “Desperte a Sombra” */
-  .title{
-    position:absolute;
-    bottom:26px;
-    width:100%;
-    text-align:center;
-    font-size:12px;
-    letter-spacing:6px;
-    text-transform:uppercase;
-    color:rgba(220,190,110,0.22);
-    z-index:6;
-  }
-  .subtitle{
-    position:absolute;
-    bottom:8px;
-    width:100%;
-    text-align:center;
-    font-size:12px;
-    letter-spacing:4px;
-    color:rgba(255,255,255,0.18);
-    z-index:6;
-  }
-
-  /* Linha dourada “gasta” */
+  /* texto */
   .divider{
     position:absolute;
-    bottom:18px;
+    bottom:44px;
     left:50%;
     width:min(520px, 80vw);
     height:1px;
@@ -217,31 +143,49 @@
     background:linear-gradient(90deg, transparent, var(--gold), transparent);
     opacity:.55;
   }
+  .title{
+    position:absolute;
+    bottom:24px;
+    width:100%;
+    text-align:center;
+    font-size:12px;
+    letter-spacing:6px;
+    color:rgba(220,190,110,0.22);
+    text-transform:uppercase;
+  }
+  .subtitle{
+    position:absolute;
+    bottom:6px;
+    width:100%;
+    text-align:center;
+    font-size:12px;
+    letter-spacing:4px;
+    color:rgba(255,255,255,0.18);
+    text-transform:uppercase;
+  }
 
-  /* CORTE (slash) */
+  /* corte (slash) */
   .slash{
-    position:fixed;
-    inset:-30%;
+    position:fixed; inset:-30%;
     z-index:9;
     pointer-events:none;
     opacity:0;
     transform:rotate(-18deg) translateX(-50%);
     background:linear-gradient(90deg,
       transparent 0%,
-      rgba(255,180,110,0.20) 44%,
-      rgba(255,140,70,0.75) 50%,
-      rgba(255,180,110,0.20) 56%,
+      rgba(255,180,110,0.18) 44%,
+      rgba(255,140,70,0.78) 50%,
+      rgba(255,180,110,0.18) 56%,
       transparent 100%);
-    filter:blur(0.2px);
   }
 
-  /* Rasgo que abre */
+  /* rasgo */
   .tear{
     position:fixed;
     left:50%;
     top:-10%;
     height:120%;
-    width:12px;
+    width:10px;
     transform:translateX(-50%);
     z-index:10;
     opacity:0;
@@ -263,12 +207,12 @@
         rgba(255,140,70,0.10) 8px 10px,
         rgba(255,255,255,0.0) 10px 18px
       );
-    opacity:.7;
+    opacity:.75;
     filter:blur(1.3px);
     mix-blend-mode:screen;
   }
 
-  /* Engolir pro preto */
+  /* engolir */
   .swallow{
     position:fixed; inset:0;
     z-index:11;
@@ -281,13 +225,9 @@
     transform:scale(0.9);
   }
 
-  /* ===== Clique sequência ===== */
-  body.drawing .shadow .sword{
-    transform:translate(-50%,-50%) rotate(-55deg);
-  }
-  body.drawing .shadow{
-    transform:translateY(6px);
-  }
+  /* ===== clique sequência ===== */
+  body.sealLock .seal{ transform:translateY(6px) scale(0.97); opacity:.85; }
+  body.sealLock .seal-wrap{ animation:none; }
 
   body.slashing .slash{
     opacity:1;
@@ -304,7 +244,7 @@
   }
   @keyframes tearGrow{
     0%{width:10px}
-    100%{width:86px}
+    100%{width:92px}
   }
 
   body.slashing .swallow{
@@ -317,11 +257,6 @@
     opacity:0;
     pointer-events:none;
     transition:opacity 520ms ease;
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    body.slashing .slash{animation:none; opacity:1}
-    body.slashing .tear{animation:none; opacity:1; width:86px}
   }
 </style>
 </head>
@@ -336,19 +271,33 @@
     loop
   ></video>
 
-  <section id="entry" aria-label="Entrada Shadow Fight">
-    <canvas id="dust"></canvas>
-    <div class="ground-glow" aria-hidden="true"></div>
+  <section id="entry" aria-label="Entrada Shadow Fight 2">
+    <canvas id="fx"></canvas>
+    <div class="ground" aria-hidden="true"></div>
 
-    <div class="stage">
-      <div class="shadow" id="shadow">
-        <div class="head"></div>
-        <div class="shoulder left"></div>
-        <div class="shoulder right"></div>
-        <div class="body"></div>
-        <div class="leg left"></div>
-        <div class="leg right"></div>
-        <div class="sword"></div>
+    <div class="center">
+      <div class="seal-wrap">
+        <svg class="seal" viewBox="0 0 200 200" aria-hidden="true">
+          <!-- círculo de tinta “pincelada” (imperfeito) -->
+          <path class="ink" d="M40 112
+            C28 86, 46 52, 76 44
+            C102 37, 126 44, 148 62
+            C172 80, 174 110, 156 136
+            C140 160, 106 174, 78 164
+            C56 156, 48 140, 40 112" />
+
+          <!-- segunda camada “sujando” -->
+          <path class="ink2" d="M52 116
+            C46 92, 58 66, 84 58
+            C110 50, 132 62, 144 80
+            C156 98, 152 120, 138 136
+            C120 156, 92 160, 72 150
+            C60 144, 56 132, 52 116" />
+
+          <!-- fumaça circular muito leve -->
+          <circle class="smoke-ring" cx="100" cy="100" r="74" />
+          <circle class="smoke-ring" cx="100" cy="100" r="62" style="opacity:.35; stroke-dasharray:6 12; animation-duration:18s"/>
+        </svg>
       </div>
 
       <div class="divider" aria-hidden="true"></div>
@@ -365,14 +314,13 @@
   const entry = document.getElementById("entry");
   const mainVideo = document.getElementById("mainVideo");
 
-  // ===== poeira / brasas (canvas) =====
-  const canvas = document.getElementById("dust");
+  // FX: poeira/brasas laranja (vento lateral)
+  const canvas = document.getElementById("fx");
   const ctx = canvas.getContext("2d", { alpha:true });
   let W=0,H=0,DPR=1;
 
-  const dust = [];
-  const COUNT = 140;
-
+  const parts = [];
+  const COUNT = 160;
   const rand=(a,b)=>Math.random()*(b-a)+a;
 
   function resize(){
@@ -386,26 +334,24 @@
   function spawn(){
     return {
       x: rand(-W*0.1, W*1.1),
-      y: rand(0, H),
+      y: rand(H*0.45, H*1.05),
       r: rand(0.6, 2.8)*DPR,
-      vx: rand(0.10, 0.55)*DPR,   // vento lateral
-      vy: rand(-0.12, -0.55)*DPR, // sobe um pouco
+      vx: rand(0.10, 0.62)*DPR,
+      vy: rand(-0.10, -0.70)*DPR,
       a: rand(0.02, 0.18),
       wob: rand(0.002, 0.008),
       life: rand(0.7, 1.3)
     };
   }
-  for(let i=0;i<COUNT;i++) dust.push(spawn());
+  for(let i=0;i<COUNT;i++) parts.push(spawn());
 
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // vento/poeira: mais concentrado no meio-baixo
-    for(const p of dust){
+    for(const p of parts){
       p.x += p.vx + Math.sin(p.y*p.wob)*(0.35*DPR);
       p.y += p.vy;
 
-      // “recicla” quando sai da tela
       if(p.x > W+80 || p.y < -80){
         Object.assign(p, spawn());
         p.x = -60;
@@ -413,12 +359,12 @@
       }
 
       const alpha = Math.max(0, Math.min(0.30, p.a))*p.life;
+
       ctx.beginPath();
       ctx.fillStyle = `rgba(255, 170, 110, ${alpha*0.35})`;
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
       ctx.fill();
 
-      // brilho laranja pontual (brasinha)
       if(p.r > 2.2*DPR){
         ctx.beginPath();
         ctx.fillStyle = `rgba(255, 140, 70, ${alpha*0.20})`;
@@ -431,22 +377,19 @@
   }
   draw();
 
-  // ===== som “corte” (WebAudio simples) =====
+  // som “corte” (web audio)
   function playSlash(){
     try{
       const AC = window.AudioContext || window.webkitAudioContext;
       const ac = new AC();
       const now = ac.currentTime;
 
-      // ruído (vento/corte)
       const len = Math.floor(ac.sampleRate * 0.16);
       const buf = ac.createBuffer(1, len, ac.sampleRate);
       const d = buf.getChannelData(0);
-      for(let i=0;i<d.length;i++){
-        d[i] = (Math.random()*2-1) * (1 - i/d.length);
-      }
-      const noise = ac.createBufferSource();
-      noise.buffer = buf;
+      for(let i=0;i<d.length;i++) d[i] = (Math.random()*2-1) * (1 - i/d.length);
+
+      const noise = ac.createBufferSource(); noise.buffer = buf;
 
       const hp = ac.createBiquadFilter();
       hp.type = "highpass";
@@ -457,11 +400,8 @@
       g.gain.exponentialRampToValueAtTime(0.18, now+0.02);
       g.gain.exponentialRampToValueAtTime(0.0001, now+0.16);
 
-      noise.connect(hp);
-      hp.connect(g);
-      g.connect(ac.destination);
+      noise.connect(hp); hp.connect(g); g.connect(ac.destination);
 
-      // “metal” curtinho
       const osc = ac.createOscillator();
       osc.type = "triangle";
       osc.frequency.setValueAtTime(520, now);
@@ -472,42 +412,34 @@
       og.gain.exponentialRampToValueAtTime(0.10, now+0.02);
       og.gain.exponentialRampToValueAtTime(0.0001, now+0.14);
 
-      osc.connect(og);
-      og.connect(ac.destination);
+      osc.connect(og); og.connect(ac.destination);
 
-      noise.start(now);
-      noise.stop(now+0.16);
-
-      osc.start(now);
-      osc.stop(now+0.14);
+      noise.start(now); noise.stop(now+0.16);
+      osc.start(now); osc.stop(now+0.14);
 
       setTimeout(()=>ac.close().catch(()=>{}), 600);
     }catch(e){}
   }
 
-  // ===== sequência clique =====
+  // sequência
   let started=false;
   function start(){
     if(started) return;
     started=true;
 
-    // começa o vídeo dentro do gesto do clique
     mainVideo.play().catch(()=>{});
 
-    // 1) puxa espada (micro)
-    document.body.classList.add("drawing");
+    document.body.classList.add("sealLock");        // “trava” o selo
 
-    // 2) corte / rasgo / engolir
     setTimeout(()=>{
       playSlash();
-      document.body.classList.add("slashing");
-    }, 420);
+      document.body.classList.add("slashing");      // corte + rasgo + engole
+    }, 360);
 
-    // 3) entra no vídeo
     setTimeout(()=>{
       document.body.classList.add("entered");
       setTimeout(()=>{ entry.style.display="none"; }, 650);
-    }, 1150);
+    }, 1100);
   }
 
   entry.addEventListener("pointerdown", start);
