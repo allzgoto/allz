@@ -6,100 +6,70 @@
   <title>Shadow Fight — Cinematic</title>
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{width:100%;height:100%;background:#000;overflow:hidden}
 
-    .stage {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      background: radial-gradient(circle at center, #0b0b0b 0%, #000 70%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .stage{
+      position:relative;width:100%;height:100%;
+      display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at center,#0b0b0b 0%,#000 70%);
     }
 
-    /* Vídeo principal (fundo) */
-    .bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      opacity: 0;
-      transition: opacity 450ms ease;
-      background: #000;
-      z-index: 1;
+    /* vídeo principal */
+    #mainVideo{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:cover;opacity:0;transition:opacity 450ms ease;
+      z-index:1;background:#000;
     }
-    .bg.is-active { opacity: 1; }
+    #mainVideo.is-active{opacity:1}
 
-    /* Intro com portal */
-    .intro {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 1;
-      transition: opacity 450ms ease;
-      z-index: 2;
+    /* intro */
+    #intro{
+      position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+      opacity:1;transition:opacity 450ms ease;z-index:2;
     }
-    .intro.is-hidden { opacity: 0; pointer-events: none; }
+    #intro.is-hidden{opacity:0;pointer-events:none}
 
-    /* Portal central */
-    .portal {
-      width: min(320px, 70vw);
-      aspect-ratio: 1 / 1;
-      border-radius: 50%;
-      overflow: hidden;
-      cursor: pointer;
-      position: relative;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow:
-        0 0 30px rgba(255,255,255,0.08),
-        0 0 80px rgba(255,255,255,0.04);
-      transform: translateZ(0);
-      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-    }
-    .portal:hover {
-      transform: scale(1.02);
-      border-color: rgba(255,255,255,0.22);
-      box-shadow:
-        0 0 45px rgba(255,255,255,0.12),
-        0 0 110px rgba(255,255,255,0.06);
+    .portal{
+      width:min(340px,72vw);
+      aspect-ratio:1/1;border-radius:50%;
+      overflow:hidden;position:relative;
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow:0 0 30px rgba(255,255,255,.08),0 0 80px rgba(255,255,255,.04);
+      transform:translateZ(0);
     }
 
-    .portal video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
+    /* IMPORTANTÍSSIMO: vídeo não captura clique */
+    .portal video{
+      width:100%;height:100%;object-fit:cover;display:block;
+      pointer-events:none;
     }
 
-    .vignette {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 3;
-      background: radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
+    /* overlay clicável por cima do vídeo */
+    .hit{
+      position:absolute;inset:0;cursor:pointer;z-index:5;
+      background:radial-gradient(circle at center, rgba(255,255,255,0.04), rgba(0,0,0,0) 55%);
     }
 
-    .noselect { user-select: none; -webkit-user-select: none; }
+    .vignette{
+      position:absolute;inset:0;pointer-events:none;z-index:3;
+      background:radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
+    }
   </style>
 </head>
-
 <body>
-  <main class="stage noselect">
+  <main class="stage">
     <video
       id="mainVideo"
-      class="bg"
       src="https://files.catbox.moe/klaol5.webm"
       playsinline
       preload="auto"
+      muted
+      loop
     ></video>
 
-    <section id="intro" class="intro">
-      <div id="portal" class="portal" role="button" tabindex="0" aria-label="Ativar portal">
+    <section id="intro">
+      <div class="portal">
         <video
           id="portalVideo"
           src="https://files.catbox.moe/5ci6gd.mp4"
@@ -107,6 +77,8 @@
           preload="auto"
           muted
         ></video>
+
+        <div id="hit" class="hit" role="button" tabindex="0" aria-label="Ativar portal"></div>
       </div>
     </section>
 
@@ -115,102 +87,67 @@
 
   <script>
     const intro = document.getElementById("intro");
-    const portal = document.getElementById("portal");
+    const hit = document.getElementById("hit");
     const portalVideo = document.getElementById("portalVideo");
     const mainVideo = document.getElementById("mainVideo");
 
     let running = false;
-    let fallbackArmed = false;
 
-    function holdFirstFrame() {
-      // deixa parado no frame 0
+    function freezePortal() {
       try { portalVideo.currentTime = 0; } catch (e) {}
       portalVideo.pause();
     }
 
-    // garante frame inicial assim que carregar dados
-    portalVideo.addEventListener("loadeddata", holdFirstFrame, { once: true });
+    portalVideo.addEventListener("loadeddata", freezePortal, { once: true });
 
-    function goToMainVideo() {
+    function goMain() {
       intro.classList.add("is-hidden");
-
       mainVideo.classList.add("is-active");
-      mainVideo.loop = true;
+      mainVideo.play().catch(err => console.warn("main play fail:", err));
 
-      mainVideo.play().catch(err => {
-        console.warn("Play do vídeo principal falhou:", err);
-      });
-
-      // fullscreen (tentativa; pode falhar)
+      // tentativa de fullscreen (pode falhar dependendo do browser)
       const el = document.documentElement;
-      if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
+      if (el.requestFullscreen) el.requestFullscreen().catch(()=>{});
     }
 
-    function armFallbackEndCheck() {
-      if (fallbackArmed) return;
-      fallbackArmed = true;
-
-      const tick = () => {
-        if (!running) return;
-
-        const d = portalVideo.duration;
-        const t = portalVideo.currentTime;
-
-        // quando estiver praticamente no fim, troca
-        if (Number.isFinite(d) && d > 0 && t >= d - 0.08) {
-          running = false;
-          goToMainVideo();
-          return;
-        }
-
-        requestAnimationFrame(tick);
-      };
-
-      requestAnimationFrame(tick);
-    }
-
-    async function startSequence() {
+    async function start() {
       if (running) return;
       running = true;
 
-      // reseta e tenta tocar
+      // reset e play do portal
       try { portalVideo.currentTime = 0; } catch (e) {}
-
-      // se metadados ainda não chegaram, espera um pouquinho
-      if (portalVideo.readyState < 2) {
-        await new Promise(resolve => {
-          const onReady = () => {
-            portalVideo.removeEventListener("loadedmetadata", onReady);
-            resolve();
-          };
-          portalVideo.addEventListener("loadedmetadata", onReady, { once: true });
-        });
-        try { portalVideo.currentTime = 0; } catch (e) {}
-      }
-
       try {
         await portalVideo.play();
-        armFallbackEndCheck();
       } catch (err) {
-        // IMPORTANTÍSSIMO: se falhar, libera pra clicar de novo
         running = false;
-        console.warn("Play do portal falhou:", err);
+        console.warn("portal play fail:", err);
+        return;
       }
+
+      // fallback: se "ended" não disparar, troca quando chegar no fim
+      const check = () => {
+        if (!running) return;
+        const d = portalVideo.duration;
+        if (Number.isFinite(d) && d > 0 && portalVideo.currentTime >= d - 0.08) {
+          running = false;
+          goMain();
+          return;
+        }
+        requestAnimationFrame(check);
+      };
+      requestAnimationFrame(check);
     }
 
-    // caminho ideal: ended
     portalVideo.addEventListener("ended", () => {
       if (!running) return;
       running = false;
-      goToMainVideo();
+      goMain();
     });
 
-    portal.addEventListener("click", startSequence);
-    portal.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        startSequence();
-      }
+    // use pointerdown (mais confiável que click em alguns casos)
+    hit.addEventListener("pointerdown", start);
+    hit.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); start(); }
     });
   </script>
 </body>
