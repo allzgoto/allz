@@ -3,266 +3,222 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Fight 2 — Brutal Entry</title>
+<title>Shadow Fight 2 — Portal Entry</title>
 
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
   :root{
-    --ash: rgba(255,200,140,0.14);
-    --ember: rgba(255,140,70,0.85);
-    --ember2: rgba(255,175,115,0.22);
-    --gold: rgba(210,170,80,0.18);
+    --ember: rgba(255,140,70,0.9);
+    --emberSoft: rgba(255,190,120,0.22);
   }
 
-  /* Página principal (vídeo) */
+  /* vídeo principal */
   #mainVideo{
     position:fixed; inset:0;
     width:100%; height:100%;
     object-fit:cover;
     z-index:0;
     opacity:0;
-    transition:opacity 700ms ease;
+    transition:opacity 900ms ease;
     filter:contrast(1.06) saturate(0.9);
   }
   body.entered #mainVideo{opacity:1}
 
-  /* ENTRY */
+  /* entry base */
   #entry{
     position:fixed; inset:0;
     z-index:10;
-    display:grid;
-    place-items:center;
+    background:#000;
     cursor:pointer;
     user-select:none;
-    background:linear-gradient(to bottom, #0b0a08, #050505);
   }
 
-  /* pergaminho/grunge (sem imagem) */
-  #entry::before{
-    content:"";
-    position:absolute; inset:-90px;
-    background:
-      radial-gradient(circle at 18% 30%, rgba(255,255,255,0.05), transparent 58%),
-      radial-gradient(circle at 78% 55%, rgba(255,255,255,0.035), transparent 60%),
-      radial-gradient(circle at 50% 85%, rgba(255,140,70,0.04), transparent 58%),
-      repeating-linear-gradient(102deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 18px),
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.46) 0 1px, transparent 1px 5px);
-    opacity:.95;
-    filter:blur(0.25px);
-    pointer-events:none;
-  }
-
-  /* vinheta forte + “bordas queimadas” */
+  /* vinheta forte */
   #entry::after{
     content:"";
     position:absolute; inset:0;
-    background:
-      radial-gradient(circle at center, rgba(0,0,0,0.05) 18%, rgba(0,0,0,0.92) 100%),
-      radial-gradient(circle at 50% 92%, rgba(255,140,70,0.06), transparent 52%);
     pointer-events:none;
+    background:
+      radial-gradient(circle at center, rgba(0,0,0,0.10) 18%, rgba(0,0,0,0.94) 100%),
+      radial-gradient(circle at 50% 90%, rgba(255,140,70,0.05), transparent 55%);
+    z-index:5;
   }
 
-  /* canvas de poeira/fumaça */
+  /* canvas FX */
   #fx{
     position:absolute; inset:0;
     z-index:1;
     pointer-events:none;
   }
 
-  /* glow baixo laranja queimado */
-  .ground{
+  /* portal layer */
+  .portalWrap{
     position:absolute;
-    left:-15%; right:-15%;
-    bottom:-25%;
-    height:65%;
-    z-index:2;
-    background:radial-gradient(circle at 50% 90%, rgba(255,140,70,0.14), transparent 64%);
-    filter:blur(14px);
-    pointer-events:none;
-    opacity:.9;
-  }
-
-  /* container central */
-  .stage{
-    position:relative;
-    width:min(980px, 94vw);
-    height:min(720px, 86vh);
+    inset:0;
     display:grid;
     place-items:center;
-    z-index:5;
+    z-index:3;
+    pointer-events:none;
   }
 
-  /* Silhueta central (1 só) */
-  .warrior{
-    width:min(420px, 56vw);
-    opacity:.96;
-    filter:drop-shadow(0 0 18px rgba(255,140,70,0.08));
-    transform:translateY(10px);
-    animation:breath 3.2s ease-in-out infinite;
-  }
-  @keyframes breath{
-    0%,100%{transform:translateY(10px)}
-    50%{transform:translateY(6px)}
+  /* “portal escuro” (não bonitinho) */
+  .portal{
+    width:min(520px, 92vw);
+    height:min(420px, 72vh);
+    opacity:0;
+    transform:scale(0.92);
+    transition:opacity 280ms ease, transform 520ms cubic-bezier(.12,.92,.12,1);
+    filter:drop-shadow(0 0 34px rgba(255,140,70,0.10));
   }
 
-  /* texto SF2 discreto, sem modernidade */
-  .hudline{
+  /* miolo do portal: radial escuro + granulação falsa */
+  .portalCore{
+    width:100%; height:100%;
+    background:
+      radial-gradient(closest-side at 50% 50%,
+        rgba(0,0,0,0.0) 0%,
+        rgba(0,0,0,0.65) 38%,
+        rgba(0,0,0,0.92) 62%,
+        rgba(0,0,0,1) 100%);
+    position:relative;
+    /* rasgo começa fechado: uma linha vertical torta */
+    clip-path:polygon(49.5% 0%, 50.5% 0%, 51% 18%, 50.2% 36%, 51% 54%, 50.2% 72%, 50.8% 100%, 49.2% 100%, 49.8% 72%, 49% 54%, 49.8% 36%, 49% 18%);
+  }
+
+  /* brilho profundo laranja vindo de dentro */
+  .portalGlow{
     position:absolute;
-    bottom:44px;
+    inset:-30%;
+    background:radial-gradient(circle at 50% 50%,
+      rgba(255,140,70,0.00) 0%,
+      rgba(255,140,70,0.18) 34%,
+      rgba(0,0,0,0.0) 62%);
+    opacity:0;
+    transform:scale(0.85);
+    filter:blur(10px);
+    pointer-events:none;
+  }
+
+  /* fumaça densa saindo do rasgo (overlay) */
+  .portalSmoke{
+    position:absolute;
+    inset:-20%;
+    background:
+      radial-gradient(circle at 50% 55%, rgba(255,255,255,0.08), transparent 55%),
+      radial-gradient(circle at 45% 50%, rgba(255,255,255,0.06), transparent 60%),
+      radial-gradient(circle at 55% 50%, rgba(255,255,255,0.05), transparent 60%);
+    opacity:0;
+    filter:blur(12px);
+    transform:scale(0.95);
+    pointer-events:none;
+  }
+
+  /* texto minimal, nada “UI” */
+  .hint{
+    position:absolute;
     left:50%;
-    width:min(560px, 86vw);
-    height:1px;
+    bottom:30px;
     transform:translateX(-50%);
-    background:linear-gradient(90deg, transparent, var(--gold), transparent);
-    opacity:.55;
-  }
-  .title{
-    position:absolute;
-    bottom:24px;
-    width:100%;
-    text-align:center;
+    z-index:4;
     font-size:12px;
     letter-spacing:6px;
     text-transform:uppercase;
-    color:rgba(220,190,110,0.22);
-  }
-  .subtitle{
-    position:absolute;
-    bottom:6px;
-    width:100%;
-    text-align:center;
-    font-size:12px;
-    letter-spacing:4px;
-    text-transform:uppercase;
-    color:rgba(255,255,255,0.18);
-  }
-
-  /* ===== Slash diagonal + flash ===== */
-  .flash{
-    position:fixed; inset:0;
-    z-index:12;
+    color:rgba(255,255,255,0.14);
+    user-select:none;
     pointer-events:none;
-    opacity:0;
-    background:#fff;
   }
 
-  .slash{
-    position:fixed;
-    inset:-35%;
-    z-index:11;
-    pointer-events:none;
-    opacity:0;
-    transform:rotate(-18deg) translateX(-55%);
-    background:
-      linear-gradient(90deg,
-        transparent 0%,
-        rgba(255,210,160,0.12) 42%,
-        rgba(255,160,90,0.78) 50%,
-        rgba(255,210,160,0.12) 58%,
-        transparent 100%);
-    filter:blur(0.25px);
-  }
+  /* ===== Clique: fases ===== */
 
-  /* ===== Rasgo via clip-path (irregular) =====
-     A gente “abre” a página principal revelando o vídeo por trás.
-  */
-  .tearMask{
-    position:fixed; inset:0;
-    z-index:10;
-    pointer-events:none;
-    background:transparent;
-    /* Começa fechado: tudo coberto (entry visível) */
-    clip-path:polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
-
-  /* transição: abre uma fenda irregular no diagonal */
-  body.ripping #entry{
-    /* entry fica por cima, mas vamos apagar rápido depois */
-  }
-
-  body.slash .flash{
-    animation:flash 180ms ease forwards;
-  }
-  @keyframes flash{
-    0%{opacity:0}
-    35%{opacity:0.55}
-    100%{opacity:0}
-  }
-
-  body.slash .slash{
+  /* 1) portal aparece */
+  body.portalOn .portal{
     opacity:1;
-    animation:slashMove 240ms ease forwards;
-  }
-  @keyframes slashMove{
-    0%{transform:rotate(-18deg) translateX(-65%)}
-    100%{transform:rotate(-18deg) translateX(65%)}
+    transform:scale(1);
   }
 
-  /* clip-path abrindo (rasgo brutal irregular) */
-  body.ripping .tearMask{
-    animation:tearOpen 520ms cubic-bezier(.12,.92,.12,1) forwards;
+  /* 2) rasgo abre verticalmente (irregular) */
+  body.portalOpen .portalCore{
+    animation:tearOpen 760ms cubic-bezier(.12,.92,.12,1) forwards;
   }
   @keyframes tearOpen{
     0%{
-      clip-path:polygon(0 0,100% 0,100% 100%,0 100%);
+      clip-path:polygon(49.5% 0%, 50.5% 0%, 51% 18%, 50.2% 36%, 51% 54%, 50.2% 72%, 50.8% 100%, 49.2% 100%, 49.8% 72%, 49% 54%, 49.8% 36%, 49% 18%);
     }
-    55%{
-      /* fenda diagonal irregular */
+    60%{
       clip-path:polygon(
-        0 0,
-        100% 0,
-        100% 100%,
-        0 100%,
-        0 0,
-        42% 0,
-        48% 14%,
-        52% 28%,
-        49% 44%,
-        56% 58%,
-        50% 72%,
-        58% 86%,
-        52% 100%,
-        42% 100%,
-        46% 86%,
-        40% 70%,
-        45% 54%,
-        38% 40%,
-        44% 26%,
-        39% 12%
+        46% 0%,
+        54% 0%,
+        56% 16%,
+        53% 30%,
+        57% 46%,
+        52% 62%,
+        58% 78%,
+        54% 100%,
+        46% 100%,
+        42% 78%,
+        48% 62%,
+        43% 46%,
+        47% 30%,
+        44% 16%
       );
     }
     100%{
-      /* abre geral: remove entry (revela vídeo) */
+      /* abre grande mas ainda dentro do portal */
       clip-path:polygon(
-        -10% -10%,
-        110% -10%,
-        110% 110%,
-        -10% 110%,
-        -10% -10%
+        18% 0%,
+        82% 0%,
+        86% 14%,
+        78% 26%,
+        88% 42%,
+        74% 58%,
+        90% 76%,
+        82% 100%,
+        18% 100%,
+        10% 76%,
+        26% 58%,
+        12% 42%,
+        22% 26%,
+        14% 14%
       );
     }
   }
 
-  /* some a entry depois da rasgada */
+  /* 3) glow + fumaça densa “saindo” */
+  body.portalOpen .portalGlow{
+    opacity:1;
+    transform:scale(1.05);
+    transition:opacity 520ms ease, transform 720ms cubic-bezier(.12,.92,.12,1);
+  }
+  body.portalOpen .portalSmoke{
+    opacity:1;
+    transform:scale(1.08);
+    transition:opacity 520ms ease, transform 820ms cubic-bezier(.12,.92,.12,1);
+  }
+
+  /* 4) portal expande pra ocupar a tela */
+  body.portalExpand .portal{
+    width:120vw;
+    height:120vh;
+    transition:width 900ms cubic-bezier(.12,.92,.12,1), height 900ms cubic-bezier(.12,.92,.12,1), transform 900ms cubic-bezier(.12,.92,.12,1), opacity 700ms ease;
+    transform:scale(1);
+  }
+
+  /* 5) some a entry e revela vídeo */
   body.entered #entry{
     opacity:0;
     pointer-events:none;
-    transition:opacity 380ms ease;
+    transition:opacity 600ms ease;
   }
 
-  /* acessibilidade */
   @media (prefers-reduced-motion: reduce){
-    .warrior{animation:none}
-    body.slash .slash, body.slash .flash{animation:none; opacity:1}
-    body.ripping .tearMask{animation:none; clip-path:none}
+    body.portalOpen .portalCore{animation:none}
   }
 </style>
 </head>
 
 <body>
-  <!-- página principal -->
   <video
     id="mainVideo"
     src="https://files.catbox.moe/klaol5.webm"
@@ -272,108 +228,40 @@
     loop
   ></video>
 
-  <!-- máscara do rasgo (abre pra revelar o vídeo por trás) -->
-  <div class="tearMask" aria-hidden="true"></div>
-
-  <!-- entry -->
-  <section id="entry" aria-label="Entrada Shadow Fight 2">
+  <section id="entry" aria-label="Entrada atmosférica Shadow Fight 2">
     <canvas id="fx"></canvas>
-    <div class="ground" aria-hidden="true"></div>
 
-    <div class="stage">
-      <!-- SILHUETA CENTRAL ÚNICA (SVG brushy, sem círculos perfeitos) -->
-      <svg class="warrior" viewBox="0 0 260 360" aria-hidden="true">
-        <!-- capa/fumaça atrás (silhueta irregular) -->
-        <path d="M68 128
-                 C50 170, 52 220, 78 264
-                 C94 292, 92 330, 60 352
-                 L196 352
-                 C170 332, 166 298, 182 270
-                 C210 224, 212 176, 192 138
-                 C168 98, 112 92, 68 128 Z"
-              fill="#000"/>
-
-        <!-- tronco -->
-        <path d="M118 112
-                 C96 124, 92 148, 96 176
-                 L102 236
-                 C104 262, 94 286, 84 304
-                 C78 316, 82 328, 100 338
-                 L160 338
-                 C178 328, 182 316, 176 304
-                 C166 286, 156 262, 158 236
-                 L164 176
-                 C168 148, 164 124, 142 112
-                 C132 106, 128 106, 118 112 Z"
-              fill="#000"/>
-
-        <!-- cabeça -->
-        <path d="M130 58
-                 C112 58, 98 74, 98 92
-                 C98 112, 112 126, 130 126
-                 C148 126, 162 112, 162 92
-                 C162 74, 148 58, 130 58 Z"
-              fill="#000"/>
-
-        <!-- braço segurando espada -->
-        <path d="M164 150
-                 C182 154, 194 166, 200 182
-                 C206 200, 198 212, 184 210
-                 C172 208, 166 196, 160 186 Z"
-              fill="#000"/>
-
-        <!-- perna esquerda -->
-        <path d="M112 238
-                 C98 268, 96 300, 104 338
-                 L124 338
-                 C124 304, 126 274, 132 246 Z"
-              fill="#000"/>
-
-        <!-- perna direita -->
-        <path d="M148 238
-                 C156 272, 158 304, 158 338
-                 L178 338
-                 C186 300, 184 268, 168 238 Z"
-              fill="#000"/>
-
-        <!-- espada (katana simples, sem look moderno) -->
-        <path d="M198 176 L244 120
-                 C248 114, 246 108, 240 104
-                 C234 100, 228 102, 224 108
-                 L180 164 Z"
-              fill="#000"/>
-
-        <!-- guarda da espada -->
-        <path d="M184 166 L202 178 L194 188 L176 176 Z" fill="#000"/>
-
-        <!-- olhos laranja quase invisíveis (vida sutil) -->
-        <circle cx="122" cy="88" r="1.8" fill="rgba(255,140,70,0.35)"/>
-        <circle cx="138" cy="88" r="1.8" fill="rgba(255,140,70,0.35)"/>
-      </svg>
-
-      <div class="hudline" aria-hidden="true"></div>
-      <div class="title">DESPERTE A SOMBRA</div>
-      <div class="subtitle">CLIQUE PARA ENTRAR</div>
+    <div class="portalWrap" aria-hidden="true">
+      <div class="portal" id="portal">
+        <div class="portalCore" id="portalCore">
+          <div class="portalGlow"></div>
+          <div class="portalSmoke"></div>
+        </div>
+      </div>
     </div>
 
-    <div class="slash" aria-hidden="true"></div>
-    <div class="flash" aria-hidden="true"></div>
+    <div class="hint">CLIQUE PARA ENTRAR</div>
   </section>
 
 <script>
   const entry = document.getElementById("entry");
   const mainVideo = document.getElementById("mainVideo");
 
-  // ===== FX contínuo: fumaça/poeira + brasas laranja =====
+  // ===== Canvas FX: fumaça sutil + brasas pequenas =====
   const canvas = document.getElementById("fx");
   const ctx = canvas.getContext("2d", { alpha:true });
+
   let W=0,H=0,DPR=1;
+  const rand=(a,b)=>Math.random()*(b-a)+a;
+
+  // estado para “espiral” ao clicar
+  let spiral = 0;          // 0 -> 1
+  let spiralTarget = 0;    // vai pra 1 no clique
 
   const smoke = [];
   const embers = [];
-  const SMOKE_N = 70;
-  const EMBER_N = 120;
-  const rand=(a,b)=>Math.random()*(b-a)+a;
+  const SMOKE_N = 55;
+  const EMBER_N = 110;
 
   function resize(){
     DPR = devicePixelRatio || 1;
@@ -387,23 +275,25 @@
     return {
       x: rand(-W*0.1, W*1.1),
       y: H + rand(0,H*0.2),
-      r: rand(24, 84)*DPR,
-      vy: rand(0.14, 0.55)*DPR,
-      vx: rand(0.06, 0.22)*DPR,     // vento lateral
-      a: rand(0.012, 0.055),
-      wob: rand(0.0015, 0.006),
+      r: rand(26, 92)*DPR,
+      vy: rand(0.10, 0.45)*DPR,
+      vx: rand(-0.08, 0.18)*DPR,   // drift leve
+      a: rand(0.010, 0.050),
+      phase: rand(0, Math.PI*2),
+      wob: rand(0.0012, 0.0045),
       life: rand(0.7, 1.25)
     };
   }
+
   function spawnEmber(){
     return {
       x: rand(-W*0.1, W*1.1),
       y: H + rand(0,H*0.25),
-      r: rand(0.6, 2.6)*DPR,
-      vy: rand(0.35, 1.45)*DPR,
-      vx: rand(0.10, 0.70)*DPR,     // vento mais forte
-      a: rand(0.03, 0.22),
-      wob: rand(0.002, 0.01),
+      r: rand(0.6, 2.0)*DPR,
+      vy: rand(0.22, 0.85)*DPR,
+      vx: rand(-0.10, 0.30)*DPR,
+      a: rand(0.02, 0.12),
+      wob: rand(0.0015, 0.008),
       life: rand(0.7, 1.25)
     };
   }
@@ -411,54 +301,95 @@
   for(let i=0;i<SMOKE_N;i++) smoke.push(spawnSmoke());
   for(let i=0;i<EMBER_N;i++) embers.push(spawnEmber());
 
+  function lerp(a,b,t){ return a + (b-a)*t; }
+
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // fumaça (cinza quente) + toque laranja
+    // aproxima espiral para o alvo (clica -> 1)
+    spiral = lerp(spiral, spiralTarget, 0.02);
+
+    const cx = W*0.5;
+    const cy = H*0.52;
+
+    // FUMAÇA
     for(const s of smoke){
-      s.x += s.vx + Math.sin(s.y*s.wob)*(0.35*DPR);
+      // drift base
+      s.x += s.vx + Math.sin((s.y*s.wob)+s.phase)*(0.22*DPR);
       s.y -= s.vy;
+
+      // força de espiral: puxa pro centro e gira
+      if(spiral > 0.001){
+        const dx = s.x - cx;
+        const dy = s.y - cy;
+        const dist = Math.max(40*DPR, Math.hypot(dx,dy));
+        // swirl tangencial (gira) + pull radial (aproxima)
+        const tang = 0.55 * spiral * (120*DPR / dist);
+        const pull = 0.18 * spiral * (140*DPR / dist);
+
+        // tangente: (-dy, dx)
+        s.x += (-dy/dist) * tang;
+        s.y += ( dx/dist) * tang;
+
+        // puxa pro centro (reduz dist)
+        s.x += (-dx/dist) * pull;
+        s.y += (-dy/dist) * pull;
+      }
+
       const a = Math.max(0, Math.min(0.10, s.a))*s.life;
 
       ctx.beginPath();
       ctx.fillStyle = `rgba(220, 210, 200, ${a})`;
-      ctx.shadowColor = `rgba(255, 140, 70, ${a*0.35})`;
-      ctx.shadowBlur = 18*DPR;
+      ctx.shadowColor = `rgba(255, 140, 70, ${a*0.25})`;
+      ctx.shadowBlur = 16*DPR;
       ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
       ctx.fill();
       ctx.shadowBlur = 0;
 
-      if(s.y < -100){
+      if(s.y < -140 || s.x < -200 || s.x > W+200){
         Object.assign(s, spawnSmoke());
         s.y = H + rand(0,H*0.2);
         s.x = rand(-W*0.1, W*1.1);
       }
     }
 
-    // brasas
+    // BRASAS
     for(const p of embers){
-      p.x += p.vx + Math.sin(p.y*p.wob)*(0.35*DPR);
+      p.x += p.vx + Math.sin(p.y*p.wob)*(0.20*DPR);
       p.y -= p.vy;
 
-      const a = Math.max(0, Math.min(0.35, p.a))*p.life;
+      if(spiral > 0.001){
+        const dx = p.x - cx;
+        const dy = p.y - cy;
+        const dist = Math.max(60*DPR, Math.hypot(dx,dy));
+        const tang = 0.85 * spiral * (160*DPR / dist);
+        const pull = 0.10 * spiral * (120*DPR / dist);
+
+        p.x += (-dy/dist) * tang;
+        p.y += ( dx/dist) * tang;
+        p.x += (-dx/dist) * pull;
+        p.y += (-dy/dist) * pull;
+      }
+
+      const a = Math.max(0, Math.min(0.30, p.a))*p.life;
 
       ctx.beginPath();
       ctx.fillStyle = `rgba(255, 140, 70, ${a*0.55})`;
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
       ctx.fill();
 
-      // trilha curta
+      // trilha leve
       ctx.beginPath();
-      ctx.strokeStyle = `rgba(255, 210, 150, ${a*0.18})`;
-      ctx.lineWidth = p.r*1.2;
+      ctx.strokeStyle = `rgba(255, 210, 150, ${a*0.14})`;
+      ctx.lineWidth = p.r*1.1;
       ctx.moveTo(p.x, p.y);
       ctx.lineTo(p.x - p.vx*10, p.y + p.vy*10);
       ctx.stroke();
 
-      if(p.y < -80 || p.x > W+120){
+      if(p.y < -120 || p.x < -240 || p.x > W+240){
         Object.assign(p, spawnEmber());
         p.y = H + rand(0,H*0.25);
-        p.x = rand(-W*0.1, W*0.35);
+        p.x = rand(-W*0.1, W*1.1);
       }
     }
 
@@ -466,71 +397,32 @@
   }
   draw();
 
-  // ===== som de corte (WebAudio) =====
-  function playSlash(){
-    try{
-      const AC = window.AudioContext || window.webkitAudioContext;
-      const ac = new AC();
-      const now = ac.currentTime;
-
-      const len = Math.floor(ac.sampleRate * 0.16);
-      const buf = ac.createBuffer(1, len, ac.sampleRate);
-      const d = buf.getChannelData(0);
-      for(let i=0;i<d.length;i++){
-        d[i] = (Math.random()*2-1) * (1 - i/d.length);
-      }
-
-      const noise = ac.createBufferSource(); noise.buffer = buf;
-
-      const hp = ac.createBiquadFilter();
-      hp.type = "highpass";
-      hp.frequency.setValueAtTime(650, now);
-
-      const g = ac.createGain();
-      g.gain.setValueAtTime(0.0001, now);
-      g.gain.exponentialRampToValueAtTime(0.18, now+0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, now+0.16);
-
-      noise.connect(hp); hp.connect(g); g.connect(ac.destination);
-
-      const osc = ac.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(520, now);
-      osc.frequency.exponentialRampToValueAtTime(210, now+0.12);
-
-      const og = ac.createGain();
-      og.gain.setValueAtTime(0.0001, now);
-      og.gain.exponentialRampToValueAtTime(0.10, now+0.02);
-      og.gain.exponentialRampToValueAtTime(0.0001, now+0.14);
-
-      osc.connect(og); og.connect(ac.destination);
-
-      noise.start(now); noise.stop(now+0.16);
-      osc.start(now); osc.stop(now+0.14);
-
-      setTimeout(()=>ac.close().catch(()=>{}), 600);
-    }catch(e){}
-  }
-
-  // ===== clique -> slash -> rasgo -> vídeo =====
+  // ===== clique -> espiral -> portal -> rasgo -> expande -> vídeo =====
   let started=false;
+
   function start(){
     if(started) return;
     started=true;
 
-    // play dentro do gesto do clique
+    // começa espiral
+    spiralTarget = 1;
+
+    // começa vídeo no gesto do clique
     mainVideo.play().catch(()=>{});
 
-    document.body.classList.add("slash");
-    playSlash();
+    document.body.classList.add("portalOn");
 
-    setTimeout(()=>document.body.classList.add("ripping"), 140);
+    // abre o rasgo
+    setTimeout(()=>document.body.classList.add("portalOpen"), 220);
 
-    // entra
+    // expande pra tela
+    setTimeout(()=>document.body.classList.add("portalExpand"), 780);
+
+    // entra no vídeo
     setTimeout(()=>{
       document.body.classList.add("entered");
-      setTimeout(()=>{ entry.style.display="none"; }, 650);
-    }, 820);
+      setTimeout(()=>{ entry.style.display="none"; }, 800);
+    }, 1450);
   }
 
   entry.addEventListener("pointerdown", start);
