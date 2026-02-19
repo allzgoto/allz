@@ -29,10 +29,11 @@
       opacity: 0;
       transition: opacity 450ms ease;
       background: #000;
+      z-index: 1;
     }
     .bg.is-active { opacity: 1; }
 
-    /* Camada inicial (portal central) */
+    /* Intro com portal */
     .intro {
       position: absolute;
       inset: 0;
@@ -43,12 +44,9 @@
       transition: opacity 450ms ease;
       z-index: 2;
     }
-    .intro.is-hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+    .intro.is-hidden { opacity: 0; pointer-events: none; }
 
-    /* Botão/portal */
+    /* Portal central */
     .portal {
       width: min(320px, 70vw);
       aspect-ratio: 1 / 1;
@@ -56,12 +54,10 @@
       overflow: hidden;
       cursor: pointer;
       position: relative;
-
-      /* atmosfera mínima */
+      border: 1px solid rgba(255,255,255,0.12);
       box-shadow:
         0 0 30px rgba(255,255,255,0.08),
         0 0 80px rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.12);
       transform: translateZ(0);
       transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
     }
@@ -80,7 +76,6 @@
       display: block;
     }
 
-    /* leve vinheta só pra não ficar "clean" */
     .vignette {
       position: absolute;
       inset: 0;
@@ -89,14 +84,12 @@
       background: radial-gradient(circle at center, rgba(0,0,0,0) 40%, rgba(0,0,0,0.65) 100%);
     }
 
-    /* Anti-seleção */
     .noselect { user-select: none; -webkit-user-select: none; }
   </style>
 </head>
 
 <body>
   <main class="stage noselect">
-    <!-- Vídeo principal (começa invisível, entra depois) -->
     <video
       id="mainVideo"
       class="bg"
@@ -105,9 +98,8 @@
       preload="auto"
     ></video>
 
-    <!-- Intro com portal -->
     <section id="intro" class="intro">
-      <div id="portal" class="portal" aria-label="Ativar portal" role="button" tabindex="0">
+      <div id="portal" class="portal" role="button" tabindex="0" aria-label="Ativar portal">
         <video
           id="portalVideo"
           src="https://files.catbox.moe/5ci6gd.mp4"
@@ -127,60 +119,93 @@
     const portalVideo = document.getElementById("portalVideo");
     const mainVideo = document.getElementById("mainVideo");
 
-    let started = false;
+    let running = false;
+    let fallbackArmed = false;
 
-    // Garante que o portal fica parado no primeiro frame (não autoplay)
-    // e que o browser carrega dados suficientes pra exibir o frame inicial.
     function holdFirstFrame() {
-      // Alguns browsers precisam de um "seek" pra cravar no 0 exato.
+      // deixa parado no frame 0
       try { portalVideo.currentTime = 0; } catch (e) {}
       portalVideo.pause();
     }
 
+    // garante frame inicial assim que carregar dados
     portalVideo.addEventListener("loadeddata", holdFirstFrame, { once: true });
 
-    async function startSequence() {
-      if (started) return;
-      started = true;
-
-      // Toca a animação do portal
-      portalVideo.muted = true; // só pra garantir que não bloqueia play
-      try {
-        await portalVideo.play();
-      } catch (err) {
-        // Se o browser bloquear, desbloqueia com um "clique" já ocorreu,
-        // então normalmente não cai aqui — mas fica seguro.
-        console.warn("Play do portal falhou:", err);
-      }
-    }
-
     function goToMainVideo() {
-      // Some com a intro
       intro.classList.add("is-hidden");
 
-      // Mostra e toca o vídeo principal
       mainVideo.classList.add("is-active");
-      mainVideo.muted = false;
       mainVideo.loop = true;
 
       mainVideo.play().catch(err => {
         console.warn("Play do vídeo principal falhou:", err);
       });
 
-      // Tenta fullscreen (pode falhar dependendo do browser)
+      // fullscreen (tentativa; pode falhar)
       const el = document.documentElement;
       if (el.requestFullscreen) el.requestFullscreen().catch(() => {});
     }
 
-    // Quando a animação do portal acabar, entra no vídeo principal
+    function armFallbackEndCheck() {
+      if (fallbackArmed) return;
+      fallbackArmed = true;
+
+      const tick = () => {
+        if (!running) return;
+
+        const d = portalVideo.duration;
+        const t = portalVideo.currentTime;
+
+        // quando estiver praticamente no fim, troca
+        if (Number.isFinite(d) && d > 0 && t >= d - 0.08) {
+          running = false;
+          goToMainVideo();
+          return;
+        }
+
+        requestAnimationFrame(tick);
+      };
+
+      requestAnimationFrame(tick);
+    }
+
+    async function startSequence() {
+      if (running) return;
+      running = true;
+
+      // reseta e tenta tocar
+      try { portalVideo.currentTime = 0; } catch (e) {}
+
+      // se metadados ainda não chegaram, espera um pouquinho
+      if (portalVideo.readyState < 2) {
+        await new Promise(resolve => {
+          const onReady = () => {
+            portalVideo.removeEventListener("loadedmetadata", onReady);
+            resolve();
+          };
+          portalVideo.addEventListener("loadedmetadata", onReady, { once: true });
+        });
+        try { portalVideo.currentTime = 0; } catch (e) {}
+      }
+
+      try {
+        await portalVideo.play();
+        armFallbackEndCheck();
+      } catch (err) {
+        // IMPORTANTÍSSIMO: se falhar, libera pra clicar de novo
+        running = false;
+        console.warn("Play do portal falhou:", err);
+      }
+    }
+
+    // caminho ideal: ended
     portalVideo.addEventListener("ended", () => {
+      if (!running) return;
+      running = false;
       goToMainVideo();
     });
 
-    // Clique no portal
     portal.addEventListener("click", startSequence);
-
-    // Acessibilidade: Enter/Space no "botão"
     portal.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
