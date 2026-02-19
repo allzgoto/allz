@@ -3,22 +3,25 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Fight — Entry v2</title>
+<title>Shadow Fight — Entry v3</title>
 
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;background:#000;overflow:hidden}
 
-  /* Vídeo principal (atrás, pronto pra revelar) */
+  /* Vídeo principal atrás (não aparece até entrar) */
   #mainVideo{
     position:fixed; inset:0;
     width:100%; height:100%;
     object-fit:cover;
     z-index:0;
-    filter:contrast(1.06) saturate(0.9);
+    opacity:0;
+    transition:opacity 700ms ease;
+    filter:contrast(1.06) saturate(0.92);
   }
+  body.entered #mainVideo{ opacity:1; }
 
-  /* Tela de entrada */
+  /* Entry sempre vivo */
   #entry{
     position:fixed; inset:0;
     z-index:10;
@@ -30,40 +33,39 @@
     user-select:none;
   }
 
-  /* textura “grimório” + ruído fake */
+  /* textura “grimório” */
   #entry::before{
     content:"";
     position:absolute; inset:-60px;
     background:
       radial-gradient(circle at 20% 30%, rgba(255,255,255,0.07), transparent 36%),
       radial-gradient(circle at 85% 65%, rgba(255,255,255,0.04), transparent 44%),
-      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 14px),
-      repeating-linear-gradient(0deg, rgba(0,0,0,0.34) 0 1px, transparent 1px 3px);
-    opacity:.75;
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.022) 0 2px, transparent 2px 14px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.32) 0 1px, transparent 1px 3px);
+    opacity:.8;
     pointer-events:none;
     filter:blur(0.2px);
   }
 
-  /* vinheta + “fumaça” */
+  /* vinheta + fumaça */
   #entry::after{
     content:"";
     position:absolute; inset:0;
     background:
-      radial-gradient(circle at center, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.84) 100%),
+      radial-gradient(circle at center, rgba(0,0,0,0.0) 18%, rgba(0,0,0,0.82) 100%),
       radial-gradient(circle at 50% 40%, rgba(255,255,255,0.03), transparent 60%);
     pointer-events:none;
   }
 
-  /* Canvas de brasas */
+  /* Brasas sempre ativas */
   #embers{
     position:absolute; inset:0;
     z-index:2;
     pointer-events:none;
-    opacity:.9;
-    filter:blur(0.2px);
+    opacity:1;
   }
 
-  /* Sombras “demônios” (silhuetas abstratas) */
+  /* “Demônios”/sombras (idle) */
   .shadows{
     position:absolute; inset:0;
     z-index:1;
@@ -71,45 +73,75 @@
   }
   .shadow{
     position:absolute;
-    width:340px; height:520px;
-    background:radial-gradient(circle at 50% 30%, rgba(0,0,0,0.0) 0 40%, rgba(0,0,0,0.85) 65%);
+    width:420px; height:640px;
     border-radius:55% 45% 60% 40% / 55% 45% 55% 45%;
+    background:
+      radial-gradient(circle at 50% 25%, rgba(0,0,0,0) 0 42%, rgba(0,0,0,0.92) 68%),
+      radial-gradient(circle at 45% 30%, rgba(255,140,60,0.04), transparent 55%);
     filter:blur(18px);
-    opacity:.35;
+    opacity:.32;
+    animation:breath 6.4s ease-in-out infinite;
     transform:translateZ(0);
-    animation:floaty 9s ease-in-out infinite alternate;
   }
-  .shadow.s1{left:-60px; bottom:-120px; transform:rotate(-8deg);}
-  .shadow.s2{right:-80px; bottom:-160px; transform:rotate(10deg); animation-duration:11s; opacity:.28;}
-  @keyframes floaty{
-    from{transform:translateY(0) scale(1)}
-    to{transform:translateY(-16px) scale(1.02)}
+  .shadow.s1{left:-120px; bottom:-220px; transform:rotate(-10deg);}
+  .shadow.s2{right:-140px; bottom:-240px; transform:rotate(12deg); opacity:.26; animation-duration:7.6s;}
+  @keyframes breath{
+    0%,100%{transform:translateY(0) scale(1)}
+    50%{transform:translateY(-18px) scale(1.03)}
   }
 
-  /* Centro: selo/runa */
+  /* Olhos (bem sutil) */
+  .eyes{
+    position:absolute;
+    width:10px; height:10px;
+    border-radius:50%;
+    background:rgba(255,160,80,0.55);
+    box-shadow:0 0 14px rgba(255,160,80,0.22);
+    opacity:0.0;
+    animation:blink 5.8s ease-in-out infinite;
+  }
+  .s1 .eyes.e1{left:210px; top:260px}
+  .s1 .eyes.e2{left:240px; top:258px}
+  .s2 .eyes.e1{right:230px; top:270px}
+  .s2 .eyes.e2{right:260px; top:268px}
+  @keyframes blink{
+    0%,70%,100%{opacity:0}
+    78%{opacity:.55}
+    82%{opacity:.12}
+    86%{opacity:.55}
+    90%{opacity:0}
+  }
+
+  /* Centro: selo/runa + lore (idle) */
   .sigil{
     position:relative;
     z-index:5;
-    width:min(640px, 92vw);
+    width:min(720px, 92vw);
     text-align:center;
+    transform:translateZ(0);
   }
 
-  .sigil .mark{
-    width:220px; height:220px;
+  .mark{
+    width:240px; height:240px;
     margin:0 auto 16px;
     border-radius:50%;
     border:1px solid rgba(255,255,255,0.18);
     box-shadow:
-      0 0 55px rgba(255,160,80,0.06),
+      0 0 55px rgba(255,160,80,0.07),
       0 0 45px rgba(255,255,255,0.08);
     display:grid;
     place-items:center;
     position:relative;
     overflow:hidden;
+    animation:idlePulse 2.8s ease-in-out infinite;
+  }
+  @keyframes idlePulse{
+    0%,100%{transform:scale(1); filter:brightness(1)}
+    50%{transform:scale(1.015); filter:brightness(1.07)}
   }
 
-  /* runas girando + brilho pulsante */
-  .sigil .mark::before{
+  /* runas girando */
+  .mark::before{
     content:"";
     position:absolute; inset:16px;
     border-radius:50%;
@@ -117,69 +149,72 @@
     opacity:.85;
     animation:spin 10s linear infinite;
   }
-  .sigil .mark::after{
-    content:"";
-    position:absolute; inset:-40px;
-    background:
-      radial-gradient(circle at 50% 50%, rgba(255,140,60,0.10), transparent 55%),
-      radial-gradient(circle at 40% 60%, rgba(255,255,255,0.05), transparent 60%);
-    opacity:.7;
-    animation:pulse 2.6s ease-in-out infinite;
-  }
   @keyframes spin{to{transform:rotate(360deg)}}
-  @keyframes pulse{50%{opacity:.35}}
 
-  .sigil .icon{
-    font-size:28px;
+  /* brilho interno */
+  .mark::after{
+    content:"";
+    position:absolute; inset:-60px;
+    background:
+      radial-gradient(circle at 50% 55%, rgba(255,140,60,0.10), transparent 55%),
+      radial-gradient(circle at 40% 35%, rgba(255,255,255,0.05), transparent 65%);
+    opacity:.6;
+    animation:glow 3.2s ease-in-out infinite;
+  }
+  @keyframes glow{50%{opacity:.28}}
+
+  .icon{
+    font-size:30px;
     letter-spacing:6px;
-    color:rgba(255,255,255,0.78);
+    color:rgba(255,255,255,0.82);
     text-shadow:0 0 18px rgba(255,255,255,0.12);
   }
 
-  .sigil .title{
+  .title{
     font-family:serif;
     letter-spacing:12px;
-    color:rgba(255,255,255,0.44);
+    color:rgba(255,255,255,0.46);
     font-size:44px;
     margin-top:6px;
   }
-  .sigil .subtitle{
-    margin-top:10px;
-    letter-spacing:6px;
-    color:rgba(255,140,60,0.35);
+
+  .lore{
+    margin-top:12px;
+    letter-spacing:5px;
+    color:rgba(255,160,80,0.34);
     font-size:12px;
     text-transform:uppercase;
+    opacity:.9;
   }
-  .sigil .hint{
-    margin-top:16px;
+
+  .hint{
+    margin-top:18px;
     letter-spacing:4px;
     color:rgba(255,255,255,0.22);
     font-size:12px;
   }
 
-  /* Portão (duas folhas) */
+  /* Portão: só aparece no clique */
   .gate{
     position:absolute; inset:0;
     z-index:6;
     pointer-events:none;
     display:flex;
+    opacity:0;            /* <-- escondido no idle */
+    transition:opacity 200ms ease;
   }
   .gate .leaf{
     width:50%;
     height:100%;
     background:
-      radial-gradient(circle at 50% 40%, rgba(255,140,60,0.05), transparent 62%),
-      linear-gradient(to bottom, #060606, #000);
-    box-shadow:inset 0 0 160px rgba(0,0,0,0.9);
+      radial-gradient(circle at 50% 40%, rgba(255,140,60,0.06), transparent 62%),
+      linear-gradient(to bottom, #050505, #000);
+    box-shadow:inset 0 0 180px rgba(0,0,0,0.92);
   }
-  .gate .leaf.left{
-    border-right:1px solid rgba(255,255,255,0.05);
-  }
-  .gate .leaf.right{
-    border-left:1px solid rgba(255,255,255,0.05);
-  }
+  .gate .leaf.left{ border-right:1px solid rgba(255,255,255,0.05); }
+  .gate .leaf.right{ border-left:1px solid rgba(255,255,255,0.05); }
 
-  /* Linha de corte (faca) */
+  /* slash + flash */
   .slash{
     position:absolute;
     left:-30%;
@@ -192,10 +227,8 @@
     opacity:0;
     z-index:7;
     pointer-events:none;
-    filter:drop-shadow(0 0 14px rgba(255,180,110,0.16));
+    filter:drop-shadow(0 0 14px rgba(255,180,110,0.18));
   }
-
-  /* Flash */
   .flash{
     position:absolute; inset:0;
     background:#fff;
@@ -204,49 +237,41 @@
     pointer-events:none;
   }
 
-  /* Estado: iniciando */
+  /* clique -> sequência */
   body.opening #entry{ cursor:default; }
-
-  body.opening .sigil{
-    animation:fadeOut 520ms ease forwards;
-  }
+  body.opening .gate{ opacity:1; } /* agora aparece */
+  body.opening .sigil{ animation:fadeOut 520ms ease forwards; }
   @keyframes fadeOut{to{opacity:0; transform:translateY(10px)}}
 
-  body.opening .slash{
-    animation:slash 360ms ease forwards;
-  }
+  body.opening .slash{ animation:slash 360ms ease forwards; }
   @keyframes slash{
     0%{opacity:0; transform:rotate(-18deg) scaleX(0)}
     25%{opacity:1}
     100%{opacity:1; transform:rotate(-18deg) scaleX(1)}
   }
 
-  body.opening .flash{
-    animation:flash 260ms ease forwards;
-  }
+  body.opening .flash{ animation:flash 260ms ease forwards; }
   @keyframes flash{
     0%{opacity:0}
     35%{opacity:0.55}
     100%{opacity:0}
   }
 
-  body.opening .gate .leaf.left{
-    animation:openLeft 980ms cubic-bezier(.18,.92,.18,1) forwards;
-  }
-  body.opening .gate .leaf.right{
-    animation:openRight 980ms cubic-bezier(.18,.92,.18,1) forwards;
-  }
+  body.opening .gate .leaf.left{ animation:openLeft 980ms cubic-bezier(.18,.92,.18,1) forwards; }
+  body.opening .gate .leaf.right{ animation:openRight 980ms cubic-bezier(.18,.92,.18,1) forwards; }
   @keyframes openLeft{to{transform:translateX(-112%)}}
   @keyframes openRight{to{transform:translateX(112%)}}
 
+  /* some com entry depois */
   body.entered #entry{
     opacity:0;
     pointer-events:none;
-    transition:opacity 420ms ease;
+    transition:opacity 520ms ease;
   }
 
   @media (prefers-reduced-motion: reduce){
-    .sigil .mark::before{animation:none}
+    .mark::before{animation:none}
+    .mark, .shadow, .eyes{animation:none}
     body.opening .gate .leaf.left,
     body.opening .gate .leaf.right,
     body.opening .slash,
@@ -270,17 +295,19 @@
     <canvas id="embers"></canvas>
 
     <div class="shadows" aria-hidden="true">
-      <div class="shadow s1"></div>
-      <div class="shadow s2"></div>
+      <div class="shadow s1">
+        <div class="eyes e1"></div><div class="eyes e2"></div>
+      </div>
+      <div class="shadow s2">
+        <div class="eyes e1"></div><div class="eyes e2"></div>
+      </div>
     </div>
 
     <div class="sigil">
-      <div class="mark">
-        <div class="icon">⚔︎</div>
-      </div>
+      <div class="mark"><div class="icon">⚔︎</div></div>
       <div class="title">SHADOW FIGHT</div>
-      <div class="subtitle">as sombras observam</div>
-      <div class="hint">CLIQUE PARA ABRIR O PORTÃO</div>
+      <div class="lore" id="lore">o portão foi selado com sangue</div>
+      <div class="hint">CLIQUE PARA ENTRAR</div>
     </div>
 
     <div class="gate" aria-hidden="true">
@@ -295,55 +322,65 @@
 <script>
   const entry = document.getElementById("entry");
   const mainVideo = document.getElementById("mainVideo");
+  const lore = document.getElementById("lore");
+
   const canvas = document.getElementById("embers");
-  const ctx = canvas.getContext("2d", { alpha: true });
+  const ctx = canvas.getContext("2d", { alpha:true });
 
   let started = false;
-  let W = 0, H = 0;
+  let W=0,H=0;
   const embers = [];
-  const EMBER_COUNT = 90;
+  const EMBER_COUNT = 110;
+
+  const loreLines = [
+    "o portão foi selado com sangue",
+    "as sombras observam em silêncio",
+    "demônios sussurram sob a pele",
+    "cada golpe alimenta o vazio",
+    "não há luz onde a sombra reina"
+  ];
+  let loreIdx = 0;
 
   function resize(){
-    W = canvas.width = window.innerWidth * devicePixelRatio;
-    H = canvas.height = window.innerHeight * devicePixelRatio;
+    W = canvas.width = innerWidth * devicePixelRatio;
+    H = canvas.height = innerHeight * devicePixelRatio;
   }
-  window.addEventListener("resize", resize);
+  addEventListener("resize", resize);
   resize();
 
-  function rand(min, max){ return Math.random() * (max - min) + min; }
+  const rand = (a,b)=>Math.random()*(b-a)+a;
 
   function spawnEmber(){
     return {
       x: rand(0, W),
-      y: H + rand(0, H * 0.15),
-      r: rand(0.7, 2.2) * devicePixelRatio,
-      vy: rand(0.35, 1.25) * devicePixelRatio,
+      y: H + rand(0, H*0.25),
+      r: rand(0.7, 2.3) * devicePixelRatio,
+      vy: rand(0.35, 1.35) * devicePixelRatio,
       vx: rand(-0.25, 0.25) * devicePixelRatio,
-      a: rand(0.10, 0.35),
-      flick: rand(0.6, 1.4),
-      life: rand(0.6, 1.2)
+      a: rand(0.10, 0.42),
+      life: rand(0.6, 1.15),
+      wob: rand(0.002, 0.01)
     };
   }
 
   for(let i=0;i<EMBER_COUNT;i++) embers.push(spawnEmber());
 
-  function tick(){
+  function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // gradiente “fogo” bem sutil
-    const g = ctx.createRadialGradient(W*0.5, H*0.92, 0, W*0.5, H*0.92, H*0.65);
-    g.addColorStop(0, "rgba(255,140,60,0.06)");
+    // brilho de base (fogo no rodapé)
+    const g = ctx.createRadialGradient(W*0.5, H*0.92, 0, W*0.5, H*0.92, H*0.7);
+    g.addColorStop(0, "rgba(255,140,60,0.07)");
     g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0,0,W,H);
 
     for(const p of embers){
-      p.x += p.vx;
+      p.x += p.vx + Math.sin(p.y * p.wob) * (0.25*devicePixelRatio);
       p.y -= p.vy;
-      p.a += (Math.sin((p.y/H)*10) * 0.002) * p.flick;
+      const alpha = Math.max(0, Math.min(0.65, p.a)) * p.life;
 
-      const alpha = Math.max(0, Math.min(0.55, p.a)) * p.life;
-
+      // partícula
       ctx.beginPath();
       ctx.fillStyle = `rgba(255, 150, 80, ${alpha})`;
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
@@ -354,32 +391,39 @@
       ctx.strokeStyle = `rgba(255, 210, 140, ${alpha*0.35})`;
       ctx.lineWidth = p.r * 1.4;
       ctx.moveTo(p.x, p.y);
-      ctx.lineTo(p.x - p.vx*10, p.y + p.vy*10);
+      ctx.lineTo(p.x - p.vx*10, p.y + p.vy*12);
       ctx.stroke();
 
-      if(p.y < -40){
-        Object.assign(p, spawnEmber());
-      }
+      if(p.y < -60) Object.assign(p, spawnEmber());
     }
 
-    requestAnimationFrame(tick);
+    requestAnimationFrame(draw);
   }
-  tick();
+  draw();
+
+  // lore trocando no idle
+  setInterval(()=>{
+    if (started) return;
+    loreIdx = (loreIdx + 1) % loreLines.length;
+    lore.style.opacity = "0";
+    setTimeout(()=>{
+      lore.textContent = loreLines[loreIdx];
+      lore.style.opacity = "0.9";
+    }, 220);
+  }, 2600);
 
   function startEntry(){
     if (started) return;
     started = true;
 
     document.body.classList.add("opening");
-
-    // play no gesto do clique (garante iniciar)
     mainVideo.play().catch(()=>{});
 
-    // remove a tela ao fim do portão
+    // entra no vídeo quando o portão terminar
     setTimeout(() => {
       document.body.classList.add("entered");
-      setTimeout(() => { entry.style.display = "none"; }, 520);
-    }, 980);
+      setTimeout(() => { entry.style.display = "none"; }, 600);
+    }, 1000);
   }
 
   entry.addEventListener("pointerdown", startEntry);
