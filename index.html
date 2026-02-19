@@ -3,212 +3,206 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Fight — Sigil Tear</title>
+<title>Shadow Fight — Eye Entry</title>
 
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:100%;height:100%;background:#000;overflow:hidden}
 
-  /* vídeo principal (atrás) */
+  /* vídeo principal atrás */
   #mainVideo{
     position:fixed; inset:0;
     width:100%; height:100%;
     object-fit:cover;
+    z-index:0;
     opacity:0;
     transition:opacity 700ms ease;
-    z-index:0;
     filter:contrast(1.06) saturate(0.92);
   }
   body.entered #mainVideo{opacity:1}
 
-  /* entry */
+  /* tela de entrada */
   #entry{
     position:fixed; inset:0;
     z-index:10;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:#040404;
+    background:#000;
+    display:grid;
+    place-items:center;
     cursor:pointer;
     user-select:none;
   }
 
-  /* textura leve */
+  /* vinheta + textura mínima */
   #entry::before{
     content:"";
-    position:absolute; inset:-60px;
+    position:absolute; inset:0;
     background:
-      radial-gradient(circle at 25% 35%, rgba(255,255,255,0.06), transparent 40%),
-      radial-gradient(circle at 80% 65%, rgba(255,255,255,0.04), transparent 48%),
-      repeating-linear-gradient(115deg, rgba(255,255,255,0.02) 0 2px, transparent 2px 14px);
-    opacity:.75;
-    pointer-events:none;
-    filter:blur(0.25px);
-  }
-
-  /* vinheta */
-  #entry::after{
-    content:"";
-    position:absolute; inset:0;
-    background:radial-gradient(circle at center, rgba(0,0,0,0.06) 22%, rgba(0,0,0,0.86) 100%);
+      radial-gradient(circle at center, rgba(120,40,255,0.06), transparent 55%),
+      radial-gradient(circle at center, rgba(0,0,0,0) 25%, rgba(0,0,0,0.85) 100%);
     pointer-events:none;
   }
 
-  /* fumaça/partículas */
-  #smoke{
-    position:absolute; inset:0;
-    z-index:1;
-    pointer-events:none;
-  }
-
-  /* container do selo */
-  .sigil-wrap{
+  /* O OLHO */
+  .eye-wrap{
     position:relative;
-    width:min(560px, 92vw);
-    height:min(560px, 92vw);
-    display:grid;
-    place-items:center;
-    z-index:5;
-  }
-
-  /* brilho ambiental */
-  .glow{
-    position:absolute;
-    inset:-80px;
-    background:
-      radial-gradient(circle at 50% 55%, rgba(255,120,60,0.12), transparent 55%),
-      radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05), transparent 60%);
-    opacity:.55;
-    filter:blur(8px);
-    animation:glowPulse 2.8s ease-in-out infinite;
-    pointer-events:none;
-  }
-  @keyframes glowPulse{
-    0%,100%{opacity:.42; transform:scale(0.98)}
-    50%{opacity:.65; transform:scale(1.02)}
-  }
-
-  /* “metades” do selo (pra rasgar no meio) */
-  .sigil-half{
-    position:absolute;
-    inset:0;
+    width:min(520px, 86vw);
+    aspect-ratio: 2.6 / 1;
     display:grid;
     place-items:center;
     transform:translateZ(0);
-    transition:transform 700ms cubic-bezier(.2,.9,.2,1), filter 700ms ease, opacity 700ms ease;
-    will-change:transform;
-  }
-  .sigil-half.left{ clip-path:inset(0 50% 0 0); }
-  .sigil-half.right{ clip-path:inset(0 0 0 50%); }
-
-  /* o SVG do selo (mesmo em ambas metades) */
-  .sigil{
-    width:78%;
-    height:78%;
-    filter:drop-shadow(0 0 18px rgba(255,150,80,0.10));
-    opacity:.92;
   }
 
-  /* linhas do selo */
-  .ring{ stroke:rgba(255,255,255,0.22); stroke-width:2.2; fill:none; }
-  .rune{ stroke:rgba(255,160,90,0.20); stroke-width:1.6; fill:none; stroke-linecap:round; stroke-linejoin:round; }
-  .runespin{ transform-origin:50% 50%; animation:spin 12s linear infinite; opacity:.9; }
-  @keyframes spin{ to{ transform:rotate(360deg); } }
-
-  /* rachaduras (invisíveis no idle) */
-  .crack{
-    stroke:rgba(255,255,255,0.55);
-    stroke-width:2.2;
-    fill:none;
-    stroke-linecap:round;
-    stroke-linejoin:round;
-    opacity:0;
-    stroke-dasharray:240;
-    stroke-dashoffset:240;
-  }
-
-  /* texto discreto */
-  .hint{
+  /* “glow roxo” ambiente */
+  .aura{
     position:absolute;
-    bottom:-6px;
-    width:100%;
-    text-align:center;
-    letter-spacing:5px;
-    font-size:12px;
-    color:rgba(255,255,255,0.22);
-    text-transform:uppercase;
-    z-index:6;
-  }
-
-  /* tremor e rachaduras ao clicar */
-  body.breaking .sigil-wrap{
-    animation:shake 480ms ease-in-out 1;
-  }
-  @keyframes shake{
-    0%{transform:translate(0)}
-    15%{transform:translate(-4px,2px)}
-    30%{transform:translate(5px,-2px)}
-    45%{transform:translate(-3px,1px)}
-    60%{transform:translate(3px,-1px)}
-    100%{transform:translate(0)}
-  }
-
-  body.breaking .crack{
-    opacity:1;
-    animation:drawCrack 520ms ease forwards;
-  }
-  @keyframes drawCrack{
-    to{ stroke-dashoffset:0; }
-  }
-
-  /* rasgo: metades afastam + escurece */
-  body.tearing .sigil-half.left{
-    transform:translateX(-110px) rotate(-2deg);
-    filter:brightness(0.9);
-  }
-  body.tearing .sigil-half.right{
-    transform:translateX(110px) rotate(2deg);
-    filter:brightness(0.9);
-  }
-
-  /* rasgo no meio */
-  .tear{
-    position:absolute;
-    top:0; left:50%;
-    width:10px; height:100%;
-    transform:translateX(-50%);
-    background:linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,0.95), rgba(0,0,0,0));
-    opacity:0;
-    z-index:7;
+    inset:-30%;
+    background:radial-gradient(circle at center, rgba(160,70,255,0.18), transparent 60%);
+    filter:blur(18px);
+    opacity:.45;
+    animation:auraPulse 2.6s ease-in-out infinite;
     pointer-events:none;
+  }
+  @keyframes auraPulse{
+    0%,100%{opacity:.35; transform:scale(0.98)}
+    50%{opacity:.55; transform:scale(1.02)}
+  }
+
+  /* Esclera/olho (forma base) */
+  .eye{
+    position:relative;
+    width:100%;
+    height:100%;
+    border-radius:999px;
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(180,90,255,0.18), rgba(0,0,0,0) 60%),
+      radial-gradient(circle at 50% 55%, rgba(255,255,255,0.06), transparent 58%),
+      linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.12));
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.10),
+      0 0 60px rgba(160,70,255,0.10),
+      inset 0 0 120px rgba(0,0,0,0.75);
+    transform:scale(0.98);
+    animation:idleBreath 2.8s ease-in-out infinite;
+  }
+  @keyframes idleBreath{
+    0%,100%{transform:scale(0.98)}
+    50%{transform:scale(1.00)}
+  }
+
+  /* Iris */
+  .iris{
+    position:absolute;
+    left:50%; top:50%;
+    width:38%;
+    aspect-ratio:1/1;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 0 22%, rgba(0,0,0,0.35) 48%, rgba(0,0,0,0.0) 60%),
+      radial-gradient(circle at 50% 50%, rgba(190,110,255,0.75), rgba(110,25,200,0.45) 55%, rgba(0,0,0,0.0) 72%),
+      repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,0.10) 0 2px, rgba(0,0,0,0) 2px 7px);
+    filter:drop-shadow(0 0 18px rgba(170,80,255,0.20));
+    opacity:.95;
+  }
+
+  /* Pupila (portal) */
+  .pupil{
+    position:absolute;
+    left:50%; top:50%;
+    width:14%;
+    aspect-ratio:1/1;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle at 50% 50%, #000 0 60%, rgba(0,0,0,0) 72%);
+    box-shadow:0 0 0 1px rgba(255,255,255,0.08);
+    animation:pupilIdle 2.2s ease-in-out infinite;
+  }
+  @keyframes pupilIdle{
+    0%,100%{transform:translate(-50%,-50%) scale(0.98)}
+    50%{transform:translate(-50%,-50%) scale(1.05)}
+  }
+
+  /* “reflexo” */
+  .shine{
+    position:absolute;
+    left:43%; top:42%;
+    width:12%;
+    aspect-ratio:1/1;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.25), rgba(255,255,255,0) 70%);
+    opacity:.65;
+    mix-blend-mode:screen;
     filter:blur(0.2px);
   }
-  body.tearing .tear{
-    opacity:1;
-    animation:tearGrow 520ms ease forwards;
+
+  /* Pálpebras (fechadas no idle -> abre no clique) */
+  .lid{
+    position:absolute;
+    left:-2%; width:104%;
+    height:52%;
+    background:radial-gradient(circle at 50% 100%, rgba(0,0,0,0.0), rgba(0,0,0,0.92) 75%), #000;
+    z-index:5;
+    pointer-events:none;
+    transition:transform 900ms cubic-bezier(.2,.9,.2,1);
   }
-  @keyframes tearGrow{
-    0%{width:8px}
-    100%{width:52px}
+  .lid.top{ top:-2%; transform:translateY(35%); }
+  .lid.bottom{ bottom:-2%; transform:translateY(-35%); }
+
+  /* texto */
+  .hint{
+    position:absolute;
+    bottom:-26px;
+    width:100%;
+    text-align:center;
+    font-size:12px;
+    letter-spacing:5px;
+    color:rgba(255,255,255,0.20);
+    text-transform:uppercase;
   }
 
-  /* flash + fade do entry */
+  /* Flash */
   .flash{
-    position:absolute; inset:0;
+    position:fixed; inset:0;
     background:#fff;
     opacity:0;
-    z-index:8;
+    z-index:12;
     pointer-events:none;
   }
-  body.tearing .flash{
-    animation:flash 220ms ease forwards;
+
+  /* ===== Sequência no clique ===== */
+
+  /* abre o olho */
+  body.opening .lid.top{ transform:translateY(-18%); }
+  body.opening .lid.bottom{ transform:translateY(18%); }
+
+  /* pupila vira portal (dilata + escurece) */
+  body.opening .pupil{
+    animation:none;
+    transition:transform 900ms cubic-bezier(.2,.9,.2,1), box-shadow 900ms ease;
+    transform:translate(-50%,-50%) scale(4.2);
+    box-shadow:0 0 0 2px rgba(255,255,255,0.10), 0 0 55px rgba(170,80,255,0.18);
+  }
+
+  /* “câmera entra no olho”: zoom no wrap */
+  body.zooming .eye-wrap{
+    transition:transform 900ms cubic-bezier(.12,.92,.12,1), filter 900ms ease;
+    transform:scale(2.6);
+    filter:blur(0.2px);
+  }
+
+  /* flash curtinho no corte */
+  body.cutting .flash{
+    animation:flash 230ms ease forwards;
   }
   @keyframes flash{
     0%{opacity:0}
-    40%{opacity:0.55}
+    35%{opacity:0.50}
     100%{opacity:0}
   }
 
+  /* some com entry */
   body.entered #entry{
     opacity:0;
     pointer-events:none;
@@ -216,13 +210,10 @@
   }
 
   @media (prefers-reduced-motion: reduce){
-    .runespin{animation:none}
-    body.breaking .sigil-wrap{animation:none}
-    body.breaking .crack{animation:none; stroke-dashoffset:0; opacity:1}
-    body.tearing .sigil-half.left,
-    body.tearing .sigil-half.right{transform:none}
-    body.tearing .tear{animation:none; opacity:1; width:52px}
-    body.tearing .flash{animation:none}
+    .aura,.eye,.pupil{animation:none}
+    body.opening .lid.top, body.opening .lid.bottom{transition:none}
+    body.opening .pupil{transition:none}
+    body.zooming .eye-wrap{transition:none; transform:scale(2.0)}
   }
 </style>
 </head>
@@ -237,218 +228,55 @@
     loop
   ></video>
 
-  <section id="entry" aria-label="Entrada">
-    <canvas id="smoke"></canvas>
+  <section id="entry" aria-label="Entrada do olho">
+    <div class="eye-wrap" id="eyeWrap">
+      <div class="aura"></div>
 
-    <div class="sigil-wrap" id="sigilWrap">
-      <div class="glow"></div>
+      <div class="eye">
+        <div class="iris"></div>
+        <div class="pupil" id="pupil"></div>
+        <div class="shine"></div>
 
-      <div class="sigil-half left">
-        <svg class="sigil" viewBox="0 0 200 200" aria-hidden="true">
-          <circle class="ring" cx="100" cy="100" r="86"></circle>
-          <circle class="ring" cx="100" cy="100" r="70" opacity="0.7"></circle>
-
-          <g class="runespin">
-            <path class="rune" d="M100 22 L108 34 L100 46 L92 34 Z"></path>
-            <path class="rune" d="M170 100 L158 108 L146 100 L158 92 Z"></path>
-            <path class="rune" d="M100 178 L92 166 L100 154 L108 166 Z"></path>
-            <path class="rune" d="M30 100 L42 92 L54 100 L42 108 Z"></path>
-
-            <path class="rune" d="M100 30 C120 52, 120 148, 100 170 C80 148, 80 52, 100 30" opacity="0.55"></path>
-            <path class="rune" d="M30 100 C52 78, 148 78, 170 100 C148 122, 52 122, 30 100" opacity="0.55"></path>
-          </g>
-
-          <!-- rachaduras (desenho simples, mas fica convincente com glow+shake) -->
-          <path class="crack" d="M100 40 L98 58 L110 74 L104 92 L116 112 L104 132 L112 154"></path>
-          <path class="crack" d="M88 52 L78 74 L86 94 L74 112 L84 132"></path>
-          <path class="crack" d="M118 62 L132 78 L124 96 L138 114 L126 134"></path>
-        </svg>
+        <div class="lid top"></div>
+        <div class="lid bottom"></div>
       </div>
 
-      <div class="sigil-half right">
-        <svg class="sigil" viewBox="0 0 200 200" aria-hidden="true">
-          <circle class="ring" cx="100" cy="100" r="86"></circle>
-          <circle class="ring" cx="100" cy="100" r="70" opacity="0.7"></circle>
-
-          <g class="runespin">
-            <path class="rune" d="M100 22 L108 34 L100 46 L92 34 Z"></path>
-            <path class="rune" d="M170 100 L158 108 L146 100 L158 92 Z"></path>
-            <path class="rune" d="M100 178 L92 166 L100 154 L108 166 Z"></path>
-            <path class="rune" d="M30 100 L42 92 L54 100 L42 108 Z"></path>
-
-            <path class="rune" d="M100 30 C120 52, 120 148, 100 170 C80 148, 80 52, 100 30" opacity="0.55"></path>
-            <path class="rune" d="M30 100 C52 78, 148 78, 170 100 C148 122, 52 122, 30 100" opacity="0.55"></path>
-          </g>
-
-          <path class="crack" d="M100 40 L98 58 L110 74 L104 92 L116 112 L104 132 L112 154"></path>
-          <path class="crack" d="M88 52 L78 74 L86 94 L74 112 L84 132"></path>
-          <path class="crack" d="M118 62 L132 78 L124 96 L138 114 L126 134"></path>
-        </svg>
-      </div>
-
-      <div class="tear" aria-hidden="true"></div>
-      <div class="flash" aria-hidden="true"></div>
-
-      <div class="hint">CLIQUE PARA QUEBRAR O SELO</div>
+      <div class="hint">CLIQUE — OLHO DA SOMBRA</div>
     </div>
+
+    <div class="flash" id="flash" aria-hidden="true"></div>
   </section>
 
 <script>
   const entry = document.getElementById("entry");
   const mainVideo = document.getElementById("mainVideo");
 
-  // ===== fumaça/partículas (idle) =====
-  const canvas = document.getElementById("smoke");
-  const ctx = canvas.getContext("2d", { alpha:true });
-  let W=0, H=0, DPR=1;
-  const puffs = [];
-  const PUFFS = 70;
-
-  function resize(){
-    DPR = devicePixelRatio || 1;
-    W = canvas.width = innerWidth * DPR;
-    H = canvas.height = innerHeight * DPR;
-  }
-  addEventListener("resize", resize);
-  resize();
-
-  const rand = (a,b)=>Math.random()*(b-a)+a;
-
-  function spawnPuff(){
-    return {
-      x: rand(0, W),
-      y: H + rand(0, H*0.2),
-      r: rand(18, 60) * DPR,
-      vy: rand(0.22, 0.65) * DPR,
-      vx: rand(-0.10, 0.10) * DPR,
-      a: rand(0.02, 0.07),
-      wob: rand(0.0015, 0.006),
-      life: rand(0.6, 1.2)
-    };
-  }
-
-  for(let i=0;i<PUFFS;i++) puffs.push(spawnPuff());
-
-  function drawSmoke(){
-    ctx.clearRect(0,0,W,H);
-
-    // leve “brasa” no rodapé
-    const g = ctx.createRadialGradient(W*0.5, H*0.95, 0, W*0.5, H*0.95, H*0.8);
-    g.addColorStop(0, "rgba(255,120,60,0.05)");
-    g.addColorStop(1, "rgba(0,0,0,0)");
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,W,H);
-
-    for(const s of puffs){
-      s.x += s.vx + Math.sin(s.y*s.wob) * (0.35*DPR);
-      s.y -= s.vy;
-      const alpha = Math.max(0, Math.min(0.12, s.a)) * s.life;
-
-      // “fumaça” (círculo blur via fill + shadow)
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-      ctx.shadowColor = `rgba(255,255,255,${alpha})`;
-      ctx.shadowBlur = 18 * DPR;
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      ctx.fill();
-      ctx.shadowBlur = 0;
-
-      if(s.y < -80){
-        Object.assign(s, spawnPuff());
-      }
-    }
-
-    requestAnimationFrame(drawSmoke);
-  }
-  drawSmoke();
-
-  // ===== som “metal/energia” via WebAudio (sem arquivo) =====
-  function playCrackSound(){
-    try{
-      const AC = window.AudioContext || window.webkitAudioContext;
-      const ac = new AC();
-
-      const now = ac.currentTime;
-
-      // ruído curto (energia)
-      const bufferSize = ac.sampleRate * 0.12;
-      const buffer = ac.createBuffer(1, bufferSize, ac.sampleRate);
-      const data = buffer.getChannelData(0);
-      for(let i=0;i<data.length;i++){
-        data[i] = (Math.random()*2-1) * (1 - i/data.length);
-      }
-      const noise = ac.createBufferSource();
-      noise.buffer = buffer;
-
-      const noiseGain = ac.createGain();
-      noiseGain.gain.setValueAtTime(0.0, now);
-      noiseGain.gain.linearRampToValueAtTime(0.18, now+0.01);
-      noiseGain.gain.exponentialRampToValueAtTime(0.0001, now+0.12);
-
-      // “metal” (senoide aguda decaindo)
-      const osc = ac.createOscillator();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(520, now);
-      osc.frequency.exponentialRampToValueAtTime(140, now+0.18);
-
-      const oscGain = ac.createGain();
-      oscGain.gain.setValueAtTime(0.0001, now);
-      oscGain.gain.exponentialRampToValueAtTime(0.12, now+0.02);
-      oscGain.gain.exponentialRampToValueAtTime(0.0001, now+0.20);
-
-      // filtro pra dar “ferro”
-      const filter = ac.createBiquadFilter();
-      filter.type = "bandpass";
-      filter.frequency.setValueAtTime(900, now);
-      filter.Q.setValueAtTime(6, now);
-
-      noise.connect(filter);
-      filter.connect(noiseGain);
-      noiseGain.connect(ac.destination);
-
-      osc.connect(oscGain);
-      oscGain.connect(ac.destination);
-
-      noise.start(now);
-      noise.stop(now + 0.13);
-
-      osc.start(now);
-      osc.stop(now + 0.22);
-
-      // fecha contexto depois
-      setTimeout(()=>ac.close().catch(()=>{}), 500);
-    }catch(e){}
-  }
-
-  // ===== sequência do clique =====
   let started = false;
 
-  function startSequence(){
+  function start(){
     if(started) return;
     started = true;
 
-    // inicia vídeo já no gesto do clique
+    // garante play no gesto do clique
     mainVideo.play().catch(()=>{});
 
-    // 1) treme + rachaduras
-    document.body.classList.add("breaking");
-    playCrackSound();
+    // 1) abre olho + pupila dilata
+    document.body.classList.add("opening");
 
-    // 2) rasga e abre
-    setTimeout(()=>{
-      document.body.classList.add("tearing");
-    }, 420);
+    // 2) zoom “entrando”
+    setTimeout(()=> document.body.classList.add("zooming"), 520);
 
-    // 3) corta pro vídeo
+    // 3) flash + corte pro vídeo
     setTimeout(()=>{
+      document.body.classList.add("cutting");
       document.body.classList.add("entered");
       setTimeout(()=>{ entry.style.display="none"; }, 650);
-    }, 1050);
+    }, 1200);
   }
 
-  entry.addEventListener("pointerdown", startSequence);
+  entry.addEventListener("pointerdown", start);
   entry.addEventListener("keydown", (e)=>{
-    if(e.key==="Enter" || e.key===" "){ e.preventDefault(); startSequence(); }
+    if(e.key==="Enter" || e.key===" "){ e.preventDefault(); start(); }
   });
   entry.tabIndex = 0;
 </script>
