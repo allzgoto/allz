@@ -12,6 +12,7 @@
   :root{
     --ember: rgba(255,140,70,0.9);
     --emberSoft: rgba(255,190,120,0.22);
+    --paperNoise: 0.06;
   }
 
   /* vídeo principal */
@@ -35,15 +36,29 @@
     user-select:none;
   }
 
-  /* vinheta forte */
+  /* vinheta forte + luz quente MUITO sutil */
   #entry::after{
     content:"";
     position:absolute; inset:0;
     pointer-events:none;
     background:
-      radial-gradient(circle at center, rgba(0,0,0,0.10) 18%, rgba(0,0,0,0.94) 100%),
-      radial-gradient(circle at 50% 90%, rgba(255,140,70,0.05), transparent 55%);
+      radial-gradient(circle at center, rgba(0,0,0,0.12) 18%, rgba(0,0,0,0.96) 100%),
+      radial-gradient(circle at 50% 85%, rgba(255,140,70,0.07), transparent 62%);
     z-index:5;
+  }
+
+  /* granulação (sem imagem externa) */
+  #entry::before{
+    content:"";
+    position:absolute; inset:0;
+    pointer-events:none;
+    opacity:var(--paperNoise);
+    mix-blend-mode:overlay;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 2px, transparent 4px),
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 3px, transparent 6px);
+    filter:blur(0.2px);
+    z-index:4;
   }
 
   /* canvas FX */
@@ -63,69 +78,33 @@
     pointer-events:none;
   }
 
-  /* “portal escuro” (não bonitinho) */
   .portal{
-    width:min(520px, 92vw);
-    height:min(420px, 72vh);
+    width:min(560px, 92vw);
+    height:min(520px, 78vh);
     opacity:0;
-    transform:scale(0.92);
-    transition:opacity 280ms ease, transform 520ms cubic-bezier(.12,.92,.12,1);
+    transform:scale(0.94);
+    transition:opacity 260ms ease, transform 520ms cubic-bezier(.12,.92,.12,1);
     filter:drop-shadow(0 0 34px rgba(255,140,70,0.10));
   }
 
-  /* miolo do portal: radial escuro + granulação falsa */
-  .portalCore{
-    width:100%; height:100%;
-    background:
-      radial-gradient(closest-side at 50% 50%,
-        rgba(0,0,0,0.0) 0%,
-        rgba(0,0,0,0.65) 38%,
-        rgba(0,0,0,0.92) 62%,
-        rgba(0,0,0,1) 100%);
-    position:relative;
-    /* rasgo começa fechado: uma linha vertical torta */
-    clip-path:polygon(49.5% 0%, 50.5% 0%, 51% 18%, 50.2% 36%, 51% 54%, 50.2% 72%, 50.8% 100%, 49.2% 100%, 49.8% 72%, 49% 54%, 49.8% 36%, 49% 18%);
-  }
-
-  /* brilho profundo laranja vindo de dentro */
-  .portalGlow{
-    position:absolute;
-    inset:-30%;
-    background:radial-gradient(circle at 50% 50%,
-      rgba(255,140,70,0.00) 0%,
-      rgba(255,140,70,0.18) 34%,
-      rgba(0,0,0,0.0) 62%);
-    opacity:0;
-    transform:scale(0.85);
-    filter:blur(10px);
-    pointer-events:none;
-  }
-
-  /* fumaça densa saindo do rasgo (overlay) */
-  .portalSmoke{
-    position:absolute;
-    inset:-20%;
-    background:
-      radial-gradient(circle at 50% 55%, rgba(255,255,255,0.08), transparent 55%),
-      radial-gradient(circle at 45% 50%, rgba(255,255,255,0.06), transparent 60%),
-      radial-gradient(circle at 55% 50%, rgba(255,255,255,0.05), transparent 60%);
-    opacity:0;
-    filter:blur(12px);
-    transform:scale(0.95);
-    pointer-events:none;
+  /* SVG ocupa toda a área do portal */
+  .portal svg{
+    width:100%;
+    height:100%;
+    display:block;
   }
 
   /* texto minimal, nada “UI” */
   .hint{
     position:absolute;
     left:50%;
-    bottom:30px;
+    bottom:28px;
     transform:translateX(-50%);
-    z-index:4;
+    z-index:6;
     font-size:12px;
     letter-spacing:6px;
     text-transform:uppercase;
-    color:rgba(255,255,255,0.14);
+    color:rgba(255,255,255,0.16);
     user-select:none;
     pointer-events:none;
   }
@@ -138,70 +117,25 @@
     transform:scale(1);
   }
 
-  /* 2) rasgo abre verticalmente (irregular) */
-  body.portalOpen .portalCore{
-    animation:tearOpen 760ms cubic-bezier(.12,.92,.12,1) forwards;
-  }
-  @keyframes tearOpen{
-    0%{
-      clip-path:polygon(49.5% 0%, 50.5% 0%, 51% 18%, 50.2% 36%, 51% 54%, 50.2% 72%, 50.8% 100%, 49.2% 100%, 49.8% 72%, 49% 54%, 49.8% 36%, 49% 18%);
-    }
-    60%{
-      clip-path:polygon(
-        46% 0%,
-        54% 0%,
-        56% 16%,
-        53% 30%,
-        57% 46%,
-        52% 62%,
-        58% 78%,
-        54% 100%,
-        46% 100%,
-        42% 78%,
-        48% 62%,
-        43% 46%,
-        47% 30%,
-        44% 16%
-      );
-    }
-    100%{
-      /* abre grande mas ainda dentro do portal */
-      clip-path:polygon(
-        18% 0%,
-        82% 0%,
-        86% 14%,
-        78% 26%,
-        88% 42%,
-        74% 58%,
-        90% 76%,
-        82% 100%,
-        18% 100%,
-        10% 76%,
-        26% 58%,
-        12% 42%,
-        22% 26%,
-        14% 14%
-      );
-    }
+  /* 2) rasgo abre (a máscara do SVG aumenta) */
+  body.portalOpen #tearRect{
+    /* abre bem */
+    transform:translate(50%, 50%) scaleX(1);
   }
 
-  /* 3) glow + fumaça densa “saindo” */
-  body.portalOpen .portalGlow{
-    opacity:1;
-    transform:scale(1.05);
-    transition:opacity 520ms ease, transform 720ms cubic-bezier(.12,.92,.12,1);
-  }
-  body.portalOpen .portalSmoke{
-    opacity:1;
-    transform:scale(1.08);
-    transition:opacity 520ms ease, transform 820ms cubic-bezier(.12,.92,.12,1);
-  }
+  /* 3) glow + fumaça aumentam */
+  body.portalOpen .portalGlow{ opacity:1; transform:scale(1.04); }
+  body.portalOpen .portalSmoke{ opacity:1; transform:scale(1.10); }
 
   /* 4) portal expande pra ocupar a tela */
   body.portalExpand .portal{
-    width:120vw;
-    height:120vh;
-    transition:width 900ms cubic-bezier(.12,.92,.12,1), height 900ms cubic-bezier(.12,.92,.12,1), transform 900ms cubic-bezier(.12,.92,.12,1), opacity 700ms ease;
+    width:130vw;
+    height:130vh;
+    transition:
+      width 900ms cubic-bezier(.12,.92,.12,1),
+      height 900ms cubic-bezier(.12,.92,.12,1),
+      transform 900ms cubic-bezier(.12,.92,.12,1),
+      opacity 700ms ease;
     transform:scale(1);
   }
 
@@ -212,8 +146,43 @@
     transition:opacity 600ms ease;
   }
 
+  /* ===== Portal look (orgânico, nada geométrico) ===== */
+  .portalCoreBg{
+    /* “buraco” escuro com borda quente difusa */
+    fill:url(#coreRadial);
+    filter:url(#softBloom);
+    opacity:0.98;
+  }
+
+  .portalGlow{
+    opacity:0;
+    transform-origin:center;
+    transform:scale(0.88);
+    transition:opacity 520ms ease, transform 720ms cubic-bezier(.12,.92,.12,1);
+    filter:url(#glowBloom);
+  }
+
+  .portalSmoke{
+    opacity:0;
+    transform-origin:center;
+    transform:scale(0.96);
+    transition:opacity 520ms ease, transform 820ms cubic-bezier(.12,.92,.12,1);
+    filter:url(#smokeBlur);
+  }
+
+  /* máscara do rasgo: começa quase fechada */
+  #tearRect{
+    transform-origin:center;
+    /* o rect é desenhado com width pequeno; aqui a gente escala no X */
+    transform:translate(50%, 50%) scaleX(0.10);
+    transition:transform 760ms cubic-bezier(.12,.92,.12,1);
+  }
+
+  /* acessibilidade */
   @media (prefers-reduced-motion: reduce){
-    body.portalOpen .portalCore{animation:none}
+    #tearRect{transition:none}
+    .portal{transition:none}
+    .portalGlow,.portalSmoke{transition:none}
   }
 </style>
 </head>
@@ -233,10 +202,87 @@
 
     <div class="portalWrap" aria-hidden="true">
       <div class="portal" id="portal">
-        <div class="portalCore" id="portalCore">
-          <div class="portalGlow"></div>
-          <div class="portalSmoke"></div>
-        </div>
+        <!-- Portal orgânico via SVG (turbulence + displacement) -->
+        <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <!-- fundo do “buraco” -->
+            <radialGradient id="coreRadial" cx="50%" cy="50%" r="65%">
+              <stop offset="0%"   stop-color="rgba(0,0,0,0.0)"/>
+              <stop offset="26%"  stop-color="rgba(0,0,0,0.55)"/>
+              <stop offset="56%"  stop-color="rgba(0,0,0,0.88)"/>
+              <stop offset="100%" stop-color="rgba(0,0,0,1)"/>
+            </radialGradient>
+
+            <!-- brilho quente vindo de dentro -->
+            <radialGradient id="innerGlow" cx="50%" cy="52%" r="55%">
+              <stop offset="0%"   stop-color="rgba(255,140,70,0.00)"/>
+              <stop offset="34%"  stop-color="rgba(255,140,70,0.22)"/>
+              <stop offset="62%"  stop-color="rgba(0,0,0,0.0)"/>
+            </radialGradient>
+
+            <!-- fumaça densa dentro do portal -->
+            <radialGradient id="innerSmoke" cx="50%" cy="55%" r="62%">
+              <stop offset="0%"   stop-color="rgba(255,255,255,0.10)"/>
+              <stop offset="40%"  stop-color="rgba(255,255,255,0.06)"/>
+              <stop offset="70%"  stop-color="rgba(255,255,255,0.00)"/>
+            </radialGradient>
+
+            <!-- Ruído animável -->
+            <filter id="tearNoise" x="-30%" y="-30%" width="160%" height="160%">
+              <feTurbulence id="turb"
+                type="fractalNoise"
+                baseFrequency="0.010"
+                numOctaves="3"
+                seed="7"
+                stitchTiles="stitch" />
+              <feDisplacementMap in="SourceGraphic" scale="65" />
+            </filter>
+
+            <!-- suaviza borda / bloom -->
+            <filter id="softBloom" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="3" result="b"/>
+              <feMerge>
+                <feMergeNode in="b"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+
+            <filter id="glowBloom" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="14" result="b"/>
+              <feMerge>
+                <feMergeNode in="b"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+
+            <filter id="smokeBlur" x="-40%" y="-40%" width="180%" height="180%">
+              <feGaussianBlur stdDeviation="18" />
+            </filter>
+
+            <!-- MÁSCARA DO RASGO: um retângulo vertical que abre + borda orgânica -->
+            <mask id="tearMask" maskUnits="userSpaceOnUse">
+              <!-- fundo preto = escondido -->
+              <rect x="0" y="0" width="1000" height="1000" fill="black"/>
+              <!-- rasgo branco = visível (aplica ruído pra ficar rasgado) -->
+              <g filter="url(#tearNoise)">
+                <!-- rect central (width pequeno) e a gente escala no X -->
+                <rect id="tearRect" x="470" y="70" width="60" height="860" fill="white" rx="18" ry="18"/>
+              </g>
+            </mask>
+          </defs>
+
+          <!-- Camada do portal: só aparece dentro do rasgo (mask) -->
+          <g mask="url(#tearMask)">
+            <rect x="0" y="0" width="1000" height="1000" class="portalCoreBg"/>
+            <rect x="0" y="0" width="1000" height="1000" fill="url(#innerGlow)" class="portalGlow"/>
+            <rect x="0" y="0" width="1000" height="1000" fill="url(#innerSmoke)" class="portalSmoke"/>
+          </g>
+
+          <!-- Um leve “halo” externo difuso (sem cara de UI) -->
+          <g opacity="0.18" filter="url(#softBloom)">
+            <ellipse cx="500" cy="520" rx="240" ry="320" fill="rgba(255,140,70,0.10)"/>
+          </g>
+        </svg>
       </div>
     </div>
 
@@ -277,7 +323,7 @@
       y: H + rand(0,H*0.2),
       r: rand(26, 92)*DPR,
       vy: rand(0.10, 0.45)*DPR,
-      vx: rand(-0.08, 0.18)*DPR,   // drift leve
+      vx: rand(-0.08, 0.18)*DPR,
       a: rand(0.010, 0.050),
       phase: rand(0, Math.PI*2),
       wob: rand(0.0012, 0.0045),
@@ -306,7 +352,6 @@
   function draw(){
     ctx.clearRect(0,0,W,H);
 
-    // aproxima espiral para o alvo (clica -> 1)
     spiral = lerp(spiral, spiralTarget, 0.02);
 
     const cx = W*0.5;
@@ -314,24 +359,19 @@
 
     // FUMAÇA
     for(const s of smoke){
-      // drift base
       s.x += s.vx + Math.sin((s.y*s.wob)+s.phase)*(0.22*DPR);
       s.y -= s.vy;
 
-      // força de espiral: puxa pro centro e gira
       if(spiral > 0.001){
         const dx = s.x - cx;
         const dy = s.y - cy;
         const dist = Math.max(40*DPR, Math.hypot(dx,dy));
-        // swirl tangencial (gira) + pull radial (aproxima)
         const tang = 0.55 * spiral * (120*DPR / dist);
         const pull = 0.18 * spiral * (140*DPR / dist);
 
-        // tangente: (-dy, dx)
         s.x += (-dy/dist) * tang;
         s.y += ( dx/dist) * tang;
 
-        // puxa pro centro (reduz dist)
         s.x += (-dx/dist) * pull;
         s.y += (-dy/dist) * pull;
       }
@@ -340,7 +380,7 @@
 
       ctx.beginPath();
       ctx.fillStyle = `rgba(220, 210, 200, ${a})`;
-      ctx.shadowColor = `rgba(255, 140, 70, ${a*0.25})`;
+      ctx.shadowColor = `rgba(255, 140, 70, ${a*0.22})`;
       ctx.shadowBlur = 16*DPR;
       ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
       ctx.fill();
@@ -378,7 +418,6 @@
       ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
       ctx.fill();
 
-      // trilha leve
       ctx.beginPath();
       ctx.strokeStyle = `rgba(255, 210, 150, ${a*0.14})`;
       ctx.lineWidth = p.r*1.1;
@@ -397,6 +436,29 @@
   }
   draw();
 
+  // ===== Animação orgânica do portal (turbulence) =====
+  const turb = document.getElementById("turb");
+  let t = 0;
+  let turbulenceBoost = 0;        // 0..1
+  let turbulenceTarget = 0;
+
+  function animateTurbulence(){
+    t += 0.016;
+
+    // aumenta ao clicar
+    turbulenceBoost = turbulenceBoost + (turbulenceTarget - turbulenceBoost) * 0.03;
+
+    // baseFrequency varia sutilmente (orgânico), mais forte durante abertura
+    const base = 0.009 + Math.sin(t*0.9)*0.0012;
+    const boost = turbulenceBoost * 0.0085;
+    const bf = Math.max(0.004, base + boost);
+
+    turb.setAttribute("baseFrequency", bf.toFixed(4));
+
+    requestAnimationFrame(animateTurbulence);
+  }
+  animateTurbulence();
+
   // ===== clique -> espiral -> portal -> rasgo -> expande -> vídeo =====
   let started=false;
 
@@ -404,21 +466,18 @@
     if(started) return;
     started=true;
 
-    // começa espiral
     spiralTarget = 1;
+    turbulenceTarget = 1;
 
     // começa vídeo no gesto do clique
     mainVideo.play().catch(()=>{});
 
     document.body.classList.add("portalOn");
 
-    // abre o rasgo
     setTimeout(()=>document.body.classList.add("portalOpen"), 220);
 
-    // expande pra tela
     setTimeout(()=>document.body.classList.add("portalExpand"), 780);
 
-    // entra no vídeo
     setTimeout(()=>{
       document.body.classList.add("entered");
       setTimeout(()=>{ entry.style.display="none"; }, 800);
