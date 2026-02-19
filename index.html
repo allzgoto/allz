@@ -1,145 +1,282 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shadow Fight II</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shadow Fight — Entry</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#000;
-  font-family:serif;
-}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:100%;height:100%;background:#000;overflow:hidden}
 
-/* Fumaça animada */
-.smoke{
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 30% 50%, rgba(255,255,255,0.04), transparent 40%),
-    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.03), transparent 50%);
-  animation: smokeMove 12s linear infinite alternate;
-}
+  /* Vídeo principal (já fica atrás, pronto pra revelar) */
+  #mainVideo{
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    z-index:0;
+    filter:contrast(1.05) saturate(0.9);
+  }
 
-@keyframes smokeMove{
-  from{transform:translateX(-2%)}
-  to{transform:translateX(2%)}
-}
+  /* Tela de entrada (grimório) */
+  #entry{
+    position:fixed; inset:0;
+    z-index:5;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#050505;
+    user-select:none;
+    cursor:pointer;
+  }
 
-/* Silhueta */
-.shadow{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:120px;
-  color:#000;
-  text-shadow:
-    0 0 25px rgba(255,255,255,0.15),
-    0 0 80px rgba(255,255,255,0.08);
-  cursor:pointer;
-}
+  /* “Textura” do grimório (sem imagem) */
+  #entry::before{
+    content:"";
+    position:absolute; inset:-40px;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06), transparent 35%),
+      radial-gradient(circle at 80% 60%, rgba(255,255,255,0.04), transparent 40%),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 14px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.35) 0 1px, transparent 1px 3px);
+    opacity:.9;
+    filter:blur(0.2px);
+    pointer-events:none;
+  }
 
-/* Título */
-.title{
-  position:absolute;
-  bottom:80px;
-  width:100%;
-  text-align:center;
-  font-size:42px;
-  letter-spacing:8px;
-  color:#888;
-  opacity:.7;
-}
+  /* Vinheta forte */
+  #entry::after{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(circle at center, rgba(0,0,0,0) 35%, rgba(0,0,0,0.78) 100%);
+    pointer-events:none;
+  }
 
-/* Slash */
-.slash{
-  position:absolute;
-  width:200%;
-  height:4px;
-  background:white;
-  top:50%;
-  left:-50%;
-  transform:rotate(-25deg) scaleX(0);
-  transform-origin:left;
-  opacity:0;
-}
+  /* Centro: selo/runa */
+  .sigil{
+    position:relative;
+    width:min(520px, 86vw);
+    text-align:center;
+    z-index:2;
+    opacity:.95;
+  }
 
-/* Flash */
-.flash{
-  position:absolute;
-  inset:0;
-  background:white;
-  opacity:0;
-  pointer-events:none;
-}
+  .sigil .mark{
+    width:180px; height:180px;
+    margin:0 auto 18px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.16);
+    box-shadow:0 0 45px rgba(255,255,255,0.08);
+    display:grid;
+    place-items:center;
+    position:relative;
+  }
 
-body.active .slash{
-  animation: slashAnim .4s ease forwards;
-}
+  /* “Runas” girando */
+  .sigil .mark::before{
+    content:"";
+    position:absolute; inset:14px;
+    border-radius:50%;
+    border:1px dashed rgba(255,255,255,0.14);
+    opacity:.9;
+    animation:spin 10s linear infinite;
+  }
+  .sigil .mark::after{
+    content:"";
+    position:absolute; inset:26px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.08);
+  }
 
-body.active .flash{
-  animation: flashAnim .3s ease forwards;
-}
+  @keyframes spin{to{transform:rotate(360deg)}}
 
-@keyframes slashAnim{
-  0%{transform:rotate(-25deg) scaleX(0);opacity:1}
-  100%{transform:rotate(-25deg) scaleX(1);opacity:1}
-}
+  .sigil .icon{
+    font-size:28px;
+    letter-spacing:6px;
+    color:rgba(255,255,255,0.72);
+    text-shadow:0 0 18px rgba(255,255,255,0.12);
+  }
 
-@keyframes flashAnim{
-  0%{opacity:0}
-  40%{opacity:1}
-  100%{opacity:0}
-}
+  .sigil .title{
+    font-family:serif;
+    letter-spacing:10px;
+    color:rgba(255,255,255,0.35);
+    font-size:38px;
+    margin-top:10px;
+  }
 
-/* Tremor */
-body.active{
-  animation: shake .3s ease;
-}
+  .sigil .hint{
+    margin-top:14px;
+    letter-spacing:4px;
+    color:rgba(255,255,255,0.22);
+    font-size:12px;
+  }
 
-@keyframes shake{
-  0%{transform:translate(0)}
-  25%{transform:translate(-4px,2px)}
-  50%{transform:translate(4px,-2px)}
-  75%{transform:translate(-2px,1px)}
-  100%{transform:translate(0)}
-}
+  /* Portão (duas folhas) por cima do entry */
+  .gate{
+    position:absolute; inset:0;
+    z-index:3;
+    pointer-events:none;
+    display:flex;
+  }
+  .gate .leaf{
+    width:50%;
+    height:100%;
+    background:
+      linear-gradient(to right, rgba(255,255,255,0.04), rgba(0,0,0,0.0)),
+      radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 55%),
+      linear-gradient(to bottom, #070707, #000);
+    border-right:1px solid rgba(255,255,255,0.05);
+    box-shadow:inset 0 0 120px rgba(0,0,0,0.85);
+    transform:translateX(0);
+  }
+  .gate .leaf.right{
+    border-right:none;
+    border-left:1px solid rgba(255,255,255,0.05);
+    background:
+      linear-gradient(to left, rgba(255,255,255,0.04), rgba(0,0,0,0.0)),
+      radial-gradient(circle at 50% 40%, rgba(255,255,255,0.05), transparent 55%),
+      linear-gradient(to bottom, #070707, #000);
+  }
+
+  /* Linha de corte (faca) */
+  .slash{
+    position:absolute;
+    left:-30%;
+    top:50%;
+    width:160%;
+    height:3px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+    transform:rotate(-18deg) scaleX(0);
+    transform-origin:left;
+    opacity:0;
+    z-index:4;
+    pointer-events:none;
+    filter:drop-shadow(0 0 10px rgba(255,255,255,0.22));
+  }
+
+  /* Flash */
+  .flash{
+    position:absolute; inset:0;
+    background:#fff;
+    opacity:0;
+    z-index:4;
+    pointer-events:none;
+  }
+
+  /* Estado: iniciando */
+  body.opening #entry{ cursor:default; }
+  body.opening .sigil{ animation:fadeOut 520ms ease forwards; }
+  @keyframes fadeOut{to{opacity:0; transform:translateY(6px)}}
+
+  body.opening .slash{
+    animation:slash 360ms ease forwards;
+  }
+  @keyframes slash{
+    0%{opacity:0; transform:rotate(-18deg) scaleX(0)}
+    25%{opacity:1}
+    100%{opacity:1; transform:rotate(-18deg) scaleX(1)}
+  }
+
+  body.opening .flash{
+    animation:flash 260ms ease forwards;
+  }
+  @keyframes flash{
+    0%{opacity:0}
+    35%{opacity:0.55}
+    100%{opacity:0}
+  }
+
+  body.opening .gate .leaf.left{
+    animation:openLeft 900ms cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  body.opening .gate .leaf.right{
+    animation:openRight 900ms cubic-bezier(.2,.9,.2,1) forwards;
+  }
+  @keyframes openLeft{
+    to{transform:translateX(-110%)}
+  }
+  @keyframes openRight{
+    to{transform:translateX(110%)}
+  }
+
+  /* some com a tela de entrada depois */
+  body.entered #entry{
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 420ms ease;
+  }
+
+  /* Se o usuário preferir menos animação */
+  @media (prefers-reduced-motion: reduce){
+    .sigil .mark::before{animation:none}
+    body.opening .gate .leaf.left,
+    body.opening .gate .leaf.right,
+    body.opening .slash,
+    body.opening .flash,
+    body.opening .sigil{animation:none}
+  }
 </style>
 </head>
 
 <body>
+  <video
+    id="mainVideo"
+    src="https://files.catbox.moe/klaol5.webm"
+    playsinline
+    preload="auto"
+    muted
+    loop
+  ></video>
 
-<div class="smoke"></div>
+  <section id="entry" aria-label="Tela de entrada">
+    <div class="sigil">
+      <div class="mark">
+        <div class="icon">⚔︎</div>
+      </div>
+      <div class="title">SHADOW FIGHT</div>
+      <div class="hint">CLIQUE PARA ENTRAR</div>
+    </div>
 
-<div class="shadow" id="start">
-  ⚔
-</div>
+    <div class="gate" aria-hidden="true">
+      <div class="leaf left"></div>
+      <div class="leaf right"></div>
+    </div>
 
-<div class="title">
-  SHADOW FIGHT II
-</div>
-
-<div class="slash"></div>
-<div class="flash"></div>
+    <div class="slash" aria-hidden="true"></div>
+    <div class="flash" aria-hidden="true"></div>
+  </section>
 
 <script>
-const start = document.getElementById("start");
+  const entry = document.getElementById("entry");
+  const mainVideo = document.getElementById("mainVideo");
 
-start.addEventListener("click", ()=>{
-  document.body.classList.add("active");
+  let started = false;
 
-  setTimeout(()=>{
-    // aqui entraria o site principal
-    alert("ENTROU NO JOGO");
-  },400);
-});
+  function startEntry(){
+    if (started) return;
+    started = true;
+
+    document.body.classList.add("opening");
+
+    // tenta tocar o vídeo no gesto do clique
+    mainVideo.play().catch(()=>{});
+
+    // quando o portão terminar de abrir, remove a tela de entrada
+    setTimeout(() => {
+      document.body.classList.add("entered");
+      // limpa completamente (pra não “pegar foco”)
+      setTimeout(() => { entry.style.display = "none"; }, 500);
+    }, 950);
+  }
+
+  entry.addEventListener("pointerdown", startEntry);
+  entry.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); startEntry(); }
+  });
+
+  // acessibilidade: permite focar o entry
+  entry.tabIndex = 0;
 </script>
-
 </body>
 </html>
