@@ -11,9 +11,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
 
-:root{
-  --ember: rgba(255,140,70,1);
-}
+:root{ --ember: rgba(255,140,70,1); }
 
 /* ===== VIDEO ===== */
 #mainVideo{
@@ -106,34 +104,59 @@ body.strikeOn #strike{opacity:0.95}
   pointer-events:none;
 }
 
+/* remove caixa pesada */
 .enterBox{
-  padding:22px 50px;
-  background:
-    radial-gradient(circle at center, rgba(255,140,70,0.12), rgba(0,0,0,0.6));
-  border-radius:10px;
-  backdrop-filter:blur(8px);
-  box-shadow:
-    0 0 60px rgba(255,140,70,0.35),
-    inset 0 0 20px rgba(255,140,70,0.2);
+  background:none;
+  padding:0;
 }
 
+/* ENTER estilo logo */
 .title{
-  font-family:'Cinzel',serif;
+  font-family: "Cinzel", serif;
   font-weight:800;
-  font-size:clamp(42px,6vw,80px); /* menor agora */
-  letter-spacing:10px;
-  color:rgba(255,210,160,0.9);
+  font-size: clamp(34px, 4.5vw, 64px);
+  letter-spacing:6px;
+  text-transform:uppercase;
+
+  background: linear-gradient(
+    to bottom,
+    #f6d5a8 0%,
+    #e2b07a 35%,
+    #b87333 60%,
+    #f6d5a8 100%
+  );
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
   text-shadow:
-    0 0 25px rgba(255,140,70,0.8),
-    0 0 70px rgba(0,0,0,0.9);
-  animation:pulse 2s ease-in-out infinite;
+    0 2px 0 #000,
+    0 0 12px rgba(255,140,70,0.6),
+    0 0 35px rgba(255,100,0,0.4);
+
+  position:relative;
+  animation:pulse 2.5s ease-in-out infinite;
+}
+
+/* aura atrás do texto */
+.title::after{
+  content:"";
+  position:absolute;
+  inset:-18px -40px;
+  background:
+    radial-gradient(circle at center,
+      rgba(255,120,0,0.15),
+      rgba(0,0,0,0.7));
+  z-index:-1;
+  filter:blur(18px);
+  border-radius:50px;
+  opacity:0.8;
 }
 
 .sub{
-  margin-top:12px;
-  font-size:11px;
-  letter-spacing:6px;
-  color:rgba(255,255,255,0.4);
+  margin-top:10px;
+  font-size:10px;
+  letter-spacing:5px;
+  color:rgba(255,255,255,0.35);
   text-transform:uppercase;
   animation:blink 1.2s steps(2,end) infinite;
 }
@@ -169,7 +192,7 @@ body.entered #entry{
   src="https://files.catbox.moe/klaol5.webm"
   playsinline preload="auto"></video>
 
-<section id="entry">
+<section id="entry" tabindex="0" aria-label="Entrada Shadow Fight 2">
 
   <div class="bgFill"></div>
   <canvas id="ashCanvas"></canvas>
@@ -177,13 +200,11 @@ body.entered #entry{
   <div class="stage">
     <div class="frameWrap">
 
-      <img class="frame"
-           src="https://files.catbox.moe/5yp48z.png">
+      <img class="frame" src="https://files.catbox.moe/5yp48z.png" alt="Shadow Fight 2 Entry">
 
       <div class="softOverlay"></div>
 
-      <img id="strike" class="frame"
-           src="https://files.catbox.moe/er48bx.gif">
+      <img id="strike" class="frame" src="https://files.catbox.moe/er48bx.gif" alt="Golpe">
 
       <div class="introUI">
         <div class="enterBox">
@@ -200,42 +221,54 @@ body.entered #entry{
 <script>
 const entry = document.getElementById("entry");
 const mainVideo = document.getElementById("mainVideo");
-const strike = document.getElementById("strike");
 
 /* ===== CINZAS VULCÂNICAS ===== */
 const canvas = document.getElementById("ashCanvas");
 const ctx = canvas.getContext("2d");
 
-let W,H;
+let W,H,DPR=1;
 function resize(){
-  W=canvas.width=window.innerWidth;
-  H=canvas.height=window.innerHeight;
+  DPR = devicePixelRatio || 1;
+  W = canvas.width = Math.floor(window.innerWidth * DPR);
+  H = canvas.height = Math.floor(window.innerHeight * DPR);
+  canvas.style.width = window.innerWidth + "px";
+  canvas.style.height = window.innerHeight + "px";
+  ctx.setTransform(DPR,0,0,DPR,0,0);
 }
 resize();
 window.addEventListener("resize",resize);
 
 const ash=[];
-for(let i=0;i<120;i++){
+const ASH_N = 140;
+for(let i=0;i<ASH_N;i++){
   ash.push({
-    x:Math.random()*W,
-    y:Math.random()*H,
-    r:Math.random()*2+0.5,
-    v:Math.random()*0.5+0.2,
-    drift:(Math.random()-0.5)*0.4
+    x:Math.random()*window.innerWidth,
+    y:Math.random()*window.innerHeight,
+    r:Math.random()*2+0.6,
+    v:Math.random()*0.55+0.18,
+    drift:(Math.random()-0.5)*0.45,
+    tw:Math.random()*0.6+0.2
   });
 }
 
 function drawAsh(){
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle="rgba(180,180,180,0.4)";
-  ash.forEach(p=>{
-    p.y-=p.v;
-    p.x+=p.drift;
-    if(p.y<0){p.y=H;p.x=Math.random()*W;}
+  ctx.clearRect(0,0,window.innerWidth,window.innerHeight);
+
+  // cinzas (cinza) + uns pontos mais escuros (sombra)
+  for(const p of ash){
+    p.y -= p.v;
+    p.x += p.drift;
+    if(p.y < -10){ p.y = window.innerHeight + 10; p.x = Math.random()*window.innerWidth; }
+    if(p.x < -10) p.x = window.innerWidth + 10;
+    if(p.x > window.innerWidth + 10) p.x = -10;
+
+    const alpha = 0.18 + p.tw*0.22;
     ctx.beginPath();
+    ctx.fillStyle = `rgba(190,190,190,${alpha})`;
     ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
     ctx.fill();
-  });
+  }
+
   requestAnimationFrame(drawAsh);
 }
 drawAsh();
@@ -247,17 +280,22 @@ function start(){
   if(started) return;
   started=true;
 
+  // gif aparece por cima
   document.body.classList.add("strikeOn");
 
+  // áudio + vídeo no clique
   setTimeout(()=>{
-    mainVideo.muted=false;
-    mainVideo.volume=1;
+    mainVideo.muted = false;
+    mainVideo.volume = 1;
     mainVideo.play().catch(()=>{});
     document.body.classList.add("entered");
   },1200);
 }
 
 entry.addEventListener("pointerdown", start);
+entry.addEventListener("keydown", (e)=>{
+  if(e.key==="Enter" || e.key===" "){ e.preventDefault(); start(); }
+});
 </script>
 
 </body>
