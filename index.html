@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Shadow Fight 2 — Entry</title>
 
-<!-- Fonte mais agressiva -->
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
 
 <style>
@@ -23,7 +22,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
   object-fit:cover;
   z-index:0;
   opacity:0;
-  transition:opacity 800ms ease;
+  transition:opacity 900ms ease;
 }
 body.entered #mainVideo{opacity:1}
 
@@ -35,16 +34,23 @@ body.entered #mainVideo{opacity:1}
   background:#000;
 }
 
-/* Fundo full blur */
+/* Fundo blur */
 .bgFill{
   position:absolute; inset:0;
   background:url("https://files.catbox.moe/5yp48z.png") center/cover no-repeat;
-  filter:blur(26px) brightness(0.25) contrast(1.2);
-  transform:scale(1.15);
+  filter:blur(28px) brightness(0.22) contrast(1.2);
+  transform:scale(1.2);
   z-index:1;
 }
 
-/* Quadro central */
+/* ===== PARTÍCULAS CINZA / CINZAS VULCÂNICAS ===== */
+#ashCanvas{
+  position:absolute; inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+
+/* ===== PALCO ===== */
 .stage{
   position:absolute; inset:0;
   display:grid;
@@ -53,42 +59,42 @@ body.entered #mainVideo{opacity:1}
 }
 
 .frameWrap{
-  width:min(1050px,92vw);
+  width:min(1000px,88vw);
   aspect-ratio:16/9;
   position:relative;
-  border-radius:18px;
+  border-radius:16px;
   overflow:hidden;
   box-shadow:
-    0 0 0 1px rgba(255,170,90,0.15),
-    0 40px 120px rgba(0,0,0,0.95);
+    0 0 0 1px rgba(255,170,90,0.1),
+    0 40px 140px rgba(0,0,0,0.95);
 }
 
-/* Imagem principal */
+/* imagem principal */
 .frame{
   position:absolute; inset:0;
   width:100%; height:100%;
   object-fit:cover;
-  filter:contrast(1.15) brightness(0.85) saturate(0.9);
+  filter:contrast(1.12) brightness(0.82) saturate(0.9);
 }
 
-/* camada de suavização por cima da imagem */
+/* suavização */
 .softOverlay{
   position:absolute; inset:0;
   z-index:2;
   background:
-    radial-gradient(circle at center, rgba(0,0,0,0.25), rgba(0,0,0,0.65)),
-    linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 40%, rgba(0,0,0,0.45));
+    radial-gradient(circle at center, rgba(0,0,0,0.2), rgba(0,0,0,0.7)),
+    linear-gradient(to bottom, rgba(0,0,0,0.3), transparent 40%, rgba(0,0,0,0.5));
   backdrop-filter: blur(2px);
 }
 
-/* GIF de impacto */
+/* gif */
 #strike{
   opacity:0;
   z-index:3;
   mix-blend-mode:screen;
   transition:opacity 200ms ease;
 }
-body.strikeOn #strike{opacity:0.9}
+body.strikeOn #strike{opacity:0.95}
 
 /* ===== ENTER UI ===== */
 .introUI{
@@ -101,32 +107,32 @@ body.strikeOn #strike{opacity:0.9}
 }
 
 .enterBox{
-  padding:30px 60px;
+  padding:22px 50px;
   background:
-    radial-gradient(circle at center, rgba(255,140,70,0.15), rgba(0,0,0,0.6));
-  border-radius:12px;
-  backdrop-filter:blur(6px);
+    radial-gradient(circle at center, rgba(255,140,70,0.12), rgba(0,0,0,0.6));
+  border-radius:10px;
+  backdrop-filter:blur(8px);
   box-shadow:
-    0 0 40px rgba(255,140,70,0.4),
-    inset 0 0 20px rgba(255,140,70,0.25);
+    0 0 60px rgba(255,140,70,0.35),
+    inset 0 0 20px rgba(255,140,70,0.2);
 }
 
 .title{
   font-family:'Cinzel',serif;
   font-weight:800;
-  font-size:clamp(60px,9vw,130px);
-  letter-spacing:12px;
-  color:rgba(255,210,160,0.85);
+  font-size:clamp(42px,6vw,80px); /* menor agora */
+  letter-spacing:10px;
+  color:rgba(255,210,160,0.9);
   text-shadow:
-    0 0 30px rgba(255,140,70,0.7),
-    0 0 80px rgba(0,0,0,0.8);
+    0 0 25px rgba(255,140,70,0.8),
+    0 0 70px rgba(0,0,0,0.9);
   animation:pulse 2s ease-in-out infinite;
 }
 
 .sub{
-  margin-top:15px;
-  font-size:12px;
-  letter-spacing:8px;
+  margin-top:12px;
+  font-size:11px;
+  letter-spacing:6px;
   color:rgba(255,255,255,0.4);
   text-transform:uppercase;
   animation:blink 1.2s steps(2,end) infinite;
@@ -134,7 +140,7 @@ body.strikeOn #strike{opacity:0.9}
 
 @keyframes pulse{
   0%,100%{transform:translateY(0);opacity:.85}
-  50%{transform:translateY(-4px);opacity:1}
+  50%{transform:translateY(-3px);opacity:1}
 }
 
 @keyframes blink{
@@ -142,33 +148,17 @@ body.strikeOn #strike{opacity:0.9}
   50%,100%{opacity:.6}
 }
 
-/* Transição wipe */
-.shadowWipe{
-  position:absolute; inset:-20%;
-  z-index:6;
-  pointer-events:none;
-  opacity:0;
-  background:
-    radial-gradient(circle at 30% 50%, transparent 0%, rgba(0,0,0,0.8) 55%, black 85%);
-  transform:translateX(-40%) skewX(-10deg);
-  transition:transform 600ms cubic-bezier(.2,.9,.1,1), opacity 200ms ease;
-}
-body.wipeOn .shadowWipe{
-  opacity:1;
-  transform:translateX(40%) skewX(-10deg);
-}
-
-/* some ENTER */
+/* fade enter */
 body.strikeOn .introUI{
   opacity:0;
   transition:opacity 300ms ease;
 }
 
-/* some entry */
+/* entrada some */
 body.entered #entry{
   opacity:0;
   pointer-events:none;
-  transition:opacity 600ms ease;
+  transition:opacity 800ms ease;
 }
 </style>
 </head>
@@ -177,11 +167,12 @@ body.entered #entry{
 
 <video id="mainVideo"
   src="https://files.catbox.moe/klaol5.webm"
-  muted loop playsinline preload="auto"></video>
+  playsinline preload="auto"></video>
 
 <section id="entry">
 
   <div class="bgFill"></div>
+  <canvas id="ashCanvas"></canvas>
 
   <div class="stage">
     <div class="frameWrap">
@@ -201,8 +192,6 @@ body.entered #entry{
         </div>
       </div>
 
-      <div class="shadowWipe"></div>
-
     </div>
   </div>
 
@@ -211,23 +200,61 @@ body.entered #entry{
 <script>
 const entry = document.getElementById("entry");
 const mainVideo = document.getElementById("mainVideo");
+const strike = document.getElementById("strike");
 
+/* ===== CINZAS VULCÂNICAS ===== */
+const canvas = document.getElementById("ashCanvas");
+const ctx = canvas.getContext("2d");
+
+let W,H;
+function resize(){
+  W=canvas.width=window.innerWidth;
+  H=canvas.height=window.innerHeight;
+}
+resize();
+window.addEventListener("resize",resize);
+
+const ash=[];
+for(let i=0;i<120;i++){
+  ash.push({
+    x:Math.random()*W,
+    y:Math.random()*H,
+    r:Math.random()*2+0.5,
+    v:Math.random()*0.5+0.2,
+    drift:(Math.random()-0.5)*0.4
+  });
+}
+
+function drawAsh(){
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle="rgba(180,180,180,0.4)";
+  ash.forEach(p=>{
+    p.y-=p.v;
+    p.x+=p.drift;
+    if(p.y<0){p.y=H;p.x=Math.random()*W;}
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fill();
+  });
+  requestAnimationFrame(drawAsh);
+}
+drawAsh();
+
+/* ===== CLICK ===== */
 let started=false;
 
 function start(){
   if(started) return;
   started=true;
 
-  document.body.classList.add("wipeOn");
+  document.body.classList.add("strikeOn");
 
   setTimeout(()=>{
-    document.body.classList.add("strikeOn");
-  },150);
-
-  setTimeout(()=>{
+    mainVideo.muted=false;
+    mainVideo.volume=1;
     mainVideo.play().catch(()=>{});
     document.body.classList.add("entered");
-  },1400);
+  },1200);
 }
 
 entry.addEventListener("pointerdown", start);
