@@ -395,13 +395,21 @@ body.scrollOpen .scroll{
   );
 }
 
-/* ===== AQUI: FONTES MAIS "PERGAMINHO" ===== */
+/* ===== AQUI: MELHORIAS DE "TINTA NO PAPEL" ===== */
 .scrollInner{
   position:absolute; inset:0;
   padding:26px 30px 18px;
-  font-family: "Cormorant Garamond", serif;
-  color:rgba(35,18,8,0.90);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
+
+  /* corpo com cara de manuscrito */
+  font-family: "IM Fell English", serif;
+  font-style: italic;
+  font-size: 17px;
+  color: rgba(28,14,6,0.92);
+
+  /* “ink bleed” leve + melhora de leitura */
+  text-shadow:
+    0 0 0 rgba(0,0,0,0.0),
+    0 1px 0 rgba(255,255,255,0.16);
 }
 
 .scrollTop{
@@ -418,35 +426,38 @@ body.scrollOpen .scroll{
   letter-spacing:3px;
   text-transform:uppercase;
   font-size:13px;
-  color:rgba(40,22,8,0.92);
-  text-shadow:0 1px 0 rgba(255,255,255,0.25);
+  color:rgba(34,18,7,0.92);
+  text-shadow:0 1px 0 rgba(255,255,255,0.20);
 }
 
+/* FECHAR: só texto, sem caixa/contorno */
 .scrollClose{
   border:none;
   background:transparent;
-  padding:6px 10px;
+  padding:0;                 /* remove área "botão" visual */
   cursor:pointer;
+
   font-family:"Cinzel", serif;
   font-weight:800;
-  letter-spacing:2px;
+  letter-spacing:2.2px;
   text-transform:uppercase;
   font-size:12px;
-  color:rgba(45,24,10,0.55);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
-  outline: 2px solid rgba(45,24,10,0.28);
-  outline-offset: -2px;
-  border-radius:10px;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.08) inset,
-    0 1px 0 rgba(255,255,255,0.18);
+
+  color:rgba(45,24,10,0.58);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
+
+  outline:none;
+  box-shadow:none;
+  border-radius:0;
   opacity:0.9;
-  transform:rotate(-1.5deg);
+  transform:rotate(-1.2deg);
 }
 .scrollClose:hover{
   opacity:1;
-  outline-color: rgba(45,24,10,0.38);
-  color:rgba(45,24,10,0.62);
+  color:rgba(45,24,10,0.72);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: rgba(45,24,10,0.26);
 }
 
 .scrollBody{
@@ -462,26 +473,66 @@ body.scrollOpen .scroll{
   flex:1;
   overflow:auto;
   padding-right:10px;
-  line-height:1.55;
-  font-size:16px;
+  line-height:1.62;
   letter-spacing:0.2px;
-  color:rgba(35,18,8,0.90);
-  filter: contrast(1.02);
+  color:rgba(28,14,6,0.92);
+
+  /* textura de “tinta” + legibilidade */
+  text-shadow:
+    0 0.6px 0 rgba(255,255,255,0.14),
+    0 0 10px rgba(0,0,0,0.02);
 }
 
-/* nomes mais "tinta" */
+/* NOMES: mais fortes e legíveis, parecendo “marcação” */
 .scrollLog .who{
-  font-family:"IM Fell English", serif;
-  font-weight:400;
-  font-style:italic;
-  letter-spacing:1px;
+  font-family:"Cinzel", serif;     /* mais “carimbo”/título */
+  font-style: normal;
+  font-weight:800;
+  letter-spacing:2px;
   text-transform:uppercase;
-  color:rgba(60,28,10,0.86);
-  margin-right:6px;
+
+  color:rgba(32,14,6,0.88);
+  margin-right:8px;
+
+  /* contraste e efeito de tinta */
+  text-shadow:
+    0 1px 0 rgba(255,255,255,0.10),
+    0 0 0 rgba(0,0,0,0);
 }
-.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
+
+/* variação sutil por personagem */
+.scrollLog .mestre{ color:rgba(55,24,10,0.82); }
 .scrollLog .shadow{ color:rgba(20,20,20,0.92); }
-.scrollLog .titan{ color:rgba(55,25,10,0.86); }
+.scrollLog .titan{ color:rgba(62,20,10,0.84); }
+
+/* linhas do typing */
+.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
+.cursor{
+  display:inline-block;
+  width:10px;
+  height:16px;
+  transform:translateY(3px);
+  background:rgba(20,10,0,0.62);
+  margin-left:4px;
+  animation:cur 0.8s steps(1,end) infinite;
+}
+@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
+
+.outputLine{
+  margin:0 0 10px 0;
+  color:rgba(20,10,0,0.92);
+  font-size:16px;
+}
+
+/* SISTEMA/VOCÊ dentro do output: mantém “tinta” */
+.outputLine .sys{
+  font-family:"Cinzel", serif;
+  font-style: normal;
+  font-weight:800;
+  letter-spacing:1.8px;
+  text-transform:uppercase;
+  color:rgba(55,24,10,0.74);
+}
 
 /* input bar continua terminalzinho, mas encaixado no pergaminho */
 .scrollInputBar{
@@ -510,30 +561,6 @@ body.scrollOpen .scroll{
 }
 #cmdInput::placeholder{
   color:rgba(20,10,0,0.45);
-}
-
-.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
-.cursor{
-  display:inline-block;
-  width:10px;
-  height:16px;
-  transform:translateY(3px);
-  background:rgba(20,10,0,0.62);
-  margin-left:4px;
-  animation:cur 0.8s steps(1,end) infinite;
-}
-@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
-
-.outputLine{
-  margin:0 0 10px 0;
-  color:rgba(20,10,0,0.92);
-  font-size:15px;
-}
-.outputLine .sys{
-  font-family:"IM Fell English", serif;
-  font-style:italic;
-  letter-spacing:0.6px;
-  color:rgba(60,28,8,0.74);
 }
 
 body.scrollOpen .scrollPaper{
