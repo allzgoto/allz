@@ -35,6 +35,9 @@ body.entered #mainVideo{
 body.scrollOpen #mainVideo{
   filter:contrast(1.06) saturate(0.92) blur(6px) brightness(0.62);
 }
+body.adminOpen #mainVideo{
+  filter:contrast(1.06) saturate(0.92) blur(7px) brightness(0.56);
+}
 
 /* ===== ENTRY ===== */
 #entry{
@@ -293,13 +296,20 @@ body.entered #entry{
   cursor:pointer;
 }
 
-/* ===== BOTÃO DO PERGAMINHO (top-center) ===== */
-#scrollBtn{
+/* ===== TOP-CENTER BUTTONS (Pergaminho + Admin) ===== */
+#topCenter{
   position:fixed;
   left:50%;
   top:14px;
   transform:translateX(-50%);
   z-index:60;
+  display:flex;
+  gap:10px;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none; /* libera somente nos botões */
+}
+.topBtn{
   width:44px;height:44px;
   border-radius:12px;
   border:1px solid rgba(255,170,90,0.18);
@@ -316,9 +326,126 @@ body.entered #entry{
   opacity:0;
   pointer-events:none;
 }
-body.entered #scrollBtn{ opacity:1; pointer-events:auto; }
-#scrollBtn:hover{ transform:translateX(-50%) scale(1.05); }
-#scrollBtn svg{ width:22px;height:22px; opacity:.9; }
+body.entered .topBtn{ opacity:1; pointer-events:auto; }
+.topBtn:hover{ transform:scale(1.05); }
+.topBtn svg{ width:22px;height:22px; opacity:.9; }
+
+/* ===== MENU TOP-RIGHT (ORNAMENTADO) ===== */
+#rightMenu{
+  position:fixed;
+  right:14px;
+  top:14px;
+  z-index:60;
+  user-select:none;
+}
+.menuBtn{
+  width:44px;height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.15), rgba(0,0,0,0.82)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.58));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.78),
+    0 0 22px rgba(255,140,70,0.12),
+    inset 0 0 14px rgba(255,140,70,0.08);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:transform .2s ease;
+  opacity:0;
+  pointer-events:none;
+  position:relative;
+  overflow:hidden;
+}
+body.entered .menuBtn{ opacity:1; pointer-events:auto; }
+.menuBtn:hover{ transform:scale(1.05); }
+.menuBtn::before{
+  content:"";
+  position:absolute; inset:-20px;
+  background: conic-gradient(from 140deg,
+    transparent 0%,
+    rgba(255,140,70,0.10) 18%,
+    rgba(255,255,255,0.10) 28%,
+    rgba(255,140,70,0.10) 38%,
+    transparent 55%,
+    rgba(255,140,70,0.08) 78%,
+    transparent 100%);
+  filter: blur(10px);
+  opacity:.55;
+  animation:spinRune 5.6s linear infinite;
+}
+@keyframes spinRune{ to{ transform:rotate(360deg); } }
+.menuBtn svg{ width:22px;height:22px; position:relative; z-index:1; opacity:.92; }
+
+.menuPanel{
+  position:absolute;
+  right:0;
+  top:54px;
+  width:240px;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 15% 10%, rgba(255,140,70,0.10), rgba(0,0,0,0.88)),
+    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.60));
+  box-shadow:
+    0 26px 120px rgba(0,0,0,0.90),
+    inset 0 0 22px rgba(255,140,70,0.07);
+  transform-origin: 100% 0%;
+  transform: scale(0.92) translateY(10px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 180ms ease, transform 220ms ease;
+}
+#rightMenu.open .menuPanel{ opacity:1; transform:scale(1) translateY(0); pointer-events:auto; }
+
+.menuTitle{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:11px;
+  color:rgba(255,220,190,0.80);
+  opacity:.9;
+  margin:2px 2px 8px;
+}
+.menuItem{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  padding:10px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.14);
+  background:
+    radial-gradient(circle at 20% 30%, rgba(255,140,70,0.10), rgba(0,0,0,0.72));
+  color:rgba(255,235,210,0.86);
+  cursor:pointer;
+  font-family:"Cormorant Garamond", serif;
+  font-size:16px;
+  letter-spacing:0.4px;
+  transition:transform .15s ease, border-color .15s ease, filter .15s ease;
+}
+.menuItem:hover{
+  transform:translateY(-1px);
+  border-color: rgba(255,170,90,0.26);
+  filter:brightness(1.06);
+}
+.menuItem small{
+  display:block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  color:rgba(255,255,255,0.45);
+  margin-top:2px;
+}
+.menuItem .dot{
+  width:10px;height:10px;border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,240,220,0.9), rgba(255,140,70,0.8) 55%, rgba(120,40,10,0.85));
+  box-shadow: 0 0 18px rgba(255,140,70,0.25);
+  flex:0 0 auto;
+}
 
 /* ===== OVERLAY DO PERGAMINHO ===== */
 #scrollOverlay{
@@ -458,32 +585,41 @@ body.scrollOpen .scroll{
   overflow:hidden;
 }
 
+/* ===== V2: FONTE MAIS "PERGAMINHO" + NOMES MAIS DESTACADOS ===== */
 .scrollLog{
   flex:1;
   overflow:auto;
   padding-right:10px;
-  line-height:1.55;
-  font-size:16px;
-  letter-spacing:0.2px;
-  color:rgba(35,18,8,0.90);
-  filter: contrast(1.02);
+  line-height:1.62;
+  font-size:17px;
+  letter-spacing:0.25px;
+  color:rgba(30,16,7,0.92);
+  filter: contrast(1.03);
+  font-family:"IM Fell English", serif; /* mais pergaminho */
 }
+.scrollLog .typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
 
-/* ===== AQUI: NOMES MENORES (AJUSTE PEDIDO) ===== */
 .scrollLog .who{
-  font-family:"IM Fell English", serif;
-  font-weight:400;
-  font-style:italic;
-  letter-spacing:0.6px;     /* era 1px */
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
   text-transform:uppercase;
-  color:rgba(60,28,10,0.86);
-  margin-right:6px;
-  font-size: 0.92em;        /* NOVO: diminui um pouco os nomes */
+  color:rgba(40,18,8,0.92);
+  margin-right:8px;
+  font-size:0.92em;
+  padding:3px 8px;
+  border-radius:999px;
+  display:inline-block;
+  transform: translateY(-1px);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), rgba(0,0,0,0.06)),
+    linear-gradient(to bottom, rgba(180,120,60,0.12), rgba(0,0,0,0.05));
+  border:1px solid rgba(0,0,0,0.14);
+  box-shadow: inset 0 0 12px rgba(255,140,70,0.06);
 }
-
-.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
-.scrollLog .shadow{ color:rgba(20,20,20,0.92); }
-.scrollLog .titan{ color:rgba(55,25,10,0.86); }
+.scrollLog .mestre{ color:rgba(70,34,12,0.90); }
+.scrollLog .shadow{ color:rgba(18,18,18,0.94); }
+.scrollLog .titan{ color:rgba(80,28,10,0.92); }
 
 .scrollInputBar{
   display:flex;
@@ -513,7 +649,6 @@ body.scrollOpen .scroll{
   color:rgba(20,10,0,0.45);
 }
 
-.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
 .cursor{
   display:inline-block;
   width:10px;
@@ -529,6 +664,7 @@ body.scrollOpen .scroll{
   margin:0 0 10px 0;
   color:rgba(20,10,0,0.92);
   font-size:15px;
+  font-family:"Cormorant Garamond", serif;
 }
 .outputLine .sys{
   font-family:"IM Fell English", serif;
@@ -546,9 +682,272 @@ body.scrollOpen .scrollPaper{
   100%{ filter:blur(0) contrast(1.06) saturate(.92); transform:scaleY(1); }
 }
 
+/* ===== ADMIN OVERLAY (Login + Dashboard) ===== */
+#adminOverlay{
+  position:fixed; inset:0;
+  z-index:85;
+  display:none;
+}
+body.adminOpen #adminOverlay{ display:block; }
+#adminOverlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.62);
+}
+.adminPanel{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.94);
+  width:min(920px, 94vw);
+  height:min(560px, 82vh);
+  opacity:0;
+  transition:opacity 220ms ease, transform 320ms cubic-bezier(.12,.92,.12,1);
+  pointer-events:none;
+}
+body.adminOpen .adminPanel{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+}
+
+/* “A e C infudido”: overlay escuro + painel pedra antigo */
+.adminStone{
+  position:absolute; inset:0;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255,140,70,0.10), rgba(0,0,0,0.40) 38%, rgba(0,0,0,0.78) 100%),
+    radial-gradient(circle at 85% 20%, rgba(255,255,255,0.06), transparent 45%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 2px, rgba(0,0,0,0.00) 2px 7px),
+    linear-gradient(180deg, rgba(30,18,10,0.65), rgba(0,0,0,0.84));
+  border:1px solid rgba(255,170,90,0.16);
+  box-shadow:
+    0 50px 180px rgba(0,0,0,0.92),
+    inset 0 0 0 1px rgba(0,0,0,0.35),
+    inset 0 0 100px rgba(255,140,70,0.05);
+  overflow:hidden;
+}
+.adminStone::before{
+  content:"";
+  position:absolute; inset:-40px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255,140,70,0.10), transparent 55%),
+    conic-gradient(from 0deg,
+      rgba(255,140,70,0.10),
+      transparent 15%,
+      rgba(255,255,255,0.06) 25%,
+      transparent 35%,
+      rgba(255,140,70,0.08) 55%,
+      transparent 70%,
+      rgba(255,140,70,0.08) 90%,
+      transparent);
+  filter:blur(18px);
+  opacity:.55;
+  animation:spinRune 8.5s linear infinite;
+}
+.adminInner{
+  position:absolute; inset:0;
+  padding:22px 22px 18px;
+  color:rgba(255,235,210,0.88);
+  font-family:"Cormorant Garamond", serif;
+}
+.adminTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.adminTitle{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-size:12px;
+  color:rgba(255,220,190,0.86);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.55);
+}
+.adminClose{
+  border:none;
+  background:transparent;
+  padding:6px 10px;
+  cursor:pointer;
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:12px;
+  color:rgba(255,220,190,0.70);
+  outline: 2px solid rgba(255,170,90,0.20);
+  outline-offset: -2px;
+  border-radius:10px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.25);
+  opacity:0.95;
+}
+.adminClose:hover{ opacity:1; outline-color: rgba(255,170,90,0.32); }
+
+.adminBody{
+  height:calc(100% - 52px);
+  display:grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap:14px;
+}
+@media (max-width: 860px){
+  .adminBody{ grid-template-columns:1fr; }
+}
+
+.adminCard{
+  border-radius:16px;
+  border:1px solid rgba(255,170,90,0.14);
+  background:
+    radial-gradient(circle at 20% 10%, rgba(255,140,70,0.10), rgba(0,0,0,0.62)),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.55));
+  box-shadow: inset 0 0 18px rgba(255,140,70,0.05);
+  padding:14px 14px 12px;
+  position:relative;
+  overflow:hidden;
+}
+.adminCard::after{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.06), transparent 40%);
+  pointer-events:none;
+  opacity:.8;
+}
+
+.adminCard h3{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:11px;
+  color:rgba(255,220,190,0.82);
+  margin-bottom:10px;
+  position:relative;
+  z-index:1;
+}
+.adminCard p{
+  position:relative;
+  z-index:1;
+  color:rgba(255,235,210,0.78);
+  line-height:1.5;
+  font-size:16px;
+}
+
+.formRow{ display:flex; flex-direction:column; gap:8px; margin:10px 0; position:relative; z-index:1; }
+.formRow label{
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  letter-spacing:0.6px;
+  color:rgba(255,235,210,0.72);
+}
+.adminInput{
+  width:100%;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.10), rgba(0,0,0,0.68));
+  padding:10px 12px;
+  outline:none;
+  color:rgba(255,240,220,0.92);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:13px;
+}
+.adminInput::placeholder{ color:rgba(255,255,255,0.35); }
+
+.adminActions{
+  display:flex; gap:10px; align-items:center; margin-top:12px; position:relative; z-index:1;
+}
+.adminBtn{
+  border:none;
+  cursor:pointer;
+  padding:10px 12px;
+  border-radius:12px;
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:11px;
+  color:rgba(255,235,210,0.88);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.22), rgba(0,0,0,0.75));
+  border:1px solid rgba(255,170,90,0.22);
+  box-shadow: 0 16px 60px rgba(0,0,0,0.65), inset 0 0 14px rgba(255,140,70,0.08);
+}
+.adminBtn:hover{ filter:brightness(1.06); }
+.adminHint{
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  color:rgba(255,235,210,0.55);
+  font-size:14px;
+}
+
+.badgeErr{
+  margin-top:10px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,120,80,0.22);
+  background: rgba(120,20,10,0.20);
+  color:rgba(255,220,210,0.88);
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  display:none;
+  position:relative;
+  z-index:1;
+}
+
+/* Dashboard */
+.metrics{
+  display:grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap:10px;
+  position:relative;
+  z-index:1;
+}
+@media (max-width: 860px){
+  .metrics{ grid-template-columns:1fr; }
+}
+.metric{
+  border-radius:14px;
+  padding:12px 12px 10px;
+  border:1px solid rgba(255,170,90,0.14);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.12), rgba(0,0,0,0.62));
+  box-shadow: inset 0 0 18px rgba(255,140,70,0.05);
+}
+.metric .k{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:10px;
+  color:rgba(255,220,190,0.75);
+}
+.metric .v{
+  margin-top:6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:22px;
+  color:rgba(255,240,220,0.92);
+  text-shadow: 0 1px 0 rgba(0,0,0,0.55);
+}
+.metric .s{
+  margin-top:4px;
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  color:rgba(255,235,210,0.55);
+  font-size:13px;
+}
+.adminDivider{
+  height:1px;
+  background:linear-gradient(to right, transparent, rgba(255,170,90,0.22), transparent);
+  margin:12px 0;
+  position:relative;
+  z-index:1;
+}
+
 @media (prefers-reduced-motion: reduce){
   .title, .sub{ animation:none; }
   .title::before{ display:none; }
+  .menuBtn::before, .adminStone::before{ animation:none; }
 }
 </style>
 </head>
@@ -609,15 +1008,68 @@ body.scrollOpen .scrollPaper{
   </div>
 </div>
 
-<button id="scrollBtn" aria-label="Abrir pergaminho (lore)">
-  <svg viewBox="0 0 24 24" fill="none">
-    <path d="M7 5h10v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" />
-    <path d="M7 8h10" stroke="rgba(255,140,70,0.7)" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M7 11h8" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
-    <path d="M7 14h9" stroke="rgba(255,140,70,0.45)" stroke-width="1.4" stroke-linecap="round"/>
-  </svg>
-</button>
+<!-- TOP CENTER: Pergaminho + Admin (lado a lado) -->
+<div id="topCenter" aria-label="Ações centrais">
+  <button class="topBtn" id="scrollBtn" aria-label="Abrir pergaminho (lore)">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M7 5h10v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" />
+      <path d="M7 8h10" stroke="rgba(255,140,70,0.7)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M7 11h8" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M7 14h9" stroke="rgba(255,140,70,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </button>
 
+  <button class="topBtn" id="adminBtn" aria-label="Abrir painel confidencial (admin)">
+    <!-- Ícone tipo selo/olho -->
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 4c4.6 0 8.5 3 10 8-1.5 5-5.4 8-10 8S3.5 17 2 12c1.5-5 5.4-8 10-8Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6"/>
+      <path d="M12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z" stroke="rgba(255,140,70,0.7)" stroke-width="1.6"/>
+      <path d="M12 2v2" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+      <path d="M12 20v2" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<!-- MENU TOP-RIGHT -->
+<div id="rightMenu" aria-label="Menu superior direito">
+  <button class="menuBtn" id="menuBtn" aria-label="Abrir menu">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 7h12" stroke="rgba(255,220,190,0.88)" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M6 12h12" stroke="rgba(255,140,70,0.78)" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M6 17h12" stroke="rgba(255,220,190,0.70)" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <div class="menuPanel" role="menu" aria-label="Opções">
+    <div class="menuTitle">Menu — Registros</div>
+
+    <button class="menuItem" id="miSocial" role="menuitem">
+      <span class="dot" aria-hidden="true"></span>
+      <span>
+        Redes Sociais
+        <small>(placeholder) abrir links</small>
+      </span>
+    </button>
+
+    <button class="menuItem" id="miArchive" role="menuitem">
+      <span class="dot" aria-hidden="true"></span>
+      <span>
+        Archive
+        <small>(placeholder) jogos / registros</small>
+      </span>
+    </button>
+
+    <button class="menuItem" id="miPlaylists" role="menuitem">
+      <span class="dot" aria-hidden="true"></span>
+      <span>
+        Playlists
+        <small>(placeholder) trilhas / sons</small>
+      </span>
+    </button>
+  </div>
+</div>
+
+<!-- OVERLAY DO PERGAMINHO -->
 <div id="scrollOverlay" aria-hidden="true">
   <div class="dim"></div>
 
@@ -649,10 +1101,119 @@ body.scrollOpen .scrollPaper{
   </div>
 </div>
 
+<!-- OVERLAY ADMIN (Login + Dashboard) -->
+<div id="adminOverlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="adminPanel" role="dialog" aria-label="Painel confidencial">
+    <div class="adminStone">
+      <div class="adminInner">
+        <div class="adminTop">
+          <div class="adminTitle">Selo — Acesso Confidencial</div>
+          <button class="adminClose" id="adminClose">FECHAR</button>
+        </div>
+
+        <div class="adminBody">
+          <!-- LEFT: Login / Contexto -->
+          <div class="adminCard" id="loginCard">
+            <h3>Portão do Selo</h3>
+            <p>
+              Apenas aqueles marcados pelas sombras podem ler os registros.
+              <br><span style="opacity:.8;font-style:italic;font-family:'IM Fell English',serif">Erre a palavra… e o portão morde.</span>
+            </p>
+
+            <div class="formRow">
+              <label for="adminUser">Usuário</label>
+              <input class="adminInput" id="adminUser" autocomplete="off" placeholder="insira o nome marcado">
+            </div>
+
+            <div class="formRow">
+              <label for="adminPass">Senha</label>
+              <input class="adminInput" id="adminPass" type="password" autocomplete="off" placeholder="insira o selo de acesso">
+            </div>
+
+            <div class="adminActions">
+              <button class="adminBtn" id="adminLogin">ENTRAR</button>
+              <div class="adminHint">Dica: o nome do protagonista…</div>
+            </div>
+
+            <div class="badgeErr" id="adminErr">Acesso negado. As sombras não reconhecem você.</div>
+
+            <div class="adminDivider"></div>
+            <p style="opacity:.72;font-size:14px;">
+              <span style="font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;">Obs:</span>
+              Estes números são <b>locais</b> (contam neste navegador). Depois a gente liga em algo real se você quiser.
+            </p>
+          </div>
+
+          <!-- RIGHT: Dashboard -->
+          <div class="adminCard" id="dashCard">
+            <h3>Registros do Portal</h3>
+
+            <div class="metrics">
+              <div class="metric">
+                <div class="k">Visitas</div>
+                <div class="v" id="mVisits">—</div>
+                <div class="s">quantas vezes abriram o selo</div>
+              </div>
+
+              <div class="metric">
+                <div class="k">ENTER acionado</div>
+                <div class="v" id="mEnter">—</div>
+                <div class="s">quantas vezes “entraram”</div>
+              </div>
+
+              <div class="metric">
+                <div class="k">Pergaminho aberto</div>
+                <div class="v" id="mScroll">—</div>
+                <div class="s">quantas vezes ouviram as vozes</div>
+              </div>
+
+              <div class="metric">
+                <div class="k">Sessões admin</div>
+                <div class="v" id="mAdmin">—</div>
+                <div class="s">quantas vezes acessaram o painel</div>
+              </div>
+            </div>
+
+            <div class="adminDivider"></div>
+
+            <p id="dashLockNote" style="opacity:.72;">
+              Bloqueado. Insira o usuário e a senha para revelar os registros.
+            </p>
+
+            <p id="dashUnlockedNote" style="display:none; opacity:.82;">
+              Acesso concedido. Os registros foram revelados.
+              <br><span style="opacity:.7;font-style:italic;font-family:'IM Fell English',serif">Aqui a gente vai enfiar um monte de coisa na V2.</span>
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const entry = document.getElementById("entry");
 const mainVideo = document.getElementById("mainVideo");
 const bgAudio = document.getElementById("bgAudio");
+
+/* ===== METRICS (LOCAL) ===== */
+const METRICS_KEY = "sf2_metrics_v2";
+function loadMetrics(){
+  try{
+    const raw = localStorage.getItem(METRICS_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return { visits:0, enter:0, scrollOpen:0, admin:0 };
+}
+function saveMetrics(m){
+  try{ localStorage.setItem(METRICS_KEY, JSON.stringify(m)); }catch(e){}
+}
+const metrics = loadMetrics();
+metrics.visits += 1;
+saveMetrics(metrics);
 
 /* ===== VOLUME PADRÃO 8% ===== */
 let currentVol = 0.08;
@@ -707,6 +1268,10 @@ async function start(){
   if(started) return;
   started=true;
 
+  // métricas
+  metrics.enter += 1;
+  saveMetrics(metrics);
+
   document.body.classList.add("strikeOn");
 
   try{
@@ -754,6 +1319,46 @@ vol.addEventListener("input", ()=>{
   bgAudio.volume = currentVol;
 });
 
+/* ===== MENU TOP-RIGHT ===== */
+const rightMenu = document.getElementById("rightMenu");
+const menuBtn = document.getElementById("menuBtn");
+const miSocial = document.getElementById("miSocial");
+const miArchive = document.getElementById("miArchive");
+const miPlaylists = document.getElementById("miPlaylists");
+
+menuBtn.addEventListener("click",(e)=>{
+  e.stopPropagation();
+  if(!document.body.classList.contains("entered")) return;
+  rightMenu.classList.toggle("open");
+});
+document.addEventListener("click",(e)=>{
+  if(!rightMenu.contains(e.target)) rightMenu.classList.remove("open");
+});
+
+function sysPing(msg){
+  // se o pergaminho estiver aberto, escreve lá; senão, abre e escreve
+  if(!document.body.classList.contains("entered")) return;
+  if(!document.body.classList.contains("scrollOpen")){
+    openScroll();
+    setTimeout(()=>writeOut(`<span class="sys">SISTEMA:</span> ${msg}`), 240);
+  }else{
+    writeOut(`<span class="sys">SISTEMA:</span> ${msg}`);
+  }
+}
+
+miSocial.addEventListener("click", ()=>{
+  rightMenu.classList.remove("open");
+  sysPing(`(placeholder) <b>Redes Sociais</b> será aberto aqui. Depois a gente liga com seus links reais.`);
+});
+miArchive.addEventListener("click", ()=>{
+  rightMenu.classList.remove("open");
+  sysPing(`(placeholder) <b>Archive</b>: registros de jogos / coleções / coisas suas. Em breve vira uma seção real.`);
+});
+miPlaylists.addEventListener("click", ()=>{
+  rightMenu.classList.remove("open");
+  sysPing(`(placeholder) <b>Playlists</b> será aberto aqui. Depois a gente coloca Spotify/YouTube/arquivos.`);
+});
+
 /* ===== PERGAMINHO ===== */
 const scrollBtn = document.getElementById("scrollBtn");
 const scrollOverlay = document.getElementById("scrollOverlay");
@@ -768,18 +1373,26 @@ let typing = false;
 let typedOnce = false;
 
 const loreLines = [
-  `<span class="who mestre">MESTRE:</span> A arena está silenciosa... mas as sombras nunca dormem.`,
-  `<span class="who shadow">SHADOW:</span> Eu sinto o vazio se abrindo. Algo me chama do outro lado.`,
-  `<span class="who titan">TITAN:</span> Você acha que pode escapar? Eu já marquei seu destino.`,
-  `<span class="who mestre">MESTRE:</span> Não responda ao medo. Use-o. Transforme-o em lâmina.`,
-  `<span class="who shadow">SHADOW:</span> Então... eu entro. E se eu cair, que as sombras me devorem.`,
-  `<span class="who titan">TITAN:</span> Venha. Eu quero ouvir seu silêncio gritar.`
+  `<span class="who mestre">MESTRE</span> A arena está silenciosa... mas as sombras nunca dormem.`,
+  `<span class="who shadow">SHADOW</span> Eu sinto o vazio se abrindo. Algo me chama do outro lado.`,
+  `<span class="who titan">TITAN</span> Você acha que pode escapar? Eu já marquei seu destino.`,
+  `<span class="who mestre">MESTRE</span> Não responda ao medo. Use-o. Transforme-o em lâmina.`,
+  `<span class="who shadow">SHADOW</span> Então... eu entro. E se eu cair, que as sombras me devorem.`,
+  `<span class="who titan">TITAN</span> Venha. Eu quero ouvir seu silêncio gritar.`
 ];
 
 function openScroll(){
   if(!document.body.classList.contains("entered")) return;
+  // se admin estiver aberto, fecha admin primeiro
+  if(document.body.classList.contains("adminOpen")) closeAdmin();
+
   document.body.classList.add("scrollOpen");
   scrollOverlay.setAttribute("aria-hidden","false");
+
+  // métricas
+  metrics.scrollOpen += 1;
+  saveMetrics(metrics);
+
   setTimeout(()=>cmdInput.focus(), 80);
 
   if(!typedOnce){
@@ -801,15 +1414,111 @@ scrollClose.addEventListener("click", closeScroll);
 scrollOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeScroll();
 });
+
+/* ===== ADMIN ===== */
+const adminBtn = document.getElementById("adminBtn");
+const adminOverlay = document.getElementById("adminOverlay");
+const adminClose = document.getElementById("adminClose");
+
+const adminUser = document.getElementById("adminUser");
+const adminPass = document.getElementById("adminPass");
+const adminLogin = document.getElementById("adminLogin");
+const adminErr = document.getElementById("adminErr");
+
+const mVisits = document.getElementById("mVisits");
+const mEnter = document.getElementById("mEnter");
+const mScroll = document.getElementById("mScroll");
+const mAdmin = document.getElementById("mAdmin");
+
+const dashLockNote = document.getElementById("dashLockNote");
+const dashUnlockedNote = document.getElementById("dashUnlockedNote");
+
+const ADMIN_USER_OK = "sombra";
+const ADMIN_PASS_OK = "projeto26";
+
+let adminUnlocked = false;
+
+function updateDashboard(){
+  const m = loadMetrics();
+  mVisits.textContent = String(m.visits ?? 0);
+  mEnter.textContent = String(m.enter ?? 0);
+  mScroll.textContent = String(m.scrollOpen ?? 0);
+  mAdmin.textContent = String(m.admin ?? 0);
+
+  if(adminUnlocked){
+    dashLockNote.style.display = "none";
+    dashUnlockedNote.style.display = "block";
+  }else{
+    dashLockNote.style.display = "block";
+    dashUnlockedNote.style.display = "none";
+  }
+}
+
+function openAdmin(){
+  if(!document.body.classList.contains("entered")) return;
+
+  // se pergaminho estiver aberto, fecha
+  if(document.body.classList.contains("scrollOpen")) closeScroll();
+
+  document.body.classList.add("adminOpen");
+  adminOverlay.setAttribute("aria-hidden","false");
+  adminErr.style.display = "none";
+
+  // métrica admin (abrir painel)
+  metrics.admin += 1;
+  saveMetrics(metrics);
+
+  updateDashboard();
+  setTimeout(()=>adminUser.focus(), 90);
+}
+function closeAdmin(){
+  document.body.classList.remove("adminOpen");
+  adminOverlay.setAttribute("aria-hidden","true");
+}
+adminBtn.addEventListener("click",(e)=>{
+  e.stopPropagation();
+  openAdmin();
+});
+adminClose.addEventListener("click", closeAdmin);
+adminOverlay.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("dim")) closeAdmin();
+});
+
+function attemptLogin(){
+  const u = (adminUser.value || "").trim().toLowerCase();
+  const p = (adminPass.value || "").trim().toLowerCase();
+
+  if(u === ADMIN_USER_OK && p === ADMIN_PASS_OK){
+    adminUnlocked = true;
+    adminErr.style.display = "none";
+    updateDashboard();
+  }else{
+    adminUnlocked = false;
+    adminErr.style.display = "block";
+    updateDashboard();
+  }
+}
+
+adminLogin.addEventListener("click", attemptLogin);
+adminPass.addEventListener("keydown", (e)=>{ if(e.key==="Enter") attemptLogin(); });
+adminUser.addEventListener("keydown", (e)=>{ if(e.key==="Enter") adminPass.focus(); });
+
+/* ===== HOTKEYS (ESC / T) ===== */
 document.addEventListener("keydown",(e)=>{
-  if(e.key === "Escape" && document.body.classList.contains("scrollOpen")){
-    closeScroll();
+  if(e.key === "Escape"){
+    if(document.body.classList.contains("scrollOpen")) closeScroll();
+    if(document.body.classList.contains("adminOpen")) closeAdmin();
+    rightMenu.classList.remove("open");
   }
   if(e.key.toLowerCase() === "t" && document.body.classList.contains("entered")){
     openScroll();
   }
+  if(e.key.toLowerCase() === "a" && document.body.classList.contains("entered")){
+    openAdmin();
+  }
 });
 
+/* ===== Terminal / Typing ===== */
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function scrollToBottom(){ scrollLog.scrollTop = scrollLog.scrollHeight; }
 
@@ -885,7 +1594,7 @@ cmdInput.addEventListener("keydown", (e)=>{
   const cmd = raw.toLowerCase();
 
   if(cmd === "ajuda" || cmd === "help" || cmd === "?"){
-    writeOut(`<span class="sys">COMANDOS:</span> <b>hub</b>, <b>arquivo</b>, <b>lore</b>, <b>fechar</b>`);
+    writeOut(`<span class="sys">COMANDOS:</span> <b>hub</b>, <b>arquivo</b>, <b>lore</b>, <b>admin</b>, <b>menu</b>, <b>fechar</b>`);
     return;
   }
   if(cmd === "fechar" || cmd === "close" || cmd === "exit"){
@@ -893,12 +1602,22 @@ cmdInput.addEventListener("keydown", (e)=>{
     setTimeout(closeScroll, 250);
     return;
   }
+  if(cmd === "admin"){
+    writeOut(`<span class="sys">SISTEMA:</span> Abrindo o <b>Painel Confidencial</b>...`);
+    setTimeout(openAdmin, 250);
+    return;
+  }
+  if(cmd === "menu"){
+    writeOut(`<span class="sys">SISTEMA:</span> Abrindo o <b>Menu</b>...`);
+    rightMenu.classList.add("open");
+    return;
+  }
   if(cmd === "hub"){
     writeOut(`<span class="sys">SISTEMA:</span> (placeholder) Abrindo HUB...`);
     return;
   }
   if(cmd === "arquivo" || cmd === "archive"){
-    writeOut(`<span class="sys">SISTEMA:</span> (placeholder) Abrindo ARQUIVO...`);
+    writeOut(`<span class="sys">SISTEMA:</span> (placeholder) Abrindo ARCHIVE...`);
     return;
   }
   if(cmd === "lore"){
@@ -916,6 +1635,9 @@ function escapeHtml(s){
           .replaceAll('"',"&quot;")
           .replaceAll("'","&#039;");
 }
+
+/* ===== INIT DASHBOARD ===== */
+updateDashboard();
 </script>
 
 </body>
