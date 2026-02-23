@@ -1,3 +1,1323 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shadow Fight 2 — Entry</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@500;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#000}
+
+:root{
+  --ember: rgba(255,140,70,1);
+  --goldA: #fff2de;
+  --goldB: #d9a56a;
+  --goldC: #a8642c;
+}
+
+/* ===== VIDEO ===== */
+#mainVideo{
+  position:fixed; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  z-index:0;
+  opacity:0;
+  transition:opacity 900ms ease, filter 900ms ease;
+  filter:contrast(1.05) saturate(0.95);
+}
+body.entered #mainVideo{
+  opacity:1;
+  filter:contrast(1.06) saturate(0.92) blur(3px) brightness(0.82);
+}
+body.scrollOpen #mainVideo,
+body.adminOpen #mainVideo,
+body.socialOpen #mainVideo{
+  filter:contrast(1.06) saturate(0.92) blur(6px) brightness(0.62);
+}
+
+/* ===== ENTRY ===== */
+#entry{
+  position:fixed; inset:0;
+  z-index:10;
+  cursor:pointer;
+  background:#000;
+}
+.bgFill{
+  position:absolute; inset:0;
+  background:url("https://files.catbox.moe/5yp48z.png") center/cover no-repeat;
+  filter:blur(28px) brightness(0.22) contrast(1.2);
+  transform:scale(1.2);
+  z-index:1;
+}
+#ashCanvas{
+  position:absolute; inset:0;
+  z-index:2;
+  pointer-events:none;
+}
+.stage{
+  position:absolute; inset:0;
+  display:grid;
+  place-items:center;
+  z-index:5;
+}
+.frameWrap{
+  width:min(1000px,88vw);
+  aspect-ratio:16/9;
+  position:relative;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,170,90,0.1),
+    0 40px 140px rgba(0,0,0,0.95);
+  transition:transform 450ms ease;
+}
+#entry:hover .frameWrap{ transform:scale(1.01); }
+.frame{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  object-fit:cover;
+  filter:contrast(1.12) brightness(0.82) saturate(0.9);
+}
+.softOverlay{
+  position:absolute; inset:0;
+  z-index:2;
+  background:
+    radial-gradient(circle at center, rgba(0,0,0,0.18), rgba(0,0,0,0.72)),
+    linear-gradient(to bottom, rgba(0,0,0,0.28), transparent 40%, rgba(0,0,0,0.55));
+  backdrop-filter: blur(2px);
+}
+#strike{
+  opacity:0;
+  z-index:3;
+  mix-blend-mode:screen;
+  transition:opacity 200ms ease;
+}
+body.strikeOn #strike{opacity:0.95}
+
+/* ===== ENTER UI ===== */
+.introUI{
+  position:absolute; inset:0;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  z-index:4;
+  pointer-events:none;
+}
+.title{
+  font-family: "Cinzel", serif;
+  font-weight:800;
+  font-size: clamp(26px, 3.2vw, 44px);
+  letter-spacing:7px;
+  text-transform:uppercase;
+
+  background: linear-gradient(
+    to bottom,
+    var(--goldA) 0%,
+    #f0cfa2 18%,
+    var(--goldB) 45%,
+    var(--goldC) 68%,
+    #f6d5a8 100%
+  );
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 2px 0 #000,
+    0 0 10px rgba(255,140,70,0.55),
+    0 0 34px rgba(255,100,0,0.35);
+
+  position:relative;
+  animation:pulse 2.6s ease-in-out infinite;
+}
+.title::after{
+  content:"";
+  position:absolute;
+  inset:-14px -42px;
+  background:
+    radial-gradient(circle at center,
+      rgba(255,120,0,0.14),
+      rgba(0,0,0,0.75));
+  z-index:-2;
+  filter:blur(18px);
+  border-radius:60px;
+  opacity:0.85;
+}
+.title::before{
+  content:"";
+  position:absolute;
+  inset:-8px -58px;
+  z-index:-1;
+  background: linear-gradient(120deg,
+    transparent 0%,
+    rgba(255,255,255,0.10) 35%,
+    rgba(255,255,255,0.22) 50%,
+    rgba(255,255,255,0.10) 65%,
+    transparent 100%);
+  transform:translateX(-70%);
+  filter:blur(8px);
+  opacity:0.55;
+  animation:shine 2.8s ease-in-out infinite;
+}
+@keyframes shine{
+  0%,55%{ transform:translateX(-70%); opacity:0.0; }
+  65%{ opacity:0.55; }
+  100%{ transform:translateX(70%); opacity:0.0; }
+}
+
+.sub{
+  margin-top:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  font-size:10px;
+  letter-spacing:4px;
+  color:rgba(255,255,255,0.42);
+  text-transform:uppercase;
+  animation:blink 1.2s steps(2,end) infinite;
+}
+
+.kbdEnter{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,170,90,0.22);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.10), rgba(0,0,0,0.72));
+  box-shadow:
+    inset 0 0 14px rgba(255,140,70,0.08),
+    0 10px 40px rgba(0,0,0,0.55);
+  color:rgba(255,220,190,0.80);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
+  letter-spacing:1px;
+}
+.kbdEnter svg{
+  width:14px;height:14px;
+  margin-left:7px;
+  opacity:0.9;
+}
+
+@keyframes pulse{ 0%,100%{transform:translateY(0);opacity:.88} 50%{transform:translateY(-3px);opacity:1} }
+@keyframes blink{ 0%,49%{opacity:.22} 50%,100%{opacity:.62} }
+
+body.strikeOn .introUI{ opacity:0; transition:opacity 300ms ease; }
+
+body.entered #entry{
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 900ms ease;
+}
+
+/* ===== VOLUME (top-left) ===== */
+#grimoire{ position:fixed; left:14px; top:14px; z-index:60; user-select:none; }
+.grimoireBtn{
+  width:44px; height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.16), rgba(0,0,0,0.78)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.75),
+    0 0 22px rgba(255,140,70,0.14),
+    inset 0 0 14px rgba(255,140,70,0.10);
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  transition:transform .2s ease;
+}
+.grimoireBtn:hover{ transform:scale(1.05); }
+.grimoireIcon{ width:21px; height:21px; }
+.grimoireIcon svg{ width:100%; height:100%; display:block; }
+.panel{
+  position:absolute;
+  left:0;
+  top:54px;
+  width:200px;
+  padding:10px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.10), rgba(0,0,0,0.86)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 26px 110px rgba(0,0,0,0.86),
+    inset 0 0 22px rgba(255,140,70,0.07);
+  transform-origin: 0% 0%;
+  transform: scale(0.92) translateY(8px);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 180ms ease, transform 220ms ease;
+}
+#grimoire.open .panel{ opacity:1; transform: scale(1) translateY(0); pointer-events:auto; }
+.row{ display:flex; align-items:center; gap:10px; }
+.volValue{
+  min-width:44px;
+  text-align:right;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  color:rgba(255,255,255,0.55);
+}
+#vol{
+  -webkit-appearance:none;
+  appearance:none;
+  width:100%;
+  height:10px;
+  border-radius:99px;
+  outline:none;
+  background:
+    linear-gradient(to right, rgba(255,140,70,0.9) var(--p,8%), rgba(255,255,255,0.10) var(--p,8%));
+  border:1px solid rgba(255,170,90,0.16);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.65);
+}
+#vol::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:16px; height:16px;
+  border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, #fff2de, #d9a56a 55%, #8a4a1f);
+  border:1px solid rgba(0,0,0,0.55);
+  box-shadow: 0 0 16px rgba(255,140,70,0.30);
+  cursor:pointer;
+}
+#vol::-moz-range-thumb{
+  width:16px; height:16px;
+  border-radius:50%;
+  background: radial-gradient(circle at 30% 30%, #fff2de, #d9a56a 55%, #8a4a1f);
+  border:1px solid rgba(0,0,0,0.55);
+  box-shadow: 0 0 16px rgba(255,140,70,0.30);
+  cursor:pointer;
+}
+
+/* ===== FULLSCREEN (abaixo do volume) ===== */
+#screenCtrl{
+  position:fixed;
+  left:14px;
+  top:68px;
+  z-index:60;
+  user-select:none;
+  transition: transform 200ms ease;
+}
+#grimoire.open + #screenCtrl{
+  transform: translateY(64px); /* desce quando abre o volume */
+}
+.screenBtn{
+  width:44px; height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.75),
+    0 0 22px rgba(255,140,70,0.12);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:transform .2s ease;
+}
+.screenBtn:hover{ transform:scale(1.05); }
+.screenBtn svg{ width:22px;height:22px; opacity:.9; }
+
+/* ===== TOP BTNS ===== */
+#scrollBtn, #adminBtn{
+  position:fixed;
+  top:14px;
+  z-index:60;
+  width:44px;height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.75),
+    0 0 22px rgba(255,140,70,0.12);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:transform .2s ease, opacity .2s ease;
+  opacity:0;
+  pointer-events:none;
+}
+#scrollBtn{ left:50%; transform:translateX(-50%); }
+#adminBtn{ left:calc(50% + 56px); }
+
+body.entered #scrollBtn,
+body.entered #adminBtn{ opacity:1; pointer-events:auto; }
+
+#scrollBtn:hover{ transform:translateX(-50%) scale(1.05); }
+#adminBtn:hover{ transform:scale(1.05); }
+
+#scrollBtn svg, #adminBtn svg{ width:22px;height:22px; opacity:.9; }
+
+/* ===== MENU TOP-RIGHT ===== */
+#menu{
+  position:fixed;
+  right:14px; top:14px;
+  z-index:65;
+  user-select:none;
+}
+.menuBtn{
+  width:44px;height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.75),
+    0 0 22px rgba(255,140,70,0.12);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:transform .2s ease, opacity .2s ease;
+  opacity:0;
+  pointer-events:none;
+}
+body.entered .menuBtn{ opacity:1; pointer-events:auto; }
+.menuBtn:hover{ transform:scale(1.05); }
+.menuBtn svg{ width:22px;height:22px; opacity:.9; }
+
+.menuDrop{
+  position:absolute;
+  right:0;
+  top:54px;
+  min-width:190px;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,170,90,0.16);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.09), rgba(0,0,0,0.90)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.62));
+  box-shadow:
+    0 28px 120px rgba(0,0,0,0.90),
+    inset 0 0 22px rgba(255,140,70,0.06);
+  opacity:0;
+  transform: translateY(10px) scale(0.96);
+  pointer-events:none;
+  transition: opacity 160ms ease, transform 200ms ease;
+}
+#menu.open .menuDrop{
+  opacity:1;
+  transform: translateY(0px) scale(1);
+  pointer-events:auto;
+}
+.menuItem{
+  width:100%;
+  border:none;
+  cursor:pointer;
+  text-align:left;
+  padding:10px 10px;
+  border-radius:12px;
+  background:rgba(255,255,255,0.04);
+  color:rgba(255,255,255,0.78);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:1px;
+  font-size:12px;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition: transform .16s ease, background .16s ease, opacity .16s ease;
+}
+.menuItem:hover{ transform: translateX(-2px); background:rgba(255,255,255,0.07); }
+.menuItem:active{ transform: translateX(0px) scale(.99); }
+.menuItem svg{ width:16px;height:16px; opacity:.9; }
+
+/* ===== OVERLAY BASE ===== */
+.overlay{
+  position:fixed; inset:0;
+  z-index:80;
+  display:none;
+}
+.overlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.55);
+}
+
+/* ===== PERGAMINHO ===== */
+#scrollOverlay{ z-index:80; display:none; }
+body.scrollOpen #scrollOverlay{ display:block; }
+.scroll{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.92);
+  width:min(860px, 92vw);
+  height:min(560px, 80vh);
+  opacity:0;
+  transition:opacity 220ms ease, transform 320ms cubic-bezier(.12,.92,.12,1);
+  pointer-events:none;
+}
+body.scrollOpen .scroll{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+}
+.scrollPaper{
+  position:absolute; inset:0;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(90,35,10,0.40), transparent 42%),
+    radial-gradient(circle at 92% 14%, rgba(80,28,8,0.38), transparent 46%),
+    radial-gradient(circle at 18% 92%, rgba(80,28,8,0.34), transparent 48%),
+    radial-gradient(circle at 90% 90%, rgba(80,28,8,0.36), transparent 50%),
+    radial-gradient(circle at 28% 38%, rgba(0,0,0,0.08), transparent 38%),
+    radial-gradient(circle at 70% 62%, rgba(0,0,0,0.07), transparent 42%),
+    radial-gradient(circle at 55% 28%, rgba(0,0,0,0.06), transparent 44%),
+    repeating-linear-gradient(12deg,
+      rgba(0,0,0,0.03) 0px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(255,255,255,0.02) 3px,
+      rgba(255,255,255,0.02) 5px),
+    linear-gradient(0deg, #cdb081, #eedcb6 22%, #e6cc9f 58%, #c7a572);
+
+  box-shadow:
+    0 40px 160px rgba(0,0,0,0.85),
+    inset 0 0 0 1px rgba(0,0,0,0.18),
+    inset 0 0 90px rgba(95,45,10,0.22);
+
+  filter:contrast(1.06) saturate(0.92);
+  overflow:hidden;
+}
+.scrollPaper::after{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
+    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.20) 100%);
+  pointer-events:none;
+  mix-blend-mode:multiply;
+  opacity:.95;
+}
+.scrollMask{
+  position:absolute; inset:0;
+  clip-path: polygon(
+    2% 5%, 6% 2%, 12% 4%, 20% 2%, 28% 4%, 36% 2%, 44% 4%, 52% 2%, 60% 4%, 68% 2%, 76% 4%, 84% 2%, 92% 4%, 98% 8%,
+    97% 18%, 99% 26%, 97% 34%, 99% 42%, 97% 50%, 99% 58%, 97% 66%, 99% 74%, 97% 82%, 98% 92%,
+    92% 96%, 86% 98%, 78% 96%, 70% 98%, 62% 96%, 54% 98%, 46% 96%, 38% 98%, 30% 96%, 22% 98%, 14% 96%, 8% 98%, 3% 94%,
+    2% 86%, 1% 78%, 3% 70%, 1% 62%, 3% 54%, 1% 46%, 3% 38%, 1% 30%, 3% 22%, 1% 14%
+  );
+}
+.scrollInner{
+  position:absolute; inset:0;
+  padding:26px 30px 18px;
+  font-family: "Cormorant Garamond", serif;
+  color:rgba(35,18,8,0.90);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
+}
+.scrollTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+  padding-right:6px;
+}
+.scrollTitle{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-size:13px;
+  color:rgba(40,22,8,0.92);
+  text-shadow:0 1px 0 rgba(255,255,255,0.25);
+}
+.scrollClose{
+  border:none;
+  background:transparent;
+  padding:6px 10px;
+  cursor:pointer;
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:12px;
+  color:rgba(45,24,10,0.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+  outline: 2px solid rgba(45,24,10,0.28);
+  outline-offset: -2px;
+  border-radius:10px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.08) inset,
+    0 1px 0 rgba(255,255,255,0.18);
+  opacity:0.9;
+  transform:rotate(-1.5deg);
+}
+.scrollClose:hover{
+  opacity:1;
+  outline-color: rgba(45,24,10,0.38);
+  color:rgba(45,24,10,0.62);
+}
+.scrollBody{
+  height:calc(100% - 44px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow:hidden;
+}
+.scrollLog{
+  flex:1;
+  overflow:auto;
+  padding-right:10px;
+  line-height:1.55;
+  font-size:16px;
+  letter-spacing:0.2px;
+  color:rgba(35,18,8,0.90);
+  filter: contrast(1.02);
+}
+.scrollLog .who{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:0.8px;
+  text-transform:uppercase;
+  margin-right:8px;
+  font-size:0.78em;
+}
+.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
+.scrollLog .shadow{ color:rgba(20,20,20,0.92); }
+.scrollLog .titan{ color:rgba(55,25,10,0.86); }
+
+.scrollInputBar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.07);
+  border:1px solid rgba(0,0,0,0.14);
+}
+.prompt{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight:900;
+  color:rgba(20,10,0,0.85);
+  letter-spacing:1px;
+}
+#cmdInput{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:13px;
+  color:rgba(20,10,0,0.92);
+}
+#cmdInput::placeholder{ color:rgba(20,10,0,0.45); }
+
+.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
+.cursor{
+  display:inline-block;
+  width:10px;
+  height:16px;
+  transform:translateY(3px);
+  background:rgba(20,10,0,0.62);
+  margin-left:4px;
+  animation:cur 0.8s steps(1,end) infinite;
+}
+@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
+
+.outputLine{
+  margin:0 0 10px 0;
+  color:rgba(20,10,0,0.92);
+  font-size:15px;
+}
+.outputLine .sys{
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  letter-spacing:0.6px;
+  color:rgba(60,28,8,0.74);
+}
+
+body.scrollOpen .scrollPaper{
+  animation:unroll 520ms cubic-bezier(.12,.92,.12,1) both;
+}
+@keyframes unroll{
+  0%{ filter:blur(1px) contrast(1.02) saturate(.9); transform:scaleY(.70); }
+  55%{ transform:scaleY(1.02); }
+  100%{ filter:blur(0) contrast(1.06) saturate(.92); transform:scaleY(1); }
+}
+
+/* ===== SOCIAL MEDIA (livre do tema) ===== */
+#socialOverlay{ z-index:85; }
+body.socialOpen #socialOverlay{ display:block; }
+
+.smWrap{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.96);
+  width:min(520px, 92vw);
+  border-radius:22px;
+  background: rgba(18,18,20,0.84);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 40px 180px rgba(0,0,0,0.78);
+  backdrop-filter: blur(14px);
+  opacity:0;
+  transition: opacity 220ms ease, transform 260ms ease;
+  pointer-events:none;
+  overflow:hidden;
+}
+body.socialOpen .smWrap{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+}
+.smWrap::after{
+  content:"";
+  position:absolute;
+  inset:-40%;
+  background: linear-gradient(120deg,
+    transparent 0%,
+    rgba(255,255,255,0.10) 40%,
+    rgba(255,255,255,0.18) 50%,
+    rgba(255,255,255,0.10) 60%,
+    transparent 100%);
+  transform:translateX(-45%) rotate(8deg);
+  opacity:0;
+  pointer-events:none;
+}
+.smWrap:hover::after{
+  opacity:.9;
+  animation: smShine 1.15s ease-in-out;
+}
+@keyframes smShine{
+  0%{ transform:translateX(-45%) rotate(8deg); }
+  100%{ transform:translateX(45%) rotate(8deg); }
+}
+.smHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 8px;
+}
+.smTitle{
+  color:rgba(255,255,255,0.70);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
+  font-size:12px;
+  text-transform:uppercase;
+}
+.smClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.smClose:hover{ background: rgba(255,255,255,0.09); }
+
+.smBody{
+  padding:8px 18px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.smProfile{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+  gap:10px;
+  padding:6px 6px 4px;
+}
+.smAvatar{
+  width:86px;height:86px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 16px 60px rgba(0,0,0,0.65);
+  overflow:hidden;
+  background: rgba(255,255,255,0.06);
+}
+.smAvatar img{ width:100%;height:100%; object-fit:cover; display:block; }
+.smName{
+  font-size:38px;
+  letter-spacing:1px;
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:800;
+}
+.smBio{
+  color:rgba(255,255,255,0.70);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:600;
+  font-size:14px;
+}
+.smLoc{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  color:rgba(255,255,255,0.75);
+  font-size:12px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+.smLoc svg{ width:14px;height:14px; opacity:.9; }
+
+.smIcons{ display:flex; justify-content:center; gap:10px; }
+.smIconBtn{
+  width:44px;height:44px;
+  border-radius:12px;
+  background: rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition: transform .15s ease, filter .15s ease, background .15s ease;
+}
+.smIconBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.08); filter: brightness(1.05); }
+.smIconBtn:active{ transform: translateY(0px) scale(0.98); }
+.smIconBtn svg{ width:20px;height:20px; opacity:.88; }
+
+.smCard{
+  border-radius:18px;
+  padding:14px;
+  background: rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.35);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.smCard:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 26px 90px rgba(0,0,0,0.55);
+}
+.smCardTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:rgba(255,255,255,0.65);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
+  font-size:12px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.smStatusPill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  color:rgba(255,255,255,0.78);
+  font-size:12px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+.smDot{ width:10px;height:10px; border-radius:50%; background:#888; }
+.smStatusPill[data-status="online"] .smDot{ background:#3bd671; }
+.smStatusPill[data-status="idle"] .smDot{ background:#f2c94c; }
+.smStatusPill[data-status="dnd"] .smDot{ background:#ff5b5b; }
+.smStatusPill[data-status="offline"] .smDot{ background:#777; }
+
+.smRow{ display:flex; align-items:center; gap:12px; }
+.smDiscIcon{
+  width:44px; height:44px;
+  border-radius:14px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.55);
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
+#dAvatar{
+  width:100%;
+  height:100%;
+  display:none;
+  object-fit:cover;
+  border-radius:14px;
+}
+.smDiscText{ display:flex; flex-direction:column; gap:2px; }
+.smDiscName{
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:800;
+  font-size:14px;
+}
+.smDiscSub{
+  color:rgba(255,255,255,0.62);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:600;
+  font-size:12px;
+}
+.smFoot{
+  margin-top:8px;
+  text-align:center;
+  color:rgba(255,255,255,0.45);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:1px;
+  font-size:11px;
+}
+
+/* ===== ADMIN ===== */
+#adminOverlay{ z-index:84; }
+body.adminOpen #adminOverlay{ display:block; }
+.adWrap{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.96);
+  width:min(980px, 94vw);
+  height:min(560px, 80vh);
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.10), rgba(0,0,0,0.90)),
+    linear-gradient(to bottom, rgba(255,255,255,0.04), rgba(0,0,0,0.62));
+  border:1px solid rgba(255,170,90,0.16);
+  box-shadow: 0 40px 180px rgba(0,0,0,0.84);
+  backdrop-filter: blur(10px);
+  opacity:0;
+  transition: opacity 220ms ease, transform 260ms ease;
+  pointer-events:none;
+  overflow:hidden;
+}
+body.adminOpen .adWrap{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+}
+.adHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 8px;
+}
+.adTitle{
+  color:rgba(255,220,190,0.70);
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:3px;
+  font-size:13px;
+  text-transform:uppercase;
+}
+.adClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,140,70,0.08);
+  color:rgba(255,220,190,0.82);
+  border:1px solid rgba(255,170,90,0.18);
+  font-family:"Cinzel", serif;
+  letter-spacing:2px;
+  font-weight:800;
+}
+.adClose:hover{ background: rgba(255,140,70,0.12); }
+
+.adGrid{
+  padding:10px 18px 18px;
+  display:grid;
+  grid-template-columns: 1.2fr .8fr;
+  gap:14px;
+  height:calc(100% - 58px);
+}
+.adCard{
+  border-radius:18px;
+  padding:16px;
+  background: rgba(0,0,0,0.35);
+  border:1px solid rgba(255,170,90,0.14);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+  overflow:auto;
+}
+.adCard h3{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:12px;
+  color:rgba(255,220,190,0.72);
+  margin-bottom:10px;
+}
+.adMuted{
+  color:rgba(255,220,190,0.62);
+  font-family:"Cormorant Garamond", serif;
+  font-size:16px;
+  line-height:1.45;
+}
+.adLabel{
+  margin-top:12px;
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  letter-spacing:.8px;
+  color:rgba(255,220,190,0.70);
+}
+.adField{
+  width:100%;
+  margin-top:6px;
+  padding:12px 12px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.16);
+  background: rgba(0,0,0,0.35);
+  color:rgba(255,220,190,0.92);
+  outline:none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.adField[readonly]{ opacity:0.85; }
+.adRow{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-top:12px;
+}
+.adBtn{
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background: rgba(255,140,70,0.10);
+  color:rgba(255,220,190,0.88);
+  cursor:pointer;
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+.adBtn:hover{ background: rgba(255,140,70,0.14); }
+.adMsg{
+  flex:1;
+  color:rgba(255,220,190,0.70);
+  font-family:"Cormorant Garamond", serif;
+  font-size:16px;
+}
+.adMsg.bad{ color:rgba(255,120,120,0.85); }
+.adMsg.good{ color:rgba(140,255,180,0.85); }
+
+.adStats{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+.stat{
+  border-radius:16px;
+  padding:14px;
+  background: rgba(0,0,0,0.28);
+  border:1px solid rgba(255,170,90,0.14);
+}
+.stat .k{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:11px;
+  color:rgba(255,220,190,0.62);
+}
+.stat .v{
+  margin-top:6px;
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  font-size:26px;
+  color:rgba(255,220,190,0.90);
+}
+.stat .s{
+  margin-top:2px;
+  font-family:"Cormorant Garamond", serif;
+  font-size:15px;
+  color:rgba(255,220,190,0.60);
+}
+
+@media (max-width: 860px){
+  .adGrid{ grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce){
+  .title, .sub{ animation:none; }
+  .title::before{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<video id="mainVideo"
+  src="https://files.catbox.moe/klaol5.webm"
+  playsinline preload="auto" loop></video>
+
+<audio id="bgAudio" src="https://files.catbox.moe/99fu05.m4a" preload="auto"></audio>
+
+<section id="entry" tabindex="0" aria-label="Entrada Shadow Fight 2">
+  <div class="bgFill"></div>
+  <canvas id="ashCanvas"></canvas>
+
+  <div class="stage">
+    <div class="frameWrap">
+      <img class="frame" src="https://files.catbox.moe/5yp48z.png" alt="Shadow Fight 2 Entry">
+      <div class="softOverlay"></div>
+      <img id="strike" class="frame" src="https://files.catbox.moe/er48bx.gif" alt="Golpe">
+
+      <div class="introUI">
+        <div>
+          <div class="title">ENTER</div>
+          <div class="sub">
+            pressione <span class="kbdEnter">ENTER
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M8 7v5h10" stroke="rgba(255,220,190,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M14 9l4 3-4 3" stroke="rgba(255,220,190,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 12H6" stroke="rgba(255,220,190,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </span>
+            / clique
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VOLUME -->
+<div id="grimoire" aria-label="Controle de volume">
+  <button class="grimoireBtn" id="grimBtn" aria-label="Abrir controle de volume">
+    <span class="grimoireIcon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="rgba(255,220,190,0.85)"/>
+        <path d="M16 9c1 .8 1.5 1.8 1.5 3s-.5 2.2-1.5 3" stroke="rgba(255,140,70,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+        <path d="M18.5 7.5c1.6 1.5 2.5 3 2.5 4.5s-.9 3-2.5 4.5" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+    </span>
+  </button>
+
+  <div class="panel">
+    <div class="row">
+      <input id="vol" type="range" min="0" max="100" value="8" />
+      <div class="volValue" id="volValue">8%</div>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN -->
+<div id="screenCtrl" aria-label="Tela cheia">
+  <button class="screenBtn" id="fsBtn" aria-label="Ativar/desativar tela cheia">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M8 4H4v4" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M16 4h4v4" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M8 20H4v-4" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M16 20h4v-4" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+    </svg>
+  </button>
+</div>
+
+<!-- PERGAMINHO BTN -->
+<button id="scrollBtn" aria-label="Abrir pergaminho (lore)">
+  <svg viewBox="0 0 24 24" fill="none">
+    <path d="M7 5h10v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V5Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" />
+    <path d="M7 8h10" stroke="rgba(255,140,70,0.7)" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M7 11h8" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+    <path d="M7 14h9" stroke="rgba(255,140,70,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+  </svg>
+</button>
+
+<!-- ADMIN BTN -->
+<button id="adminBtn" aria-label="Abrir selo (admin)">
+  <svg viewBox="0 0 24 24" fill="none">
+    <path d="M12 3l7 4v6c0 5-3 8-7 8s-7-3-7-8V7l7-4Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" />
+    <path d="M9.5 12l1.6 1.6L14.8 10" stroke="rgba(255,140,70,0.75)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<!-- MENU TOP-RIGHT -->
+<div id="menu" aria-label="Menu">
+  <button class="menuBtn" id="menuBtn" aria-label="Abrir menu">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M5 7h14" stroke="rgba(255,220,190,0.9)" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M5 12h14" stroke="rgba(255,140,70,0.75)" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M5 17h14" stroke="rgba(255,220,190,0.75)" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <div class="menuDrop" role="menu" aria-label="Opções">
+    <button class="menuItem" id="openSocial" role="menuitem">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 12c2.2 0 4-1.8 4-4S14.2 4 12 4 8 5.8 8 8s1.8 4 4 4Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6"/>
+        <path d="M4 20c1.2-3.5 4.3-6 8-6s6.8 2.5 8 6" stroke="rgba(255,140,70,0.7)" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      Social Media
+    </button>
+
+    <button class="menuItem" id="openArchives" role="menuitem">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M4 7h16v13H4V7Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6"/>
+        <path d="M4 7l2-3h12l2 3" stroke="rgba(255,140,70,0.7)" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      Archives
+    </button>
+
+    <button class="menuItem" id="openPlaylists" role="menuitem">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M6 7h12" stroke="rgba(255,220,190,0.9)" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M6 12h12" stroke="rgba(255,140,70,0.7)" stroke-width="1.8" stroke-linecap="round"/>
+        <path d="M6 17h8" stroke="rgba(255,220,190,0.75)" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      Playlists
+    </button>
+  </div>
+</div>
+
+<!-- PERGAMINHO -->
+<div id="scrollOverlay" class="overlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="scroll" role="dialog" aria-label="Pergaminho">
+    <div class="scrollMask">
+      <div class="scrollPaper">
+        <div class="scrollInner">
+          <div class="scrollTop">
+            <div class="scrollTitle">Pergaminho — Vozes nas Sombras</div>
+            <button class="scrollClose" id="scrollClose">FECHAR</button>
+          </div>
+
+          <div class="scrollBody">
+            <div class="scrollLog" id="scrollLog">
+              <div class="typeLine" id="typeLine"></div><span class="cursor" id="cursor"></span>
+              <div id="out"></div>
+            </div>
+
+            <div class="scrollInputBar">
+              <div class="prompt">&gt;</div>
+              <input id="cmdInput" autocomplete="off" spellcheck="false"
+                     placeholder="digite um comando (ex: hub, arquivo, lore, ajuda) e ENTER">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminOverlay" class="overlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="adWrap" role="dialog" aria-label="Selo — Acesso confidencial">
+    <div class="adHead">
+      <div class="adTitle">Selo — Acesso confidencial</div>
+      <button class="adClose" id="adminClose">FECHAR</button>
+    </div>
+
+    <div class="adGrid">
+      <div class="adCard">
+        <h3>Portão do Selo</h3>
+        <div class="adMuted">Apenas aqueles marcados pelas sombras podem ler os registros.</div>
+
+        <div class="adLabel">Usuário</div>
+        <input class="adField" id="adminUser" value="Sombra" readonly>
+
+        <div class="adLabel">Senha</div>
+        <input class="adField" id="adminPass" type="password" placeholder="insira o selo de acesso">
+
+        <div class="adRow">
+          <button class="adBtn" id="adminEnter">Entrar</button>
+          <div class="adMsg" id="adminMsg"></div>
+        </div>
+
+        <div class="adMuted" style="margin-top:12px; opacity:.85">
+          Obs: estes números são locais (contam neste navegador).
+        </div>
+      </div>
+
+      <div class="adCard" id="adminPanel" style="display:none;">
+        <h3>Registros do Portal</h3>
+
+        <div class="adStats">
+          <div class="stat">
+            <div class="k">Visitas</div>
+            <div class="v" id="stVisits">0</div>
+            <div class="s">quantas vezes abriram o site</div>
+          </div>
+          <div class="stat">
+            <div class="k">Enter acionado</div>
+            <div class="v" id="stEnter">0</div>
+            <div class="s">quantas vezes “entraram”</div>
+          </div>
+          <div class="stat">
+            <div class="k">Pergaminho aberto</div>
+            <div class="v" id="stScroll">0</div>
+            <div class="s">quantas vezes ouviram as vozes</div>
+          </div>
+          <div class="stat">
+            <div class="k">Sessões admin</div>
+            <div class="v" id="stAdmin">0</div>
+            <div class="s">quantas vezes acessaram o painel</div>
+          </div>
+        </div>
+
+        <div class="adMuted" style="margin-top:14px;">
+          Liberado. Aqui vai virar teu dashboard “confidencial” na V2.1+.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL MEDIA -->
+<div id="socialOverlay" class="overlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="smWrap" role="dialog" aria-label="Social Media">
+    <div class="smHead">
+      <div class="smTitle">SOCIAL MEDIA</div>
+      <button class="smClose" id="socialClose">FECHAR</button>
+    </div>
+
+    <div class="smBody">
+      <div class="smProfile">
+        <div class="smAvatar">
+          <img src="https://files.catbox.moe/5lkce6.gif" alt="Allz avatar">
+        </div>
+
+        <div class="smName">Allz</div>
+        <div class="smBio">awake and unafraid</div>
+
+        <div class="smLoc">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 21s7-4.5 7-11a7 7 0 1 0-14 0c0 6.5 7 11 7 11Z" stroke="rgba(255,255,255,0.75)" stroke-width="1.6"/>
+            <path d="M12 11.2a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" fill="rgba(255,255,255,0.75)"/>
+          </svg>
+          purgatório
+        </div>
+      </div>
+
+      <div class="smCard">
+        <div class="smCardTitle">
+          <span>Discord Status</span>
+          <span class="smStatusPill" id="dPill" data-status="offline">
+            <span class="smDot"></span>
+            <span id="dStatusTxt">Offline</span>
+          </span>
+        </div>
+
+        <div class="smRow">
+          <div class="smDiscIcon" aria-hidden="true">
+            <img id="dAvatar" alt="Discord avatar">
+            <svg id="dAvatarFallback" viewBox="0 0 24 24" fill="none">
+              <path d="M16.5 7.5c-1.1-.8-2.3-1.3-3.6-1.5l-.4.7c-1.3-.2-2.7-.2-4 0l-.4-.7c-1.3.2-2.5.7-3.6 1.5C2.3 10.7 2 13.8 2.1 16.9c1.5 1.1 3.2 1.9 5 2.4l.9-1.5c-.6-.2-1.2-.5-1.7-.9l.4-.3c3.2 1.5 6.7 1.5 9.9 0l.4.3c-.5.4-1.1.7-1.7.9l.9 1.5c1.8-.5 3.5-1.3 5-2.4.2-3.1-.1-6.2-2.6-9.4Z"
+                    stroke="rgba(255,255,255,0.55)" stroke-width="1.2" />
+              <path d="M9 14.2c.6 0 1-.6 1-1.2s-.4-1.2-1-1.2-1 .6-1 1.2.4 1.2 1 1.2Zm6 0c.6 0 1-.6 1-1.2s-.4-1.2-1-1.2-1 .6-1 1.2.4 1.2 1 1.2Z"
+                    fill="rgba(255,255,255,0.65)"/>
+            </svg>
+          </div>
+
+          <div class="smDiscText">
+            <div class="smDiscName" id="dUserLine">Allz · allzz.exe</div>
+            <div class="smDiscSub" id="dSubLine">status local (aguardando API)</div>
+          </div>
+        </div>
+
+        <div class="smFoot" id="dTime">ATUALIZADO ÀS --:--</div>
+      </div>
+    </div>
+  </div>
+</div>
 <script>
 const entry = document.getElementById("entry");
 const mainVideo = document.getElementById("mainVideo");
@@ -14,7 +1334,6 @@ const LS = {
   scroll: "sf2_scroll_open",
   admin: "sf2_admin_sessions",
 };
-
 function bump(key){
   const v = Number(localStorage.getItem(key) || "0") + 1;
   localStorage.setItem(key, String(v));
@@ -75,7 +1394,6 @@ async function start(){
   started=true;
 
   bump(LS.enter);
-
   document.body.classList.add("strikeOn");
 
   try{
@@ -86,7 +1404,7 @@ async function start(){
 
   setTimeout(async ()=>{
     try{
-      mainVideo.muted = true; // vídeo sempre mudo (não atrapalha overlays)
+      mainVideo.muted = true;
       await mainVideo.play();
     }catch(e){}
     document.body.classList.add("entered");
@@ -188,9 +1506,8 @@ scrollOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeScroll();
 });
 
-/* (SEM atalhos extras) — removi T / ESC */
+/* sem atalhos extras (T/ESC removidos) */
 
-/* Typing helpers */
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function scrollToBottom(){ scrollLog.scrollTop = scrollLog.scrollHeight; }
 
@@ -302,7 +1619,6 @@ function escapeHtml(s){
 const adminBtn = document.getElementById("adminBtn");
 const adminOverlay = document.getElementById("adminOverlay");
 const adminClose = document.getElementById("adminClose");
-const adminUser = document.getElementById("adminUser");
 const adminPass = document.getElementById("adminPass");
 const adminEnter = document.getElementById("adminEnter");
 const adminMsg = document.getElementById("adminMsg");
@@ -329,7 +1645,6 @@ function closeAdmin(){
   document.body.classList.remove("adminOpen");
   adminOverlay.setAttribute("aria-hidden","true");
 }
-
 adminBtn.addEventListener("click",(e)=>{
   e.stopPropagation();
   openAdmin();
@@ -345,7 +1660,6 @@ function fillStats(){
   stScroll.textContent = getCount(LS.scroll);
   stAdmin.textContent = getCount(LS.admin);
 }
-
 adminEnter.addEventListener("click", ()=>{
   const pass = adminPass.value.trim();
   if(pass !== ADMIN_PASS){
@@ -389,7 +1703,6 @@ function closeSocialOverlay(){
   document.body.classList.remove("socialOpen");
   socialOverlay.setAttribute("aria-hidden","true");
 }
-
 openSocial.addEventListener("click", ()=>{
   menu.classList.remove("open");
   openSocialOverlay();
@@ -407,13 +1720,12 @@ socialOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeSocialOverlay();
 });
 
-/* Discord status (Lanyard) */
+/* Discord (Lanyard) */
 const dPill = document.getElementById("dPill");
 const dStatusTxt = document.getElementById("dStatusTxt");
 const dUserLine = document.getElementById("dUserLine");
 const dSubLine = document.getElementById("dSubLine");
 const dTime = document.getElementById("dTime");
-
 const dAvatar = document.getElementById("dAvatar");
 const dAvatarFallback = document.getElementById("dAvatarFallback");
 
@@ -426,14 +1738,12 @@ function niceStatus(s){
   if(s === "dnd") return "Não perturbe";
   return "Offline";
 }
-
 function nowHHMM(){
   const now = new Date();
   const hh = String(now.getHours()).padStart(2,"0");
   const mm = String(now.getMinutes()).padStart(2,"0");
   return `${hh}:${mm}`;
 }
-
 async function fetchLanyard(){
   try{
     const r = await fetch(`https://api.lanyard.rest/v1/users/${LANYARD_ID}`, { cache: "no-store" });
@@ -442,22 +1752,15 @@ async function fetchLanyard(){
     if(!data) return;
 
     const status = data.discord_status || "offline";
-    const label = niceStatus(status);
-
     dPill.setAttribute("data-status", status);
-    dStatusTxt.textContent = label;
+    dStatusTxt.textContent = niceStatus(status);
 
     const du = data.discord_user || {};
     const display = du.global_name || du.display_name || du.username || "Allz";
     dUserLine.textContent = `${display} · ${FORCED_USERNAME}`;
 
-    // subline (local / placeholders)
-    // se o lanyard tiver activity, você pode mudar depois (V2.1)
-    dSubLine.textContent = (status === "offline")
-      ? "offline"
-      : "ativo (Lanyard)";
+    dSubLine.textContent = (status === "offline") ? "offline" : "ativo (Lanyard)";
 
-    // Avatar real do Discord
     if(du.id){
       const fallbackIndex = (Number(du.discriminator || "0") % 5);
       const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/${fallbackIndex}.png`;
@@ -479,9 +1782,10 @@ async function fetchLanyard(){
     dTime.textContent = `ATUALIZADO ÀS ${nowHHMM()}`;
   }catch(e){}
 }
-
-// loop leve (só pra social)
 setInterval(()=>{
   if(document.body.classList.contains("socialOpen")) fetchLanyard();
 }, 15000);
 </script>
+
+</body>
+</html>
