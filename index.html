@@ -356,6 +356,32 @@ body.entered #scrollBtn{ opacity:1; pointer-events:auto; }
 #scrollBtn:hover{ transform:translateX(-50%) scale(1.05); }
 #scrollBtn svg{ width:22px;height:22px; opacity:.9; }
 
+/* ===== BOTÃO ADMIN (ao lado do pergaminho) — V2.1 ===== */
+#adminBtn{
+  position:fixed;
+  left:calc(50% + 56px);
+  top:14px;
+  z-index:60;
+  width:44px;height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.75),
+    0 0 22px rgba(255,140,70,0.10);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:transform .2s ease, opacity .2s ease;
+  opacity:0;
+  pointer-events:none;
+}
+body.entered #adminBtn{ opacity:1; pointer-events:auto; }
+#adminBtn:hover{ transform:scale(1.05); }
+#adminBtn svg{ width:22px;height:22px; opacity:.9; }
+
 /* ===== MENU (top-right) ===== */
 #menuWrap{
   position:fixed;
@@ -909,11 +935,295 @@ body.scrollOpen .scrollPaper{
   .title, .sub{ animation:none; }
   .title::before{ display:none; }
 }
+
+/* =========================================================
+   PLAYLISTS OVERLAY — V2.1 (novo)
+========================================================= */
+#playlistsOverlay{
+  position:fixed; inset:0;
+  z-index:95;
+  display:none;
+}
+body.playlistsOpen #playlistsOverlay{ display:block; }
+body.playlistsOpen #mainVideo{
+  filter:contrast(1.06) saturate(0.92) blur(8px) brightness(0.45);
+}
+#playlistsOverlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.86);
+  backdrop-filter: blur(3px);
+  animation:dimIn 240ms ease both;
+}
+
+.plCard{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.94);
+  width:min(1100px, 94vw);
+  height:min(680px, 90vh);
+  border-radius:22px;
+  background: rgba(16,16,18,0.92);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 55px 220px rgba(0,0,0,0.92);
+  backdrop-filter: blur(18px);
+  overflow:hidden;
+  opacity:0;
+  animation:plIn 320ms cubic-bezier(.12,.92,.12,1) both;
+}
+@keyframes plIn{
+  from{ opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px); }
+  to{ opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
+}
+.plHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.plTitle{
+  color:rgba(255,255,255,0.70);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
+  font-size:12px;
+  text-transform:uppercase;
+}
+.plClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.plClose:hover{ background: rgba(255,255,255,0.09); }
+
+.plBody{
+  height:calc(100% - 58px);
+  display:grid;
+  grid-template-columns: 280px 1fr;
+}
+.plList{
+  padding:14px;
+  border-right:1px solid rgba(255,255,255,0.06);
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.plItem{
+  width:100%;
+  border:none;
+  cursor:pointer;
+  text-align:left;
+  padding:12px 12px;
+  border-radius:16px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.86);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:800;
+  letter-spacing:0.2px;
+  transition: transform .16s ease, background .16s ease, filter .16s ease;
+}
+.plItem small{
+  display:block;
+  margin-top:4px;
+  font-weight:700;
+  opacity:.65;
+}
+.plItem:hover{ transform: translateY(-1px); background:rgba(255,255,255,0.08); filter:brightness(1.03); }
+.plItem.active{ background:rgba(255,255,255,0.12); border-color:rgba(255,255,255,0.12); }
+
+.plPlayer{
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.plFrameWrap{
+  width:100%;
+  height:100%;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.35);
+}
+.plFrameWrap iframe{
+  width:100%;
+  height:100%;
+  border:none;
+}
+
+@media (max-width: 860px){
+  .plBody{ grid-template-columns: 1fr; }
+  .plList{
+    flex-direction:row;
+    overflow:auto;
+    border-right:none;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .plItem{ min-width: 220px; }
+  .plPlayer{ height: calc(100% - 120px); }
+}
+
+/* =========================================================
+   ADMIN OVERLAY — V2.1 (novo)
+========================================================= */
+#adminOverlay{
+  position:fixed; inset:0;
+  z-index:98;
+  display:none;
+}
+body.adminOpen #adminOverlay{ display:block; }
+body.adminOpen #mainVideo{
+  filter:contrast(1.06) saturate(0.92) blur(10px) brightness(0.38);
+}
+#adminOverlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.90);
+  backdrop-filter: blur(2px);
+  animation:dimIn 240ms ease both;
+}
+
+.adCard{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.94);
+  width:min(740px, 94vw);
+  border-radius:22px;
+  background: rgba(15,15,17,0.95);
+  border:1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 60px 240px rgba(0,0,0,0.94);
+  backdrop-filter: blur(18px);
+  overflow:hidden;
+  opacity:0;
+  animation:adIn 320ms cubic-bezier(.12,.92,.12,1) both;
+}
+@keyframes adIn{
+  from{ opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px); }
+  to{ opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
+}
+
+.adHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.adTitle{
+  color:rgba(255,255,255,0.70);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
+  font-size:12px;
+  text-transform:uppercase;
+}
+.adClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.adClose:hover{ background: rgba(255,255,255,0.09); }
+
+.adBody{
+  padding:16px 18px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.adField{
+  width:100%;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:rgba(255,255,255,0.05);
+  color:rgba(255,255,255,0.90);
+  outline:none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.adField::placeholder{ color:rgba(255,255,255,0.45); }
+
+.adBtnRow{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.adBtn{
+  border:none;
+  cursor:pointer;
+  padding:12px 14px;
+  border-radius:14px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-size:12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  transition: transform .15s ease, filter .15s ease, background .15s ease;
+}
+.adBtn:active{ transform:scale(0.98); }
+.adBtnPrimary{
+  background:#fff;
+  color:#000;
+}
+.adBtnGhost{
+  background:rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.86);
+  border:1px solid rgba(255,255,255,0.10);
+}
+.adBtn:hover{ filter:brightness(1.04); transform: translateY(-1px); }
+
+.adHint{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
+  letter-spacing:1px;
+}
+
+.adGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:10px;
+}
+@media (max-width: 620px){
+  .adGrid{ grid-template-columns: 1fr; }
+}
+.adMetric{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.10);
+  padding:12px 12px;
+  border-radius:16px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.35);
+}
+.adMetric .k{
+  color:rgba(255,255,255,0.60);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.adMetric .v{
+  margin-top:6px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  font-size:22px;
+  color:rgba(255,255,255,0.92);
+}
 </style>
 </head>
 <body>
-
-<video id="mainVideo"
+  <video id="mainVideo"
   src="https://files.catbox.moe/klaol5.webm"
   playsinline preload="auto" loop></video>
 
@@ -990,6 +1300,14 @@ body.scrollOpen .scrollPaper{
   </svg>
 </button>
 
+<!-- ===== BOTÃO ADMIN (ao lado do pergaminho) — V2.1 ===== -->
+<button id="adminBtn" aria-label="Abrir admin">
+  <svg viewBox="0 0 24 24" fill="none">
+    <path d="M12 2l7 4v6c0 5-3 9-7 10C8 21 5 17 5 12V6l7-4Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6"/>
+    <path d="M9.5 12.2l1.7 1.7 3.6-4" stroke="rgba(255,140,70,0.7)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
 <!-- ===== MENU (top-right) ===== -->
 <div id="menuWrap" aria-label="Menu">
   <button class="menuBtn" id="menuBtn" aria-label="Abrir menu">
@@ -1008,7 +1326,7 @@ body.scrollOpen .scrollPaper{
       Archives <span class="tag">placeholder</span>
     </button>
     <button class="menuItem" id="openPlaylists">
-      Playlists <span class="tag">placeholder</span>
+      Playlists <span class="tag">V2.1</span>
     </button>
   </div>
 </div>
@@ -1144,6 +1462,73 @@ body.scrollOpen .scrollPaper{
     </div>
   </div>
 </div>
+<!-- ================= PLAYLISTS OVERLAY — V2.1 ================= -->
+<div id="playlistsOverlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="plCard" role="dialog" aria-label="Playlists">
+    <div class="plHead">
+      <div class="plTitle">PLAYLISTS</div>
+      <button class="plClose" id="plClose">FECHAR</button>
+    </div>
+
+    <div class="plBody">
+      <div class="plList" id="plList" aria-label="Lista de playlists"></div>
+
+      <div class="plPlayer">
+        <div class="plFrameWrap">
+          <iframe
+            id="plFrame"
+            src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            title="Spotify Playlist Embed">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ADMIN OVERLAY — V2.1 ================= -->
+<div id="adminOverlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="adCard" role="dialog" aria-label="Admin">
+    <div class="adHead">
+      <div class="adTitle">CONFIDENTIAL ACCESS</div>
+      <button class="adClose" id="adClose">FECHAR</button>
+    </div>
+
+    <div class="adBody">
+      <!-- LOGIN -->
+      <div id="adLogin">
+        <input class="adField" id="adUser" autocomplete="off" placeholder="Usuário">
+        <input class="adField" id="adPass" type="password" placeholder="Senha">
+        <div class="adBtnRow">
+          <button class="adBtn adBtnPrimary" id="adLoginBtn">ENTRAR</button>
+          <button class="adBtn adBtnGhost" id="adLoginHint">DICA</button>
+        </div>
+        <div class="adHint" id="adMsg">Acesso restrito.</div>
+      </div>
+
+      <!-- DASHBOARD -->
+      <div id="adDash" style="display:none">
+        <div class="adHint">Dashboard local (localStorage). Nenhum servidor.</div>
+
+        <div class="adGrid" id="adGrid"></div>
+
+        <div class="adBtnRow">
+          <button class="adBtn adBtnGhost" id="adResetBtn">RESET MÉTRICAS</button>
+          <button class="adBtn adBtnPrimary" id="adLogoutBtn">SAIR</button>
+        </div>
+
+        <div class="adHint" id="adUpdated">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const entry = document.getElementById("entry");
 const mainVideo = document.getElementById("mainVideo");
@@ -1201,6 +1586,9 @@ let started=false;
 async function start(){
   if(started) return;
   started=true;
+
+  // métrica: entradas
+  incLocal("enter_count");
 
   document.body.classList.add("strikeOn");
 
@@ -1303,12 +1691,7 @@ openArchives.addEventListener("click", ()=>{
   // placeholder (V2.1)
   alert("Archives (placeholder) — V2.1");
 });
-openPlaylists.addEventListener("click", ()=>{
-  menuWrap.classList.remove("open");
-  // placeholder (V2.1)
-  alert("Playlists (placeholder) — V2.1");
-});
-
+  <script>
 /* ===== SOCIAL OVERLAY ===== */
 const socialOverlay = document.getElementById("socialOverlay");
 const socialClose = document.getElementById("socialClose");
@@ -1332,24 +1715,92 @@ function getLocal(key){
   return Number(localStorage.getItem(key) || "0");
 }
 
+/* ===== LANYARD (Discord Presence) =====
+   Obs: endpoint: api.lanyard.rest/v1/users/513830615225860096
+*/
+const LANYARD_USER_ID = "513830615225860096";
+const LANYARD_URL = `https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`;
+
+function mapStatusPT(s){
+  if(s === "online") return "Online";
+  if(s === "idle") return "Ausente";
+  if(s === "dnd") return "Não perturbe";
+  return "Offline";
+}
+function statusToPill(s){
+  smStatusPill.dataset.status = s || "offline";
+  smStatusText.textContent = mapStatusPT(s || "offline");
+}
+function setUpdatedNow(){
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mm = String(d.getMinutes()).padStart(2,"0");
+  smUpdatedAt.textContent = `atualizado às ${hh}:${mm}`;
+}
+async function fetchLanyard(){
+  statusToPill("idle");
+  setUpdatedNow();
+
+  try{
+    const r = await fetch(LANYARD_URL, { cache:"no-store" });
+    if(!r.ok) throw new Error("lanyard http");
+    const j = await r.json();
+
+    const data = j?.data;
+    if(!data) throw new Error("lanyard data");
+
+    const st = data.discord_status || "offline";
+    statusToPill(st);
+
+    const dn =
+      data.discord_user?.global_name ||
+      data.discord_user?.display_name ||
+      data.discord_user?.username ||
+      "Allz";
+    smDiscordName.textContent = dn;
+
+    smDiscordSub.textContent = "@allzz.exe";
+
+    const uid = data.discord_user?.id || LANYARD_USER_ID;
+    const av = data.discord_user?.avatar;
+    if(av){
+      const isAnim = av.startsWith("a_");
+      const ext = isAnim ? "gif" : "png";
+      const url = `https://cdn.discordapp.com/avatars/${uid}/${av}.${ext}?size=256`;
+
+      dAvatar.src = url;
+      dAvatar.style.display = "block";
+      dFallback.style.display = "none";
+    }else{
+      dAvatar.style.display = "none";
+      dFallback.style.display = "block";
+    }
+
+    setUpdatedNow();
+  }catch(e){
+    // mantém local fallback
+  }
+}
+
+/* ===== SOCIAL OPEN/CLOSE (atualizado: fecha outros overlays) ===== */
 function openSocialOverlay(){
   if(!document.body.classList.contains("entered")) return;
 
-  // fecha outros
-  document.body.classList.remove("scrollOpen");
-  scrollOverlay.setAttribute("aria-hidden","true");
+  // fecha outros overlays
+  if(document.body.classList.contains("scrollOpen")) closeScroll();
+  if(document.body.classList.contains("playlistsOpen")) closePlaylistsOverlay();
+  if(document.body.classList.contains("adminOpen")) closeAdminOverlay();
 
-  // pausa áudio do fundo enquanto social estiver aberto
   pauseBgAudio();
 
   document.body.classList.add("socialOpen");
   socialOverlay.setAttribute("aria-hidden","false");
 
-  // views
+  // views + métrica open
   const v = incLocal("sm_views");
   smViews.textContent = String(v);
+  incLocal("social_open");
 
-  // busca Lanyard (se falhar, fica no status local)
   fetchLanyard();
 
   setTimeout(()=>socialClose.focus(), 80);
@@ -1369,81 +1820,6 @@ socialOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeSocialOverlay();
 });
 
-/* ===== LANYARD (Discord Presence) =====
-   Obs: você mandou o endpoint: api.lanyard.rest/v1/users/513830615225860096
-*/
-const LANYARD_USER_ID = "513830615225860096";
-const LANYARD_URL = `https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`;
-
-function mapStatusPT(s){
-  // Lanyard: "online" | "idle" | "dnd" | "offline"
-  if(s === "online") return "Online";
-  if(s === "idle") return "Ausente";
-  if(s === "dnd") return "Não perturbe";
-  return "Offline";
-}
-function statusToPill(s){
-  smStatusPill.dataset.status = s || "offline";
-  smStatusText.textContent = mapStatusPT(s || "offline");
-}
-
-function setUpdatedNow(){
-  const d = new Date();
-  const hh = String(d.getHours()).padStart(2,"0");
-  const mm = String(d.getMinutes()).padStart(2,"0");
-  smUpdatedAt.textContent = `atualizado às ${hh}:${mm}`;
-}
-
-async function fetchLanyard(){
-  // status local default
-  statusToPill("idle");
-  setUpdatedNow();
-
-  try{
-    const r = await fetch(LANYARD_URL, { cache:"no-store" });
-    if(!r.ok) throw new Error("lanyard http");
-    const j = await r.json();
-
-    const data = j?.data;
-    if(!data) throw new Error("lanyard data");
-
-    // status
-    const st = data.discord_status || "offline";
-    statusToPill(st);
-
-    // nomes
-    const dn =
-      data.discord_user?.global_name ||
-      data.discord_user?.display_name ||
-      data.discord_user?.username ||
-      "Allz";
-    smDiscordName.textContent = dn;
-
-    // username solicitado: allzz.exe (fixo)
-    smDiscordSub.textContent = "@allzz.exe";
-
-    // avatar do discord, se existir
-    const uid = data.discord_user?.id || LANYARD_USER_ID;
-    const av = data.discord_user?.avatar;
-    if(av){
-      // se avatar começa com "a_" geralmente é gif
-      const isAnim = av.startsWith("a_");
-      const ext = isAnim ? "gif" : "png";
-      const url = `https://cdn.discordapp.com/avatars/${uid}/${av}.${ext}?size=256`;
-
-      dAvatar.src = url;
-      dAvatar.style.display = "block";
-      dFallback.style.display = "none";
-    }else{
-      dAvatar.style.display = "none";
-      dFallback.style.display = "block";
-    }
-
-    setUpdatedNow();
-  }catch(e){
-    // mantém local fallback
-  }
-}
 
 /* ===== PERGAMINHO ===== */
 const scrollBtn = document.getElementById("scrollBtn");
@@ -1470,15 +1846,19 @@ const loreLines = [
 function openScroll(){
   if(!document.body.classList.contains("entered")) return;
 
-  // fecha social se estiver aberto
+  // fecha outros overlays
   if(document.body.classList.contains("socialOpen")) closeSocialOverlay();
+  if(document.body.classList.contains("playlistsOpen")) closePlaylistsOverlay();
+  if(document.body.classList.contains("adminOpen")) closeAdminOverlay();
 
-  // pausa áudio do fundo enquanto pergaminho estiver aberto
   pauseBgAudio();
 
   document.body.classList.add("scrollOpen");
   scrollOverlay.setAttribute("aria-hidden","false");
   setTimeout(()=>cmdInput.focus(), 80);
+
+  // métrica
+  incLocal("scroll_open");
 
   if(!typedOnce){
     startTyping();
@@ -1499,16 +1879,6 @@ scrollBtn.addEventListener("click",(e)=>{
 scrollClose.addEventListener("click", closeScroll);
 scrollOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeScroll();
-});
-
-/* Remove atalhos: só ESC fecha (quando estiver aberto) */
-document.addEventListener("keydown",(e)=>{
-  if(e.key === "Escape" && document.body.classList.contains("scrollOpen")){
-    closeScroll();
-  }
-  if(e.key === "Escape" && document.body.classList.contains("socialOpen")){
-    closeSocialOverlay();
-  }
 });
 
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
@@ -1617,6 +1987,226 @@ function escapeHtml(s){
           .replaceAll('"',"&quot;")
           .replaceAll("'","&#039;");
 }
+
+/* =========================================================
+   PLAYLISTS — V2.1
+========================================================= */
+const playlistsOverlay = document.getElementById("playlistsOverlay");
+const plClose = document.getElementById("plClose");
+const plList = document.getElementById("plList");
+const plFrame = document.getElementById("plFrame");
+
+const PLAYLISTS = [
+  {
+    name: "Main Energy",
+    desc: "boost • foco • ritmo",
+    src: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M"
+  },
+  {
+    name: "Dark Mode",
+    desc: "noite • sombra • peso",
+    src: "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd"
+  },
+  {
+    name: "Lo-Fi / Calm",
+    desc: "calmo • repetição • grind",
+    src: "https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn"
+  }
+];
+
+function buildPlaylistList(){
+  plList.innerHTML = "";
+  PLAYLISTS.forEach((p, idx)=>{
+    const b = document.createElement("button");
+    b.className = "plItem" + (idx === 0 ? " active" : "");
+    b.type = "button";
+    b.innerHTML = `${p.name}<small>${p.desc}</small>`;
+    b.addEventListener("click", ()=>{
+      document.querySelectorAll(".plItem").forEach(x=>x.classList.remove("active"));
+      b.classList.add("active");
+      plFrame.src = p.src;
+    });
+    plList.appendChild(b);
+  });
+  // playlist padrão
+  plFrame.src = PLAYLISTS[0].src;
+}
+buildPlaylistList();
+
+function openPlaylistsOverlay(){
+  if(!document.body.classList.contains("entered")) return;
+
+  // fecha outros overlays
+  if(document.body.classList.contains("scrollOpen")) closeScroll();
+  if(document.body.classList.contains("socialOpen")) closeSocialOverlay();
+  if(document.body.classList.contains("adminOpen")) closeAdminOverlay();
+
+  pauseBgAudio();
+
+  document.body.classList.add("playlistsOpen");
+  playlistsOverlay.setAttribute("aria-hidden","false");
+  incLocal("playlists_open");
+
+  setTimeout(()=>plClose.focus(), 80);
+}
+function closePlaylistsOverlay(){
+  document.body.classList.remove("playlistsOpen");
+  playlistsOverlay.setAttribute("aria-hidden","true");
+  resumeBgAudio();
+}
+
+openPlaylists.addEventListener("click", ()=>{
+  menuWrap.classList.remove("open");
+  openPlaylistsOverlay();
+});
+plClose.addEventListener("click", closePlaylistsOverlay);
+playlistsOverlay.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("dim")) closePlaylistsOverlay();
+});
+
+/* =========================================================
+   ADMIN — V2.1 (modular)
+========================================================= */
+const adminBtn = document.getElementById("adminBtn");
+const adminOverlay = document.getElementById("adminOverlay");
+const adClose = document.getElementById("adClose");
+
+const adLogin = document.getElementById("adLogin");
+const adUser = document.getElementById("adUser");
+const adPass = document.getElementById("adPass");
+const adLoginBtn = document.getElementById("adLoginBtn");
+const adLoginHint = document.getElementById("adLoginHint");
+const adMsg = document.getElementById("adMsg");
+
+const adDash = document.getElementById("adDash");
+const adGrid = document.getElementById("adGrid");
+const adResetBtn = document.getElementById("adResetBtn");
+const adLogoutBtn = document.getElementById("adLogoutBtn");
+const adUpdated = document.getElementById("adUpdated");
+
+const ADMIN_USER = "Sombra";
+const ADMIN_PASS = "Projeto26";
+
+function openAdminOverlay(){
+  if(!document.body.classList.contains("entered")) return;
+
+  // fecha outros overlays
+  if(document.body.classList.contains("scrollOpen")) closeScroll();
+  if(document.body.classList.contains("socialOpen")) closeSocialOverlay();
+  if(document.body.classList.contains("playlistsOpen")) closePlaylistsOverlay();
+
+  pauseBgAudio();
+
+  document.body.classList.add("adminOpen");
+  adminOverlay.setAttribute("aria-hidden","false");
+  incLocal("admin_open");
+
+  // estado inicial
+  showAdminLogin();
+
+  setTimeout(()=>adUser.focus(), 80);
+}
+function closeAdminOverlay(){
+  document.body.classList.remove("adminOpen");
+  adminOverlay.setAttribute("aria-hidden","true");
+  resumeBgAudio();
+}
+
+function showAdminLogin(){
+  adDash.style.display = "none";
+  adLogin.style.display = "block";
+  adMsg.textContent = "Acesso restrito.";
+  adUser.value = "";
+  adPass.value = "";
+}
+function showAdminDash(){
+  adLogin.style.display = "none";
+  adDash.style.display = "block";
+  renderAdminMetrics();
+}
+
+function renderAdminMetrics(){
+  const keys = [
+    { k:"enter_count", label:"Entradas" },
+    { k:"scroll_open", label:"Pergaminho aberto" },
+    { k:"social_open", label:"Social aberto" },
+    { k:"sm_views", label:"Social views" },
+    { k:"playlists_open", label:"Playlists aberto" },
+    { k:"admin_open", label:"Admin aberto" }
+  ];
+
+  adGrid.innerHTML = "";
+  keys.forEach(item=>{
+    const card = document.createElement("div");
+    card.className = "adMetric";
+    card.innerHTML = `<div class="k">${item.label}</div><div class="v">${getLocal(item.k)}</div>`;
+    adGrid.appendChild(card);
+  });
+
+  const d = new Date();
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mm = String(d.getMinutes()).padStart(2,"0");
+  adUpdated.textContent = `Atualizado às ${hh}:${mm}`;
+}
+
+function resetAdminMetrics(){
+  const toClear = ["enter_count","scroll_open","social_open","sm_views","playlists_open","admin_open"];
+  toClear.forEach(k=>localStorage.removeItem(k));
+  renderAdminMetrics();
+}
+
+adminBtn.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  openAdminOverlay();
+});
+adClose.addEventListener("click", closeAdminOverlay);
+adminOverlay.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("dim")) closeAdminOverlay();
+});
+
+adLoginHint.addEventListener("click", ()=>{
+  adMsg.textContent = "Dica: usuário é uma sombra. senha é um projeto.";
+});
+
+adLoginBtn.addEventListener("click", ()=>{
+  const u = (adUser.value || "").trim();
+  const p = (adPass.value || "").trim();
+
+  if(u === ADMIN_USER && p === ADMIN_PASS){
+    adMsg.textContent = "Acesso concedido.";
+    showAdminDash();
+    return;
+  }
+  adMsg.textContent = "Negado. Credenciais inválidas.";
+});
+
+adResetBtn.addEventListener("click", resetAdminMetrics);
+adLogoutBtn.addEventListener("click", ()=>{
+  showAdminLogin();
+  closeAdminOverlay();
+});
+
+/* ===== ESC fecha overlays (scroll/social/playlists/admin) ===== */
+document.addEventListener("keydown",(e)=>{
+  if(e.key !== "Escape") return;
+
+  if(document.body.classList.contains("adminOpen")){
+    closeAdminOverlay();
+    return;
+  }
+  if(document.body.classList.contains("playlistsOpen")){
+    closePlaylistsOverlay();
+    return;
+  }
+  if(document.body.classList.contains("scrollOpen")){
+    closeScroll();
+    return;
+  }
+  if(document.body.classList.contains("socialOpen")){
+    closeSocialOverlay();
+    return;
+  }
+});
 </script>
 </body>
 </html>
