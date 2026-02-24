@@ -39,10 +39,13 @@ body.socialOpen #mainVideo{
   filter:contrast(1.06) saturate(0.92) blur(7px) brightness(0.52);
 }
 body.playlistsOpen #mainVideo{
-  filter:contrast(1.06) saturate(0.92) blur(8px) brightness(0.45);
+  filter:contrast(1.06) saturate(0.92) blur(7px) brightness(0.52);
 }
 body.adminOpen #mainVideo{
-  filter:contrast(1.06) saturate(0.92) blur(8px) brightness(0.40);
+  filter:contrast(1.06) saturate(0.92) blur(7px) brightness(0.52);
+}
+body.editOpen #mainVideo{
+  filter:contrast(1.06) saturate(0.92) blur(7px) brightness(0.52);
 }
 
 /* ===== ENTRY ===== */
@@ -173,7 +176,6 @@ body.strikeOn #strike{opacity:0.95}
   65%{ opacity:0.55; }
   100%{ transform:translateX(70%); opacity:0.0; }
 }
-
 .sub{
   margin-top:12px;
   display:flex;
@@ -186,7 +188,6 @@ body.strikeOn #strike{opacity:0.95}
   text-transform:uppercase;
   animation:blink 1.2s steps(2,end) infinite;
 }
-
 .kbdEnter{
   display:inline-flex;
   align-items:center;
@@ -204,11 +205,7 @@ body.strikeOn #strike{opacity:0.95}
   font-size:11px;
   letter-spacing:1px;
 }
-.kbdEnter svg{
-  width:14px;height:14px;
-  margin-left:7px;
-  opacity:0.9;
-}
+.kbdEnter svg{ width:14px;height:14px; margin-left:7px; opacity:0.9; }
 
 @keyframes pulse{ 0%,100%{transform:translateY(0);opacity:.88} 50%{transform:translateY(-3px);opacity:1} }
 @keyframes blink{ 0%,49%{opacity:.22} 50%,100%{opacity:.62} }
@@ -312,7 +309,6 @@ body.entered #entry{
   transition: transform 220ms ease;
 }
 #grimoire.open ~ #fsWrap{ transform: translateY(70px); }
-
 .fsBtn{
   width:44px;height:44px;
   border-radius:12px;
@@ -358,6 +354,33 @@ body.entered #scrollBtn{ opacity:1; pointer-events:auto; }
 #scrollBtn:hover{ transform:translateX(-50%) scale(1.05); }
 #scrollBtn svg{ width:22px;height:22px; opacity:.9; }
 
+/* ===== BOTÃO ADMIN (ao lado do pergaminho) ===== */
+#adminBtn{
+  position:fixed;
+  left:calc(50% + 58px);
+  top:14px;
+  transform:translateX(-50%);
+  z-index:60;
+  width:44px;height:44px;
+  border-radius:12px;
+  border:1px solid rgba(255,170,90,0.18);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
+  box-shadow:
+    0 14px 44px rgba(0,0,0,0.75),
+    0 0 22px rgba(255,140,70,0.12);
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  transition:transform .2s ease, opacity .2s ease;
+  opacity:0;
+  pointer-events:none;
+}
+body.entered #adminBtn{ opacity:1; pointer-events:auto; }
+#adminBtn:hover{ transform:translateX(-50%) scale(1.05); }
+#adminBtn svg{ width:22px;height:22px; opacity:.9; }
+
 /* ===== MENU (top-right) ===== */
 #menuWrap{
   position:fixed;
@@ -379,19 +402,42 @@ body.entered #scrollBtn{ opacity:1; pointer-events:auto; }
   cursor:pointer;
   display:grid;
   place-items:center;
-  transition:transform .2s ease, opacity .2s ease;
+  transition:transform .2s ease, opacity .2s ease, filter .2s ease;
   opacity:0;
   pointer-events:none;
 }
 body.entered .menuBtn{ opacity:1; pointer-events:auto; }
 .menuBtn:hover{ transform:scale(1.05); }
+
+/* ✅ ANIMAÇÃO CHAMATIVA SÓ NO MENU (até o primeiro clique) */
+@keyframes menuPing{
+  0%,100%{
+    transform:scale(1);
+    filter:brightness(1);
+    box-shadow:
+      0 14px 44px rgba(0,0,0,0.75),
+      0 0 14px rgba(255,140,70,0.14);
+  }
+  50%{
+    transform:scale(1.06);
+    filter:brightness(1.08);
+    box-shadow:
+      0 14px 44px rgba(0,0,0,0.75),
+      0 0 28px rgba(255,140,70,0.30);
+  }
+}
+body.entered:not(.menuSeen) .menuBtn{
+  animation:menuPing 2.2s ease-in-out infinite;
+}
+body.menuSeen .menuBtn{ animation:none; }
+
 .menuBtn svg{ width:22px;height:22px; opacity:.9; }
 
 .menuDrop{
   position:absolute;
   right:0;
   top:54px;
-  width:240px;
+  width:220px;
   padding:10px;
   border-radius:14px;
   border:1px solid rgba(255,170,90,0.16);
@@ -431,37 +477,10 @@ body.entered .menuBtn{ opacity:1; pointer-events:auto; }
   transition: transform .16s ease, background .16s ease;
 }
 .menuItem:hover{ transform: translateX(-2px); background:rgba(255,255,255,0.07); }
-.menuItem .tag{
-  font-size:10px;
-  letter-spacing:1px;
-  opacity:.55;
-}
+.menuItem .tag{ font-size:10px; letter-spacing:1px; opacity:.55; }
 
-/* ===== BOTÃO ADMIN (ao lado do pergaminho) ===== */
-#adminBtn{
-  position:fixed;
-  left:calc(50% + 58px);
-  top:14px;
-  z-index:60;
-  width:44px;height:44px;
-  border-radius:12px;
-  border:1px solid rgba(255,170,90,0.18);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
-  box-shadow:
-    0 14px 44px rgba(0,0,0,0.75),
-    0 0 22px rgba(255,140,70,0.12);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  transition:transform .2s ease, opacity .2s ease;
-  opacity:0;
-  pointer-events:none;
-}
-body.entered #adminBtn{ opacity:1; pointer-events:auto; }
-#adminBtn:hover{ transform:scale(1.05); }
-#adminBtn svg{ width:22px;height:22px; opacity:.9; }
+/* ===== OVERLAY BASE ===== */
+@keyframes dimIn{ from{opacity:0} to{opacity:1} }
 
 /* ===== OVERLAY DO PERGAMINHO ===== */
 #scrollOverlay{
@@ -488,8 +507,198 @@ body.socialOpen #socialOverlay{ display:block; }
   backdrop-filter: blur(2px);
   animation:dimIn 240ms ease both;
 }
-@keyframes dimIn{ from{opacity:0} to{opacity:1} }
 
+/* ===== EDIT/HUB OVERLAY (AUTO) ===== */
+#editOverlay{
+  position:fixed; inset:0;
+  z-index:92;
+  display:none;
+}
+body.editOpen #editOverlay{ display:block; }
+#editOverlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.84);
+  backdrop-filter: blur(3px);
+  animation:dimIn 240ms ease both;
+}
+.hubShell{
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(.96);
+  width:min(980px, 94vw);
+  height:min(620px, 84vh);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(12,12,14,0.80);
+  box-shadow: 0 44px 180px rgba(0,0,0,0.88);
+  backdrop-filter: blur(18px);
+  overflow:hidden;
+  opacity:0;
+  animation:hubIn 320ms cubic-bezier(.12,.92,.12,1) both;
+}
+@keyframes hubIn{
+  from{opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px);}
+  to{opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0);}
+}
+.hubTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.hubTitle{
+  display:flex; flex-direction:column; gap:6px;
+}
+.hubTitle b{
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size:18px;
+}
+.hubTitle span{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.hubClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.hubClose:hover{ background: rgba(255,255,255,0.09); }
+
+.hubBody{
+  height:calc(100% - 62px);
+  display:grid;
+  grid-template-columns: 1fr 340px;
+  gap:14px;
+  padding:14px;
+}
+.hubMain{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.26);
+  overflow:hidden;
+  position:relative;
+}
+.hubMain::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,140,70,0.12), transparent 55%),
+    radial-gradient(circle at 70% 80%, rgba(255,255,255,0.06), transparent 60%);
+  pointer-events:none;
+}
+.hubMainInner{
+  position:absolute; inset:0;
+  padding:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  z-index:2;
+}
+.hubBig{
+  flex:1;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  overflow:hidden;
+  position:relative;
+}
+.hubBig .hint{
+  position:absolute; left:16px; bottom:16px;
+  color:rgba(255,255,255,0.68);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.hubBig video{
+  width:100%; height:100%;
+  object-fit:cover;
+  filter:contrast(1.02) saturate(0.92) brightness(0.92);
+  opacity:0.92;
+}
+.hubCards{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:10px;
+}
+.hubCard{
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  padding:12px;
+}
+.hubCard .k{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.hubCard .v{
+  margin-top:8px;
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size:16px;
+  font-weight:800;
+}
+
+.hubSide{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+  padding:14px;
+  overflow:auto;
+}
+.hubSideTitle{
+  color:rgba(255,255,255,0.70);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
+  font-size:12px;
+  text-transform:uppercase;
+  margin-bottom:10px;
+}
+.hubSideText{
+  color:rgba(255,255,255,0.70);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:650;
+  line-height:1.45;
+  font-size:13px;
+}
+.hubPills{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.hubPill{
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  color:rgba(255,255,255,0.72);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+@media (max-width: 860px){
+  .hubBody{ grid-template-columns: 1fr; }
+  .hubCards{ grid-template-columns: 1fr; }
+}
+
+/* ===== SOCIAL CARD ===== */
 .smCard{
   position:absolute;
   left:50%;
@@ -529,7 +738,6 @@ body.socialOpen #socialOverlay{ display:block; }
   25%{ opacity:.9; }
   100%{ opacity:0; transform:translateX(45%) rotate(12deg); }
 }
-
 .smHead{
   display:flex;
   align-items:center;
@@ -554,7 +762,6 @@ body.socialOpen #socialOverlay{ display:block; }
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 .smClose:hover{ background: rgba(255,255,255,0.09); }
-
 .smBody{
   padding:6px 18px 18px;
   display:flex;
@@ -603,7 +810,6 @@ body.socialOpen #socialOverlay{ display:block; }
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 .smLoc svg{ width:14px;height:14px; opacity:.9; }
-
 .smIcons{
   display:flex;
   justify-content:center;
@@ -688,13 +894,7 @@ body.socialOpen #socialOverlay{ display:block; }
   place-items:center;
   flex:0 0 auto;
 }
-#dAvatar{
-  width:100%;
-  height:100%;
-  display:none;
-  object-fit:cover;
-  border-radius:14px;
-}
+#dAvatar{ width:100%; height:100%; display:none; object-fit:cover; border-radius:14px; }
 .smDiscText{ display:flex; flex-direction:column; gap:2px; }
 .smDiscName{
   color:rgba(255,255,255,0.92);
@@ -716,8 +916,514 @@ body.socialOpen #socialOverlay{ display:block; }
   letter-spacing:1px;
   font-size:11px;
 }
+
+/* ===== PERGAMINHO ===== */
+.scroll{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) scale(.92);
+  width:min(860px, 92vw);
+  height:min(560px, 80vh);
+  opacity:0;
+  transition:opacity 220ms ease, transform 320ms cubic-bezier(.12,.92,.12,1);
+  pointer-events:none;
+}
+body.scrollOpen .scroll{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+}
+.scrollPaper{
+  position:absolute; inset:0;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(90,35,10,0.40), transparent 42%),
+    radial-gradient(circle at 92% 14%, rgba(80,28,8,0.38), transparent 46%),
+    radial-gradient(circle at 18% 92%, rgba(80,28,8,0.34), transparent 48%),
+    radial-gradient(circle at 90% 90%, rgba(80,28,8,0.36), transparent 50%),
+    radial-gradient(circle at 28% 38%, rgba(0,0,0,0.08), transparent 38%),
+    radial-gradient(circle at 70% 62%, rgba(0,0,0,0.07), transparent 42%),
+    radial-gradient(circle at 55% 28%, rgba(0,0,0,0.06), transparent 44%),
+    repeating-linear-gradient(12deg,
+      rgba(0,0,0,0.03) 0px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(255,255,255,0.02) 3px,
+      rgba(255,255,255,0.02) 5px),
+    linear-gradient(0deg, #cdb081, #eedcb6 22%, #e6cc9f 58%, #c7a572);
+  box-shadow:
+    0 40px 160px rgba(0,0,0,0.85),
+    inset 0 0 0 1px rgba(0,0,0,0.18),
+    inset 0 0 90px rgba(95,45,10,0.22);
+  filter:contrast(1.06) saturate(0.92);
+  overflow:hidden;
+}
+.scrollPaper::after{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
+    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.20) 100%);
+  pointer-events:none;
+  mix-blend-mode:multiply;
+  opacity:.95;
+}
+.scrollMask{
+  position:absolute; inset:0;
+  clip-path: polygon(
+    2% 5%, 6% 2%, 12% 4%, 20% 2%, 28% 4%, 36% 2%, 44% 4%, 52% 2%, 60% 4%, 68% 2%, 76% 4%, 84% 2%, 92% 4%, 98% 8%,
+    97% 18%, 99% 26%, 97% 34%, 99% 42%, 97% 50%, 99% 58%, 97% 66%, 99% 74%, 97% 82%, 98% 92%,
+    92% 96%, 86% 98%, 78% 96%, 70% 98%, 62% 96%, 54% 98%, 46% 96%, 38% 98%, 30% 96%, 22% 98%, 14% 96%, 8% 98%, 3% 94%,
+    2% 86%, 1% 78%, 3% 70%, 1% 62%, 3% 54%, 1% 46%, 3% 38%, 1% 30%, 3% 22%, 1% 14%
+  );
+}
+.scrollInner{
+  position:absolute; inset:0;
+  padding:26px 30px 18px;
+  font-family: "Cormorant Garamond", serif;
+  color:rgba(35,18,8,0.90);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
+}
+.scrollTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:10px;
+  padding-right:6px;
+}
+.scrollTitle{
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  font-size:13px;
+  color:rgba(40,22,8,0.92);
+  text-shadow:0 1px 0 rgba(255,255,255,0.25);
+}
+.scrollClose{
+  border:none;
+  background:transparent;
+  padding:6px 10px;
+  cursor:pointer;
+  font-family:"Cinzel", serif;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:12px;
+  color:rgba(45,24,10,0.55);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
+  outline: 2px solid rgba(45,24,10,0.28);
+  outline-offset: -2px;
+  border-radius:10px;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.08) inset,
+    0 1px 0 rgba(255,255,255,0.18);
+  opacity:0.9;
+  transform:rotate(-1.5deg);
+}
+.scrollClose:hover{
+  opacity:1;
+  outline-color: rgba(45,24,10,0.38);
+  color:rgba(45,24,10,0.62);
+}
+.scrollBody{
+  height:calc(100% - 44px);
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  overflow:hidden;
+}
+.scrollLog{
+  flex:1;
+  overflow:auto;
+  padding-right:10px;
+  line-height:1.55;
+  font-size:16px;
+  letter-spacing:0.2px;
+  color:rgba(35,18,8,0.90);
+  filter: contrast(1.02);
+}
+.scrollLog .who{
+  font-family:"IM Fell English", serif;
+  font-weight:400;
+  font-style:italic;
+  letter-spacing:0.6px;
+  text-transform:uppercase;
+  color:rgba(60,28,10,0.86);
+  margin-right:6px;
+  font-size: 0.90em;
+}
+.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
+.scrollLog .shadow{ color:rgba(20,20,20,0.92); }
+.scrollLog .titan{ color:rgba(55,25,10,0.86); }
+
+.scrollInputBar{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background:rgba(0,0,0,0.07);
+  border:1px solid rgba(0,0,0,0.14);
+}
+.prompt{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight:900;
+  color:rgba(20,10,0,0.85);
+  letter-spacing:1px;
+}
+#cmdInput{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:13px;
+  color:rgba(20,10,0,0.92);
+}
+#cmdInput::placeholder{ color:rgba(20,10,0,0.45); }
+
+.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
+.cursor{
+  display:inline-block;
+  width:10px;
+  height:16px;
+  transform:translateY(3px);
+  background:rgba(20,10,0,0.62);
+  margin-left:4px;
+  animation:cur 0.8s steps(1,end) infinite;
+}
+@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
+
+.outputLine{
+  margin:0 0 10px 0;
+  color:rgba(20,10,0,0.92);
+  font-size:15px;
+}
+.outputLine .sys{
+  font-family:"IM Fell English", serif;
+  font-style:italic;
+  letter-spacing:0.6px;
+  color:rgba(60,28,8,0.74);
+}
+
+body.scrollOpen .scrollPaper{
+  animation:unroll 520ms cubic-bezier(.12,.92,.12,1) both;
+}
+@keyframes unroll{
+  0%{ filter:blur(1px) contrast(1.02) saturate(.9); transform:scaleY(.70); }
+  55%{ transform:scaleY(1.02); }
+  100%{ filter:blur(0) contrast(1.06) saturate(.92); transform:scaleY(1); }
+}
+
+/* ===== PLAYLISTS OVERLAY ===== */
+#playlistsOverlay{
+  position:fixed; inset:0;
+  z-index:95;
+  display:none;
+}
+body.playlistsOpen #playlistsOverlay{ display:block; }
+#playlistsOverlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.86);
+  backdrop-filter: blur(3px);
+  animation:dimIn 240ms ease both;
+}
+.plShell{
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(.96);
+  width:min(980px, 94vw);
+  height:min(620px, 84vh);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(12,12,14,0.80);
+  box-shadow: 0 44px 180px rgba(0,0,0,0.88);
+  backdrop-filter: blur(18px);
+  overflow:hidden;
+  opacity:0;
+  animation:hubIn 320ms cubic-bezier(.12,.92,.12,1) both;
+}
+.plTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.plTitle{ display:flex; flex-direction:column; gap:6px; }
+.plTitle b{
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size:18px;
+}
+.plTitle span{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.plClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.plClose:hover{ background: rgba(255,255,255,0.09); }
+.plBody{
+  height:calc(100% - 62px);
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  gap:14px;
+  padding:14px;
+}
+.plLeft{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+  padding:12px;
+  overflow:auto;
+}
+.plHint{
+  margin-bottom:10px;
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.plList{ display:flex; flex-direction:column; gap:10px; }
+.plItem{
+  width:100%;
+  border:none;
+  cursor:pointer;
+  text-align:left;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  color:rgba(255,255,255,0.88);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:800;
+  letter-spacing:.2px;
+  transition: transform .16s ease, background .16s ease, border-color .16s ease;
+}
+.plItem small{
+  display:block;
+  margin-top:4px;
+  font-weight:600;
+  color:rgba(255,255,255,0.55);
+  font-size:12px;
+}
+.plItem:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
+.plItem.active{
+  border-color: rgba(255,255,255,0.22);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.18), rgba(0,0,0,0.28));
+}
+.plRight{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  overflow:hidden;
+  position:relative;
+}
+.plFrame{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:none;
+}
+@media (max-width: 860px){
+  .plBody{ grid-template-columns: 1fr; }
+  .plLeft{ max-height: 200px; }
+}
+
+/* ===== ADMIN OVERLAY ===== */
+#adminOverlay{
+  position:fixed; inset:0;
+  z-index:98;
+  display:none;
+}
+body.adminOpen #adminOverlay{ display:block; }
+#adminOverlay .dim{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,0.88);
+  backdrop-filter: blur(3px);
+  animation:dimIn 240ms ease both;
+}
+.adShell{
+  position:absolute;
+  left:50%; top:50%;
+  transform:translate(-50%,-50%) scale(.96);
+  width:min(840px, 94vw);
+  height:min(560px, 84vh);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(12,12,14,0.82);
+  box-shadow: 0 44px 180px rgba(0,0,0,0.90);
+  backdrop-filter: blur(18px);
+  overflow:hidden;
+  opacity:0;
+  animation:hubIn 320ms cubic-bezier(.12,.92,.12,1) both;
+}
+.adTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:18px 18px 12px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.adTitle{ display:flex; flex-direction:column; gap:6px; }
+.adTitle b{
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-size:18px;
+}
+.adTitle span{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.adClose{
+  border:none;
+  cursor:pointer;
+  padding:8px 12px;
+  border-radius:999px;
+  background: rgba(255,255,255,0.06);
+  color:rgba(255,255,255,0.78);
+  border:1px solid rgba(255,255,255,0.10);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.adClose:hover{ background: rgba(255,255,255,0.09); }
+.adBody{
+  height:calc(100% - 62px);
+  padding:16px;
+  overflow:auto;
+}
+.adPanel{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+  padding:16px;
+}
+.adLoginGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
+.adLabel{
+  color:rgba(255,255,255,0.65);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.adInput{
+  width:100%;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.35);
+  color:rgba(255,255,255,0.88);
+  outline:none;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+}
+.adInput:focus{
+  border-color: rgba(255,255,255,0.22);
+  box-shadow: 0 0 0 3px rgba(255,140,70,0.10);
+}
+.adActions{
+  display:flex;
+  gap:10px;
+  margin-top:14px;
+  flex-wrap:wrap;
+}
+.adBtn{
+  border:none;
+  cursor:pointer;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.35);
+  color:rgba(255,255,255,0.84);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-size:12px;
+  transition: transform .15s ease, background .15s ease;
+}
+.adBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
+.adBtn.primary{
+  background: radial-gradient(circle at 30% 30%, rgba(255,140,70,0.20), rgba(0,0,0,0.35));
+  border-color: rgba(255,255,255,0.18);
+}
+.adMsg{
+  margin-top:12px;
+  color:rgba(255,255,255,0.68);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+}
+.adDash{ display:none; }
+.adGrid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:12px;
+  margin-top:12px;
+}
+.adMetric{
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.28);
+  padding:14px;
+}
+.adMetric .k{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.adMetric .v{
+  margin-top:8px;
+  font-size:30px;
+  color:rgba(255,255,255,0.92);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+}
+.adUpdated{
+  margin-top:10px;
+  color:rgba(255,255,255,0.45);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:12px;
+}
+@media (max-width: 820px){
+  .adGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .adLoginGrid{ grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .title, .sub{ animation:none; }
+  .title::before{ display:none; }
+  body.entered:not(.menuSeen) .menuBtn{ animation:none; }
+}
 </style>
 </head>
+
 <body>
 
 <video id="mainVideo"
@@ -798,10 +1504,11 @@ body.socialOpen #socialOverlay{ display:block; }
 </button>
 
 <!-- ===== BOTÃO ADMIN ===== -->
-<button id="adminBtn" aria-label="Abrir Admin">
+<button id="adminBtn" aria-label="Abrir admin">
   <svg viewBox="0 0 24 24" fill="none">
-    <path d="M12 3l7 4v5c0 5-3 8-7 9-4-1-7-4-7-9V7l7-4Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6"/>
-    <path d="M9.5 12l1.7 1.7L14.7 10" stroke="rgba(255,140,70,0.75)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M12 3a4 4 0 0 1 4 4v2" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+    <path d="M8 9h8a4 4 0 0 1 4 4v4a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-4a4 4 0 0 1 4-4Z" stroke="rgba(255,220,190,0.9)" stroke-width="1.6"/>
+    <path d="M12 13v3" stroke="rgba(255,140,70,0.7)" stroke-width="1.6" stroke-linecap="round"/>
   </svg>
 </button>
 
@@ -825,6 +1532,38 @@ body.socialOpen #socialOverlay{ display:block; }
     <button class="menuItem" id="openPlaylists">
       Playlists <span class="tag">V2.1</span>
     </button>
+  </div>
+</div>
+
+<!-- ===== OVERLAY DO PERGAMINHO ===== -->
+<div id="scrollOverlay" aria-hidden="true">
+  <div class="dim"></div>
+
+  <div class="scroll" role="dialog" aria-label="Pergaminho">
+    <div class="scrollMask">
+      <div class="scrollPaper">
+        <div class="scrollInner">
+          <div class="scrollTop">
+            <div class="scrollTitle">Pergaminho — Vozes nas Sombras</div>
+            <button class="scrollClose" id="scrollClose">FECHAR</button>
+          </div>
+
+          <div class="scrollBody">
+            <div class="scrollLog" id="scrollLog">
+              <div class="typeLine" id="typeLine"></div><span class="cursor" id="cursor"></span>
+              <div id="out"></div>
+            </div>
+
+            <div class="scrollInputBar">
+              <div class="prompt">&gt;</div>
+              <input id="cmdInput" autocomplete="off" spellcheck="false"
+                     placeholder="digite um comando (ex: hub, arquivo, lore, ajuda) e ENTER">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -895,7 +1634,6 @@ body.socialOpen #socialOverlay{ display:block; }
       <div class="smSection">
         <div class="smSectionTitle">
           <span>DISCORD STATUS</span>
-
           <span class="smStatusPill" id="smStatusPill" data-status="idle">
             <span class="smDot"></span>
             <span id="smStatusText">Ausente</span>
@@ -926,591 +1664,70 @@ body.socialOpen #socialOverlay{ display:block; }
     </div>
   </div>
 </div>
-<style>
-/* ===== RESTO DO CSS DO PERGAMINHO (igual ao seu) ===== */
-.scroll{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.92);
-  width:min(860px, 92vw);
-  height:min(560px, 80vh);
-  opacity:0;
-  transition:opacity 220ms ease, transform 320ms cubic-bezier(.12,.92,.12,1);
-  pointer-events:none;
-}
-body.scrollOpen .scroll{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-  pointer-events:auto;
-}
 
-/* ===== PERGAMINHO ===== */
-.scrollPaper{
-  position:absolute; inset:0;
-  border-radius:18px;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(90,35,10,0.40), transparent 42%),
-    radial-gradient(circle at 92% 14%, rgba(80,28,8,0.38), transparent 46%),
-    radial-gradient(circle at 18% 92%, rgba(80,28,8,0.34), transparent 48%),
-    radial-gradient(circle at 90% 90%, rgba(80,28,8,0.36), transparent 50%),
-    radial-gradient(circle at 28% 38%, rgba(0,0,0,0.08), transparent 38%),
-    radial-gradient(circle at 70% 62%, rgba(0,0,0,0.07), transparent 42%),
-    radial-gradient(circle at 55% 28%, rgba(0,0,0,0.06), transparent 44%),
-    repeating-linear-gradient(12deg,
-      rgba(0,0,0,0.03) 0px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(255,255,255,0.02) 3px,
-      rgba(255,255,255,0.02) 5px),
-    linear-gradient(0deg, #cdb081, #eedcb6 22%, #e6cc9f 58%, #c7a572);
-
-  box-shadow:
-    0 40px 160px rgba(0,0,0,0.85),
-    inset 0 0 0 1px rgba(0,0,0,0.18),
-    inset 0 0 90px rgba(95,45,10,0.22);
-
-  filter:contrast(1.06) saturate(0.92);
-  overflow:hidden;
-}
-.scrollPaper::after{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
-    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.20) 100%);
-  pointer-events:none;
-  mix-blend-mode:multiply;
-  opacity:.95;
-}
-.scrollMask{
-  position:absolute; inset:0;
-  clip-path: polygon(
-    2% 5%, 6% 2%, 12% 4%, 20% 2%, 28% 4%, 36% 2%, 44% 4%, 52% 2%, 60% 4%, 68% 2%, 76% 4%, 84% 2%, 92% 4%, 98% 8%,
-    97% 18%, 99% 26%, 97% 34%, 99% 42%, 97% 50%, 99% 58%, 97% 66%, 99% 74%, 97% 82%, 98% 92%,
-    92% 96%, 86% 98%, 78% 96%, 70% 98%, 62% 96%, 54% 98%, 46% 96%, 38% 98%, 30% 96%, 22% 98%, 14% 96%, 8% 98%, 3% 94%,
-    2% 86%, 1% 78%, 3% 70%, 1% 62%, 3% 54%, 1% 46%, 3% 38%, 1% 30%, 3% 22%, 1% 14%
-  );
-}
-
-/* ===== FONTES DO PERGAMINHO ===== */
-.scrollInner{
-  position:absolute; inset:0;
-  padding:26px 30px 18px;
-  font-family: "Cormorant Garamond", serif;
-  color:rgba(35,18,8,0.90);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
-}
-
-.scrollTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:10px;
-  padding-right:6px;
-}
-.scrollTitle{
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  font-size:13px;
-  color:rgba(40,22,8,0.92);
-  text-shadow:0 1px 0 rgba(255,255,255,0.25);
-}
-
-.scrollClose{
-  border:none;
-  background:transparent;
-  padding:6px 10px;
-  cursor:pointer;
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:12px;
-  color:rgba(45,24,10,0.55);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
-  outline: 2px solid rgba(45,24,10,0.28);
-  outline-offset: -2px;
-  border-radius:10px;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.08) inset,
-    0 1px 0 rgba(255,255,255,0.18);
-  opacity:0.9;
-  transform:rotate(-1.5deg);
-}
-.scrollClose:hover{
-  opacity:1;
-  outline-color: rgba(45,24,10,0.38);
-  color:rgba(45,24,10,0.62);
-}
-
-.scrollBody{
-  height:calc(100% - 44px);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  overflow:hidden;
-}
-
-.scrollLog{
-  flex:1;
-  overflow:auto;
-  padding-right:10px;
-  line-height:1.55;
-  font-size:16px;
-  letter-spacing:0.2px;
-  color:rgba(35,18,8,0.90);
-  filter: contrast(1.02);
-}
-
-/* ===== NOMES MENORES ===== */
-.scrollLog .who{
-  font-family:"IM Fell English", serif;
-  font-weight:400;
-  font-style:italic;
-  letter-spacing:0.6px;
-  text-transform:uppercase;
-  color:rgba(60,28,10,0.86);
-  margin-right:6px;
-  font-size: 0.90em;
-}
-.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
-.scrollLog .shadow{ color:rgba(20,20,20,0.92); }
-.scrollLog .titan{ color:rgba(55,25,10,0.86); }
-
-.scrollInputBar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.07);
-  border:1px solid rgba(0,0,0,0.14);
-}
-.prompt{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-weight:900;
-  color:rgba(20,10,0,0.85);
-  letter-spacing:1px;
-}
-#cmdInput{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:13px;
-  color:rgba(20,10,0,0.92);
-}
-#cmdInput::placeholder{ color:rgba(20,10,0,0.45); }
-
-.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
-.cursor{
-  display:inline-block;
-  width:10px;
-  height:16px;
-  transform:translateY(3px);
-  background:rgba(20,10,0,0.62);
-  margin-left:4px;
-  animation:cur 0.8s steps(1,end) infinite;
-}
-@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
-
-.outputLine{
-  margin:0 0 10px 0;
-  color:rgba(20,10,0,0.92);
-  font-size:15px;
-}
-.outputLine .sys{
-  font-family:"IM Fell English", serif;
-  font-style:italic;
-  letter-spacing:0.6px;
-  color:rgba(60,28,8,0.74);
-}
-
-body.scrollOpen .scrollPaper{
-  animation:unroll 520ms cubic-bezier(.12,.92,.12,1) both;
-}
-@keyframes unroll{
-  0%{ filter:blur(1px) contrast(1.02) saturate(.9); transform:scaleY(.70); }
-  55%{ transform:scaleY(1.02); }
-  100%{ filter:blur(0) contrast(1.06) saturate(.92); transform:scaleY(1); }
-}
-
-/* ===========================
-   PLAYLISTS OVERLAY (V2.1)
-   =========================== */
-#playlistsOverlay{
-  position:fixed; inset:0;
-  z-index:95;
-  display:none;
-}
-body.playlistsOpen #playlistsOverlay{ display:block; }
-#playlistsOverlay .dim{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.86);
-  backdrop-filter: blur(3px);
-  animation:dimIn 240ms ease both;
-}
-
-.plShell{
-  position:absolute;
-  left:50%; top:50%;
-  transform:translate(-50%,-50%) scale(.96);
-  width:min(980px, 94vw);
-  height:min(620px, 84vh);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(12,12,14,0.80);
-  box-shadow: 0 44px 180px rgba(0,0,0,0.88);
-  backdrop-filter: blur(18px);
-  overflow:hidden;
-  opacity:0;
-  animation:plIn 320ms cubic-bezier(.12,.92,.12,1) both;
-}
-@keyframes plIn{
-  from{opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px);}
-  to{opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0);}
-}
-
-.plTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:18px 18px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-.plTitle{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.plTitle b{
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size:18px;
-  letter-spacing:.3px;
-}
-.plTitle span{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-.plClose{
-  border:none;
-  cursor:pointer;
-  padding:8px 12px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  color:rgba(255,255,255,0.78);
-  border:1px solid rgba(255,255,255,0.10);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-.plClose:hover{ background: rgba(255,255,255,0.09); }
-
-.plBody{
-  height:calc(100% - 62px);
-  display:grid;
-  grid-template-columns: 320px 1fr;
-  gap:14px;
-  padding:14px;
-}
-.plLeft{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
-  padding:12px;
-  overflow:auto;
-}
-.plHint{
-  margin-bottom:10px;
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-.plList{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.plItem{
-  width:100%;
-  border:none;
-  cursor:pointer;
-  text-align:left;
-  padding:12px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.25);
-  color:rgba(255,255,255,0.88);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:800;
-  letter-spacing:.2px;
-  transition: transform .16s ease, background .16s ease, border-color .16s ease;
-}
-.plItem small{
-  display:block;
-  margin-top:4px;
-  font-weight:600;
-  color:rgba(255,255,255,0.55);
-  font-size:12px;
-}
-.plItem:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
-.plItem.active{
-  border-color: rgba(255,255,255,0.22);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.18), rgba(0,0,0,0.28));
-}
-
-.plRight{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.25);
-  overflow:hidden;
-  position:relative;
-}
-.plFrame{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-}
-
-/* responsivo playlists */
-@media (max-width: 860px){
-  .plBody{ grid-template-columns: 1fr; }
-  .plLeft{ max-height: 200px; }
-}
-
-/* ===========================
-   ADMIN OVERLAY (V2.1)
-   =========================== */
-#adminOverlay{
-  position:fixed; inset:0;
-  z-index:98;
-  display:none;
-}
-body.adminOpen #adminOverlay{ display:block; }
-#adminOverlay .dim{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.88);
-  backdrop-filter: blur(3px);
-  animation:dimIn 240ms ease both;
-}
-
-.adShell{
-  position:absolute;
-  left:50%; top:50%;
-  transform:translate(-50%,-50%) scale(.96);
-  width:min(840px, 94vw);
-  height:min(560px, 84vh);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(12,12,14,0.82);
-  box-shadow: 0 44px 180px rgba(0,0,0,0.90);
-  backdrop-filter: blur(18px);
-  overflow:hidden;
-  opacity:0;
-  animation:plIn 320ms cubic-bezier(.12,.92,.12,1) both;
-}
-
-.adTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:18px 18px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-.adTitle{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-.adTitle b{
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size:18px;
-}
-.adTitle span{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-.adClose{
-  border:none;
-  cursor:pointer;
-  padding:8px 12px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  color:rgba(255,255,255,0.78);
-  border:1px solid rgba(255,255,255,0.10);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-.adClose:hover{ background: rgba(255,255,255,0.09); }
-
-.adBody{
-  height:calc(100% - 62px);
-  padding:16px;
-  overflow:auto;
-}
-
-.adPanel{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
-  padding:16px;
-}
-
-.adLoginGrid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:12px;
-  margin-top:12px;
-}
-.adLabel{
-  color:rgba(255,255,255,0.65);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  margin-bottom:6px;
-}
-.adInput{
-  width:100%;
-  padding:12px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.35);
-  color:rgba(255,255,255,0.88);
-  outline:none;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
-}
-.adInput:focus{
-  border-color: rgba(255,255,255,0.22);
-  box-shadow: 0 0 0 3px rgba(255,140,70,0.10);
-}
-.adActions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-  flex-wrap:wrap;
-}
-.adBtn{
-  border:none;
-  cursor:pointer;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.35);
-  color:rgba(255,255,255,0.84);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  font-size:12px;
-  transition: transform .15s ease, background .15s ease;
-}
-.adBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
-.adBtn.primary{
-  background: radial-gradient(circle at 30% 30%, rgba(255,140,70,0.20), rgba(0,0,0,0.35));
-  border-color: rgba(255,255,255,0.18);
-}
-.adMsg{
-  margin-top:12px;
-  color:rgba(255,255,255,0.68);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
-}
-
-.adDash{
-  display:none;
-}
-.adGrid{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
-  gap:12px;
-  margin-top:12px;
-}
-.adMetric{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.28);
-  padding:14px;
-}
-.adMetric .k{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-.adMetric .v{
-  margin-top:8px;
-  font-size:30px;
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-}
-.adUpdated{
-  margin-top:10px;
-  color:rgba(255,255,255,0.45);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-}
-@media (max-width: 820px){
-  .adGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .adLoginGrid{ grid-template-columns: 1fr; }
-}
-@media (prefers-reduced-motion: reduce){
-  .title, .sub{ animation:none; }
-  .title::before{ display:none; }
-}
-</style>
-
-<!-- ===== OVERLAY DO PERGAMINHO ===== -->
-<div id="scrollOverlay" aria-hidden="true">
+<!-- ===== EDIT/HUB OVERLAY (AUTO) ===== -->
+<div id="editOverlay" aria-hidden="true">
   <div class="dim"></div>
 
-  <div class="scroll" role="dialog" aria-label="Pergaminho">
-    <div class="scrollMask">
-      <div class="scrollPaper">
-        <div class="scrollInner">
-          <div class="scrollTop">
-            <div class="scrollTitle">Pergaminho — Vozes nas Sombras</div>
-            <button class="scrollClose" id="scrollClose">FECHAR</button>
+  <div class="hubShell" role="dialog" aria-label="Edit / Hub">
+    <div class="hubTop">
+      <div class="hubTitle">
+        <b>EDIT / HUB</b>
+        <span>apresentação automática</span>
+      </div>
+      <button class="hubClose" id="hubClose">FECHAR</button>
+    </div>
+
+    <div class="hubBody">
+      <div class="hubMain">
+        <div class="hubMainInner">
+          <div class="hubBig">
+            <!-- placeholder visual usando seu próprio vídeo -->
+            <video src="https://files.catbox.moe/klaol5.webm" muted autoplay loop playsinline></video>
+            <div class="hint">troque aqui pela sua EDIT depois</div>
           </div>
 
-          <div class="scrollBody">
-            <div class="scrollLog" id="scrollLog">
-              <div class="typeLine" id="typeLine"></div><span class="cursor" id="cursor"></span>
-              <div id="out"></div>
+          <div class="hubCards">
+            <div class="hubCard">
+              <div class="k">Tema</div>
+              <div class="v">Shadow Fight 2</div>
             </div>
-
-            <div class="scrollInputBar">
-              <div class="prompt">&gt;</div>
-              <input id="cmdInput" autocomplete="off" spellcheck="false"
-                     placeholder="digite um comando (ex: hub, arquivo, lore, ajuda) e ENTER">
+            <div class="hubCard">
+              <div class="k">Lore</div>
+              <div class="v">Sombras • Titan</div>
+            </div>
+            <div class="hubCard">
+              <div class="k">V2.1</div>
+              <div class="v">Playlists + Admin</div>
             </div>
           </div>
+        </div>
+      </div>
 
+      <div class="hubSide">
+        <div class="hubSideTitle">Como explorar</div>
+        <div class="hubSideText">
+          Use o <b>MENU</b> no canto superior direito para abrir:
+          <br><br>
+          • Social Media<br>
+          • Playlists (Spotify)<br>
+          • Archives (placeholder)
+          <br><br>
+          E o botão do <b>Pergaminho</b> para a lore/terminal.
+        </div>
+
+        <div class="hubPills">
+          <div class="hubPill">menu</div>
+          <div class="hubPill">pergaminho</div>
+          <div class="hubPill">playlists</div>
+          <div class="hubPill">admin</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== PLAYLISTS OVERLAY (V2.1) ===== -->
+<!-- ===== PLAYLISTS OVERLAY ===== -->
 <div id="playlistsOverlay" aria-hidden="true">
   <div class="dim"></div>
 
@@ -1530,13 +1747,15 @@ body.adminOpen #adminOverlay{ display:block; }
       </div>
 
       <div class="plRight">
-        <iframe class="plFrame" id="plFrame" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <iframe class="plFrame" id="plFrame"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"></iframe>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== ADMIN OVERLAY (V2.1) ===== -->
+<!-- ===== ADMIN OVERLAY ===== -->
 <div id="adminOverlay" aria-hidden="true">
   <div class="dim"></div>
 
@@ -1552,7 +1771,6 @@ body.adminOpen #adminOverlay{ display:block; }
     <div class="adBody">
       <div class="adPanel">
 
-        <!-- LOGIN -->
         <div id="adLogin">
           <div class="adMsg" id="adMsg">Acesso restrito.</div>
 
@@ -1573,7 +1791,6 @@ body.adminOpen #adminOverlay{ display:block; }
           </div>
         </div>
 
-        <!-- DASH -->
         <div class="adDash" id="adDash">
           <div class="adMsg">Dashboard confidencial.</div>
 
@@ -1590,6 +1807,7 @@ body.adminOpen #adminOverlay{ display:block; }
     </div>
   </div>
 </div>
+
 <script>
 /* =========================
    BASE
@@ -1602,7 +1820,7 @@ const bgAudio = document.getElementById("bgAudio");
 let currentVol = 0.08;
 bgAudio.volume = currentVol;
 
-/* ===== CINZAS (canvas) ===== */
+/* ===== CINZAS ===== */
 const canvas = document.getElementById("ashCanvas");
 const ctx = canvas.getContext("2d");
 let W=0, H=0;
@@ -1645,7 +1863,70 @@ function drawAsh(){
 }
 drawAsh();
 
-/* ===== CLICK / ENTER ===== */
+/* =========================
+   ÁUDIO pause/resume
+   ========================= */
+let audioWasPlaying = false;
+function pauseBgAudio(){
+  try{
+    audioWasPlaying = !bgAudio.paused && !bgAudio.ended && bgAudio.currentTime > 0;
+    bgAudio.pause();
+  }catch(e){}
+}
+async function resumeBgAudio(){
+  try{
+    if(audioWasPlaying){
+      bgAudio.volume = currentVol;
+      await bgAudio.play();
+    }
+  }catch(e){}
+}
+
+/* =========================
+   OVERLAYS helpers
+   ========================= */
+const scrollOverlay = document.getElementById("scrollOverlay");
+const socialOverlay = document.getElementById("socialOverlay");
+const playlistsOverlay = document.getElementById("playlistsOverlay");
+const adminOverlay = document.getElementById("adminOverlay");
+const editOverlay = document.getElementById("editOverlay");
+
+const overlayFlags = ["scrollOpen","socialOpen","playlistsOpen","adminOpen","editOpen"];
+
+function closeAllOverlays(){
+  document.body.classList.remove(...overlayFlags);
+  scrollOverlay?.setAttribute("aria-hidden","true");
+  socialOverlay?.setAttribute("aria-hidden","true");
+  playlistsOverlay?.setAttribute("aria-hidden","true");
+  adminOverlay?.setAttribute("aria-hidden","true");
+  editOverlay?.setAttribute("aria-hidden","true");
+}
+
+function openOverlay(flag){
+  if(!document.body.classList.contains("entered")) return;
+  closeAllOverlays();
+  pauseBgAudio();
+  document.body.classList.add(flag);
+  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","false");
+  if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","false");
+  if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","false");
+  if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","false");
+  if(flag==="editOpen") editOverlay.setAttribute("aria-hidden","false");
+}
+
+function closeOverlay(flag){
+  document.body.classList.remove(flag);
+  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","true");
+  if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","true");
+  if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","true");
+  if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","true");
+  if(flag==="editOpen") editOverlay.setAttribute("aria-hidden","true");
+  resumeBgAudio();
+}
+
+/* =========================
+   CLICK / ENTER
+   ========================= */
 let started=false;
 async function start(){
   if(started) return;
@@ -1665,6 +1946,15 @@ async function start(){
       await mainVideo.play();
     }catch(e){}
     document.body.classList.add("entered");
+
+    // AUTO ABRIR EDIT/HUB (uma vez por sessão)
+    try{
+      const seen = sessionStorage.getItem("hub_auto_shown");
+      if(!seen){
+        sessionStorage.setItem("hub_auto_shown","1");
+        setTimeout(()=> openEditOverlay(), 900);
+      }
+    }catch(e){}
   }, 1050);
 }
 entry.addEventListener("pointerdown", start);
@@ -1673,7 +1963,7 @@ entry.addEventListener("keydown", (e)=>{
 });
 
 /* =========================
-   CONTROLE DE VOLUME
+   VOLUME
    ========================= */
 const grimoire = document.getElementById("grimoire");
 const grimBtn = document.getElementById("grimBtn");
@@ -1719,55 +2009,6 @@ fsBtn.addEventListener("click", (e)=>{
 });
 
 /* =========================
-   UTIL: ÁUDIO pause/resume
-   ========================= */
-let audioWasPlaying = false;
-function pauseBgAudio(){
-  try{
-    audioWasPlaying = !bgAudio.paused && !bgAudio.ended && bgAudio.currentTime > 0;
-    bgAudio.pause();
-  }catch(e){}
-}
-async function resumeBgAudio(){
-  try{
-    if(audioWasPlaying){
-      bgAudio.volume = currentVol;
-      await bgAudio.play();
-    }
-  }catch(e){}
-}
-
-/* =========================
-   OVERLAYS: helpers
-   ========================= */
-const overlayFlags = ["scrollOpen","socialOpen","playlistsOpen","adminOpen"];
-function closeAllOverlays(){
-  document.body.classList.remove(...overlayFlags);
-  scrollOverlay?.setAttribute("aria-hidden","true");
-  socialOverlay?.setAttribute("aria-hidden","true");
-  playlistsOverlay?.setAttribute("aria-hidden","true");
-  adminOverlay?.setAttribute("aria-hidden","true");
-}
-function openOverlay(flag){
-  if(!document.body.classList.contains("entered")) return;
-  closeAllOverlays();
-  pauseBgAudio();
-  document.body.classList.add(flag);
-  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","false");
-  if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","false");
-  if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","false");
-  if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","false");
-}
-function closeOverlay(flag){
-  document.body.classList.remove(flag);
-  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","true");
-  if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","true");
-  if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","true");
-  if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","true");
-  resumeBgAudio();
-}
-
-/* =========================
    MENU (top-right)
    ========================= */
 const menuWrap = document.getElementById("menuWrap");
@@ -1779,6 +2020,7 @@ const openPlaylists = document.getElementById("openPlaylists");
 menuBtn.addEventListener("click",(e)=>{
   e.stopPropagation();
   if(!document.body.classList.contains("entered")) return;
+  document.body.classList.add("menuSeen"); // para a animação chamativa
   menuWrap.classList.toggle("open");
 });
 document.addEventListener("click",(e)=>{
@@ -1791,9 +2033,24 @@ openArchives.addEventListener("click", ()=>{
 });
 
 /* =========================
+   EDIT/HUB overlay (auto)
+   ========================= */
+const hubClose = document.getElementById("hubClose");
+function openEditOverlay(){
+  menuWrap.classList.remove("open");
+  openOverlay("editOpen");
+  setTimeout(()=>hubClose.focus(), 80);
+}
+function closeEditOverlay(){ closeOverlay("editOpen"); }
+
+hubClose.addEventListener("click", closeEditOverlay);
+editOverlay.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("dim")) closeEditOverlay();
+});
+
+/* =========================
    SOCIAL OVERLAY
    ========================= */
-const socialOverlay = document.getElementById("socialOverlay");
 const socialClose = document.getElementById("socialClose");
 const smViews = document.getElementById("smViews");
 const smStatusPill = document.getElementById("smStatusPill");
@@ -1805,14 +2062,10 @@ const smDiscordSub = document.getElementById("smDiscordSub");
 const dAvatar = document.getElementById("dAvatar");
 const dFallback = document.getElementById("dFallback");
 
-/* contador local */
 function incLocal(key){
   const v = Number(localStorage.getItem(key) || "0") + 1;
   localStorage.setItem(key, String(v));
   return v;
-}
-function getLocal(key){
-  return Number(localStorage.getItem(key) || "0");
 }
 
 function openSocialOverlay(){
@@ -1828,13 +2081,15 @@ function openSocialOverlay(){
 }
 function closeSocialOverlay(){ closeOverlay("socialOpen"); }
 
-openSocial.addEventListener("click", openSocialOverlay);
+openSocial.addEventListener("click", ()=>{
+  menuWrap.classList.remove("open");
+  openSocialOverlay();
+});
 socialClose.addEventListener("click", closeSocialOverlay);
 socialOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeSocialOverlay();
 });
 
-/* ===== LANYARD ===== */
 const LANYARD_USER_ID = "513830615225860096";
 const LANYARD_URL = `https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`;
 
@@ -1896,14 +2151,12 @@ async function fetchLanyard(){
 }
 
 /* =========================
-   PLAYLISTS OVERLAY (V2.1)
+   PLAYLISTS OVERLAY
    ========================= */
-const playlistsOverlay = document.getElementById("playlistsOverlay");
 const plClose = document.getElementById("plClose");
 const plList = document.getElementById("plList");
 const plFrame = document.getElementById("plFrame");
 
-/* SUA LISTA DE PLAYLISTS (troque os links quando quiser) */
 const PLAYLISTS = [
   {
     name: "Shadow Vibes",
@@ -1922,6 +2175,15 @@ const PLAYLISTS = [
   }
 ];
 
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
 function renderPlaylistList(){
   plList.innerHTML = "";
   PLAYLISTS.forEach((p, idx)=>{
@@ -1929,9 +2191,7 @@ function renderPlaylistList(){
     btn.className = "plItem";
     btn.type = "button";
     btn.innerHTML = `${escapeHtml(p.name)}<small>${escapeHtml(p.desc)}</small>`;
-    btn.addEventListener("click", ()=>{
-      setActivePlaylist(idx);
-    });
+    btn.addEventListener("click", ()=> setActivePlaylist(idx));
     plList.appendChild(btn);
   });
 }
@@ -1949,27 +2209,28 @@ function openPlaylistsOverlay(){
 
   renderPlaylistList();
   const last = Number(localStorage.getItem("pl_last") || "0");
-  setActivePlaylist(Number.isFinite(last) ? Math.max(0, Math.min(last, PLAYLISTS.length-1)) : 0);
+  const safe = Number.isFinite(last) ? Math.max(0, Math.min(last, PLAYLISTS.length-1)) : 0;
+  setActivePlaylist(safe);
 
   setTimeout(()=>plClose.focus(), 80);
 }
 function closePlaylistsOverlay(){
-  // para o embed parar de tocar quando fechar
   plFrame.src = "about:blank";
   closeOverlay("playlistsOpen");
 }
-
-openPlaylists.addEventListener("click", openPlaylistsOverlay);
+openPlaylists.addEventListener("click", ()=>{
+  menuWrap.classList.remove("open");
+  openPlaylistsOverlay();
+});
 plClose.addEventListener("click", closePlaylistsOverlay);
 playlistsOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closePlaylistsOverlay();
 });
 
 /* =========================
-   ADMIN OVERLAY (V2.1)
+   ADMIN OVERLAY
    ========================= */
 const adminBtn = document.getElementById("adminBtn");
-const adminOverlay = document.getElementById("adminOverlay");
 const adClose = document.getElementById("adClose");
 
 const adLogin = document.getElementById("adLogin");
@@ -1994,7 +2255,6 @@ function nowHHMM(){
   const d = new Date();
   return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
 }
-
 function metricGet(key){ return Number(localStorage.getItem(key) || "0"); }
 function metricSet(key, v){ localStorage.setItem(key, String(v)); }
 function metricInc(key){
@@ -2002,7 +2262,6 @@ function metricInc(key){
   metricSet(key, v);
   return v;
 }
-
 function buildAdminMetrics(){
   const metrics = [
     { key:"m_site_opens", label:"Site Opens" },
@@ -2015,12 +2274,11 @@ function buildAdminMetrics(){
   metrics.forEach(m=>{
     const card = document.createElement("div");
     card.className = "adMetric";
-    card.innerHTML = `<div class="k">${escapeHtml(m.label)}</div><div class="v" id="${m.key}">${metricGet(m.key)}</div>`;
+    card.innerHTML = `<div class="k">${escapeHtml(m.label)}</div><div class="v">${metricGet(m.key)}</div>`;
     adGrid.appendChild(card);
   });
   adUpdated.textContent = `Atualizado às ${nowHHMM()}`;
 }
-
 function showAdminLogin(msg){
   adLogin.style.display = "block";
   adDash.style.display = "none";
@@ -2031,14 +2289,11 @@ function showAdminDash(){
   adDash.style.display = "block";
   buildAdminMetrics();
 }
-
 function openAdminOverlay(){
   if(!document.body.classList.contains("entered")) return;
   openOverlay("adminOpen");
   setTimeout(()=>adClose.focus(), 80);
 
-  // view/open metric
-  metricInc("m_admin_logins_view"); // opcional, não exibido
   if(localStorage.getItem(ADMIN_OK_KEY)==="1"){
     showAdminDash();
   }else{
@@ -2060,7 +2315,6 @@ adminOverlay.addEventListener("click",(e)=>{
 adLoginHint.addEventListener("click", ()=>{
   adMsg.textContent = "Usuário fixo: Sombra • Senha: Projeto26";
 });
-
 function tryLogin(){
   const u = (adUser.value || "").trim();
   const p = (adPass.value || "").trim();
@@ -2078,7 +2332,6 @@ adLoginBtn.addEventListener("click", tryLogin);
 adPass.addEventListener("keydown",(e)=>{
   if(e.key==="Enter") tryLogin();
 });
-
 adResetBtn.addEventListener("click", ()=>{
   const keys = ["m_site_opens","m_social_opens","m_scroll_opens","m_playlists_opens","m_admin_logins"];
   keys.forEach(k=> localStorage.removeItem(k));
@@ -2091,10 +2344,9 @@ adLogoutBtn.addEventListener("click", ()=>{
 });
 
 /* =========================
-   PERGAMINHO (lore)
+   PERGAMINHO
    ========================= */
 const scrollBtn = document.getElementById("scrollBtn");
-const scrollOverlay = document.getElementById("scrollOverlay");
 const scrollClose = document.getElementById("scrollClose");
 const scrollLog = document.getElementById("scrollLog");
 const typeLine = document.getElementById("typeLine");
@@ -2114,41 +2366,6 @@ const loreLines = [
   `<span class="who titan">TITAN:</span> Venha. Eu quero ouvir seu silêncio gritar.`
 ];
 
-function openScroll(){
-  if(!document.body.classList.contains("entered")) return;
-  openOverlay("scrollOpen");
-  metricInc("m_scroll_opens");
-  setTimeout(()=>cmdInput.focus(), 80);
-
-  if(!typedOnce){
-    startTyping();
-  }else{
-    cursor.style.display = "none";
-  }
-}
-function closeScroll(){
-  closeOverlay("scrollOpen");
-}
-
-scrollBtn.addEventListener("click",(e)=>{
-  e.stopPropagation();
-  openScroll();
-});
-scrollClose.addEventListener("click", closeScroll);
-scrollOverlay.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("dim")) closeScroll();
-});
-
-/* ESC fecha qualquer overlay */
-document.addEventListener("keydown",(e)=>{
-  if(e.key !== "Escape") return;
-
-  if(document.body.classList.contains("adminOpen")) return closeAdminOverlay();
-  if(document.body.classList.contains("playlistsOpen")) return closePlaylistsOverlay();
-  if(document.body.classList.contains("socialOpen")) return closeSocialOverlay();
-  if(document.body.classList.contains("scrollOpen")) return closeScroll();
-});
-
 function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
 function scrollToBottom(){ scrollLog.scrollTop = scrollLog.scrollHeight; }
 
@@ -2159,7 +2376,6 @@ function writeOut(html){
   out.appendChild(line);
   scrollToBottom();
 }
-
 function finishTypingNow(){
   typing = false;
   cursor.style.display = "none";
@@ -2169,7 +2385,6 @@ function finishTypingNow(){
     writeOut(`<span class="sys">SISTEMA:</span> Digite <b>ajuda</b> para ver comandos.`);
   }
 }
-
 async function startTyping(){
   if(typing) return;
   typing = true;
@@ -2212,6 +2427,25 @@ async function startTyping(){
   }
 }
 
+function openScroll(){
+  if(!document.body.classList.contains("entered")) return;
+  metricInc("m_scroll_opens");
+  openOverlay("scrollOpen");
+  setTimeout(()=>cmdInput.focus(), 80);
+  if(!typedOnce) startTyping();
+  else cursor.style.display = "none";
+}
+function closeScroll(){ closeOverlay("scrollOpen"); }
+
+scrollBtn.addEventListener("click",(e)=>{
+  e.stopPropagation();
+  openScroll();
+});
+scrollClose.addEventListener("click", closeScroll);
+scrollOverlay.addEventListener("click",(e)=>{
+  if(e.target.classList.contains("dim")) closeScroll();
+});
+
 cmdInput.addEventListener("keydown", (e)=>{
   if(e.key !== "Enter") return;
   const raw = cmdInput.value.trim();
@@ -2233,7 +2467,8 @@ cmdInput.addEventListener("keydown", (e)=>{
     return;
   }
   if(cmd === "hub"){
-    writeOut(`<span class="sys">SISTEMA:</span> (placeholder) Abrindo HUB...`);
+    writeOut(`<span class="sys">SISTEMA:</span> Abrindo EDIT/HUB...`);
+    setTimeout(openEditOverlay, 250);
     return;
   }
   if(cmd === "arquivo" || cmd === "archive"){
@@ -2248,88 +2483,27 @@ cmdInput.addEventListener("keydown", (e)=>{
   writeOut(`<span class="sys">SISTEMA:</span> Comando desconhecido. Digite <b>ajuda</b>.`);
 });
 
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
 /* =========================
-   MÉTRICAS INICIAIS
+   ESC fecha qualquer overlay
    ========================= */
-metricInc("m_site_opens");
-
-/* métricas dos outros overlays */
-const _openSocialOverlay = openSocialOverlay;
-openSocialOverlay = function(){
-  metricInc("m_social_opens");
-  _openSocialOverlay();
-};
-
-const _openPlaylistsOverlay = openPlaylistsOverlay;
-openPlaylistsOverlay = function(){
-  metricInc("m_playlists_opens");
-  _openPlaylistsOverlay();
-};
-</script>
-<script>
-/* =========================================
-   PATCH FINAL (métricas sem sobrescrever função)
-   =========================================
-   Se você NÃO removeu o trecho que eu pedi remover,
-   remove AGORA pra não duplicar comportamento.
-*/
-
-/* Ajuste: garantir que métricas de social/playlists incrementem
-   (caso seu código tenha sido editado no meio do caminho) */
-
-(function ensureMetricsHooks(){
-  // Se as funções existirem no escopo global, não mexe nelas.
-  // Aqui é só uma proteção: incrementa quando os botões forem clicados.
-  try{
-    const btnSocial = document.getElementById("openSocial");
-    const btnPlaylists = document.getElementById("openPlaylists");
-
-    if(btnSocial && !btnSocial.dataset.metricBound){
-      btnSocial.dataset.metricBound = "1";
-      btnSocial.addEventListener("click", ()=>{
-        try{ metricInc("m_social_opens"); }catch(e){}
-      }, { capture:true });
-    }
-
-    if(btnPlaylists && !btnPlaylists.dataset.metricBound){
-      btnPlaylists.dataset.metricBound = "1";
-      btnPlaylists.addEventListener("click", ()=>{
-        try{ metricInc("m_playlists_opens"); }catch(e){}
-      }, { capture:true });
-    }
-  }catch(e){}
-})();
-
-/* =========================================
-   FECHAR MENU QUANDO ABRIR QUALQUER OVERLAY
-   (segurança pra não ficar drop aberto)
-   ========================================= */
 document.addEventListener("keydown",(e)=>{
-  if(e.key === "Escape"){
-    try{ document.getElementById("menuWrap").classList.remove("open"); }catch(err){}
-  }
+  if(e.key !== "Escape") return;
+
+  menuWrap.classList.remove("open");
+
+  if(document.body.classList.contains("adminOpen")) return closeAdminOverlay();
+  if(document.body.classList.contains("playlistsOpen")) return closePlaylistsOverlay();
+  if(document.body.classList.contains("socialOpen")) return closeSocialOverlay();
+  if(document.body.classList.contains("scrollOpen")) return closeScroll();
+  if(document.body.classList.contains("editOpen")) return closeEditOverlay();
 });
 
-/* =========================================
-   GARANTIR: clique fora fecha menu (já tem),
-   mas aqui evita drop travado em mobile.
-   ========================================= */
-document.addEventListener("touchstart",(e)=>{
-  try{
-    const menuWrap = document.getElementById("menuWrap");
-    if(menuWrap && !menuWrap.contains(e.target)) menuWrap.classList.remove("open");
-  }catch(err){}
-}, { passive:true });
-
+/* =========================
+   MÉTRICAS
+   ========================= */
+metricInc("m_site_opens");
+openSocial.addEventListener("click", ()=> metricInc("m_social_opens"), {capture:true});
+openPlaylists.addEventListener("click", ()=> metricInc("m_playlists_opens"), {capture:true});
 </script>
 
 </body>
