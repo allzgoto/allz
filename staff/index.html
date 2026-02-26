@@ -56,8 +56,8 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      border-bottom:1px solid var(--stroke);
       gap:10px;
+      border-bottom:1px solid var(--stroke);
       position:relative;
       z-index:5;
     }
@@ -72,7 +72,6 @@
     .brand__sub{font-size:12px;color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
     .left__actions{display:flex; gap:8px; flex:0 0 auto}
 
-    /* Bigger, reliable hitbox */
     .iconbtn{
       width:44px;height:44px;
       border-radius:14px;
@@ -85,7 +84,7 @@
       position:relative;
       z-index:6;
     }
-    .iconbtn svg{pointer-events:none} /* <-- FIX: svg não “rouba” o clique */
+    .iconbtn svg{pointer-events:none}
     .iconbtn:hover{background:rgba(255,255,255,.06)}
     .iconbtn:active{transform:translateY(1px)}
 
@@ -195,14 +194,13 @@
       top:0; right:-320px;
       width:300px;
       height:100%;
-      max-height:100%;
       background:linear-gradient(180deg, rgba(12,14,20,.98), rgba(8,9,12,.98));
       border-left:1px solid var(--stroke);
       transition:right .22s ease;
       box-shadow:-18px 0 60px rgba(0,0,0,.55);
       padding:14px 12px;
       overflow:auto;
-      z-index:10;
+      z-index:40;
     }
     .filters.open{right:0}
     .filters__header{
@@ -327,6 +325,23 @@
       background:rgba(179,0,255,.95);
       box-shadow:0 0 0 6px rgba(179,0,255,.12);
     }
+
+    /* Mobile-only back button inside center top */
+    .mBack{
+      display:none;
+      height:38px;
+      padding:0 12px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.92);
+      cursor:pointer;
+      font-weight:900;
+      gap:8px;
+      align-items:center;
+    }
+    .mBack:hover{background:rgba(255,255,255,.06)}
+    .mBack svg{pointer-events:none}
 
     /* Notification bell + panel */
     .bell{
@@ -562,11 +577,6 @@
       border-color:rgba(179,0,255,.35);
       background:rgba(179,0,255,.12);
     }
-    .panel__header{
-      padding:12px 14px;
-      border-bottom:1px solid var(--stroke);
-    }
-    .panel__title{font-weight:900}
     .panel__body{padding:14px}
     .row{
       display:grid;
@@ -608,7 +618,7 @@
       outline:none;
     }
 
-    /* Toast notifications */
+    /* Toast notifications (PC) */
     .toasts{
       position:fixed;
       right:14px;
@@ -658,16 +668,78 @@
       background:transparent;
     }
 
-    /* Responsive */
+    /* MOBILE MODE (3 telas) */
+    .mNav{
+      display:none;
+      position:fixed;
+      left:10px;
+      right:10px;
+      bottom:10px;
+      z-index:60;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(15,17,24,.92), rgba(10,11,15,.92));
+      box-shadow:0 18px 60px rgba(0,0,0,.65);
+      padding:8px;
+      gap:8px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .mNav button{
+      height:44px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:rgba(255,255,255,.9);
+      font-weight:900;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+    }
+    .mNav button.active{
+      border-color:rgba(179,0,255,.45);
+      background:rgba(179,0,255,.13);
+      box-shadow:0 0 0 6px rgba(179,0,255,.08);
+    }
+    .mNav button svg{pointer-events:none}
+    .mNavBadge{
+      min-width:18px;
+      height:18px;
+      padding:0 6px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:900;
+      background:rgba(255,0,212,.95);
+      border:1px solid rgba(255,255,255,.16);
+    }
+
     @media (max-width: 1100px){
       body{overflow:auto}
       .app{grid-template-columns: 340px 1fr; grid-template-rows:auto auto; height:auto}
       .right{grid-column: 1 / -1}
     }
+
     @media (max-width: 820px){
-      body{overflow:auto}
-      .app{grid-template-columns: 1fr; padding:10px}
-      .left,.center,.right{border-radius:16px}
+      body{overflow:hidden}
+      .app{
+        height:100%;
+        grid-template-columns: 1fr;
+        padding:10px;
+        padding-bottom:78px;
+        gap:10px;
+      }
+
+      .left,.center,.right{display:none; height:calc(100vh - 88px)}
+      body[data-view="list"] .left{display:flex}
+      body[data-view="chat"] .center{display:flex}
+      body[data-view="details"] .right{display:flex}
+
+      .mNav{display:grid}
+
       .filters{
         position:fixed;
         top:10px;
@@ -679,24 +751,48 @@
         border:1px solid var(--stroke);
       }
       .filters.open{right:10px}
-      .filters__header{
-        border-top-left-radius:16px;
-        border-top-right-radius:16px;
-      }
+
       .notiPanel{
         right:10px;
-        top:76px;
+        top:70px;
         width:min(92vw, 420px);
       }
+
+      .mBack{display:inline-flex}
     }
   </style>
 </head>
-<body>
+
+<body data-view="list">
   <div class="toasts" id="toasts"></div>
+
+  <!-- Mobile bottom nav -->
+  <div class="mNav" id="mNav">
+    <button id="mNavList" class="active" type="button" title="Conversas">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Conversas
+    </button>
+    <button id="mNavChat" type="button" title="Chat">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M21 15a4 4 0 01-4 4H8l-5 3V7a4 4 0 014-4h10a4 4 0 014 4v8z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+      Chat
+    </button>
+    <button id="mNavDetails" type="button" title="Detalhes">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M10 3h4M12 7v14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        <path d="M7 12h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      Detalhes
+      <span class="mNavBadge" id="mNavBadge" style="display:none">0</span>
+    </button>
+  </div>
 
   <div class="app">
     <!-- LEFT -->
-    <aside class="left">
+    <aside class="left" id="paneLeft">
       <div class="left__header">
         <div class="brand">
           <div class="dot"></div>
@@ -714,7 +810,6 @@
         </div>
       </div>
 
-      <!-- QUEUE TABS -->
       <div class="queues" id="queueTabs"></div>
 
       <div class="search">
@@ -776,21 +871,27 @@
 
         <div class="filters__section" style="border-bottom:none">
           <div class="filters__label">Atualização</div>
-          <div class="muted">Agora a notificação tem central (sininho) e anti-spam.</div>
+          <div class="muted">Mobile agora vira 3 telas (Conversas/Chat/Detalhes).</div>
         </div>
       </div>
     </aside>
-
-    <!-- CENTER -->
-    <main class="center">
+        <!-- CENTER -->
+    <main class="center" id="paneCenter">
       <div class="center__top">
+        <!-- mobile back -->
+        <button class="mBack" id="btnMobileBack" type="button" title="Voltar para conversas">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Voltar
+        </button>
+
         <div class="banner">
           <span>🎉</span>
           <span id="bannerText">Pagamento confirmado! Seu pedido está sendo processado...</span>
         </div>
 
         <div class="center__topRight">
-          <!-- Notification Bell -->
           <button class="bell" id="btnBell" title="Notificações">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
               <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -804,7 +905,6 @@
         </div>
       </div>
 
-      <!-- Notification Panel -->
       <div class="notiPanel" id="notiPanel" aria-hidden="true">
         <div class="notiHead">
           <div class="notiTitle">Notificações</div>
@@ -832,7 +932,7 @@
     </main>
 
     <!-- RIGHT -->
-    <aside class="right">
+    <aside class="right" id="paneRight">
       <div class="stats">
         <div class="stat">
           <div class="stat__label">GASTOS</div>
@@ -876,18 +976,11 @@
   </div>
 
   <script>
-    /***********************
-     * STAFF PANEL v3.1
-     * FIXES:
-     * - Notification anti-spam
-     * - Notification center (bell + panel)
-     * - Filter icon hitbox reliably clickable
-     ***********************/
-    const LS_KEY = "staff_panel_v3_1";
+    const LS_KEY = "staff_panel_v3_2_mobile";
     const AGENT = "Allz";
 
     const AUTO_REMOVE_DELIVERED_MS = 60 * 60 * 1000; // 1 hour
-    const POLL_MS = 2500; // refresh interval
+    const POLL_MS = 2500;
     const SIMULATE_REPLY_PROB = 0.22;
 
     const QUEUES = [
@@ -908,6 +1001,18 @@
       { id:"canceled", label:"Cancelados" },
     ];
 
+    function isMobile(){ return window.matchMedia("(max-width: 820px)").matches; }
+
+    // Mobile view state
+    function setView(v){
+      document.body.setAttribute("data-view", v);
+      // nav active
+      mNavList.classList.toggle("active", v==="list");
+      mNavChat.classList.toggle("active", v==="chat");
+      mNavDetails.classList.toggle("active", v==="details");
+    }
+    function getView(){ return document.body.getAttribute("data-view") || "list"; }
+
     function nowMinusMinutes(m){ return Date.now() - (m*60*1000); }
     function rid(){ return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16); }
 
@@ -920,7 +1025,8 @@
     }
 
     function seedTicketsBase(){
-      return [
+      // Base + mais tickets artificiais (>= 15) pra testar
+      const base = [
         {
           id:"t1",
           queue:"PEDIDOS_NOVOS",
@@ -943,914 +1049,257 @@
           messages: [
             { id: rid(), type:"sys", text:"🎉 Pagamento confirmado! Seu pedido está sendo processado. Nossa equipe entrará em contato em breve para realizar a entrega." },
             { id: rid(), type:"sys", text:"Allz assumiu este atendimento." },
-            { id: rid(), type:"me", text:"Olá! Muito obrigado pela sua compra, caso tenha alguma dúvida, pode me informar aqui ou lá no discord, abrindo suporte. Entregaremos o mais rápido possível, ainda hoje! 💜", at: nowMinusMinutes(30)},
-            { id: rid(), type:"me", text:"Verifiquei que ainda não enviou sua gamepass, precisa de ajuda com isso? Caso ela apenas não tenha sido encontrada, vá em \"minhas compras\" e selecione a compra que está tendo problemas, após isso é só clicar em \"inserir link manualmente\" e colocar o link de sua gamepass! Lembre-se de desativar os preços regionais.", at: nowMinusMinutes(28)},
+            { id: rid(), type:"me", text:"Olá! Muito obrigado pela sua compra, caso tenha alguma dúvida, pode me informar aqui ou lá no discord, abrindo suporte. Entregaremos o mais rápido possível, ainda hoje! 💜", ts: nowMinusMinutes(34) },
+            { id: rid(), type:"me", text:"Verifiquei que ainda não enviou sua gamepass, precisa de ajuda com isso? Caso ela apenas não tenha sido encontrada, vá em \"minhas compras\" e selecione a compra que está tendo problemas, após isso é só clicar em \"inserir link manualmente\" e colocar o link de sua gamepass! Lembre-se de desativar os preços regionais.", ts: nowMinusMinutes(33) },
           ],
-          lastSeenMsgCount: 0,
-          lastNotifiedCount: 0
-        },
-        {
-          id:"t2",
-          queue:"MM2",
-          name:"Lipe nuts",
-          user:"lipezzk077",
-          createdAt: nowMinusMinutes(55),
-          unread:false,
-          mine:false,
-          status:"paid",
-          category:"MM2",
-          total:"R$ 49,90",
-          nick:"lipezzk077",
-          gamepass:"-",
-          item:"MM2 — Pacote",
-          client:"Lipe",
-          clientEmail:"-",
-          spent:49.9, orders:1, items:1,
-          tags:["ENTREGUE","MM2"],
-          deliveredAt: Date.now() - (25 * 60 * 1000),
-          messages: [
-            { id: rid(), type:"sys", text:"Pagamento confirmado! Pedido liberado para entrega." },
-            { id: rid(), type:"me", text:"Pedido recebido! Já estou separando seu item. ✅", at: nowMinusMinutes(52)},
-            { id: rid(), type:"them", text:"Opa, beleza! Valeu", at: nowMinusMinutes(51)},
-            { id: rid(), type:"me", text:"Entregue! Se precisar de algo, chama. 💜", at: nowMinusMinutes(50)},
-          ],
-          lastSeenMsgCount: 0,
-          lastNotifiedCount: 0
-        },
-        {
-          id:"t3",
-          queue:"SEM_GAMEPASS",
-          name:"DUDAXLSANTOS",
-          user:"DUDAXLSANTOS",
-          createdAt: nowMinusMinutes(80),
-          unread:true,
-          mine:true,
-          status:"pending",
-          category:"ROBUX_GAMEPASS",
-          total:"R$ 25,00",
-          nick:"dudaxl",
-          gamepass:"https://www.roblox.com/game-pass/123456789",
-          item:"500 Robux (via Gamepass)",
-          client:"Duda",
-          clientEmail:"-",
-          spent:25, orders:1, items:1,
-          tags:["GAMEPASS","SEM_GAMEPASS"],
-          deliveredAt:null,
-          messages: [
-            { id: rid(), type:"sys", text:"Pagamento confirmado! Seu pedido está sendo processado." },
-            { id: rid(), type:"sys", text:"Allz assumiu este atendimento." },
-            { id: rid(), type:"them", text:"Oi, eu não achei onde manda o link", at: nowMinusMinutes(78)},
-          ],
-          lastSeenMsgCount: 0,
-          lastNotifiedCount: 0
-        },
-        {
-          id:"t4",
-          queue:"DTI",
-          name:"w1s.",
-          user:"southnak",
-          createdAt: nowMinusMinutes(110),
-          unread:true,
-          mine:false,
-          status:"pending",
-          category:"MM2",
-          total:"R$ 19,90",
-          nick:"southnak",
-          gamepass:"-",
-          item:"MM2 — Item avulso",
-          client:"w1s",
-          clientEmail:"-",
-          spent:19.9, orders:1, items:1,
-          tags:["MM2","MUDAR_TAG"],
-          deliveredAt:null,
-          messages: [
-            { id: rid(), type:"sys", text:"Pedido em análise." },
-            { id: rid(), type:"them", text:"Posso esperar, só me avisa aqui", at: nowMinusMinutes(108)},
-          ],
-          lastSeenMsgCount: 0,
-          lastNotifiedCount: 0
-        },
-        {
-          id:"t5",
-          queue:"FILA_DE_ENTREGA",
-          name:"b.ferrazxl",
-          user:"brunoteixeiraferrazferraz@gmail.com",
-          createdAt: nowMinusMinutes(140),
-          unread:false,
-          mine:false,
-          status:"refunded",
-          category:"MM2",
-          total:"R$ 12,00",
-          nick:"brunoteixeira",
-          gamepass:"-",
-          item:"MM2 — Item",
-          client:"Bruno",
-          clientEmail:"brunoteixeiraferrazferraz@gmail.com",
-          spent:12, orders:1, items:1,
-          tags:["REEMBOLSO","MM2"],
-          deliveredAt:null,
-          messages: [
-            { id: rid(), type:"sys", text:"Reembolso processado." },
-            { id: rid(), type:"me", text:"Reembolso concluído. 💜", at: nowMinusMinutes(138)},
-          ],
-          lastSeenMsgCount: 0,
-          lastNotifiedCount: 0
         },
       ];
-    }
 
-    function generateExtraTickets(count){
-      const names = ["ThayS","Nina","Renan","Bryan","Laura","Letícia","Paulo","Yasmim","Brenda","Miguel","Gabi","Rafa","Davi","Malu","Caio","Luan","Iza","Noah","Bia","Hugo","Ana","Vini","Lara","Gui","Theo"];
-      const users = ["thaysw0","ninaz","renan_77","bryanbr","laura_s","leticia_m","paulo00","yas_kk","brendaX","migrez","gabi_13","rafaelo","davi_x","maluzita","caio_rbx","luanbr","iza_rob","noahdev","bianca2","hugoz","ana_mod","vini33","lara_f","gui_k","theo_01"];
-      const categories = ["MM2","ROBUX_GAMEPASS","BLOXFRUITS","MM2","ROBUX_GAMEPASS"];
-      const items = ["MM2 — Godly","MM2 — Pacote","BloxFruits — Fruta","500 Robux (via Gamepass)","BloxFruits — Pass"];
-      const tagsPool = ["MM2","GAMEPASS","ENTREGUE","REEMBOLSO","MUDAR_TAG","URGENTE","BUG","FALTA_LINK","PAGAMENTO","DÚVIDA","SEM_GAMEPASS","DTI"];
-      const statuses = ["pending","paid","refunded","canceled"];
-      const queuePool = ["DTI","PEDIDOS_NOVOS","SEM_GAMEPASS","BLOXFRUITS","MM2","FILA_DE_ENTREGA"];
+      const names = [
+        ["Lipe nuts","lipezzk077","MM2","paid","ENTREGUE"],
+        ["DUDAXLSANTOS","dudaxlsantos","SEM_GAMEPASS","pending","SEM_GAMEPASS"],
+        ["w1s.","southnak","DTI","pending","MM2"],
+        ["b.ferrazxl","brunoteixeiraferrarazferraz@gmail.com","FILA_DE_ENTREGA","refunded","REEMBOLSO"],
+        ["ThayS","myleswr0","DTI","pending","PEDIDOS_NOVOS"],
+        ["Nina","ninazyn","PEDIDOS_NOVOS","pending","GAMEPASS"],
+        ["Renan","renanx","SEM_GAMEPASS","pending","SEM_GAMEPASS"],
+        ["Brenda","brendinha","FILA_DE_ENTREGA","pending","MM2"],
+        ["Bryan","bryanz","BLOXFRUITS","paid","ENTREGUE"],
+        ["Laura","lauraz","PEDIDOS_NOVOS","pending","GAMEPASS"],
+        ["Leticia","letz","DTI","pending","MM2"],
+        ["Paulo","pauloz","MM2","pending","MM2"],
+        ["Miguel","migz","PEDIDOS_NOVOS","pending","GAMEPASS"],
+        ["Yasmim","yasmimz","BLOXFRUITS","pending","BLOXFRUITS"],
+        ["Riquelmy","rikz","FILA_DE_ENTREGA","pending","FILA_DE_ENTREGA"],
+        ["Liz","lizz","SEM_GAMEPASS","canceled","CANCELADO"],
+      ];
 
-      const out = [];
-      for(let i=0;i<count;i++){
-        const idx = i % names.length;
-        const status = statuses[i % statuses.length];
-        const cat = categories[i % categories.length];
-        const queue = queuePool[i % queuePool.length];
-        const tagA = tagsPool[(i*3) % tagsPool.length];
-        const tagB = tagsPool[(i*3 + 2) % tagsPool.length];
-
-        const id = "tx" + (i+1);
-        const createdAt = nowMinusMinutes(170 + i*9);
-        const unread = (i % 3) !== 0;
-        const mine = (i % 4) === 0;
-
-        const item = items[i % items.length];
-        const nick = users[idx];
-
-        const deliveredAt = (status==="paid" ? (Date.now() - ((10 + (i%70)) * 60 * 1000)) : null);
-
-        out.push({
+      const extra = names.map((n,idx)=>{
+        const id = "t" + (idx+2);
+        const created = nowMinusMinutes(10 + idx*3);
+        const queue = n[2];
+        const status = n[3];
+        const mainTag = n[4];
+        const isDelivered = mainTag === "ENTREGUE";
+        return {
           id,
           queue,
-          name: names[idx],
-          user: users[idx],
-          createdAt,
-          unread,
-          mine,
+          name:n[0],
+          user:n[1],
+          createdAt: created,
+          unread: Math.random() < 0.45,
+          mine: Math.random() < 0.55,
           status,
-          category: cat,
-          total: "R$ " + (10 + (i%7)*3) + ",90",
-          nick,
-          gamepass: cat === "ROBUX_GAMEPASS" ? "https://www.roblox.com/game-pass/123456" + (100+i) : "-",
-          item,
-          client: names[idx],
-          clientEmail: "-",
-          spent: 10 + (i%7)*3,
-          orders: 1,
-          items: 1,
-          tags: uniqueTags([tagA, tagB, cat, queue]),
-          deliveredAt,
-          messages: [
-            { id: rid(), type:"sys", text: "Ticket criado no sistema." },
-            ...(mine ? [{ id: rid(), type:"sys", text: AGENT + " assumiu este atendimento." }] : []),
-            { id: rid(), type:"them", text: cat==="ROBUX_GAMEPASS" ? "Opa, onde envio o link da gamepass?" : "Oi, quando entrega meu item?", at: createdAt + 2*60*1000 },
-            ...(status==="paid" ? [{ id: rid(), type:"me", text:"Entregue ✅ qualquer coisa chama!", at: createdAt + 6*60*1000 }] : []),
-            ...(status==="refunded" ? [{ id: rid(), type:"me", text:"Reembolso processado. 💜", at: createdAt + 6*60*1000 }] : []),
-            ...(status==="canceled" ? [{ id: rid(), type:"me", text:"Pedido cancelado conforme solicitado.", at: createdAt + 6*60*1000 }] : []),
-          ],
-          lastSeenMsgCount: 0,
-          lastNotifiedCount: 0
-        });
-      }
-      return out;
+          category:"ROBUX_GAMEPASS",
+          total:"R$ 12,60",
+          nick:"user_" + (idx+10),
+          gamepass:"https://www.roblox.com/game-pass/" + (1573179000 + idx),
+          item: (queue==="BLOXFRUITS" ? "BloxFruits (item)" : "Robux (via Gamepass)"),
+          client:n[0],
+          clientEmail:(n[0].toLowerCase().replace(/\s+/g,"") + "@gmail.com"),
+          spent:13, orders:1, items:1,
+          tags: uniqueTags([mainTag, queue]),
+          deliveredAt: isDelivered ? (Date.now() - (20*60*1000)) : null,
+          messages:[
+            { id: rid(), type:"sys", text:"Pagamento confirmado! Seu pedido está sendo processado." },
+            { id: rid(), type:"sys", text:`${AGENT} assumiu este atendimento.` },
+            { id: rid(), type:"client", text:(Math.random()<.5?"Oi, quando entrega meu item?":"Opa, onde envio o link da gamepass?"), ts: created+60*1000 },
+          ]
+        };
+      });
+
+      // Ajuste rápido pra “Lipe nuts” ficar ENTREGUE/ pago (igual print)
+      extra[0].tags = uniqueTags(["ENTREGUE","MM2"]);
+      extra[0].status = "paid";
+      extra[0].deliveredAt = Date.now() - (30*60*1000);
+      extra[0].unread = false;
+
+      return base.concat(extra);
     }
 
-    const seedData = () => {
-      const base = seedTicketsBase();
-      const extra = generateExtraTickets(15);
-      return {
-        me: AGENT,
-        selectedId: base[0]?.id || null,
-        filters: {
-          queue: "all",
-          status: "all",
-          tag: "all",
-          onlyUnread: false,
-          onlyMine: false,
-          sortBy: "recent",
-          search: "",
-          soundOn: false,
-          demoSim: true
-        },
-        tickets: base.concat(extra),
-        notifications: [] // {id, ticketId, name, text, at, read}
-      };
-    };
-
-    function load(){
+    function loadState(){
       try{
         const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return seedData();
-        const parsed = JSON.parse(raw);
-        if(!parsed.tickets || !Array.isArray(parsed.tickets)) return seedData();
-
-        parsed.filters = parsed.filters || {};
-        parsed.filters.queue = parsed.filters.queue || "all";
-        parsed.filters.soundOn = !!parsed.filters.soundOn;
-        parsed.filters.demoSim = parsed.filters.demoSim !== false;
-
-        parsed.notifications = Array.isArray(parsed.notifications) ? parsed.notifications : [];
-
-        parsed.tickets.forEach(t=>{
-          t.queue = t.queue || "PEDIDOS_NOVOS";
-          t.tags = (t.tags || []).map(normalizeTag);
-          t.deliveredAt = t.deliveredAt ?? null;
-          t.messages = (t.messages || []).map(m => ({ id: m.id || rid(), ...m }));
-          t.lastSeenMsgCount = t.lastSeenMsgCount || 0;
-          t.lastNotifiedCount = t.lastNotifiedCount || 0; // <- anti spam
-        });
-        return parsed;
-      }catch{
-        return seedData();
-      }
+        if(!raw) return null;
+        return JSON.parse(raw);
+      }catch(e){ return null; }
     }
-    function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
-
-    let state = load();
-
-    // Elements
-    const elTicketList = document.getElementById("ticketList");
-    const elChat = document.getElementById("chat");
-    const elPanelBody = document.getElementById("panelBody");
-    const elTicketTags = document.getElementById("ticketTags");
-    const elTagInput = document.getElementById("tagInput");
-    const elBtnAddTag = document.getElementById("btnAddTag");
-    const elSearch = document.getElementById("searchInput");
-    const elOnlyUnread = document.getElementById("onlyUnread");
-    const elOnlyMine = document.getElementById("onlyMine");
-    const elSortBy = document.getElementById("sortBy");
-    const elStatusPills = document.getElementById("statusPills");
-    const elTagCloud = document.getElementById("tagCloud");
-    const elBanner = document.getElementById("bannerText");
-    const elQueueTabs = document.getElementById("queueTabs");
-    const elSoundOn = document.getElementById("soundOn");
-    const elDemoSim = document.getElementById("demoSim");
-    const elToasts = document.getElementById("toasts");
-
-    // Notifications
-    const elBell = document.getElementById("btnBell");
-    const elBellBadge = document.getElementById("bellBadge");
-    const elNotiPanel = document.getElementById("notiPanel");
-    const elNotiList = document.getElementById("notiList");
-    const elBtnMarkAllRead = document.getElementById("btnMarkAllRead");
-    const elBtnClearNoti = document.getElementById("btnClearNoti");
-
-    // Filters drawer
-    const elFilters = document.getElementById("filters");
-    document.getElementById("btnFilters").addEventListener("click", () => elFilters.classList.add("open"));
-    document.getElementById("btnCloseFilters").addEventListener("click", () => elFilters.classList.remove("open"));
-    document.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape"){
-        elFilters.classList.remove("open");
-        elNotiPanel.classList.remove("open");
-      }
-    });
-
-    // Tabs
-    document.querySelectorAll(".tab").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
-        document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
-        btn.classList.add("active");
-        renderRightPanel();
-      });
-    });
-
-    // Persist inputs
-    elSearch.value = state.filters.search || "";
-    elOnlyUnread.checked = !!state.filters.onlyUnread;
-    elOnlyMine.checked = !!state.filters.onlyMine;
-    elSortBy.value = state.filters.sortBy || "recent";
-    elSoundOn.checked = !!state.filters.soundOn;
-    elDemoSim.checked = !!state.filters.demoSim;
-
-    elSearch.addEventListener("input", (e)=>{
-      state.filters.search = e.target.value;
-      save();
-      renderTicketsPreserveScroll();
-      renderQueueTabs();
-    });
-    elOnlyUnread.addEventListener("change", ()=>{
-      state.filters.onlyUnread = elOnlyUnread.checked;
-      save();
-      renderTicketsPreserveScroll();
-      renderQueueTabs();
-    });
-    elOnlyMine.addEventListener("change", ()=>{
-      state.filters.onlyMine = elOnlyMine.checked;
-      save();
-      renderTicketsPreserveScroll();
-      renderQueueTabs();
-    });
-    elSortBy.addEventListener("change", ()=>{
-      state.filters.sortBy = elSortBy.value;
-      save();
-      renderTicketsPreserveScroll();
-      renderQueueTabs();
-    });
-    elSoundOn.addEventListener("change", ()=>{
-      state.filters.soundOn = elSoundOn.checked;
-      save();
-      toast("Som de notificação", elSoundOn.checked ? "Ativado" : "Desativado", "🔔");
-    });
-    elDemoSim.addEventListener("change", ()=>{
-      state.filters.demoSim = elDemoSim.checked;
-      save();
-      toast("Simulação (DEMO)", elDemoSim.checked ? "Ativada" : "Desativada", "🧪");
-    });
-
-    // Notification bell toggle
-    elBell.addEventListener("click", ()=>{
-      elNotiPanel.classList.toggle("open");
-      renderNotifications();
-      // se abrir, marca como "visualizado" mas não precisa marcar como lido
-    });
-    elBtnMarkAllRead.addEventListener("click", ()=>{
-      state.notifications.forEach(n => n.read = true);
-      save();
-      renderNotifications();
-      renderBellBadge();
-      toast("Notificações", "Marcadas como lidas.", "✅");
-    });
-    elBtnClearNoti.addEventListener("click", ()=>{
-      state.notifications = [];
-      save();
-      renderNotifications();
-      renderBellBadge();
-      toast("Notificações", "Lista limpa.", "🧹");
-    });
-
-    // close noti panel when click outside
-    document.addEventListener("click", (e)=>{
-      const inBell = elBell.contains(e.target);
-      const inPanel = elNotiPanel.contains(e.target);
-      if(!inBell && !inPanel){
-        elNotiPanel.classList.remove("open");
-      }
-      // close filters if click outside too
-      if(elFilters.classList.contains("open")){
-        const inFilters = elFilters.contains(e.target) || document.getElementById("btnFilters").contains(e.target);
-        if(!inFilters) elFilters.classList.remove("open");
-      }
-    });
-
-    function getSelected(){
-      return state.tickets.find(x=>x.id===state.selectedId) || state.tickets[0] || null;
-    }
-
-    function selectTicket(id){
-      state.selectedId = id;
-      const t = getSelected();
-      if(t){
-        t.unread = false;
-        t.lastSeenMsgCount = (t.messages||[]).length;
-      }
-      // marca notificações desse ticket como lidas
-      state.notifications.forEach(n => { if(n.ticketId === id) n.read = true; });
-      save();
-      renderAll({ keepChatScroll:false });
-      scrollChatBottom();
-      renderBellBadge();
-      renderNotifications();
-    }
-
-    // Messaging
-    const elMsgInput = document.getElementById("msgInput");
-    document.getElementById("btnSend").addEventListener("click", sendMsg);
-    elMsgInput.addEventListener("keydown", (e)=>{ if(e.key === "Enter") sendMsg(); });
-
-    function sendMsg(){
-      const text = (elMsgInput.value || "").trim();
-      if(!text) return;
-      const t = getSelected();
-      if(!t) return;
-
-      t.messages.push({ id: rid(), type:"me", text, at: Date.now() });
-      t.unread = false;
-      t.lastSeenMsgCount = t.messages.length;
-      elMsgInput.value = "";
-      save();
-
-      renderChat();
-      renderTicketsPreserveScroll();
-      renderRightPanel();
-      renderQueueTabs();
-      scrollChatBottom();
-    }
-
-    function deleteMsg(msgId){
-      const t = getSelected();
-      if(!t) return;
-      t.messages = (t.messages||[]).filter(m => m.id !== msgId);
-      t.lastSeenMsgCount = t.messages.length;
-      save();
-      renderChat();
-      renderTicketsPreserveScroll();
-      renderRightPanel();
-    }
-
-    // Actions buttons
-    document.getElementById("btnResolver").addEventListener("click", ()=>{
-      const t = getSelected();
-      if(!t) return;
-
-      t.status = "paid";
-      t.tags = uniqueTags([...(t.tags||[]), "ENTREGUE"]);
-      t.queue = "FILA_DE_ENTREGA";
-      t.unread = false;
-      t.deliveredAt = Date.now();
-      t.messages.push({ id: rid(), type:"sys", text:"Pedido marcado como ENTREGUE. Este chat será removido automaticamente após 1 hora." });
-      t.lastSeenMsgCount = t.messages.length;
-
-      save();
-      toast("Pedido resolvido", "Marcado como ENTREGUE + movido para FILA DE ENTREGA", "✅");
-      renderAll({ keepChatScroll:true });
-      scrollChatBottom();
-    });
-
-    document.getElementById("btnLiberar").addEventListener("click", ()=>{
-      const t = getSelected();
-      if(!t) return;
-      t.unread = false;
-      t.messages.push({ id: rid(), type:"sys", text:"Ticket liberado para atendimento/entrega." });
-      t.lastSeenMsgCount = t.messages.length;
-      save();
-      toast("Ticket liberado", "Aviso registrado no chat", "🟣");
-      renderChat();
-      renderTicketsPreserveScroll();
-      renderRightPanel();
-      scrollChatBottom();
-    });
-
-    // Tag add/remove
-    elBtnAddTag.addEventListener("click", addTagFromInput);
-    elTagInput.addEventListener("keydown", (e)=>{ if(e.key === "Enter") addTagFromInput(); });
-
-    function addTagFromInput(){
-      const raw = (elTagInput.value || "").trim();
-      if(!raw) return;
-      const tag = normalizeTag(raw);
-      const t = getSelected();
-      if(!t) return;
-
-      const prevScroll = elTicketList.scrollTop;
-      t.tags = uniqueTags([...(t.tags||[]), tag]);
-      elTagInput.value = "";
-      save();
-
-      renderTagCloud();
-      renderTickets();
-      elTicketList.scrollTop = prevScroll;
-
-      renderRightPanel();
-      renderQueueTabs();
-    }
-
-    function removeTag(tag){
-      const t = getSelected();
-      if(!t) return;
-
-      const prevScroll = elTicketList.scrollTop;
-      t.tags = (t.tags||[]).filter(x => normalizeTag(x) !== normalizeTag(tag));
-      save();
-
-      renderTagCloud();
-      renderTickets();
-      elTicketList.scrollTop = prevScroll;
-
-      renderRightPanel();
-      renderQueueTabs();
-    }
-
-    // Filters
-    function statusBadge(status){
-      if(status==="paid") return ["PAGO","good"];
-      if(status==="pending") return ["PENDENTE","warn"];
-      if(status==="refunded") return ["REEMBOLSADO","good"];
-      if(status==="canceled") return ["CANCELADO","bad"];
-      return ["—",""];
-    }
-
-    function passesFilters(t){
-      const f = state.filters;
-      if(f.queue !== "all" && t.queue !== f.queue) return false;
-      if(f.status !== "all" && t.status !== f.status) return false;
-      if(f.tag !== "all"){
-        const tags = (t.tags||[]).map(normalizeTag);
-        if(!tags.includes(normalizeTag(f.tag))) return false;
-      }
-      if(f.onlyUnread && !t.unread) return false;
-      if(f.onlyMine && !t.mine) return false;
-
-      const q = (f.search||"").trim().toLowerCase();
-      if(q){
-        const hay = [t.name, t.user, t.category, t.item, t.queue, (t.tags||[]).join(" ")].join(" ").toLowerCase();
-        if(!hay.includes(q)) return false;
-      }
-      return true;
-    }
-
-    function sortTickets(arr){
-      const f = state.filters;
-      const copy = [...arr];
-      copy.sort((a,b)=>{
-        if(f.sortBy==="old") return a.createdAt - b.createdAt;
-        return b.createdAt - a.createdAt;
-      });
-      return copy;
-    }
-
-    function getVisibleTickets(){ return sortTickets(state.tickets.filter(passesFilters)); }
-
-    function getSnippet(t){
-      const msgs = t.messages || [];
-      const last = [...msgs].reverse().find(m => m.type !== "sys");
-      if(!last) return "Sem mensagens.";
-      return (last.type==="me" ? "Você: " : "") + last.text.slice(0,90);
-    }
-
-    function renderQueueTabs(){
-      const counts = countQueuesWithCurrentFilters();
-      elQueueTabs.innerHTML = "";
-      QUEUES.forEach(q=>{
-        const btn = document.createElement("div");
-        btn.className = "qtab" + (state.filters.queue===q.id ? " active" : "");
-        btn.addEventListener("click", ()=>{
-          state.filters.queue = q.id;
-          save();
-          renderAll({ keepChatScroll:true });
-        });
-        const label = document.createElement("span");
-        label.textContent = q.label;
-        const badge = document.createElement("span");
-        badge.className = "qbadge";
-        badge.textContent = String(counts[q.id] ?? 0);
-        btn.appendChild(label);
-        btn.appendChild(badge);
-        elQueueTabs.appendChild(btn);
-      });
-    }
-
-    function passesFiltersWith(filters, t){
-      const f = filters;
-      if(f.status !== "all" && t.status !== f.status) return false;
-      if(f.tag !== "all"){
-        const tags = (t.tags||[]).map(normalizeTag);
-        if(!tags.includes(normalizeTag(f.tag))) return false;
-      }
-      if(f.onlyUnread && !t.unread) return false;
-      if(f.onlyMine && !t.mine) return false;
-      const q = (f.search||"").trim().toLowerCase();
-      if(q){
-        const hay = [t.name, t.user, t.category, t.item, t.queue, (t.tags||[]).join(" ")].join(" ").toLowerCase();
-        if(!hay.includes(q)) return false;
-      }
-      return true;
-    }
-
-    function countQueuesWithCurrentFilters(){
-      const f = state.filters;
-      const counts = {};
-      QUEUES.forEach(q => counts[q.id]=0);
-
-      state.tickets.forEach(t=>{
-        const temp = { ...f, queue:"all" };
-        if(!passesFiltersWith(temp, t)) return;
-        counts["all"]++;
-        counts[t.queue] = (counts[t.queue]||0) + 1;
-      });
-
-      return counts;
-    }
-
-    function renderStatusPills(){
-      elStatusPills.innerHTML = "";
-      STATUS.forEach(s=>{
-        const pill = document.createElement("div");
-        pill.className = "pill" + (state.filters.status===s.id ? " active" : "");
-        pill.textContent = s.label;
-        pill.addEventListener("click", ()=>{
-          state.filters.status = s.id;
-          save();
-          renderAll({ keepChatScroll:true });
-        });
-        elStatusPills.appendChild(pill);
-      });
-    }
-
-    function getAllTags(){
-      const set = new Set();
-      state.tickets.forEach(t => (t.tags||[]).forEach(tag=>set.add(normalizeTag(tag))));
-      return Array.from(set).sort((a,b)=>a.localeCompare(b));
-    }
-
-    function renderTagCloud(){
-      const tags = getAllTags();
-      elTagCloud.innerHTML = "";
-
-      const all = document.createElement("div");
-      all.className = "tag" + (state.filters.tag==="all" ? " active" : "");
-      all.textContent = "Todas";
-      all.addEventListener("click", ()=>{
-        state.filters.tag = "all";
-        save();
-        renderAll({ keepChatScroll:true });
-      });
-      elTagCloud.appendChild(all);
-
-      tags.forEach(tag=>{
-        const t = document.createElement("div");
-        t.className = "tag" + (state.filters.tag===tag ? " active" : "");
-        t.textContent = tag;
-        t.addEventListener("click", ()=>{
-          state.filters.tag = tag;
-          save();
-          renderAll({ keepChatScroll:true });
-        });
-        elTagCloud.appendChild(t);
-      });
-    }
-
-    function renderTickets(){
-      const tickets = getVisibleTickets();
-      elTicketList.innerHTML = "";
-
-      tickets.forEach(t=>{
-        const wrap = document.createElement("div");
-        wrap.className = "ticket" + (t.id===state.selectedId ? " active" : "");
-        wrap.addEventListener("click", ()=>selectTicket(t.id));
-
-        const [label, cls] = statusBadge(t.status);
-
-        const top = document.createElement("div");
-        top.className = "ticket__top";
-
-        const name = document.createElement("div");
-        name.className = "ticket__name";
-        name.textContent = t.name;
-
-        const meta = document.createElement("div");
-        meta.className = "ticket__meta";
-
-        if(t.unread){
-          const dot = document.createElement("span");
-          dot.className = "unreadDot";
-          meta.appendChild(dot);
-        }
-
-        const badge = document.createElement("span");
-        badge.className = "badge " + cls;
-        badge.textContent = label;
-
-        const small = document.createElement("span");
-        small.textContent = t.queue;
-
-        meta.appendChild(badge);
-        meta.appendChild(small);
-
-        top.appendChild(name);
-        top.appendChild(meta);
-
-        const snippet = document.createElement("div");
-        snippet.className = "ticket__snippet";
-        snippet.textContent = getSnippet(t);
-
-        const tags = document.createElement("div");
-        tags.className = "ticket__tags";
-
-        (t.tags||[]).slice(0,3).forEach(tag=>{
-          const tg = document.createElement("div");
-          tg.className = "tag";
-          tg.textContent = normalizeTag(tag);
-          tg.addEventListener("click", (e)=>{
-            e.stopPropagation();
-            state.filters.tag = normalizeTag(tag);
-            save();
-            renderAll({ keepChatScroll:true });
-          });
-          tags.appendChild(tg);
-        });
-
-        wrap.appendChild(top);
-        wrap.appendChild(snippet);
-        if((t.tags||[]).length) wrap.appendChild(tags);
-
-        elTicketList.appendChild(wrap);
-      });
-
-      const hasSelected = tickets.some(t=>t.id===state.selectedId);
-      if(!hasSelected && tickets.length){
-        state.selectedId = tickets[0].id;
-        save();
-      }
-
-      if(!tickets.length){
-        const empty = document.createElement("div");
-        empty.style.padding = "18px";
-        empty.className = "muted";
-        empty.textContent = "Nenhum ticket encontrado com esses filtros.";
-        elTicketList.appendChild(empty);
-      }
-    }
-
-    function renderTicketsPreserveScroll(){
-      const prev = elTicketList.scrollTop;
-      renderTickets();
-      elTicketList.scrollTop = prev;
+    function saveState(){
+      localStorage.setItem(LS_KEY, JSON.stringify(state));
     }
 
     function formatTime(ts){
-      try{
-        const d = new Date(ts);
-        const hh = String(d.getHours()).padStart(2,"0");
-        const mm = String(d.getMinutes()).padStart(2,"0");
-        return `${hh}:${mm}`;
-      }catch{ return ""; }
+      const d = new Date(ts || Date.now());
+      const hh = String(d.getHours()).padStart(2,"0");
+      const mm = String(d.getMinutes()).padStart(2,"0");
+      return `${hh}:${mm}`;
     }
 
-    function renderChat(){
-      const t = getSelected();
-      if(!t){ elChat.innerHTML=""; return; }
+    // UI refs
+    const ticketList = document.getElementById("ticketList");
+    const chatEl = document.getElementById("chat");
+    const panelBody = document.getElementById("panelBody");
+    const ticketTagsEl = document.getElementById("ticketTags");
 
-      elChat.innerHTML = "";
-      const sysTop = (t.messages||[]).find(m => m.type==="sys");
-      elBanner.textContent = sysTop ? sysTop.text : "Ticket aberto.";
+    const tagCloud = document.getElementById("tagCloud");
+    const statusPills = document.getElementById("statusPills");
+    const queueTabs = document.getElementById("queueTabs");
 
-      (t.messages||[]).forEach(m=>{
-        if(m.type==="sys"){
-          const row = document.createElement("div");
-          row.className = "sys";
-          const b = document.createElement("div");
-          b.className = "sys__bubble";
-          b.textContent = m.text;
-          row.appendChild(b);
-          elChat.appendChild(row);
-          return;
-        }
+    const searchInput = document.getElementById("searchInput");
+    const msgInput = document.getElementById("msgInput");
+    const btnSend = document.getElementById("btnSend");
 
-        const row = document.createElement("div");
-        row.className = "msgRow" + (m.type==="me" ? " me" : "");
-        const bubble = document.createElement("div");
-        bubble.className = "bubble" + (m.type==="me" ? " me" : "");
-        bubble.textContent = m.text;
+    const btnFilters = document.getElementById("btnFilters");
+    const btnCloseFilters = document.getElementById("btnCloseFilters");
+    const filters = document.getElementById("filters");
 
-        const meta = document.createElement("div");
-        meta.className = "meta";
+    const onlyUnread = document.getElementById("onlyUnread");
+    const onlyMine = document.getElementById("onlyMine");
+    const soundOn = document.getElementById("soundOn");
+    const demoSim = document.getElementById("demoSim");
+    const sortBy = document.getElementById("sortBy");
 
-        if(m.type==="me"){
-          const del = document.createElement("button");
-          del.className = "delBtn";
-          del.type = "button";
-          del.textContent = "APAGAR";
-          del.addEventListener("click", (e)=>{
-            e.stopPropagation();
-            deleteMsg(m.id);
-          });
-          meta.appendChild(del);
-        }
+    const btnLiberar = document.getElementById("btnLiberar");
+    const btnResolver = document.getElementById("btnResolver");
 
-        const time = document.createElement("span");
-        time.textContent = formatTime(m.at || t.createdAt);
-        meta.appendChild(time);
+    const btnAddTag = document.getElementById("btnAddTag");
+    const tagInput = document.getElementById("tagInput");
 
-        bubble.appendChild(meta);
-        row.appendChild(bubble);
-        elChat.appendChild(row);
-      });
-    }
+    const toastsEl = document.getElementById("toasts");
 
-    function scrollChatBottom(){ elChat.scrollTop = elChat.scrollHeight; }
+    // notifications
+    const btnBell = document.getElementById("btnBell");
+    const notiPanel = document.getElementById("notiPanel");
+    const notiList = document.getElementById("notiList");
+    const bellBadge = document.getElementById("bellBadge");
+    const btnMarkAllRead = document.getElementById("btnMarkAllRead");
+    const btnClearNoti = document.getElementById("btnClearNoti");
 
-    function hashId(id){
-      const s = "4c6b26f3a71e" + id.replace(/\D/g,"");
-      return s.slice(0,12) + "-4...";
-    }
+    // mobile
+    const mNavList = document.getElementById("mNavList");
+    const mNavChat = document.getElementById("mNavChat");
+    const mNavDetails = document.getElementById("mNavDetails");
+    const mNavBadge = document.getElementById("mNavBadge");
+    const btnMobileBack = document.getElementById("btnMobileBack");
 
-    function renderRightPanel(){
-      const t = getSelected();
-      if(!t){ elPanelBody.innerHTML=""; return; }
-
-      document.getElementById("statSpent").textContent = String(t.spent ?? 13);
-      document.getElementById("statOrders").textContent = String(t.orders ?? 1);
-      document.getElementById("statItems").textContent = String(t.items ?? 1);
-
-      const activeTab = document.querySelector(".tab.active")?.dataset?.tab || "info";
-
-      if(activeTab === "info"){
-        elPanelBody.innerHTML = `
-          <div class="row"><div class="k">Fila</div><div class="v">${t.queue}</div></div>
-          <div class="row"><div class="k">Categoria</div><div class="v">${t.category}</div></div>
-          <div class="row"><div class="k">Data</div><div class="v">${new Date(t.createdAt).toLocaleString("pt-BR")}</div></div>
-          <div class="row"><div class="k">ID Pedido</div><div class="v">${hashId(t.id)}</div></div>
-          <div class="row"><div class="k">Valor Total</div><div class="v" style="color:${t.status==="paid" ? "var(--good)" : "rgba(255,255,255,.9)"}">${t.total}</div></div>
-          <div class="row"><div class="k">Nickname Roblox</div><div class="v">${t.nick}</div></div>
-          <div class="row"><div class="k">Link da Gamepass</div><div class="v">${t.gamepass && t.gamepass!=="-" ? `<a class="v link" href="${t.gamepass}" target="_blank" rel="noreferrer">${t.gamepass}</a>` : "-"}</div></div>
-          <div class="row"><div class="k">Item</div><div class="v">${t.item}</div></div>
-          <div class="row"><div class="k">Cliente</div><div class="v">${t.client}${t.clientEmail && t.clientEmail!=="-" ? ` <span class="muted">(${t.clientEmail})</span>` : ""}</div></div>
-        `;
-      } else if(activeTab === "items"){
-        elPanelBody.innerHTML = `
-          <div class="row"><div class="k">Item</div><div class="v">${t.item}</div></div>
-          <div class="row"><div class="k">Categoria</div><div class="v">${t.category}</div></div>
-          <div class="row"><div class="k">Status</div><div class="v">${statusBadge(t.status)[0]}</div></div>
-          <div class="row"><div class="k">Fila</div><div class="v">${t.queue}</div></div>
-          <div class="row"><div class="k">Quantidade</div><div class="v">1</div></div>
-        `;
-      } else {
-        elPanelBody.innerHTML = `
-          <div class="row"><div class="k">Mover para fila</div><div class="v"></div></div>
-          <select id="queueSelect" class="select" style="margin-top:6px">
-            ${QUEUES.filter(q=>q.id!=="all").map(q=>`<option value="${q.id}" ${q.id===t.queue?"selected":""}>${q.label}</option>`).join("")}
-          </select>
-
-          <div class="row" style="margin-top:12px"><div class="k">Notificar cliente</div><div class="v"></div></div>
-          <div class="muted">E-mail aqui é DEMO. Para e-mail real precisa backend.</div>
-          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
-            <button class="btn small ghost" id="btnEmail">ENVIAR E-MAIL</button>
-            <button class="btn small" id="btnPing">NOTIFICAÇÃO (DEMO)</button>
-          </div>
-        `;
-
-        const qs = document.getElementById("queueSelect");
-        qs.addEventListener("change", ()=>{
-          const nv = qs.value;
-          t.queue = nv;
-          t.tags = uniqueTags([...(t.tags||[]), nv]);
-          save();
-          toast("Fila atualizada", `Ticket movido para: ${nv}`, "📦");
-          renderTicketsPreserveScroll();
-          renderQueueTabs();
-          renderTagCloud();
-        });
-
-        document.getElementById("btnEmail").addEventListener("click", ()=>{
-          const email = t.clientEmail && t.clientEmail !== "-" ? t.clientEmail : null;
-          if(!email){
-            toast("E-mail indisponível", "Este ticket não tem e-mail cadastrado.", "✉️");
-            return;
-          }
-          toast("E-mail (DEMO)", `Simulando envio para ${email}`, "📨");
-          t.messages.push({ id: rid(), type:"sys", text:`(DEMO) E-mail enviado para o cliente: ${email}` });
-          t.lastSeenMsgCount = t.messages.length;
-          save();
-          renderChat();
-          scrollChatBottom();
-        });
-
-        document.getElementById("btnPing").addEventListener("click", ()=>{
-          toast("Notificação (DEMO)", "Simulando lembrete tipo bot do Discord.", "🤖");
-        });
-      }
-
-      // Ticket tags
-      elTicketTags.innerHTML = "";
-      (t.tags || []).forEach(tag=>{
-        const tg = document.createElement("div");
-        tg.className = "tag removable";
-        tg.textContent = normalizeTag(tag);
-        tg.title = "Clique para remover";
-        tg.addEventListener("click", ()=> removeTag(tag));
-        elTicketTags.appendChild(tg);
-      });
-
-      if(!(t.tags||[]).length){
-        const none = document.createElement("div");
-        none.className = "muted";
-        none.textContent = "Sem tags ainda.";
-        elTicketTags.appendChild(none);
-      }
-    }
-
-    // Toast
-    function toast(title, msg, icon="🟣"){
-      const t = document.createElement("div");
-      t.className = "toast";
-      t.innerHTML = `
-        <div class="ticon">${icon}</div>
+    let state = loadState() || {
+      agent: AGENT,
+      tickets: seedTicketsBase(),
+      activeTicketId: "t1",
+      filters:{
+        queue:"all",
+        status:"all",
+        onlyUnread:false,
+        onlyMine:false,
+        tag:null,
+        search:"",
+        sort:"recent",
+        sound:true,
+        demo:true,
+      },
+      panelTab:"info",
+      notifications: [],
+      notiReadIds: [],
+    };
+    saveState();
+        function toast(title, msg){
+      const el = document.createElement("div");
+      el.className = "toast";
+      el.innerHTML = `
+        <div class="ticon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          </svg>
+        </div>
         <div>
-          <div><b>${escapeHtml(title)}</b></div>
-          <div class="tmeta">${escapeHtml(msg)}</div>
+          <b>${title}</b>
+          <div class="tmeta">${msg}</div>
         </div>
       `;
-      elToasts.appendChild(t);
-
-      setTimeout(()=> {
-        t.style.opacity = "0";
-        t.style.transform = "translateY(-6px)";
-        t.style.transition = "all .18s ease";
-        setTimeout(()=> t.remove(), 220);
-      }, 1900);
+      toastsEl.appendChild(el);
+      setTimeout(()=> el.remove(), 2800);
     }
 
-    function escapeHtml(s){
-      return String(s)
+    // ====== NOTIFICATIONS (store + panel) ======
+    function addNotification({ticketId, title, text}){
+      const n = {
+        id: rid(),
+        ticketId,
+        title,
+        text,
+        ts: Date.now(),
+        read: false
+      };
+      state.notifications.unshift(n);
+      saveState();
+      renderNotifications();
+    }
+
+    function markAllNotificationsRead(){
+      state.notifications.forEach(n => n.read = true);
+      saveState();
+      renderNotifications();
+    }
+
+    function clearNotifications(){
+      state.notifications = [];
+      saveState();
+      renderNotifications();
+    }
+
+    function unreadNotiCount(){
+      return state.notifications.filter(n => !n.read).length;
+    }
+
+    function renderNotifications(){
+      const unread = unreadNotiCount();
+
+      if(unread > 0){
+        bellBadge.style.display = "";
+        bellBadge.textContent = String(unread);
+        mNavBadge.style.display = "";
+        mNavBadge.textContent = String(unread);
+      }else{
+        bellBadge.style.display = "none";
+        mNavBadge.style.display = "none";
+      }
+
+      if(state.notifications.length === 0){
+        notiList.innerHTML = `<div class="notiEmpty">Sem notificações.</div>`;
+        return;
+      }
+
+      notiList.innerHTML = state.notifications.map(n => `
+        <div class="notiItem" data-nid="${n.id}">
+          ${n.read ? `<div style="width:10px;height:10px;opacity:.25"></div>` : `<div class="notiDot"></div>`}
+          <div class="notiText">
+            <b>${escapeHtml(n.title)}</b><br/>
+            <span>${escapeHtml(n.text)}</span>
+            <div class="notiMeta">${new Date(n.ts).toLocaleString()}</div>
+          </div>
+        </div>
+      `).join("");
+
+      // click -> mark read + open ticket
+      notiList.querySelectorAll(".notiItem").forEach(item=>{
+        item.addEventListener("click", ()=>{
+          const nid = item.getAttribute("data-nid");
+          const n = state.notifications.find(x => x.id === nid);
+          if(!n) return;
+          n.read = true;
+          state.activeTicketId = n.ticketId;
+          saveState();
+          renderAll();
+
+          // no mobile: vai pro chat
+          if(isMobile()) setView("chat");
+        });
+      });
+    }
+
+    // ====== HTML safety ======
+    function escapeHtml(str){
+      return String(str)
         .replaceAll("&","&amp;")
         .replaceAll("<","&lt;")
         .replaceAll(">","&gt;")
@@ -1858,240 +1307,579 @@
         .replaceAll("'","&#039;");
     }
 
-    function playBeep(){
-      if(!state.filters.soundOn) return;
-      try{
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        const ctx = new AudioCtx();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "sine";
-        o.frequency.value = 740;
-        g.gain.value = 0.05;
-        o.connect(g); g.connect(ctx.destination);
-        o.start();
-        setTimeout(()=>{ o.stop(); ctx.close(); }, 110);
-      }catch{}
+    // ====== FILTER HELPERS ======
+    function statusBadgeClass(status){
+      if(status === "paid") return "good";
+      if(status === "pending") return "warn";
+      if(status === "refunded") return "good";
+      if(status === "canceled") return "bad";
+      return "";
     }
-
-    // Notification center
-    function addNotification(ticket, msgText){
-      const notif = {
-        id: rid(),
-        ticketId: ticket.id,
-        name: ticket.name,
-        text: msgText,
-        at: Date.now(),
-        read: false
+    function statusLabel(status){
+      const m = {
+        paid:"PAGO",
+        pending:"PENDENTE",
+        refunded:"REEMBOLSADO",
+        canceled:"CANCELADO"
       };
-      state.notifications.unshift(notif);
-      // cap size
-      if(state.notifications.length > 80) state.notifications = state.notifications.slice(0,80);
+      return m[status] || String(status).toUpperCase();
     }
 
-    function renderBellBadge(){
-      const unread = state.notifications.filter(n => !n.read).length;
-      if(unread > 0){
-        elBellBadge.style.display = "flex";
-        elBellBadge.textContent = String(Math.min(unread, 99));
-      }else{
-        elBellBadge.style.display = "none";
-      }
+    function queueLabel(q){
+      const found = QUEUES.find(x=>x.id===q);
+      return found ? found.label : q;
     }
 
-    function renderNotifications(){
-      renderBellBadge();
-      elNotiList.innerHTML = "";
+    function ticketMatches(t){
+      const f = state.filters;
 
-      if(!state.notifications.length){
-        const d = document.createElement("div");
-        d.className = "notiEmpty";
-        d.textContent = "Sem notificações.";
-        elNotiList.appendChild(d);
-        return;
+      if(f.queue !== "all" && t.queue !== f.queue) return false;
+      if(f.status !== "all" && t.status !== f.status) return false;
+      if(f.onlyUnread && !t.unread) return false;
+      if(f.onlyMine && !t.mine) return false;
+
+      if(f.tag){
+        const tag = normalizeTag(f.tag);
+        const tags = (t.tags||[]).map(normalizeTag);
+        if(!tags.includes(tag)) return false;
       }
 
-      state.notifications.forEach(n=>{
-        const item = document.createElement("div");
-        item.className = "notiItem";
-        item.addEventListener("click", ()=>{
-          n.read = true;
-          save();
-          selectTicket(n.ticketId);
-          elNotiPanel.classList.remove("open");
-        });
+      const s = (f.search||"").trim().toLowerCase();
+      if(s){
+        const hay = `${t.name} ${t.user} ${(t.tags||[]).join(" ")} ${t.queue} ${t.status}`.toLowerCase();
+        if(!hay.includes(s)) return false;
+      }
 
-        const dot = document.createElement("div");
-        dot.className = "notiDot";
-        dot.style.opacity = n.read ? "0" : "1";
-
-        const txt = document.createElement("div");
-        txt.className = "notiText";
-        txt.innerHTML = `<b>${escapeHtml(n.name)}</b> • ${escapeHtml(n.text.slice(0,80))}`;
-
-        const meta = document.createElement("div");
-        meta.className = "notiMeta";
-        meta.textContent = new Date(n.at).toLocaleString("pt-BR");
-
-        const wrap = document.createElement("div");
-        wrap.appendChild(txt);
-        wrap.appendChild(meta);
-
-        item.appendChild(dot);
-        item.appendChild(wrap);
-
-        elNotiList.appendChild(item);
-      });
+      return true;
     }
 
-    // Auto-remove delivered
-    function cleanupDelivered(){
-      const before = state.tickets.length;
+    function getVisibleTickets(){
+      const f = state.filters;
+      let arr = state.tickets.slice();
+
+      // auto remove delivered after 1 hour
       const now = Date.now();
-      state.tickets = state.tickets.filter(t=>{
-        if(t.status !== "paid") return true;
-        const hasEntregue = (t.tags||[]).map(normalizeTag).includes("ENTREGUE");
-        if(!hasEntregue) return true;
+      arr = arr.filter(t=>{
         if(!t.deliveredAt) return true;
         return (now - t.deliveredAt) < AUTO_REMOVE_DELIVERED_MS;
       });
 
-      const after = state.tickets.length;
-      if(after !== before){
-        const still = state.tickets.some(x=>x.id===state.selectedId);
-        if(!still) state.selectedId = state.tickets[0]?.id || null;
-        save();
-        renderAll({ keepChatScroll:true });
+      // apply filters
+      arr = arr.filter(ticketMatches);
+
+      // sort
+      if(f.sort === "old"){
+        arr.sort((a,b)=> (a.createdAt||0) - (b.createdAt||0));
+      }else{
+        arr.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
       }
+      return arr;
     }
 
-    // Anti-spam detection of new customer messages
-    function detectNewCustomerMessages(){
-      const selected = getSelected();
-
+    function allTagsInData(){
+      const tags = [];
       state.tickets.forEach(t=>{
-        const msgCount = (t.messages||[]).length;
-        const lastNotified = t.lastNotifiedCount || 0;
+        (t.tags||[]).forEach(x=>tags.push(normalizeTag(x)));
+      });
+      // remove duplicates + keep order-ish
+      return Array.from(new Set(tags)).sort((a,b)=> a.localeCompare(b));
+    }
 
-        if(msgCount > lastNotified){
-          const newMsgs = t.messages.slice(lastNotified);
-          const latestThem = [...newMsgs].reverse().find(m => m.type === "them");
-          if(latestThem){
-            // mark ticket unread unless currently open
-            const isOpen = selected && selected.id === t.id;
-            if(!isOpen){
-              t.unread = true;
+    // ====== RENDER LEFT (queues + list) ======
+    function renderQueueTabs(){
+      // counts by queue respecting status/search etc? aqui é count bruto por queue (mas com outros filtros aplicados exceto queue)
+      const f = state.filters;
+      const baseFilter = (t)=>{
+        // same as ticketMatches but ignoring queue constraint
+        const oldQueue = f.queue;
+        const tmp = {...f, queue:"all"};
+        const prev = state.filters;
+        state.filters = tmp;
+        const ok = ticketMatches(t);
+        state.filters = prev;
+        // restore f
+        state.filters.queue = oldQueue;
+        return ok;
+      };
 
-              // Add to notification center ONCE per new message batch
-              addNotification(t, latestThem.text);
+      queueTabs.innerHTML = QUEUES.map(q=>{
+        const count = state.tickets.filter(t=> (q.id==="all" ? baseFilter(t) : (baseFilter(t) && t.queue===q.id))).length;
+        const active = (state.filters.queue===q.id);
+        return `
+          <div class="qtab ${active?"active":""}" data-q="${q.id}">
+            ${q.label}
+            <span class="qbadge">${count}</span>
+          </div>
+        `;
+      }).join("");
 
-              // Light toast only (1) + optional sound
-              toast("Cliente respondeu", `${t.name}: ${latestThem.text.slice(0,64)}`, "💬");
-              playBeep();
-            }
-          }
+      queueTabs.querySelectorAll(".qtab").forEach(el=>{
+        el.addEventListener("click", ()=>{
+          state.filters.queue = el.getAttribute("data-q");
+          saveState();
+          renderAll();
+        });
+      });
+    }
 
-          // update lastNotifiedCount so it doesn't spam
-          t.lastNotifiedCount = msgCount;
+    function renderStatusPills(){
+      statusPills.innerHTML = STATUS.map(s=>{
+        const active = state.filters.status===s.id;
+        return `<div class="pill ${active?"active":""}" data-status="${s.id}">${s.label}</div>`;
+      }).join("");
 
-          // if open ticket, consider read
-          if(selected && selected.id === t.id){
-            t.unread = false;
-            t.lastSeenMsgCount = msgCount;
-          }
+      statusPills.querySelectorAll(".pill").forEach(p=>{
+        p.addEventListener("click", ()=>{
+          state.filters.status = p.getAttribute("data-status");
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function renderTagCloud(){
+      const tags = allTagsInData();
+      const active = state.filters.tag ? normalizeTag(state.filters.tag) : null;
+
+      const pills = [`<div class="tag ${!active?"active":""}" data-tag="">Todas</div>`]
+        .concat(tags.map(t=> `<div class="tag ${active===t?"active":""}" data-tag="${t}">${t}</div>`));
+
+      tagCloud.innerHTML = pills.join("");
+
+      tagCloud.querySelectorAll(".tag").forEach(t=>{
+        t.addEventListener("click", ()=>{
+          const tg = t.getAttribute("data-tag");
+          state.filters.tag = tg ? tg : null;
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function renderTicketList(){
+      const visible = getVisibleTickets();
+      if(!visible.find(t=>t.id===state.activeTicketId) && visible.length){
+        state.activeTicketId = visible[0].id;
+      }
+
+      ticketList.innerHTML = visible.map(t=>{
+        const active = t.id===state.activeTicketId;
+        const tags = (t.tags||[]).slice(0,4).map(x=> `<span class="tag">${escapeHtml(normalizeTag(x))}</span>`).join("");
+        const unread = t.unread ? `<span class="unreadDot" title="Não lido"></span>` : ``;
+        const queue = `<span class="badge">${escapeHtml(queueLabel(t.queue).replaceAll(" ","_"))}</span>`;
+        const st = `<span class="badge ${statusBadgeClass(t.status)}">${escapeHtml(statusLabel(t.status))}</span>`;
+        const snippet = lastSnippet(t);
+
+        return `
+          <div class="ticket ${active?"active":""}" data-id="${t.id}">
+            <div class="ticket__top">
+              <div class="ticket__name">${escapeHtml(t.name)}</div>
+              <div class="ticket__meta">
+                ${unread}
+                ${st}
+                ${queue}
+              </div>
+            </div>
+            <div class="ticket__snippet">${escapeHtml(snippet)}</div>
+            <div class="ticket__tags">${tags}</div>
+          </div>
+        `;
+      }).join("");
+
+      ticketList.querySelectorAll(".ticket").forEach(card=>{
+        card.addEventListener("click", ()=>{
+          state.activeTicketId = card.getAttribute("data-id");
+          // ao abrir ticket, marca como lido (sem resetar scroll: só re-render local)
+          const t = state.tickets.find(x=>x.id===state.activeTicketId);
+          if(t) t.unread = false;
+
+          saveState();
+          renderAll();
+
+          // mobile: abre chat
+          if(isMobile()) setView("chat");
+        });
+      });
+    }
+
+    function lastSnippet(t){
+      const msgs = t.messages || [];
+      for(let i=msgs.length-1;i>=0;i--){
+        const m = msgs[i];
+        if(m.type==="me") return "Você: " + m.text.slice(0,62);
+        if(m.type==="client") return m.text.slice(0,62);
+      }
+      return "—";
+    }
+
+    // ====== RENDER CENTER (chat) ======
+    function renderChat(){
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t){
+        chatEl.innerHTML = "";
+        return;
+      }
+
+      const html = (t.messages||[]).map(m=>{
+        if(m.type==="sys"){
+          return `<div class="sys"><div class="sys__bubble">${escapeHtml(m.text)}</div></div>`;
         }
+        if(m.type==="me"){
+          return `
+            <div class="msgRow me">
+              <div class="bubble me">
+                ${escapeHtml(m.text)}
+                <div class="meta">
+                  <button class="delBtn" data-mid="${m.id}" title="Apagar">Apagar</button>
+                  <span>${formatTime(m.ts)}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        // client
+        return `
+          <div class="msgRow">
+            <div class="bubble">
+              ${escapeHtml(m.text)}
+              <div class="meta"><span>${formatTime(m.ts)}</span></div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      chatEl.innerHTML = html;
+
+      // delete message (only mine)
+      chatEl.querySelectorAll(".delBtn").forEach(btn=>{
+        btn.addEventListener("click",(e)=>{
+          e.stopPropagation();
+          const mid = btn.getAttribute("data-mid");
+          t.messages = (t.messages||[]).filter(x=>x.id!==mid);
+          saveState();
+          renderChat(); // só o chat, sem mexer no resto
+        });
       });
 
-      renderBellBadge();
-      save();
+      // keep scroll at bottom on new render
+      chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    // DEMO simulate
-    const SIM_REPLIES = [
-      "Oi, tô aqui! Conseguiu ver?",
-      "Eu mandei o link agora, confere por favor",
-      "Tem previsão de entrega?",
-      "Meu nick é esse mesmo, tá certo?",
-      "Se precisar eu mando print",
-      "Conseguiu achar a gamepass?",
-      "Posso esperar, só me avisa aqui",
-      "Opa, respondi no discord também",
-    ];
+    // ====== RENDER RIGHT (panel + tags) ======
+    function renderPanel(){
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t){ panelBody.innerHTML = ""; return; }
 
-    function simulateIncoming(){
-      if(!state.filters.demoSim) return;
-      if(Math.random() > SIMULATE_REPLY_PROB) return;
+      const tab = state.panelTab;
 
-      const candidates = state.tickets.filter(t => t.status === "pending");
-      if(!candidates.length) return;
+      if(tab==="info"){
+        panelBody.innerHTML = `
+          <div class="row"><div class="k">Pedido</div><div class="v">${escapeHtml(t.queue)}</div></div>
+          <div class="row"><div class="k">Data</div><div class="v">${new Date(t.createdAt).toLocaleString()}</div></div>
+          <div class="row"><div class="k">Categoria</div><div class="v" style="color:rgba(179,0,255,.95)">${escapeHtml(t.category)}</div></div>
+          <div class="row"><div class="k">Valor total</div><div class="v" style="color:var(--good)">${escapeHtml(t.total)}</div></div>
+          <div class="row"><div class="k">Nickname Roblox</div><div class="v">${escapeHtml(t.nick)}</div></div>
+          <div class="row"><div class="k">Link da Gamepass</div><div class="v"><a class="v link" href="${t.gamepass}" target="_blank" rel="noreferrer">${escapeHtml(t.gamepass)}</a></div></div>
+          <div class="row"><div class="k">Cliente registrado</div><div class="v">${escapeHtml(t.client)} <span class="muted">(${escapeHtml(t.clientEmail)})</span></div></div>
+        `;
+      }else if(tab==="items"){
+        panelBody.innerHTML = `
+          <div class="row"><div class="k">Item</div><div class="v">${escapeHtml(t.item)}</div></div>
+          <div class="row"><div class="k">Status</div><div class="v">${escapeHtml(statusLabel(t.status))}</div></div>
+          <div class="row"><div class="k">Fila</div><div class="v">${escapeHtml(queueLabel(t.queue))}</div></div>
+        `;
+      }else{
+        panelBody.innerHTML = `
+          <div class="row"><div class="k">Ações rápidas</div><div class="v"></div></div>
+          <div class="muted" style="margin-top:6px; line-height:1.4">
+            • “Resolver” marca como ENTREGUE e agenda auto-remoção (1h).<br/>
+            • “Liberar” apenas marca como “meu ticket” (demo).<br/>
+            • Notificação por email aqui é demo (não envia de verdade em site estático).
+          </div>
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+            <button class="btn small ghost" id="btnEmailDemo">Notificar por e-mail (demo)</button>
+            <button class="btn small" id="btnMarkUnread">Marcar como não lido</button>
+          </div>
+        `;
 
-      const t = candidates[Math.floor(Math.random()*candidates.length)];
-      const txt = SIM_REPLIES[Math.floor(Math.random()*SIM_REPLIES.length)];
-      t.messages.push({ id: rid(), type:"them", text: txt, at: Date.now() });
-      save();
+        const btnEmailDemo = document.getElementById("btnEmailDemo");
+        const btnMarkUnread = document.getElementById("btnMarkUnread");
+
+        btnEmailDemo?.addEventListener("click", ()=>{
+          toast("Email (demo)", "Aqui seria enviado um e-mail pro cliente.");
+        });
+        btnMarkUnread?.addEventListener("click", ()=>{
+          t.unread = true;
+          saveState();
+          renderAll();
+        });
+      }
+
+      // stats
+      document.getElementById("statSpent").textContent = String(t.spent ?? 13);
+      document.getElementById("statOrders").textContent = String(t.orders ?? 1);
+      document.getElementById("statItems").textContent = String(t.items ?? 1);
     }
 
-    // Render all
-    function renderAll({ keepChatScroll=true } = {}){
+    function renderTicketTags(){
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t){ ticketTagsEl.innerHTML = ""; return; }
+
+      const tags = uniqueTags(t.tags || []);
+      ticketTagsEl.innerHTML = tags.map(tag=>{
+        return `<span class="tag removable" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`;
+      }).join("");
+
+      // remove tag (sem reset / sem pular pro topo)
+      ticketTagsEl.querySelectorAll(".tag.removable").forEach(el=>{
+        el.addEventListener("click",(e)=>{
+          e.preventDefault();
+          e.stopPropagation();
+          const tg = normalizeTag(el.getAttribute("data-tag"));
+          t.tags = (t.tags||[]).map(normalizeTag).filter(x=>x!==tg);
+          // se filtro tava nessa tag, limpa
+          if(state.filters.tag && normalizeTag(state.filters.tag)===tg){
+            state.filters.tag = null;
+          }
+          saveState();
+          renderAll();
+        });
+      });
+    }
+
+    function renderAll(){
       renderQueueTabs();
       renderStatusPills();
       renderTagCloud();
-      renderTicketsPreserveScroll();
-
-      if(keepChatScroll){
-        const prev = elChat.scrollTop;
-        renderChat();
-        elChat.scrollTop = prev;
-      }else{
-        renderChat();
-      }
-
-      renderRightPanel();
+      renderTicketList();
+      renderChat();
+      renderPanel();
+      renderTicketTags();
       renderNotifications();
     }
 
-    // Init render
-    renderAll({ keepChatScroll:false });
-    setTimeout(()=> scrollChatBottom(), 60);
+    // ====== EVENTS ======
 
-    // Chat click marks read
-    elChat.addEventListener("click", ()=>{
-      const t = getSelected();
-      if(!t) return;
-      t.unread = false;
-      t.lastSeenMsgCount = (t.messages||[]).length;
-      // mark notifications of this ticket read
-      state.notifications.forEach(n => { if(n.ticketId === t.id) n.read = true; });
-      save();
-      renderTicketsPreserveScroll();
-      renderQueueTabs();
-      renderBellBadge();
-      renderNotifications();
+    // Tabs right panel
+    document.querySelectorAll(".tab").forEach(tab=>{
+      tab.addEventListener("click", ()=>{
+        document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+        tab.classList.add("active");
+        state.panelTab = tab.getAttribute("data-tab");
+        saveState();
+        renderPanel();
+      });
     });
 
-    // Auto-refresh loop
-    setInterval(()=>{
-      cleanupDelivered();
-      simulateIncoming();
-      detectNewCustomerMessages();
+    // Filters open/close (pega clique em QUALQUER lugar do botão, sem precisar "pontinha")
+    btnFilters.addEventListener("click", (e)=>{
+      e.preventDefault();
+      filters.classList.add("open");
+    });
+    btnCloseFilters.addEventListener("click", ()=> filters.classList.remove("open"));
+    document.addEventListener("keydown",(e)=>{
+      if(e.key==="Escape"){
+        filters.classList.remove("open");
+        notiPanel.classList.remove("open");
+      }
+    });
 
-      // fast repaint (preserve scroll)
-      const listScroll = elTicketList.scrollTop;
-      const chatScroll = elChat.scrollTop;
-      const atBottom = (elChat.scrollHeight - elChat.scrollTop - elChat.clientHeight) < 80;
+    // search + toggles
+    searchInput.value = state.filters.search || "";
+    searchInput.addEventListener("input", ()=>{
+      state.filters.search = searchInput.value;
+      saveState();
+      renderAll();
+    });
 
-      renderQueueTabs();
-      renderTickets();
-      elTicketList.scrollTop = listScroll;
+    onlyUnread.checked = !!state.filters.onlyUnread;
+    onlyMine.checked = !!state.filters.onlyMine;
+    soundOn.checked = !!state.filters.sound;
+    demoSim.checked = !!state.filters.demo;
+    sortBy.value = state.filters.sort || "recent";
 
+    onlyUnread.addEventListener("change", ()=>{
+      state.filters.onlyUnread = !!onlyUnread.checked;
+      saveState();
+      renderAll();
+    });
+    onlyMine.addEventListener("change", ()=>{
+      state.filters.onlyMine = !!onlyMine.checked;
+      saveState();
+      renderAll();
+    });
+    soundOn.addEventListener("change", ()=>{
+      state.filters.sound = !!soundOn.checked;
+      saveState();
+    });
+    demoSim.addEventListener("change", ()=>{
+      state.filters.demo = !!demoSim.checked;
+      saveState();
+    });
+    sortBy.addEventListener("change", ()=>{
+      state.filters.sort = sortBy.value;
+      saveState();
+      renderAll();
+    });
+
+    // send message
+    function sendMessage(){
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t) return;
+      const text = (msgInput.value||"").trim();
+      if(!text) return;
+
+      t.messages = t.messages || [];
+      t.messages.push({ id: rid(), type:"me", text, ts: Date.now() });
+
+      msgInput.value = "";
+      saveState();
       renderChat();
-      if(atBottom) scrollChatBottom();
-      else elChat.scrollTop = chatScroll;
+      renderTicketList();
+    }
+    btnSend.addEventListener("click", sendMessage);
+    msgInput.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"){
+        e.preventDefault();
+        sendMessage();
+      }
+    });
 
-      renderRightPanel();
-      renderBellBadge();
-      save();
-    }, POLL_MS);
+    // add tag
+    function addTag(){
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t) return;
+      const raw = (tagInput.value||"").trim();
+      if(!raw) return;
+      const tg = normalizeTag(raw);
+      t.tags = uniqueTags([...(t.tags||[]), tg]);
+      tagInput.value = "";
+      saveState();
+      renderAll();
+    }
+    btnAddTag.addEventListener("click", addTag);
+    tagInput.addEventListener("keydown",(e)=>{
+      if(e.key==="Enter"){
+        e.preventDefault();
+        addTag();
+      }
+    });
+
+    // Liberar / Resolver
+    btnLiberar.addEventListener("click", ()=>{
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t) return;
+      t.mine = true;
+      toast("Liberado", "Ticket marcado como seu (demo).");
+      saveState();
+      renderAll();
+    });
+
+    btnResolver.addEventListener("click", ()=>{
+      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t) return;
+
+      t.status = "paid";
+      t.tags = uniqueTags([...(t.tags||[]), "ENTREGUE"]);
+      t.deliveredAt = Date.now();
+
+      toast("Resolvido", "Marcado como ENTREGUE. Auto-remove em 1 hora.");
+      saveState();
+      renderAll();
+    });
+
+    // Notification bell panel
+    btnBell.addEventListener("click", (e)=>{
+      e.preventDefault();
+      notiPanel.classList.toggle("open");
+      filters.classList.remove("open");
+    });
+    btnMarkAllRead.addEventListener("click", ()=>{
+      markAllNotificationsRead();
+    });
+    btnClearNoti.addEventListener("click", ()=>{
+      clearNotifications();
+    });
+
+    // click outside closes panels
+    document.addEventListener("click",(e)=>{
+      const target = e.target;
+      // close notifications if clicked outside
+      if(notiPanel.classList.contains("open")){
+        const insideNoti = notiPanel.contains(target) || btnBell.contains(target);
+        if(!insideNoti) notiPanel.classList.remove("open");
+      }
+      // close filters if clicked outside
+      if(filters.classList.contains("open")){
+        const insideFilters = filters.contains(target) || btnFilters.contains(target);
+        if(!insideFilters) filters.classList.remove("open");
+      }
+    });
+
+    // ====== MOBILE NAV ======
+    mNavList.addEventListener("click", ()=> setView("list"));
+    mNavChat.addEventListener("click", ()=> setView("chat"));
+    mNavDetails.addEventListener("click", ()=> setView("details"));
+    btnMobileBack.addEventListener("click", ()=> setView("list"));
+
+    // on resize: if desktop, ignore view; if mobile and no active view -> list
+    window.addEventListener("resize", ()=>{
+      if(isMobile()){
+        if(!getView()) setView("list");
+      }
+    });
+
+    // ====== DEMO POLLING (simula cliente respondendo) ======
+    function randomPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    function simulateClientReply(){
+      if(!state.filters.demo) return;
+      const visible = state.tickets.filter(t=> !t.deliveredAt);
+      if(visible.length===0) return;
+      if(Math.random() > SIMULATE_REPLY_PROB) return;
+
+      const t = randomPick(visible);
+      const txts = [
+        "Oi, quando entrega meu item?",
+        "Opa, onde envio o link da gamepass?",
+        "Não achei onde mando o link 😭",
+        "Consegue me ajudar? tá dando erro aqui",
+        "Posso esperar, só me avisa aqui"
+      ];
+
+      t.messages = t.messages || [];
+      const msg = { id: rid(), type:"client", text: randomPick(txts), ts: Date.now() };
+      t.messages.push(msg);
+      t.unread = true;
+
+      // add notification (sem spam infinito: só cria 1 por mensagem)
+      addNotification({
+        ticketId: t.id,
+        title: "Cliente respondeu",
+        text: `${t.name}: ${msg.text}`
+      });
+
+      // toast só no desktop (no mobile já tem bell)
+      if(!isMobile()){
+        toast("Cliente respondeu", `${t.name}: ${msg.text}`);
+      }
+
+      saveState();
+      // re-render list only (não fica “não para” porque não fica empilhando toast sempre sem necessidade)
+      renderTicketList();
+      renderNotifications();
+    }
+
+    // ====== INIT ======
+    document.getElementById("agentName").textContent = state.agent || AGENT;
+
+    // start view: mobile list, desktop normal
+    if(isMobile()){
+      setView("list");
+    }
+
+    renderAll();
+    setInterval(simulateClientReply, POLL_MS);
   </script>
 </body>
 </html>
