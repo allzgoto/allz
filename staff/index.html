@@ -31,7 +31,19 @@
         linear-gradient(180deg, var(--bg), #07080b);
       overflow:hidden;
     }
+
+    /* canvas background */
+    #embers{
+      position:fixed;
+      inset:0;
+      z-index:0;
+      pointer-events:none;
+      opacity:.55;
+    }
+
     .app{
+      position:relative;
+      z-index:1;
       height:100%;
       display:grid;
       grid-template-columns: 340px 1fr 360px;
@@ -326,7 +338,7 @@
       box-shadow:0 0 0 6px rgba(179,0,255,.12);
     }
 
-    /* Mobile-only back button inside center top */
+    /* Mobile-only back button */
     .mBack{
       display:none;
       height:38px;
@@ -428,8 +440,8 @@
     .notiEmpty{padding:14px; color:rgba(255,255,255,.55); font-size:13px}
 
     .chatWrap{flex:1; display:flex; flex-direction:column; min-height:0}
-.chat{
-  padding:14px 16px 8px;
+    .chat{
+      padding:14px 16px 8px;
       overflow:auto;
       flex:1;
     }
@@ -448,28 +460,29 @@
       color:rgba(255,255,255,.7);
       font-size:13px;
     }
-  .msgRow{
-  display:flex;
-  margin:6px 0;
-}
+    .msgRow{
+      display:flex;
+      margin:6px 0;
+    }
     .msgRow.me{justify-content:flex-end}
     .bubble{
-max-width:min(520px, 70%);
-padding:12px 14px;
-border-radius:16px;
+      max-width:min(520px, 62vw);
+      padding:10px 12px;
+      border-radius:14px;
       border:1px solid rgba(255,255,255,.06);
       background:rgba(255,255,255,.03);
       color:rgba(255,255,255,.88);
       line-height:1.25;
       box-shadow:0 10px 35px rgba(0,0,0,.35);
       position:relative;
-      font-size:14px;
+      font-size:13px;
       white-space:pre-wrap;
     }
     .bubble.me{
       background:linear-gradient(180deg, rgba(179,0,255,.92), rgba(179,0,255,.70));
       border-color:rgba(255,255,255,.12);
       color:#fff;
+      padding:10px 12px;
     }
     .bubble .meta{
       margin-top:8px;
@@ -621,7 +634,7 @@ border-radius:16px;
       outline:none;
     }
 
-    /* Toast notifications (PC) */
+    /* Toast notifications */
     .toasts{
       position:fixed;
       right:14px;
@@ -671,7 +684,7 @@ border-radius:16px;
       background:transparent;
     }
 
-    /* MOBILE MODE (3 telas) */
+    /* MOBILE MODE */
     .mNav{
       display:none;
       position:fixed;
@@ -762,11 +775,14 @@ border-radius:16px;
       }
 
       .mBack{display:inline-flex}
+
+      .bubble{ max-width:86vw; }
     }
   </style>
 </head>
 
 <body data-view="list">
+  <canvas id="embers"></canvas>
   <div class="toasts" id="toasts"></div>
 
   <!-- Mobile bottom nav -->
@@ -878,10 +894,10 @@ border-radius:16px;
         </div>
       </div>
     </aside>
-        <!-- CENTER -->
+
+    <!-- CENTER -->
     <main class="center" id="paneCenter">
       <div class="center__top">
-        <!-- mobile back -->
         <button class="mBack" id="btnMobileBack" type="button" title="Voltar para conversas">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -961,8 +977,8 @@ border-radius:16px;
       </div>
 
       <div class="panel">
-        <div class="panel__header"><div class="panel__title">Tags do Ticket</div></div>
         <div class="panel__body">
+          <div style="font-weight:900; margin-bottom:10px">Tags do Ticket</div>
           <div class="tagRow" id="ticketTags"></div>
 
           <div class="tagAdd">
@@ -979,7 +995,7 @@ border-radius:16px;
   </div>
 
   <script>
-    const LS_KEY = "staff_panel_v3_2_mobile";
+    const LS_KEY = "staff_panel_v4_full";
     const AGENT = "Allz";
 
     const AUTO_REMOVE_DELIVERED_MS = 60 * 60 * 1000; // 1 hour
@@ -1006,10 +1022,8 @@ border-radius:16px;
 
     function isMobile(){ return window.matchMedia("(max-width: 820px)").matches; }
 
-    // Mobile view state
     function setView(v){
       document.body.setAttribute("data-view", v);
-      // nav active
       mNavList.classList.toggle("active", v==="list");
       mNavChat.classList.toggle("active", v==="chat");
       mNavDetails.classList.toggle("active", v==="details");
@@ -1028,7 +1042,6 @@ border-radius:16px;
     }
 
     function seedTicketsBase(){
-      // Base + mais tickets artificiais (>= 15) pra testar
       const base = [
         {
           id:"t1",
@@ -1111,7 +1124,6 @@ border-radius:16px;
         };
       });
 
-      // Ajuste rápido pra “Lipe nuts” ficar ENTREGUE/ pago (igual print)
       extra[0].tags = uniqueTags(["ENTREGUE","MM2"]);
       extra[0].status = "paid";
       extra[0].deliveredAt = Date.now() - (30*60*1000);
@@ -1138,7 +1150,6 @@ border-radius:16px;
       return `${hh}:${mm}`;
     }
 
-    // UI refs
     const ticketList = document.getElementById("ticketList");
     const chatEl = document.getElementById("chat");
     const panelBody = document.getElementById("panelBody");
@@ -1170,7 +1181,6 @@ border-radius:16px;
 
     const toastsEl = document.getElementById("toasts");
 
-    // notifications
     const btnBell = document.getElementById("btnBell");
     const notiPanel = document.getElementById("notiPanel");
     const notiList = document.getElementById("notiList");
@@ -1178,7 +1188,6 @@ border-radius:16px;
     const btnMarkAllRead = document.getElementById("btnMarkAllRead");
     const btnClearNoti = document.getElementById("btnClearNoti");
 
-    // mobile
     const mNavList = document.getElementById("mNavList");
     const mNavChat = document.getElementById("mNavChat");
     const mNavDetails = document.getElementById("mNavDetails");
@@ -1202,10 +1211,10 @@ border-radius:16px;
       },
       panelTab:"info",
       notifications: [],
-      notiReadIds: [],
     };
     saveState();
-        function toast(title, msg){
+
+    function toast(title, msg){
       const el = document.createElement("div");
       el.className = "toast";
       el.innerHTML = `
@@ -1220,87 +1229,9 @@ border-radius:16px;
         </div>
       `;
       toastsEl.appendChild(el);
-      setTimeout(()=> el.remove(), 2800);
+      setTimeout(()=> el.remove(), 2400);
     }
 
-    // ====== NOTIFICATIONS (store + panel) ======
-    function addNotification({ticketId, title, text}){
-      const n = {
-        id: rid(),
-        ticketId,
-        title,
-        text,
-        ts: Date.now(),
-        read: false
-      };
-      state.notifications.unshift(n);
-      saveState();
-      renderNotifications();
-    }
-
-    function markAllNotificationsRead(){
-      state.notifications.forEach(n => n.read = true);
-      saveState();
-      renderNotifications();
-    }
-
-    function clearNotifications(){
-      state.notifications = [];
-      saveState();
-      renderNotifications();
-    }
-
-    function unreadNotiCount(){
-      return state.notifications.filter(n => !n.read).length;
-    }
-
-    function renderNotifications(){
-      const unread = unreadNotiCount();
-
-      if(unread > 0){
-        bellBadge.style.display = "";
-        bellBadge.textContent = String(unread);
-        mNavBadge.style.display = "";
-        mNavBadge.textContent = String(unread);
-      }else{
-        bellBadge.style.display = "none";
-        mNavBadge.style.display = "none";
-      }
-
-      if(state.notifications.length === 0){
-        notiList.innerHTML = `<div class="notiEmpty">Sem notificações.</div>`;
-        return;
-      }
-
-      notiList.innerHTML = state.notifications.map(n => `
-        <div class="notiItem" data-nid="${n.id}">
-          ${n.read ? `<div style="width:10px;height:10px;opacity:.25"></div>` : `<div class="notiDot"></div>`}
-          <div class="notiText">
-            <b>${escapeHtml(n.title)}</b><br/>
-            <span>${escapeHtml(n.text)}</span>
-            <div class="notiMeta">${new Date(n.ts).toLocaleString()}</div>
-          </div>
-        </div>
-      `).join("");
-
-      // click -> mark read + open ticket
-      notiList.querySelectorAll(".notiItem").forEach(item=>{
-        item.addEventListener("click", ()=>{
-          const nid = item.getAttribute("data-nid");
-          const n = state.notifications.find(x => x.id === nid);
-          if(!n) return;
-          n.read = true;
-          state.activeTicketId = n.ticketId;
-          saveState();
-          renderAll();
-
-          // no mobile: vai pro chat
-          if(isMobile()) setView("chat");
-        });
-      });
-    }
-
-    // ====== HTML safety ======
     function escapeHtml(str){
       return String(str)
         .replaceAll("&","&amp;")
@@ -1310,110 +1241,149 @@ border-radius:16px;
         .replaceAll("'","&#039;");
     }
 
-    // ====== FILTER HELPERS ======
+    // Notifications
+    function addNotification({ticketId, title, text}){
+      const n = { id: rid(), ticketId, title, text, ts: Date.now(), read:false };
+      state.notifications.unshift(n);
+      saveState();
+      renderNotifications();
+    }
+    function markAllNotificationsRead(){
+      state.notifications.forEach(n => n.read = true);
+      saveState();
+      renderNotifications();
+    }
+    function clearNotifications(){
+      state.notifications = [];
+      saveState();
+      renderNotifications();
+    }
+    function unreadNotiCount(){
+      return state.notifications.filter(n=>!n.read).length;
+    }
+    function renderNotifications(){
+      const unread = unreadNotiCount();
+      if(unread>0){
+        bellBadge.style.display="";
+        bellBadge.textContent=String(unread);
+        mNavBadge.style.display="";
+        mNavBadge.textContent=String(unread);
+      }else{
+        bellBadge.style.display="none";
+        mNavBadge.style.display="none";
+      }
+
+      if(state.notifications.length===0){
+        notiList.innerHTML = `<div class="notiEmpty">Sem notificações.</div>`;
+        return;
+      }
+
+      notiList.innerHTML = state.notifications.map(n=>`
+        <div class="notiItem" data-nid="${n.id}">
+          ${n.read?`<div style="width:10px;height:10px;opacity:.25"></div>`:`<div class="notiDot"></div>`}
+          <div class="notiText">
+            <b>${escapeHtml(n.title)}</b><br/>
+            <span>${escapeHtml(n.text)}</span>
+            <div class="notiMeta">${new Date(n.ts).toLocaleString()}</div>
+          </div>
+        </div>
+      `).join("");
+
+      notiList.querySelectorAll(".notiItem").forEach(item=>{
+        item.addEventListener("click", ()=>{
+          const nid = item.getAttribute("data-nid");
+          const n = state.notifications.find(x=>x.id===nid);
+          if(!n) return;
+          n.read=true;
+          state.activeTicketId = n.ticketId;
+          saveState();
+          renderAll();
+          if(isMobile()) setView("chat");
+        });
+      });
+    }
+
+    // Helpers
     function statusBadgeClass(status){
-      if(status === "paid") return "good";
-      if(status === "pending") return "warn";
-      if(status === "refunded") return "good";
-      if(status === "canceled") return "bad";
+      if(status==="paid") return "good";
+      if(status==="pending") return "warn";
+      if(status==="refunded") return "good";
+      if(status==="canceled") return "bad";
       return "";
     }
     function statusLabel(status){
-      const m = {
-        paid:"PAGO",
-        pending:"PENDENTE",
-        refunded:"REEMBOLSADO",
-        canceled:"CANCELADO"
-      };
-      return m[status] || String(status).toUpperCase();
+      const m={paid:"PAGO",pending:"PENDENTE",refunded:"REEMBOLSADO",canceled:"CANCELADO"};
+      return m[status]||String(status).toUpperCase();
     }
-
     function queueLabel(q){
-      const found = QUEUES.find(x=>x.id===q);
-      return found ? found.label : q;
+      const f=QUEUES.find(x=>x.id===q);
+      return f?f.label:q;
+    }
+    function lastSnippet(t){
+      const msgs=t.messages||[];
+      for(let i=msgs.length-1;i>=0;i--){
+        const m=msgs[i];
+        if(m.type==="me") return "Você: "+m.text.slice(0,62);
+        if(m.type==="client") return m.text.slice(0,62);
+      }
+      return "—";
     }
 
     function ticketMatches(t){
-      const f = state.filters;
-
-      if(f.queue !== "all" && t.queue !== f.queue) return false;
-      if(f.status !== "all" && t.status !== f.status) return false;
+      const f=state.filters;
+      if(f.queue!=="all" && t.queue!==f.queue) return false;
+      if(f.status!=="all" && t.status!==f.status) return false;
       if(f.onlyUnread && !t.unread) return false;
       if(f.onlyMine && !t.mine) return false;
-
       if(f.tag){
-        const tag = normalizeTag(f.tag);
-        const tags = (t.tags||[]).map(normalizeTag);
+        const tag=normalizeTag(f.tag);
+        const tags=(t.tags||[]).map(normalizeTag);
         if(!tags.includes(tag)) return false;
       }
-
-      const s = (f.search||"").trim().toLowerCase();
+      const s=(f.search||"").trim().toLowerCase();
       if(s){
         const hay = `${t.name} ${t.user} ${(t.tags||[]).join(" ")} ${t.queue} ${t.status}`.toLowerCase();
         if(!hay.includes(s)) return false;
       }
-
       return true;
     }
 
     function getVisibleTickets(){
-      const f = state.filters;
-      let arr = state.tickets.slice();
-
-      // auto remove delivered after 1 hour
-      const now = Date.now();
-      arr = arr.filter(t=>{
+      const now=Date.now();
+      let arr=state.tickets.slice().filter(t=>{
         if(!t.deliveredAt) return true;
         return (now - t.deliveredAt) < AUTO_REMOVE_DELIVERED_MS;
       });
-
-      // apply filters
-      arr = arr.filter(ticketMatches);
-
-      // sort
-      if(f.sort === "old"){
-        arr.sort((a,b)=> (a.createdAt||0) - (b.createdAt||0));
-      }else{
-        arr.sort((a,b)=> (b.createdAt||0) - (a.createdAt||0));
-      }
+      arr=arr.filter(ticketMatches);
+      if(state.filters.sort==="old") arr.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
+      else arr.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
       return arr;
     }
 
     function allTagsInData(){
-      const tags = [];
-      state.tickets.forEach(t=>{
-        (t.tags||[]).forEach(x=>tags.push(normalizeTag(x)));
-      });
-      // remove duplicates + keep order-ish
-      return Array.from(new Set(tags)).sort((a,b)=> a.localeCompare(b));
+      const tags=[];
+      state.tickets.forEach(t=>(t.tags||[]).forEach(x=>tags.push(normalizeTag(x))));
+      return Array.from(new Set(tags)).sort((a,b)=>a.localeCompare(b));
     }
 
-    // ====== RENDER LEFT (queues + list) ======
+    // Render left
     function renderQueueTabs(){
-      // counts by queue respecting status/search etc? aqui é count bruto por queue (mas com outros filtros aplicados exceto queue)
-      const f = state.filters;
-      const baseFilter = (t)=>{
-        // same as ticketMatches but ignoring queue constraint
-        const oldQueue = f.queue;
-        const tmp = {...f, queue:"all"};
-        const prev = state.filters;
-        state.filters = tmp;
-        const ok = ticketMatches(t);
-        state.filters = prev;
-        // restore f
-        state.filters.queue = oldQueue;
+      const f=state.filters;
+      const baseFilter=(t)=>{
+        const oldQueue=f.queue;
+        const tmp={...f, queue:"all"};
+        const prev=state.filters;
+        state.filters=tmp;
+        const ok=ticketMatches(t);
+        state.filters=prev;
+        state.filters.queue=oldQueue;
         return ok;
       };
 
       queueTabs.innerHTML = QUEUES.map(q=>{
-        const count = state.tickets.filter(t=> (q.id==="all" ? baseFilter(t) : (baseFilter(t) && t.queue===q.id))).length;
-        const active = (state.filters.queue===q.id);
-        return `
-          <div class="qtab ${active?"active":""}" data-q="${q.id}">
-            ${q.label}
-            <span class="qbadge">${count}</span>
-          </div>
-        `;
+        const count = state.tickets.filter(t => q.id==="all" ? baseFilter(t) : (baseFilter(t) && t.queue===q.id)).length;
+        const active = state.filters.queue===q.id;
+        return `<div class="qtab ${active?"active":""}" data-q="${q.id}">${q.label}<span class="qbadge">${count}</span></div>`;
       }).join("");
 
       queueTabs.querySelectorAll(".qtab").forEach(el=>{
@@ -1427,13 +1397,12 @@ border-radius:16px;
 
     function renderStatusPills(){
       statusPills.innerHTML = STATUS.map(s=>{
-        const active = state.filters.status===s.id;
+        const active=state.filters.status===s.id;
         return `<div class="pill ${active?"active":""}" data-status="${s.id}">${s.label}</div>`;
       }).join("");
-
       statusPills.querySelectorAll(".pill").forEach(p=>{
         p.addEventListener("click", ()=>{
-          state.filters.status = p.getAttribute("data-status");
+          state.filters.status=p.getAttribute("data-status");
           saveState();
           renderAll();
         });
@@ -1441,17 +1410,14 @@ border-radius:16px;
     }
 
     function renderTagCloud(){
-      const tags = allTagsInData();
-      const active = state.filters.tag ? normalizeTag(state.filters.tag) : null;
-
-      const pills = [`<div class="tag ${!active?"active":""}" data-tag="">Todas</div>`]
-        .concat(tags.map(t=> `<div class="tag ${active===t?"active":""}" data-tag="${t}">${t}</div>`));
-
-      tagCloud.innerHTML = pills.join("");
-
+      const tags=allTagsInData();
+      const active=state.filters.tag?normalizeTag(state.filters.tag):null;
+      const pills=[`<div class="tag ${!active?"active":""}" data-tag="">Todas</div>`]
+        .concat(tags.map(t=>`<div class="tag ${active===t?"active":""}" data-tag="${t}">${t}</div>`));
+      tagCloud.innerHTML=pills.join("");
       tagCloud.querySelectorAll(".tag").forEach(t=>{
         t.addEventListener("click", ()=>{
-          const tg = t.getAttribute("data-tag");
+          const tg=t.getAttribute("data-tag");
           state.filters.tag = tg ? tg : null;
           saveState();
           renderAll();
@@ -1460,30 +1426,23 @@ border-radius:16px;
     }
 
     function renderTicketList(){
-      const visible = getVisibleTickets();
+      const visible=getVisibleTickets();
       if(!visible.find(t=>t.id===state.activeTicketId) && visible.length){
-        state.activeTicketId = visible[0].id;
+        state.activeTicketId=visible[0].id;
       }
-
       ticketList.innerHTML = visible.map(t=>{
-        const active = t.id===state.activeTicketId;
-        const tags = (t.tags||[]).slice(0,4).map(x=> `<span class="tag">${escapeHtml(normalizeTag(x))}</span>`).join("");
-        const unread = t.unread ? `<span class="unreadDot" title="Não lido"></span>` : ``;
-        const queue = `<span class="badge">${escapeHtml(queueLabel(t.queue).replaceAll(" ","_"))}</span>`;
-        const st = `<span class="badge ${statusBadgeClass(t.status)}">${escapeHtml(statusLabel(t.status))}</span>`;
-        const snippet = lastSnippet(t);
-
+        const active=t.id===state.activeTicketId;
+        const tags=(t.tags||[]).slice(0,4).map(x=>`<span class="tag">${escapeHtml(normalizeTag(x))}</span>`).join("");
+        const unread=t.unread?`<span class="unreadDot" title="Não lido"></span>`:"";
+        const queue=`<span class="badge">${escapeHtml(queueLabel(t.queue).replaceAll(" ","_"))}</span>`;
+        const st=`<span class="badge ${statusBadgeClass(t.status)}">${escapeHtml(statusLabel(t.status))}</span>`;
         return `
           <div class="ticket ${active?"active":""}" data-id="${t.id}">
             <div class="ticket__top">
               <div class="ticket__name">${escapeHtml(t.name)}</div>
-              <div class="ticket__meta">
-                ${unread}
-                ${st}
-                ${queue}
-              </div>
+              <div class="ticket__meta">${unread}${st}${queue}</div>
             </div>
-            <div class="ticket__snippet">${escapeHtml(snippet)}</div>
+            <div class="ticket__snippet">${escapeHtml(lastSnippet(t))}</div>
             <div class="ticket__tags">${tags}</div>
           </div>
         `;
@@ -1491,39 +1450,22 @@ border-radius:16px;
 
       ticketList.querySelectorAll(".ticket").forEach(card=>{
         card.addEventListener("click", ()=>{
-          state.activeTicketId = card.getAttribute("data-id");
-          // ao abrir ticket, marca como lido (sem resetar scroll: só re-render local)
-          const t = state.tickets.find(x=>x.id===state.activeTicketId);
-          if(t) t.unread = false;
-
+          state.activeTicketId=card.getAttribute("data-id");
+          const t=state.tickets.find(x=>x.id===state.activeTicketId);
+          if(t) t.unread=false;
           saveState();
           renderAll();
-
-          // mobile: abre chat
           if(isMobile()) setView("chat");
         });
       });
     }
 
-    function lastSnippet(t){
-      const msgs = t.messages || [];
-      for(let i=msgs.length-1;i>=0;i--){
-        const m = msgs[i];
-        if(m.type==="me") return "Você: " + m.text.slice(0,62);
-        if(m.type==="client") return m.text.slice(0,62);
-      }
-      return "—";
-    }
-
-    // ====== RENDER CENTER (chat) ======
+    // Render chat
     function renderChat(){
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
-      if(!t){
-        chatEl.innerHTML = "";
-        return;
-      }
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t){ chatEl.innerHTML=""; return; }
 
-      const html = (t.messages||[]).map(m=>{
+      chatEl.innerHTML = (t.messages||[]).map(m=>{
         if(m.type==="sys"){
           return `<div class="sys"><div class="sys__bubble">${escapeHtml(m.text)}</div></div>`;
         }
@@ -1540,7 +1482,6 @@ border-radius:16px;
             </div>
           `;
         }
-        // client
         return `
           <div class="msgRow">
             <div class="bubble">
@@ -1551,99 +1492,68 @@ border-radius:16px;
         `;
       }).join("");
 
-      chatEl.innerHTML = html;
-
-      // delete message (only mine)
       chatEl.querySelectorAll(".delBtn").forEach(btn=>{
         btn.addEventListener("click",(e)=>{
           e.stopPropagation();
-          const mid = btn.getAttribute("data-mid");
-          t.messages = (t.messages||[]).filter(x=>x.id!==mid);
+          const mid=btn.getAttribute("data-mid");
+          t.messages=(t.messages||[]).filter(x=>x.id!==mid);
           saveState();
-          renderChat(); // só o chat, sem mexer no resto
+          renderChat();
         });
       });
 
-      // keep scroll at bottom on new render
       chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    // ====== RENDER RIGHT (panel + tags) ======
+    // Render right panel
     function renderPanel(){
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
-      if(!t){ panelBody.innerHTML = ""; return; }
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t){ panelBody.innerHTML=""; return; }
 
-      const tab = state.panelTab;
+      const tab=state.panelTab;
 
       if(tab==="info"){
-        panelBody.innerHTML = `
+        panelBody.innerHTML=`
           <div class="row"><div class="k">Pedido</div><div class="v">${escapeHtml(t.queue)}</div></div>
           <div class="row"><div class="k">Data</div><div class="v">${new Date(t.createdAt).toLocaleString()}</div></div>
           <div class="row"><div class="k">Categoria</div><div class="v" style="color:rgba(179,0,255,.95)">${escapeHtml(t.category)}</div></div>
           <div class="row"><div class="k">Valor total</div><div class="v" style="color:var(--good)">${escapeHtml(t.total)}</div></div>
           <div class="row"><div class="k">Nickname Roblox</div><div class="v">${escapeHtml(t.nick)}</div></div>
           <div class="row"><div class="k">Link da Gamepass</div><div class="v"><a class="v link" href="${t.gamepass}" target="_blank" rel="noreferrer">${escapeHtml(t.gamepass)}</a></div></div>
-          <div class="row"><div class="k">Cliente registrado</div><div class="v">${escapeHtml(t.client)} <span class="muted">(${escapeHtml(t.clientEmail)})</span></div></div>
+          <div class="row"><div class="k">Cliente</div><div class="v">${escapeHtml(t.client)} <span class="muted">(${escapeHtml(t.clientEmail)})</span></div></div>
         `;
       }else if(tab==="items"){
-        panelBody.innerHTML = `
+        panelBody.innerHTML=`
           <div class="row"><div class="k">Item</div><div class="v">${escapeHtml(t.item)}</div></div>
           <div class="row"><div class="k">Status</div><div class="v">${escapeHtml(statusLabel(t.status))}</div></div>
           <div class="row"><div class="k">Fila</div><div class="v">${escapeHtml(queueLabel(t.queue))}</div></div>
         `;
       }else{
-        panelBody.innerHTML = `
-          <div class="row"><div class="k">Ações rápidas</div><div class="v"></div></div>
-          <div class="muted" style="margin-top:6px; line-height:1.4">
+        panelBody.innerHTML=`
+          <div class="muted" style="line-height:1.5">
             • “Resolver” marca como ENTREGUE e agenda auto-remoção (1h).<br/>
-            • “Liberar” apenas marca como “meu ticket” (demo).<br/>
-            • Notificação por email aqui é demo (não envia de verdade em site estático).
-          </div>
-          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-            <button class="btn small ghost" id="btnEmailDemo">Notificar por e-mail (demo)</button>
-            <button class="btn small" id="btnMarkUnread">Marcar como não lido</button>
+            • “Liberar” marca como “meu ticket” (demo).<br/>
+            • E-mail aqui é demo (site estático não envia de verdade).
           </div>
         `;
-
-        const btnEmailDemo = document.getElementById("btnEmailDemo");
-        const btnMarkUnread = document.getElementById("btnMarkUnread");
-
-        btnEmailDemo?.addEventListener("click", ()=>{
-          toast("Email (demo)", "Aqui seria enviado um e-mail pro cliente.");
-        });
-        btnMarkUnread?.addEventListener("click", ()=>{
-          t.unread = true;
-          saveState();
-          renderAll();
-        });
       }
 
-      // stats
-      document.getElementById("statSpent").textContent = String(t.spent ?? 13);
-      document.getElementById("statOrders").textContent = String(t.orders ?? 1);
-      document.getElementById("statItems").textContent = String(t.items ?? 1);
+      document.getElementById("statSpent").textContent=String(t.spent ?? 13);
+      document.getElementById("statOrders").textContent=String(t.orders ?? 1);
+      document.getElementById("statItems").textContent=String(t.items ?? 1);
     }
 
     function renderTicketTags(){
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
-      if(!t){ ticketTagsEl.innerHTML = ""; return; }
-
-      const tags = uniqueTags(t.tags || []);
-      ticketTagsEl.innerHTML = tags.map(tag=>{
-        return `<span class="tag removable" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`;
-      }).join("");
-
-      // remove tag (sem reset / sem pular pro topo)
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
+      if(!t){ ticketTagsEl.innerHTML=""; return; }
+      const tags=uniqueTags(t.tags||[]);
+      ticketTagsEl.innerHTML = tags.map(tag=>`<span class="tag removable" data-tag="${escapeHtml(tag)}">${escapeHtml(tag)}</span>`).join("");
       ticketTagsEl.querySelectorAll(".tag.removable").forEach(el=>{
         el.addEventListener("click",(e)=>{
-          e.preventDefault();
-          e.stopPropagation();
-          const tg = normalizeTag(el.getAttribute("data-tag"));
-          t.tags = (t.tags||[]).map(normalizeTag).filter(x=>x!==tg);
-          // se filtro tava nessa tag, limpa
-          if(state.filters.tag && normalizeTag(state.filters.tag)===tg){
-            state.filters.tag = null;
-          }
+          e.preventDefault(); e.stopPropagation();
+          const tg=normalizeTag(el.getAttribute("data-tag"));
+          t.tags=(t.tags||[]).map(normalizeTag).filter(x=>x!==tg);
+          if(state.filters.tag && normalizeTag(state.filters.tag)===tg) state.filters.tag=null;
           saveState();
           renderAll();
         });
@@ -1661,25 +1571,21 @@ border-radius:16px;
       renderNotifications();
     }
 
-    // ====== EVENTS ======
-
-    // Tabs right panel
+    // Right panel tabs
     document.querySelectorAll(".tab").forEach(tab=>{
       tab.addEventListener("click", ()=>{
         document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
         tab.classList.add("active");
-        state.panelTab = tab.getAttribute("data-tab");
+        state.panelTab=tab.getAttribute("data-tab");
         saveState();
         renderPanel();
       });
     });
 
-    // Filters open/close (pega clique em QUALQUER lugar do botão, sem precisar "pontinha")
-    btnFilters.addEventListener("click", (e)=>{
-      e.preventDefault();
-      filters.classList.add("open");
-    });
-    btnCloseFilters.addEventListener("click", ()=> filters.classList.remove("open"));
+    // Filters open/close
+    btnFilters.addEventListener("click",(e)=>{ e.preventDefault(); filters.classList.add("open"); });
+    btnCloseFilters.addEventListener("click",()=>filters.classList.remove("open"));
+
     document.addEventListener("keydown",(e)=>{
       if(e.key==="Escape"){
         filters.classList.remove("open");
@@ -1687,7 +1593,7 @@ border-radius:16px;
       }
     });
 
-    // search + toggles
+    // Search/toggles
     searchInput.value = state.filters.search || "";
     searchInput.addEventListener("input", ()=>{
       state.filters.search = searchInput.value;
@@ -1701,148 +1607,112 @@ border-radius:16px;
     demoSim.checked = !!state.filters.demo;
     sortBy.value = state.filters.sort || "recent";
 
-    onlyUnread.addEventListener("change", ()=>{
-      state.filters.onlyUnread = !!onlyUnread.checked;
-      saveState();
-      renderAll();
-    });
-    onlyMine.addEventListener("change", ()=>{
-      state.filters.onlyMine = !!onlyMine.checked;
-      saveState();
-      renderAll();
-    });
-    soundOn.addEventListener("change", ()=>{
-      state.filters.sound = !!soundOn.checked;
-      saveState();
-    });
-    demoSim.addEventListener("change", ()=>{
-      state.filters.demo = !!demoSim.checked;
-      saveState();
-    });
-    sortBy.addEventListener("change", ()=>{
-      state.filters.sort = sortBy.value;
-      saveState();
-      renderAll();
-    });
+    onlyUnread.addEventListener("change", ()=>{ state.filters.onlyUnread=!!onlyUnread.checked; saveState(); renderAll(); });
+    onlyMine.addEventListener("change", ()=>{ state.filters.onlyMine=!!onlyMine.checked; saveState(); renderAll(); });
+    soundOn.addEventListener("change", ()=>{ state.filters.sound=!!soundOn.checked; saveState(); });
+    demoSim.addEventListener("change", ()=>{ state.filters.demo=!!demoSim.checked; saveState(); });
+    sortBy.addEventListener("change", ()=>{ state.filters.sort=sortBy.value; saveState(); renderAll(); });
 
-    // send message
+    // Send message
     function sendMessage(){
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
-      const text = (msgInput.value||"").trim();
+      const text=(msgInput.value||"").trim();
       if(!text) return;
-
-      t.messages = t.messages || [];
+      t.messages=t.messages||[];
       t.messages.push({ id: rid(), type:"me", text, ts: Date.now() });
-
-      msgInput.value = "";
+      msgInput.value="";
       saveState();
       renderChat();
       renderTicketList();
     }
     btnSend.addEventListener("click", sendMessage);
     msgInput.addEventListener("keydown",(e)=>{
-      if(e.key==="Enter"){
-        e.preventDefault();
-        sendMessage();
-      }
+      if(e.key==="Enter"){ e.preventDefault(); sendMessage(); }
     });
 
-    // add tag
+    // Add tag
     function addTag(){
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
-      const raw = (tagInput.value||"").trim();
+      const raw=(tagInput.value||"").trim();
       if(!raw) return;
-      const tg = normalizeTag(raw);
-      t.tags = uniqueTags([...(t.tags||[]), tg]);
-      tagInput.value = "";
+      const tg=normalizeTag(raw);
+      t.tags=uniqueTags([...(t.tags||[]), tg]);
+      tagInput.value="";
       saveState();
       renderAll();
     }
     btnAddTag.addEventListener("click", addTag);
     tagInput.addEventListener("keydown",(e)=>{
-      if(e.key==="Enter"){
-        e.preventDefault();
-        addTag();
-      }
+      if(e.key==="Enter"){ e.preventDefault(); addTag(); }
     });
 
     // Liberar / Resolver
     btnLiberar.addEventListener("click", ()=>{
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
-      t.mine = true;
+      t.mine=true;
       toast("Liberado", "Ticket marcado como seu (demo).");
       saveState();
       renderAll();
     });
 
     btnResolver.addEventListener("click", ()=>{
-      const t = state.tickets.find(x=>x.id===state.activeTicketId);
+      const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
-
-      t.status = "paid";
-      t.tags = uniqueTags([...(t.tags||[]), "ENTREGUE"]);
-      t.deliveredAt = Date.now();
-
+      t.status="paid";
+      t.tags=uniqueTags([...(t.tags||[]), "ENTREGUE"]);
+      t.deliveredAt=Date.now();
       toast("Resolvido", "Marcado como ENTREGUE. Auto-remove em 1 hora.");
       saveState();
       renderAll();
     });
 
-    // Notification bell panel
-    btnBell.addEventListener("click", (e)=>{
+    // Bell panel
+    btnBell.addEventListener("click",(e)=>{
       e.preventDefault();
       notiPanel.classList.toggle("open");
       filters.classList.remove("open");
     });
-    btnMarkAllRead.addEventListener("click", ()=>{
-      markAllNotificationsRead();
-    });
-    btnClearNoti.addEventListener("click", ()=>{
-      clearNotifications();
-    });
+    btnMarkAllRead.addEventListener("click", ()=> markAllNotificationsRead());
+    btnClearNoti.addEventListener("click", ()=> clearNotifications());
 
-    // click outside closes panels
+    // click outside close
     document.addEventListener("click",(e)=>{
-      const target = e.target;
-      // close notifications if clicked outside
+      const target=e.target;
       if(notiPanel.classList.contains("open")){
-        const insideNoti = notiPanel.contains(target) || btnBell.contains(target);
-        if(!insideNoti) notiPanel.classList.remove("open");
+        const inside = notiPanel.contains(target) || btnBell.contains(target);
+        if(!inside) notiPanel.classList.remove("open");
       }
-      // close filters if clicked outside
       if(filters.classList.contains("open")){
-        const insideFilters = filters.contains(target) || btnFilters.contains(target);
-        if(!insideFilters) filters.classList.remove("open");
+        const inside = filters.contains(target) || btnFilters.contains(target);
+        if(!inside) filters.classList.remove("open");
       }
     });
 
-    // ====== MOBILE NAV ======
+    // Mobile nav
     mNavList.addEventListener("click", ()=> setView("list"));
     mNavChat.addEventListener("click", ()=> setView("chat"));
     mNavDetails.addEventListener("click", ()=> setView("details"));
     btnMobileBack.addEventListener("click", ()=> setView("list"));
 
-    // on resize: if desktop, ignore view; if mobile and no active view -> list
     window.addEventListener("resize", ()=>{
       if(isMobile()){
         if(!getView()) setView("list");
       }
     });
 
-    // ====== DEMO POLLING (simula cliente respondendo) ======
     function randomPick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
     function simulateClientReply(){
       if(!state.filters.demo) return;
-      const visible = state.tickets.filter(t=> !t.deliveredAt);
+      const visible=state.tickets.filter(t=>!t.deliveredAt);
       if(visible.length===0) return;
-      if(Math.random() > SIMULATE_REPLY_PROB) return;
+      if(Math.random()>SIMULATE_REPLY_PROB) return;
 
-      const t = randomPick(visible);
-      const txts = [
+      const t=randomPick(visible);
+      const txts=[
         "Oi, quando entrega meu item?",
         "Opa, onde envio o link da gamepass?",
         "Não achei onde mando o link 😭",
@@ -1850,39 +1720,92 @@ border-radius:16px;
         "Posso esperar, só me avisa aqui"
       ];
 
-      t.messages = t.messages || [];
-      const msg = { id: rid(), type:"client", text: randomPick(txts), ts: Date.now() };
+      t.messages=t.messages||[];
+      const msg={ id: rid(), type:"client", text: randomPick(txts), ts: Date.now() };
       t.messages.push(msg);
-      t.unread = true;
+      t.unread=true;
 
-      // add notification (sem spam infinito: só cria 1 por mensagem)
-      addNotification({
-        ticketId: t.id,
-        title: "Cliente respondeu",
-        text: `${t.name}: ${msg.text}`
-      });
+      addNotification({ ticketId:t.id, title:"Cliente respondeu", text:`${t.name}: ${msg.text}` });
 
-      // toast só no desktop (no mobile já tem bell)
       if(!isMobile()){
         toast("Cliente respondeu", `${t.name}: ${msg.text}`);
       }
 
       saveState();
-      // re-render list only (não fica “não para” porque não fica empilhando toast sempre sem necessidade)
       renderTicketList();
       renderNotifications();
     }
 
-    // ====== INIT ======
     document.getElementById("agentName").textContent = state.agent || AGENT;
-
-    // start view: mobile list, desktop normal
-    if(isMobile()){
-      setView("list");
-    }
-
+    if(isMobile()) setView("list");
     renderAll();
     setInterval(simulateClientReply, POLL_MS);
+
+    // ===== Fundo com "cometinhas/brasas" (sutil) =====
+    (function embersBackground(){
+      const canvas = document.getElementById("embers");
+      if(!canvas) return;
+      const ctx = canvas.getContext("2d", { alpha:true });
+
+      let w=0, h=0, dpr=1;
+      function resize(){
+        dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+        w = canvas.width  = Math.floor(window.innerWidth * dpr);
+        h = canvas.height = Math.floor(window.innerHeight * dpr);
+      }
+      window.addEventListener("resize", resize);
+      resize();
+
+      const N = 42;
+      const parts = Array.from({length:N}, ()=>spawn(true));
+
+      function spawn(init=false){
+        const x = Math.random()*w;
+        const y = init ? Math.random()*h : -40*dpr;
+        const speed = (0.35 + Math.random()*1.15) * dpr;
+        const drift = (-0.25 + Math.random()*0.5) * dpr;
+        const len = (8 + Math.random()*22) * dpr;
+        const size = (0.7 + Math.random()*1.6) * dpr;
+        const alpha = 0.08 + Math.random()*0.18;
+        return {x,y,speed,drift,len,size,alpha};
+      }
+
+      function step(){
+        ctx.clearRect(0,0,w,h);
+
+        const g = ctx.createRadialGradient(w*0.5,h*0.15, 50*dpr, w*0.5,h*0.5, Math.max(w,h)*0.8);
+        g.addColorStop(0, "rgba(179,0,255,0.00)");
+        g.addColorStop(1, "rgba(0,0,0,0.20)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0,0,w,h);
+
+        for(const p of parts){
+          p.x += p.drift;
+          p.y += p.speed;
+
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(179, 0, 255, ${p.alpha})`;
+          ctx.lineWidth = p.size;
+          ctx.lineCap = "round";
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - p.drift*10, p.y - p.len);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.fillStyle = `rgba(255, 0, 212, ${Math.min(0.35, p.alpha*2)})`;
+          ctx.arc(p.x, p.y, p.size*0.9, 0, Math.PI*2);
+          ctx.fill();
+
+          if(p.y > h + 60*dpr || p.x < -80*dpr || p.x > w + 80*dpr){
+            Object.assign(p, spawn(false));
+            p.x = Math.random()*w;
+          }
+        }
+
+        requestAnimationFrame(step);
+      }
+      step();
+    })();
   </script>
 </body>
 </html>
