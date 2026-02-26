@@ -7,21 +7,16 @@
   <style>
     :root{
       --bg:#0a0b0f;
-      --bg2:#0d0f15;
-      --card:#0f1118;
-      --card2:#0f121b;
       --stroke:rgba(255,255,255,.07);
       --text:#e9e9ee;
       --muted:#a2a2b3;
-      --accent:#b300ff;         /* roxo */
-      --accent2:#ff00d4;        /* pink roxo */
+      --accent:#b300ff;
+      --accent2:#ff00d4;
       --good:#33d17a;
       --warn:#f2b01e;
       --bad:#ff4d4d;
       --shadow:0 18px 60px rgba(0,0,0,.65);
       --radius:18px;
-      --radius2:14px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
     }
     *{box-sizing:border-box}
@@ -36,11 +31,10 @@
         linear-gradient(180deg, var(--bg), #07080b);
       overflow:hidden;
     }
-
     .app{
       height:100%;
       display:grid;
-      grid-template-columns: 320px 1fr 340px;
+      grid-template-columns: 340px 1fr 360px;
       gap:14px;
       padding:14px;
     }
@@ -63,17 +57,18 @@
       align-items:center;
       justify-content:space-between;
       border-bottom:1px solid var(--stroke);
+      gap:10px;
     }
-    .brand{display:flex; gap:10px; align-items:center}
+    .brand{display:flex; gap:10px; align-items:center; min-width:0}
     .dot{
       width:10px;height:10px;border-radius:50%;
       background:var(--good);
       box-shadow:0 0 0 6px rgba(51,209,122,.12);
+      flex:0 0 auto;
     }
-    .brand__title{font-weight:800; letter-spacing:.2px}
-    .brand__sub{font-size:12px;color:var(--muted); margin-top:2px}
-
-    .left__actions{display:flex; gap:8px}
+    .brand__title{font-weight:900; letter-spacing:.2px}
+    .brand__sub{font-size:12px;color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .left__actions{display:flex; gap:8px; flex:0 0 auto}
     .iconbtn{
       width:38px;height:38px;
       border-radius:12px;
@@ -86,6 +81,39 @@
     }
     .iconbtn:hover{background:rgba(255,255,255,.06)}
     .iconbtn:active{transform:translateY(1px)}
+
+    /* Queue tabs */
+    .queues{
+      padding:10px 12px 0;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .qtab{
+      font-size:12px;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      cursor:pointer;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .qtab.active{
+      border-color:rgba(179,0,255,.45);
+      background:rgba(179,0,255,.13);
+      box-shadow:0 0 0 6px rgba(179,0,255,.08);
+    }
+    .qbadge{
+      font-size:11px;
+      padding:2px 7px;
+      border-radius:999px;
+      border:1px solid rgba(179,0,255,.22);
+      background:rgba(179,0,255,.10);
+      color:rgba(255,255,255,.92);
+    }
 
     .search{padding:10px 14px}
     .search input{
@@ -121,13 +149,13 @@
       background: linear-gradient(180deg, rgba(179,0,255,.12), rgba(255,0,212,.06));
     }
     .ticket__top{display:flex; align-items:center; justify-content:space-between; gap:8px}
-    .ticket__name{font-weight:800}
+    .ticket__name{font-weight:900}
     .ticket__meta{display:flex; align-items:center; gap:8px; color:var(--muted); font-size:12px}
     .badge{
       font-size:11px;
       padding:4px 8px;
       border-radius:999px;
-      border:1px solid var(--stroke);
+      border:1px solid rgba(255,255,255,.09);
       background:rgba(255,255,255,.03);
       color:var(--muted);
       white-space:nowrap;
@@ -136,7 +164,7 @@
     .badge.warn{color:var(--warn); border-color:rgba(242,176,30,.25); background:rgba(242,176,30,.08)}
     .badge.bad{color:var(--bad); border-color:rgba(255,77,77,.25); background:rgba(255,77,77,.08)}
     .ticket__snippet{font-size:13px; color:rgba(255,255,255,.78); line-height:1.25}
-    .ticket__tags{display:flex; flex-wrap:wrap; gap:6px}
+    .ticket__tags{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
     .tag{
       font-size:11px;
       padding:4px 8px;
@@ -147,8 +175,14 @@
       cursor:pointer;
       user-select:none;
     }
+    .unreadDot{
+      width:8px;height:8px;border-radius:50%;
+      background:rgba(255,0,212,.9);
+      box-shadow:0 0 0 6px rgba(255,0,212,.10);
+      display:inline-block;
+    }
 
-    /* Filters (FIX: smaller + scroll + responsive) */
+    /* Filters drawer */
     .filters{
       position:absolute;
       top:0; right:-320px;
@@ -185,7 +219,7 @@
       font-size:12px;
       padding:7px 10px;
       border-radius:999px;
-      border:1px solid var(--stroke);
+      border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.03);
       cursor:pointer;
       user-select:none;
@@ -249,17 +283,16 @@
       min-width:0;
     }
     .banner span{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-    .spark{filter:drop-shadow(0 4px 10px rgba(255,255,255,.12))}
     .center__topRight{display:flex; gap:10px}
     .btn{
       height:38px;
       padding:0 14px;
       border-radius:12px;
-      border:1px solid var(--stroke);
+      border:1px solid rgba(255,255,255,.08);
       background:rgba(255,255,255,.03);
       color:var(--text);
       cursor:pointer;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:.4px;
       transition:transform .08s ease, background .15s ease, border-color .15s ease;
       display:flex;
@@ -276,7 +309,7 @@
       border-color:rgba(179,0,255,.25);
       background:rgba(179,0,255,.10);
     }
-    .btn.small{height:34px; border-radius:12px; padding:0 12px; font-weight:800}
+    .btn.small{height:34px; border-radius:12px; padding:0 12px; font-weight:900}
     .dotSmall{
       width:7px;height:7px;border-radius:50%;
       background:rgba(179,0,255,.95);
@@ -297,7 +330,7 @@
     }
     .sys .sys__bubble{
       padding:10px 12px;
-      max-width:820px;
+      max-width:900px;
       border-radius:999px;
       background:rgba(255,255,255,.03);
       border:1px solid rgba(255,255,255,.06);
@@ -307,7 +340,7 @@
     .msgRow{display:flex; margin:10px 0}
     .msgRow.me{justify-content:flex-end}
     .bubble{
-      max-width:min(860px, 78%);
+      max-width:min(900px, 80%);
       padding:14px 14px;
       border-radius:18px;
       border:1px solid rgba(255,255,255,.06);
@@ -317,6 +350,7 @@
       box-shadow:0 10px 35px rgba(0,0,0,.35);
       position:relative;
       font-size:14px;
+      white-space:pre-wrap;
     }
     .bubble.me{
       background:linear-gradient(180deg, rgba(179,0,255,.92), rgba(179,0,255,.70));
@@ -330,8 +364,20 @@
       display:flex;
       gap:10px;
       justify-content:flex-end;
+      align-items:center;
     }
-
+    .delBtn{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.15);
+      color:rgba(255,255,255,.9);
+      border-radius:10px;
+      padding:3px 8px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:11px;
+      display:none;
+    }
+    .msgRow.me .bubble:hover .delBtn{display:inline-flex}
     .composer{
       padding:12px;
       border-top:1px solid var(--stroke);
@@ -414,7 +460,7 @@
       background:rgba(255,255,255,.03);
       color:rgba(255,255,255,.85);
       cursor:pointer;
-      font-weight:800;
+      font-weight:900;
     }
     .tab.active{
       border-color:rgba(179,0,255,.35);
@@ -435,33 +481,27 @@
     }
     .row:last-child{border-bottom:none}
     .k{color:var(--muted); font-size:12px}
-    .v{font-weight:800}
+    .v{font-weight:900}
     .v.link{
       color:rgba(179,0,255,.95);
       text-decoration:none;
       font-weight:900;
+      word-break:break-all;
     }
     .v.link:hover{text-decoration:underline}
     .muted{color:rgba(255,255,255,.45); font-size:12px}
 
     .tagRow{display:flex; flex-wrap:wrap; gap:8px}
     .tagRow .tag{border-color:rgba(179,0,255,.25); background:rgba(179,0,255,.10)}
-    .tagRow .tag.removable{
-      position:relative;
-      padding-right:26px;
-    }
+    .tagRow .tag.removable{position:relative; padding-right:26px}
     .tagRow .tag.removable::after{
       content:"×";
       position:absolute;
       right:9px; top:3px;
-      opacity:.8;
+      opacity:.85;
       font-weight:900;
     }
-    .tagAdd{
-      display:flex;
-      gap:8px;
-      margin-top:12px;
-    }
+    .tagAdd{display:flex; gap:8px; margin-top:12px}
     .tagAdd input{
       flex:1;
       padding:10px 12px;
@@ -470,6 +510,44 @@
       background:rgba(255,255,255,.03);
       color:var(--text);
       outline:none;
+    }
+
+    /* Toast notifications */
+    .toasts{
+      position:fixed;
+      right:14px;
+      top:14px;
+      z-index:9999;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      pointer-events:none;
+    }
+    .toast{
+      pointer-events:none;
+      width:min(420px, calc(100vw - 28px));
+      border-radius:16px;
+      border:1px solid rgba(179,0,255,.25);
+      background:linear-gradient(180deg, rgba(179,0,255,.20), rgba(15,17,24,.92));
+      box-shadow:0 18px 60px rgba(0,0,0,.65);
+      padding:12px 12px;
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      animation: toastIn .18s ease-out;
+    }
+    @keyframes toastIn{
+      from{transform:translateY(-8px); opacity:.0}
+      to{transform:translateY(0); opacity:1}
+    }
+    .toast b{font-weight:900}
+    .toast .tmeta{font-size:12px; color:rgba(255,255,255,.7); margin-top:4px}
+    .toast .ticon{
+      width:34px;height:34px;border-radius:12px;
+      display:grid;place-items:center;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.18);
+      flex:0 0 auto;
     }
 
     /* Scrollbars */
@@ -487,14 +565,13 @@
     /* Responsive */
     @media (max-width: 1100px){
       body{overflow:auto}
-      .app{grid-template-columns: 320px 1fr; grid-template-rows:auto auto; height:auto}
+      .app{grid-template-columns: 340px 1fr; grid-template-rows:auto auto; height:auto}
       .right{grid-column: 1 / -1}
     }
     @media (max-width: 820px){
       body{overflow:auto}
       .app{grid-template-columns: 1fr; padding:10px}
       .left,.center,.right{border-radius:16px}
-      /* filters as overlay on small screens */
       .filters{
         position:fixed;
         top:10px;
@@ -514,15 +591,17 @@
   </style>
 </head>
 <body>
+  <div class="toasts" id="toasts"></div>
+
   <div class="app">
     <!-- LEFT -->
     <aside class="left">
       <div class="left__header">
         <div class="brand">
           <div class="dot"></div>
-          <div>
+          <div style="min-width:0">
             <div class="brand__title">Conversas</div>
-            <div class="brand__sub">Bem-vindo(a), <b id="agentName">Allz</b></div>
+            <div class="brand__sub">Bem-vindo(a), <b id="agentName">Allz</b> • <span id="liveLabel">ao vivo</span></div>
           </div>
         </div>
         <div class="left__actions">
@@ -534,12 +613,16 @@
         </div>
       </div>
 
+      <!-- QUEUE TABS -->
+      <div class="queues" id="queueTabs"></div>
+
       <div class="search">
         <input id="searchInput" type="text" placeholder="Pesquisar..." />
       </div>
 
       <div class="list" id="ticketList"></div>
 
+      <!-- FILTERS DRAWER -->
       <div class="filters" id="filters">
         <div class="filters__header">
           <div class="filters__title">Filtros</div>
@@ -564,6 +647,10 @@
             <input type="checkbox" id="onlyMine" />
             <span>Meus tickets</span>
           </label>
+          <label class="check">
+            <input type="checkbox" id="soundOn" />
+            <span>Som de notificação</span>
+          </label>
         </div>
 
         <div class="filters__section">
@@ -581,6 +668,11 @@
             *Tags aparecem conforme você adiciona nos tickets.
           </div>
         </div>
+
+        <div class="filters__section" style="border-bottom:none">
+          <div class="filters__label">Atualização</div>
+          <div class="muted">Este protótipo atualiza automaticamente e simula respostas do cliente.</div>
+        </div>
       </div>
     </aside>
 
@@ -588,7 +680,7 @@
     <main class="center">
       <div class="center__top">
         <div class="banner">
-          <span class="spark">🎉</span>
+          <span>🎉</span>
           <span id="bannerText">Pagamento confirmado! Seu pedido está sendo processado...</span>
         </div>
 
@@ -650,7 +742,7 @@
           </div>
 
           <div class="muted" style="margin-top:10px">
-            Dica: clique em uma tag aqui ou no filtro para filtrar.
+            Dica: clique numa tag acima para remover. Clique em tags na lista/filtro para filtrar.
           </div>
         </div>
       </div>
@@ -658,16 +750,33 @@
   </div>
 
   <script>
-    /***************
-     * Simple Staff Panel (single-file)
-     * - Fake tickets + chat
-     * - Tags per ticket (persisted)
-     * - Filter by status, tag, unread, mine, search, sort
-     * - No reset: localStorage
-     ***************/
-
-    const LS_KEY = "staff_panel_v2";
+    /***********************
+     * STAFF PANEL v3
+     * - queues/tabs
+     * - notifications (toast + optional sound)
+     * - delete own messages
+     * - fast updates (auto-refresh + simulated incoming)
+     * - fix scroll jump on tag insert / re-render
+     * - removable tags
+     * - auto-remove delivered chats after 1 hour
+     * - "notify email" button (demo)
+     ***********************/
+    const LS_KEY = "staff_panel_v3";
     const AGENT = "Allz";
+
+    const AUTO_REMOVE_DELIVERED_MS = 60 * 60 * 1000; // 1 hour
+    const POLL_MS = 2500; // refresh interval
+    const SIMULATE_REPLY_PROB = 0.22; // chance per tick to create a customer reply
+
+    const QUEUES = [
+      { id:"all", label:"TODAS" },
+      { id:"DTI", label:"DTI" },
+      { id:"PEDIDOS_NOVOS", label:"PEDIDOS NOVOS" },
+      { id:"SEM_GAMEPASS", label:"SEM GAMEPASS" },
+      { id:"BLOXFRUITS", label:"BLOXFRUITS" },
+      { id:"MM2", label:"MM2" },
+      { id:"FILA_DE_ENTREGA", label:"FILA DE ENTREGA" },
+    ];
 
     const STATUS = [
       { id:"all", label:"Todos" },
@@ -677,9 +786,8 @@
       { id:"canceled", label:"Cancelados" },
     ];
 
-    function nowMinusMinutes(m){
-      return Date.now() - (m*60*1000);
-    }
+    function nowMinusMinutes(m){ return Date.now() - (m*60*1000); }
+    function rid(){ return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16); }
 
     function normalizeTag(tag){
       return String(tag).trim().toUpperCase().replace(/\s+/g,"_");
@@ -689,19 +797,156 @@
       return Array.from(set);
     }
 
+    function seedTicketsBase(){
+      return [
+        {
+          id:"t1",
+          queue:"PEDIDOS_NOVOS",
+          name:"Kamila",
+          user:"Wzkamila",
+          createdAt: nowMinusMinutes(35),
+          unread:true,
+          mine:true,
+          status:"pending",
+          category:"ROBUX_GAMEPASS",
+          total:"R$ 12,60",
+          nick:"revoltadinha13",
+          gamepass:"https://www.roblox.com/game-pass/1573179189",
+          item:"300 Robux (via Gamepass)",
+          client:"Esmeralda",
+          clientEmail:"cm5592521@gmail.com",
+          spent:13, orders:1, items:1,
+          tags:["GAMEPASS","SEM_GAMEPASS"],
+          deliveredAt:null,
+          messages: [
+            { id: rid(), type:"sys", text:"🎉 Pagamento confirmado! Seu pedido está sendo processado. Nossa equipe entrará em contato em breve para realizar a entrega." },
+            { id: rid(), type:"sys", text:"Allz assumiu este atendimento." },
+            { id: rid(), type:"me", text:"Olá! Muito obrigado pela sua compra, caso tenha alguma dúvida, pode me informar aqui ou lá no discord, abrindo suporte. Entregaremos o mais rápido possível, ainda hoje! 💜", at: nowMinusMinutes(30)},
+            { id: rid(), type:"me", text:"Verifiquei que ainda não enviou sua gamepass, precisa de ajuda com isso? Caso ela apenas não tenha sido encontrada, vá em \"minhas compras\" e selecione a compra que está tendo problemas, após isso é só clicar em \"inserir link manualmente\" e colocar o link de sua gamepass! Lembre-se de desativar os preços regionais.", at: nowMinusMinutes(28)},
+          ],
+          lastSeenMsgCount: 0
+        },
+        {
+          id:"t2",
+          queue:"MM2",
+          name:"Lipe nuts",
+          user:"lipezzk077",
+          createdAt: nowMinusMinutes(55),
+          unread:false,
+          mine:false,
+          status:"paid",
+          category:"MM2",
+          total:"R$ 49,90",
+          nick:"lipezzk077",
+          gamepass:"-",
+          item:"MM2 — Pacote",
+          client:"Lipe",
+          clientEmail:"-",
+          spent:49.9, orders:1, items:1,
+          tags:["ENTREGUE","MM2"],
+          deliveredAt: Date.now() - (25 * 60 * 1000), // delivered 25 min ago
+          messages: [
+            { id: rid(), type:"sys", text:"Pagamento confirmado! Pedido liberado para entrega." },
+            { id: rid(), type:"me", text:"Pedido recebido! Já estou separando seu item. ✅", at: nowMinusMinutes(52)},
+            { id: rid(), type:"them", text:"Opa, beleza! Valeu", at: nowMinusMinutes(51)},
+            { id: rid(), type:"me", text:"Entregue! Se precisar de algo, chama. 💜", at: nowMinusMinutes(50)},
+          ],
+          lastSeenMsgCount: 0
+        },
+        {
+          id:"t3",
+          queue:"SEM_GAMEPASS",
+          name:"DUDAXLSANTOS",
+          user:"DUDAXLSANTOS",
+          createdAt: nowMinusMinutes(80),
+          unread:true,
+          mine:true,
+          status:"pending",
+          category:"ROBUX_GAMEPASS",
+          total:"R$ 25,00",
+          nick:"dudaxl",
+          gamepass:"https://www.roblox.com/game-pass/123456789",
+          item:"500 Robux (via Gamepass)",
+          client:"Duda",
+          clientEmail:"-",
+          spent:25, orders:1, items:1,
+          tags:["GAMEPASS","SEM_GAMEPASS"],
+          deliveredAt:null,
+          messages: [
+            { id: rid(), type:"sys", text:"Pagamento confirmado! Seu pedido está sendo processado." },
+            { id: rid(), type:"sys", text:"Allz assumiu este atendimento." },
+            { id: rid(), type:"them", text:"Oi, eu não achei onde manda o link", at: nowMinusMinutes(78)},
+          ],
+          lastSeenMsgCount: 0
+        },
+        {
+          id:"t4",
+          queue:"DTI",
+          name:"w1s.",
+          user:"southnak",
+          createdAt: nowMinusMinutes(110),
+          unread:true,
+          mine:false,
+          status:"pending",
+          category:"MM2",
+          total:"R$ 19,90",
+          nick:"southnak",
+          gamepass:"-",
+          item:"MM2 — Item avulso",
+          client:"w1s",
+          clientEmail:"-",
+          spent:19.9, orders:1, items:1,
+          tags:["MM2","MUDAR_TAG"],
+          deliveredAt:null,
+          messages: [
+            { id: rid(), type:"sys", text:"Pedido em análise." },
+            { id: rid(), type:"them", text:"Meu ticket tá sem tag, pode arrumar?", at: nowMinusMinutes(108)},
+          ],
+          lastSeenMsgCount: 0
+        },
+        {
+          id:"t5",
+          queue:"FILA_DE_ENTREGA",
+          name:"b.ferrazxl",
+          user:"brunoteixeiraferrazferraz@gmail.com",
+          createdAt: nowMinusMinutes(140),
+          unread:false,
+          mine:false,
+          status:"refunded",
+          category:"MM2",
+          total:"R$ 12,00",
+          nick:"brunoteixeira",
+          gamepass:"-",
+          item:"MM2 — Item",
+          client:"Bruno",
+          clientEmail:"brunoteixeiraferrazferraz@gmail.com",
+          spent:12, orders:1, items:1,
+          tags:["REEMBOLSO","MM2"],
+          deliveredAt:null,
+          messages: [
+            { id: rid(), type:"sys", text:"Reembolso processado." },
+            { id: rid(), type:"me", text:"Reembolso concluído. 💜", at: nowMinusMinutes(138)},
+          ],
+          lastSeenMsgCount: 0
+        },
+      ];
+    }
+
     function generateExtraTickets(count){
-      const names = ["ThayS","Nina","Renan","Bryan","Laura","Letícia","Paulo","Yasmim","Brenda","Miguel","Gabi","Rafa","Davi","Malu","Caio","Luan","Iza","Noah","Bia","Hugo"];
-      const users = ["thaysw0","ninaz","renan_77","bryanbr","laura_s","leticia_m","paulo00","yas_kk","brendaX","migrez","gabi_13","rafaelo","davi_x","maluzita","caio_rbx","luanbr","iza_rob","noahdev","bianca2","hugoz"];
-      const categories = ["MM2","ROBUX_GAMEPASS","MM2","MM2","ROBUX_GAMEPASS"];
-      const items = ["MM2 — Godly","MM2 — Pacote","300 Robux (via Gamepass)","500 Robux (via Gamepass)","MM2 — Item avulso"];
-      const tagsPool = ["MM2","GAMEPASS","ENTREGUE","REEMBOLSO","MUDAR_TAG","URGENTE","BUG","FALTA_LINK","PAGAMENTO","DÚVIDA"];
+      const names = ["ThayS","Nina","Renan","Bryan","Laura","Letícia","Paulo","Yasmim","Brenda","Miguel","Gabi","Rafa","Davi","Malu","Caio","Luan","Iza","Noah","Bia","Hugo","Ana","Vini","Lara","Gui","Theo"];
+      const users = ["thaysw0","ninaz","renan_77","bryanbr","laura_s","leticia_m","paulo00","yas_kk","brendaX","migrez","gabi_13","rafaelo","davi_x","maluzita","caio_rbx","luanbr","iza_rob","noahdev","bianca2","hugoz","ana_mod","vini33","lara_f","gui_k","theo_01"];
+      const categories = ["MM2","ROBUX_GAMEPASS","BLOXFRUITS","MM2","ROBUX_GAMEPASS"];
+      const items = ["MM2 — Godly","MM2 — Pacote","BloxFruits — Fruta","500 Robux (via Gamepass)","BloxFruits — Pass"];
+      const tagsPool = ["MM2","GAMEPASS","ENTREGUE","REEMBOLSO","MUDAR_TAG","URGENTE","BUG","FALTA_LINK","PAGAMENTO","DÚVIDA","SEM_GAMEPASS","DTI"];
       const statuses = ["pending","paid","refunded","canceled"];
+      const queuePool = ["DTI","PEDIDOS_NOVOS","SEM_GAMEPASS","BLOXFRUITS","MM2","FILA_DE_ENTREGA"];
 
       const out = [];
       for(let i=0;i<count;i++){
         const idx = i % names.length;
         const status = statuses[i % statuses.length];
         const cat = categories[i % categories.length];
+        const queue = queuePool[i % queuePool.length];
         const tagA = tagsPool[(i*3) % tagsPool.length];
         const tagB = tagsPool[(i*3 + 2) % tagsPool.length];
 
@@ -713,8 +958,11 @@
         const item = items[i % items.length];
         const nick = users[idx];
 
+        const deliveredAt = (status==="paid" ? (Date.now() - ((10 + (i%70)) * 60 * 1000)) : null);
+
         out.push({
           id,
+          queue,
           name: names[idx],
           user: users[idx],
           createdAt,
@@ -731,152 +979,40 @@
           spent: 10 + (i%7)*3,
           orders: 1,
           items: 1,
-          tags: uniqueTags([tagA, tagB, cat]),
+          tags: uniqueTags([tagA, tagB, cat, queue]),
+          deliveredAt,
           messages: [
-            { type:"sys", text: "Ticket criado no sistema." },
-            ...(mine ? [{ type:"sys", text: AGENT + " assumiu este atendimento." }] : []),
-            { type:"them", text: cat==="ROBUX_GAMEPASS" ? "Opa, onde envio o link da gamepass?" : "Oi, quando entrega meu item?", at: createdAt + 2*60*1000 },
-            ...(status==="paid" ? [{ type:"me", text:"Entregue ✅ qualquer coisa chama!", at: createdAt + 6*60*1000 }] : []),
-            ...(status==="refunded" ? [{ type:"me", text:"Reembolso processado. 💜", at: createdAt + 6*60*1000 }] : []),
-            ...(status==="canceled" ? [{ type:"me", text:"Pedido cancelado conforme solicitado.", at: createdAt + 6*60*1000 }] : []),
-          ]
+            { id: rid(), type:"sys", text: "Ticket criado no sistema." },
+            ...(mine ? [{ id: rid(), type:"sys", text: AGENT + " assumiu este atendimento." }] : []),
+            { id: rid(), type:"them", text: cat==="ROBUX_GAMEPASS" ? "Opa, onde envio o link da gamepass?" : "Oi, quando entrega meu item?", at: createdAt + 2*60*1000 },
+            ...(status==="paid" ? [{ id: rid(), type:"me", text:"Entregue ✅ qualquer coisa chama!", at: createdAt + 6*60*1000 }] : []),
+            ...(status==="refunded" ? [{ id: rid(), type:"me", text:"Reembolso processado. 💜", at: createdAt + 6*60*1000 }] : []),
+            ...(status==="canceled" ? [{ id: rid(), type:"me", text:"Pedido cancelado conforme solicitado.", at: createdAt + 6*60*1000 }] : []),
+          ],
+          lastSeenMsgCount: 0
         });
       }
       return out;
     }
 
     const seedData = () => {
-      const baseTickets = [
-        {
-          id:"t1",
-          name:"Kamila",
-          user:"Wzkamila",
-          createdAt: nowMinusMinutes(35),
-          unread:true,
-          mine:true,
-          status:"pending",
-          category:"ROBUX_GAMEPASS",
-          total:"R$ 12,60",
-          nick:"revoltadinha13",
-          gamepass:"https://www.roblox.com/game-pass/1573179189",
-          item:"300 Robux (via Gamepass)",
-          client:"Esmeralda",
-          clientEmail:"cm5592521@gmail.com",
-          spent:13, orders:1, items:1,
-          tags:["MM2","GAMEPASS"],
-          messages: [
-            { type:"sys", text:"🎉 Pagamento confirmado! Seu pedido está sendo processado. Nossa equipe entrará em contato em breve para realizar a entrega." },
-            { type:"sys", text:"Allz assumiu este atendimento." },
-            { type:"me", text:"Olá! Muito obrigado pela sua compra, caso tenha alguma dúvida, pode me informar aqui ou lá no discord, abrindo suporte. Entregaremos o mais rápido possível, ainda hoje! 💜", at: nowMinusMinutes(30)},
-            { type:"me", text:"Verifiquei que ainda não enviou sua gamepass, precisa de ajuda com isso? Caso ela apenas não tenha sido encontrada, vá em \"minhas compras\" e selecione a compra que está tendo problemas, após isso é só clicar em \"inserir link manualmente\" e colocar o link de sua gamepass! Lembre-se de desativar os preços regionais.", at: nowMinusMinutes(28)},
-          ]
-        },
-        {
-          id:"t2",
-          name:"Lipe nuts",
-          user:"lipezzk077",
-          createdAt: nowMinusMinutes(55),
-          unread:false,
-          mine:false,
-          status:"paid",
-          category:"MM2",
-          total:"R$ 49,90",
-          nick:"lipezzk077",
-          gamepass:"-",
-          item:"MM2 — Pacote",
-          client:"Lipe",
-          clientEmail:"-",
-          spent:49.9, orders:1, items:1,
-          tags:["ENTREGUE","MM2"],
-          messages: [
-            { type:"sys", text:"Pagamento confirmado! Pedido liberado para entrega." },
-            { type:"me", text:"Pedido recebido! Já estou separando seu item. ✅", at: nowMinusMinutes(52)},
-            { type:"them", text:"Opa, beleza! Valeu", at: nowMinusMinutes(51)},
-            { type:"me", text:"Entregue! Se precisar de algo, chama. 💜", at: nowMinusMinutes(50)},
-          ]
-        },
-        {
-          id:"t3",
-          name:"DUDAXLSANTOS",
-          user:"DUDAXLSANTOS",
-          createdAt: nowMinusMinutes(80),
-          unread:true,
-          mine:true,
-          status:"pending",
-          category:"ROBUX_GAMEPASS",
-          total:"R$ 25,00",
-          nick:"dudaxl",
-          gamepass:"https://www.roblox.com/game-pass/123456789",
-          item:"500 Robux (via Gamepass)",
-          client:"Duda",
-          clientEmail:"-",
-          spent:25, orders:1, items:1,
-          tags:["GAMEPASS"],
-          messages: [
-            { type:"sys", text:"Pagamento confirmado! Seu pedido está sendo processado." },
-            { type:"sys", text:"Allz assumiu este atendimento." },
-            { type:"them", text:"Oi, eu não achei onde manda o link", at: nowMinusMinutes(78)},
-          ]
-        },
-        {
-          id:"t4",
-          name:"w1s.",
-          user:"southnak",
-          createdAt: nowMinusMinutes(110),
-          unread:true,
-          mine:false,
-          status:"pending",
-          category:"MM2",
-          total:"R$ 19,90",
-          nick:"southnak",
-          gamepass:"-",
-          item:"MM2 — Item avulso",
-          client:"w1s",
-          clientEmail:"-",
-          spent:19.9, orders:1, items:1,
-          tags:["MM2","MUDAR_TAG"],
-          messages: [
-            { type:"sys", text:"Pedido em análise." },
-            { type:"them", text:"Meu ticket tá sem tag, pode arrumar?", at: nowMinusMinutes(108)},
-          ]
-        },
-        {
-          id:"t5",
-          name:"b.ferrazxl",
-          user:"brunoteixeiraferrazferraz@gmail.com",
-          createdAt: nowMinusMinutes(140),
-          unread:false,
-          mine:false,
-          status:"refunded",
-          category:"MM2",
-          total:"R$ 12,00",
-          nick:"brunoteixeira",
-          gamepass:"-",
-          item:"MM2 — Item",
-          client:"Bruno",
-          clientEmail:"brunoteixeiraferrazferraz@gmail.com",
-          spent:12, orders:1, items:1,
-          tags:["REEMBOLSO","MM2"],
-          messages: [
-            { type:"sys", text:"Reembolso processado." },
-            { type:"me", text:"Reembolso concluído. 💜", at: nowMinusMinutes(138)},
-          ]
-        },
-      ];
-
+      const base = seedTicketsBase();
       const extra = generateExtraTickets(15);
       return {
         me: AGENT,
-        selectedId: "t1",
+        selectedId: base[0]?.id || null,
         filters: {
+          queue: "all",
           status: "all",
           tag: "all",
           onlyUnread: false,
           onlyMine: false,
           sortBy: "recent",
-          search: ""
+          search: "",
+          soundOn: false
         },
-        tickets: baseTickets.concat(extra)
+        tickets: base.concat(extra),
+        ui: { lastToastAt: 0 }
       };
     };
 
@@ -886,6 +1022,17 @@
         if(!raw) return seedData();
         const parsed = JSON.parse(raw);
         if(!parsed.tickets || !Array.isArray(parsed.tickets)) return seedData();
+        // migrate missing fields
+        parsed.filters = parsed.filters || {};
+        parsed.filters.queue = parsed.filters.queue || "all";
+        parsed.filters.soundOn = !!parsed.filters.soundOn;
+        parsed.tickets.forEach(t=>{
+          t.queue = t.queue || guessQueue(t);
+          t.tags = (t.tags || []).map(normalizeTag);
+          t.deliveredAt = t.deliveredAt ?? null;
+          t.messages = (t.messages || []).map(m => ({ id: m.id || rid(), ...m }));
+          t.lastSeenMsgCount = t.lastSeenMsgCount || 0;
+        });
         return parsed;
       }catch{
         return seedData();
@@ -893,6 +1040,14 @@
     }
     function save(){
       localStorage.setItem(LS_KEY, JSON.stringify(state));
+    }
+
+    function guessQueue(t){
+      const tags = (t.tags||[]).map(normalizeTag);
+      if(tags.includes("MM2")) return "MM2";
+      if(tags.includes("BLOXFRUITS")) return "BLOXFRUITS";
+      if(tags.includes("SEM_GAMEPASS")) return "SEM_GAMEPASS";
+      return "PEDIDOS_NOVOS";
     }
 
     let state = load();
@@ -911,6 +1066,9 @@
     const elStatusPills = document.getElementById("statusPills");
     const elTagCloud = document.getElementById("tagCloud");
     const elBanner = document.getElementById("bannerText");
+    const elQueueTabs = document.getElementById("queueTabs");
+    const elSoundOn = document.getElementById("soundOn");
+    const elToasts = document.getElementById("toasts");
 
     // Filters drawer
     const elFilters = document.getElementById("filters");
@@ -929,7 +1087,311 @@
       });
     });
 
-    // Status pills
+    // Inputs (persist)
+    elSearch.value = state.filters.search || "";
+    elOnlyUnread.checked = !!state.filters.onlyUnread;
+    elOnlyMine.checked = !!state.filters.onlyMine;
+    elSortBy.value = state.filters.sortBy || "recent";
+    elSoundOn.checked = !!state.filters.soundOn;
+
+    elSearch.addEventListener("input", (e)=>{
+      state.filters.search = e.target.value;
+      save();
+      renderTicketsPreserveScroll();
+      renderQueueTabs();
+    });
+
+    elOnlyUnread.addEventListener("change", ()=>{
+      state.filters.onlyUnread = elOnlyUnread.checked;
+      save();
+      renderTicketsPreserveScroll();
+      renderQueueTabs();
+    });
+
+    elOnlyMine.addEventListener("change", ()=>{
+      state.filters.onlyMine = elOnlyMine.checked;
+      save();
+      renderTicketsPreserveScroll();
+      renderQueueTabs();
+    });
+
+    elSortBy.addEventListener("change", ()=>{
+      state.filters.sortBy = elSortBy.value;
+      save();
+      renderTicketsPreserveScroll();
+      renderQueueTabs();
+    });
+
+    elSoundOn.addEventListener("change", ()=>{
+      state.filters.soundOn = elSoundOn.checked;
+      save();
+      toast("Som de notificação", elSoundOn.checked ? "Ativado" : "Desativado", "🔔");
+    });
+
+    // Messaging
+    const elMsgInput = document.getElementById("msgInput");
+    document.getElementById("btnSend").addEventListener("click", sendMsg);
+    elMsgInput.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") sendMsg();
+    });
+
+    function getSelected(){
+      return state.tickets.find(x=>x.id===state.selectedId) || state.tickets[0] || null;
+    }
+
+    function selectTicket(id){
+      state.selectedId = id;
+      const t = getSelected();
+      if(t){
+        t.unread = false;
+        t.lastSeenMsgCount = (t.messages||[]).length;
+      }
+      save();
+      renderAll({ keepChatScroll:false });
+      scrollChatBottom();
+    }
+
+    function sendMsg(){
+      const text = (elMsgInput.value || "").trim();
+      if(!text) return;
+
+      const t = getSelected();
+      if(!t) return;
+
+      t.messages.push({ id: rid(), type:"me", text, at: Date.now() });
+      t.unread = false;
+      t.lastSeenMsgCount = t.messages.length;
+
+      elMsgInput.value = "";
+      save();
+
+      renderChat();      // fast update without re-open
+      renderTicketsPreserveScroll();
+      renderRightPanel();
+      renderQueueTabs();
+      scrollChatBottom();
+    }
+
+    function deleteMsg(msgId){
+      const t = getSelected();
+      if(!t) return;
+      t.messages = (t.messages||[]).filter(m => m.id !== msgId);
+      t.lastSeenMsgCount = t.messages.length;
+      save();
+      renderChat();
+      renderTicketsPreserveScroll();
+      renderRightPanel();
+    }
+
+    // Actions buttons
+    document.getElementById("btnResolver").addEventListener("click", ()=>{
+      const t = getSelected();
+      if(!t) return;
+
+      t.status = "paid";
+      t.tags = uniqueTags([...(t.tags||[]), "ENTREGUE"]);
+      t.queue = "FILA_DE_ENTREGA";
+      t.unread = false;
+      t.deliveredAt = Date.now();
+
+      t.messages.push({ id: rid(), type:"sys", text:"Pedido marcado como ENTREGUE. Este chat será removido automaticamente após 1 hora." });
+
+      save();
+      toast("Pedido resolvido", "Marcado como ENTREGUE + movido para FILA DE ENTREGA", "✅");
+      renderAll({ keepChatScroll:true });
+      scrollChatBottom();
+    });
+
+    document.getElementById("btnLiberar").addEventListener("click", ()=>{
+      const t = getSelected();
+      if(!t) return;
+      t.unread = false;
+      t.messages.push({ id: rid(), type:"sys", text:"Ticket liberado para atendimento/entrega." });
+      t.lastSeenMsgCount = t.messages.length;
+      save();
+      toast("Ticket liberado", "Aviso registrado no chat", "🟣");
+      renderChat();
+      renderTicketsPreserveScroll();
+      renderRightPanel();
+      scrollChatBottom();
+    });
+
+    // Tag add/remove
+    elBtnAddTag.addEventListener("click", addTagFromInput);
+    elTagInput.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter") addTagFromInput();
+    });
+
+    function addTagFromInput(){
+      const raw = (elTagInput.value || "").trim();
+      if(!raw) return;
+      const tag = normalizeTag(raw);
+
+      const t = getSelected();
+      if(!t) return;
+
+      // FIX: preserve list scroll (no jump to top)
+      const prevScroll = elTicketList.scrollTop;
+
+      t.tags = uniqueTags([...(t.tags||[]), tag]);
+      elTagInput.value = "";
+      save();
+
+      renderTagCloud();
+      renderTickets(); // will be restored below
+      elTicketList.scrollTop = prevScroll;
+
+      renderRightPanel();
+      renderQueueTabs();
+    }
+
+    function removeTag(tag){
+      const t = getSelected();
+      if(!t) return;
+
+      const prevScroll = elTicketList.scrollTop;
+
+      t.tags = (t.tags||[]).filter(x => normalizeTag(x) !== normalizeTag(tag));
+      save();
+
+      renderTagCloud();
+      renderTickets();
+      elTicketList.scrollTop = prevScroll;
+
+      renderRightPanel();
+      renderQueueTabs();
+    }
+
+    // Filters
+    function statusBadge(status){
+      if(status==="paid") return ["PAGO","good"];
+      if(status==="pending") return ["PENDENTE","warn"];
+      if(status==="refunded") return ["REEMBOLSADO","good"];
+      if(status==="canceled") return ["CANCELADO","bad"];
+      return ["—",""];
+    }
+
+    function passesFilters(t){
+      const f = state.filters;
+
+      // queue
+      if(f.queue !== "all" && t.queue !== f.queue) return false;
+
+      // status
+      if(f.status !== "all" && t.status !== f.status) return false;
+
+      // tag
+      if(f.tag !== "all"){
+        const tags = (t.tags||[]).map(normalizeTag);
+        if(!tags.includes(normalizeTag(f.tag))) return false;
+      }
+
+      // unread / mine
+      if(f.onlyUnread && !t.unread) return false;
+      if(f.onlyMine && !t.mine) return false;
+
+      // search
+      const q = (f.search||"").trim().toLowerCase();
+      if(q){
+        const hay = [
+          t.name, t.user, t.category, t.item, t.queue, (t.tags||[]).join(" ")
+        ].join(" ").toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+
+      return true;
+    }
+
+    function sortTickets(arr){
+      const f = state.filters;
+      const copy = [...arr];
+      copy.sort((a,b)=>{
+        if(f.sortBy==="old") return a.createdAt - b.createdAt;
+        return b.createdAt - a.createdAt;
+      });
+      return copy;
+    }
+
+    function getVisibleTickets(){
+      return sortTickets(state.tickets.filter(passesFilters));
+    }
+
+    function getSnippet(t){
+      const msgs = t.messages || [];
+      const last = [...msgs].reverse().find(m => m.type !== "sys");
+      if(!last) return "Sem mensagens.";
+      return (last.type==="me" ? "Você: " : "") + last.text.slice(0,90);
+    }
+
+    // Queue tabs render
+    function renderQueueTabs(){
+      const counts = countQueuesWithCurrentFilters();
+      elQueueTabs.innerHTML = "";
+
+      QUEUES.forEach(q=>{
+        const btn = document.createElement("div");
+        btn.className = "qtab" + (state.filters.queue===q.id ? " active" : "");
+        btn.addEventListener("click", ()=>{
+          state.filters.queue = q.id;
+          save();
+          renderAll({ keepChatScroll:true });
+        });
+
+        const label = document.createElement("span");
+        label.textContent = q.label;
+
+        const badge = document.createElement("span");
+        badge.className = "qbadge";
+        badge.textContent = String(counts[q.id] ?? 0);
+
+        btn.appendChild(label);
+        btn.appendChild(badge);
+        elQueueTabs.appendChild(btn);
+      });
+    }
+
+    function countQueuesWithCurrentFilters(){
+      // Count per queue respecting filters except queue itself (so tabs remain informative)
+      const f = state.filters;
+      const counts = {};
+      QUEUES.forEach(q => counts[q.id]=0);
+
+      state.tickets.forEach(t=>{
+        // apply filters but ignore queue filter
+        const temp = { ...f, queue:"all" };
+        if(!passesFiltersWith(temp, t)) return;
+        counts["all"]++;
+        counts[t.queue] = (counts[t.queue]||0) + 1;
+      });
+
+      return counts;
+    }
+
+    function passesFiltersWith(filters, t){
+      const f = filters;
+
+      if(f.status !== "all" && t.status !== f.status) return false;
+
+      if(f.tag !== "all"){
+        const tags = (t.tags||[]).map(normalizeTag);
+        if(!tags.includes(normalizeTag(f.tag))) return false;
+      }
+
+      if(f.onlyUnread && !t.unread) return false;
+      if(f.onlyMine && !t.mine) return false;
+
+      const q = (f.search||"").trim().toLowerCase();
+      if(q){
+        const hay = [
+          t.name, t.user, t.category, t.item, t.queue, (t.tags||[]).join(" ")
+        ].join(" ").toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+
+      return true;
+    }
+
+    // Status pills + tag cloud
     function renderStatusPills(){
       elStatusPills.innerHTML = "";
       STATUS.forEach(s=>{
@@ -939,7 +1401,7 @@
         pill.addEventListener("click", ()=>{
           state.filters.status = s.id;
           save();
-          renderAll();
+          renderAll({ keepChatScroll:true });
         });
         elStatusPills.appendChild(pill);
       });
@@ -961,7 +1423,7 @@
       all.addEventListener("click", ()=>{
         state.filters.tag = "all";
         save();
-        renderAll();
+        renderAll({ keepChatScroll:true });
       });
       elTagCloud.appendChild(all);
 
@@ -972,162 +1434,15 @@
         t.addEventListener("click", ()=>{
           state.filters.tag = tag;
           save();
-          renderAll();
+          renderAll({ keepChatScroll:true });
         });
         elTagCloud.appendChild(t);
       });
     }
 
-    // Inputs (persist)
-    elSearch.value = state.filters.search || "";
-    elOnlyUnread.checked = !!state.filters.onlyUnread;
-    elOnlyMine.checked = !!state.filters.onlyMine;
-    elSortBy.value = state.filters.sortBy || "recent";
-
-    elSearch.addEventListener("input", (e)=>{
-      state.filters.search = e.target.value;
-      save();
-      renderTickets();
-    });
-
-    elOnlyUnread.addEventListener("change", ()=>{
-      state.filters.onlyUnread = elOnlyUnread.checked;
-      save();
-      renderTickets();
-    });
-
-    elOnlyMine.addEventListener("change", ()=>{
-      state.filters.onlyMine = elOnlyMine.checked;
-      save();
-      renderTickets();
-    });
-
-    elSortBy.addEventListener("change", ()=>{
-      state.filters.sortBy = elSortBy.value;
-      save();
-      renderTickets();
-    });
-
-    // Messaging
-    const elMsgInput = document.getElementById("msgInput");
-    document.getElementById("btnSend").addEventListener("click", sendMsg);
-    elMsgInput.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter") sendMsg();
-    });
-
-    function sendMsg(){
-      const text = (elMsgInput.value || "").trim();
-      if(!text) return;
-
-      const t = getSelected();
-      t.messages.push({ type:"me", text, at: Date.now() });
-      t.unread = false;
-      elMsgInput.value = "";
-      save();
-      renderAll();
-      scrollChatBottom();
-    }
-
-    // Actions buttons
-    document.getElementById("btnResolver").addEventListener("click", ()=>{
-      const t = getSelected();
-      t.status = "paid";
-      t.tags = uniqueTags([...(t.tags||[]), "ENTREGUE"]);
-      t.unread = false;
-      save();
-      renderAll();
-    });
-    document.getElementById("btnLiberar").addEventListener("click", ()=>{
-      const t = getSelected();
-      t.unread = false;
-      t.messages.push({ type:"sys", text:"Ticket liberado para atendimento/entrega." });
-      save();
-      renderAll();
-      scrollChatBottom();
-    });
-
-    // Tag add/remove
-    elBtnAddTag.addEventListener("click", addTagFromInput);
-    elTagInput.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter") addTagFromInput();
-    });
-
-    function addTagFromInput(){
-      const raw = (elTagInput.value || "").trim();
-      if(!raw) return;
-      const tag = normalizeTag(raw);
-
-      const t = getSelected();
-      t.tags = uniqueTags([...(t.tags||[]), tag]);
-      elTagInput.value = "";
-      save();
-      renderAll();
-    }
-
-    function removeTag(tag){
-      const t = getSelected();
-      t.tags = (t.tags||[]).filter(x => normalizeTag(x) !== normalizeTag(tag));
-      save();
-      renderAll();
-    }
-
-    function getSelected(){
-      return state.tickets.find(x=>x.id===state.selectedId) || state.tickets[0];
-    }
-
-    function selectTicket(id){
-      state.selectedId = id;
-      const t = getSelected();
-      t.unread = false;
-      save();
-      renderAll();
-      scrollChatBottom();
-    }
-
-    function statusBadge(status){
-      if(status==="paid") return ["PAGO","good"];
-      if(status==="pending") return ["PENDENTE","warn"];
-      if(status==="refunded") return ["REEMBOLSADO","good"];
-      if(status==="canceled") return ["CANCELADO","bad"];
-      return ["—",""];
-    }
-
-    function passesFilters(t){
-      const f = state.filters;
-
-      if(f.status !== "all" && t.status !== f.status) return false;
-
-      if(f.tag !== "all"){
-        const tags = (t.tags||[]).map(normalizeTag);
-        if(!tags.includes(normalizeTag(f.tag))) return false;
-      }
-
-      if(f.onlyUnread && !t.unread) return false;
-      if(f.onlyMine && !t.mine) return false;
-
-      const q = (f.search||"").trim().toLowerCase();
-      if(q){
-        const hay = [
-          t.name, t.user, t.category, t.item, (t.tags||[]).join(" ")
-        ].join(" ").toLowerCase();
-        if(!hay.includes(q)) return false;
-      }
-
-      return true;
-    }
-
-    function sortTickets(arr){
-      const f = state.filters;
-      const copy = [...arr];
-      copy.sort((a,b)=>{
-        if(f.sortBy==="old") return a.createdAt - b.createdAt;
-        return b.createdAt - a.createdAt;
-      });
-      return copy;
-    }
-
+    // Render tickets list (with unread dot, tags, queue)
     function renderTickets(){
-      const tickets = sortTickets(state.tickets.filter(passesFilters));
+      const tickets = getVisibleTickets();
       elTicketList.innerHTML = "";
 
       tickets.forEach(t=>{
@@ -1147,12 +1462,18 @@
         const meta = document.createElement("div");
         meta.className = "ticket__meta";
 
+        if(t.unread){
+          const dot = document.createElement("span");
+          dot.className = "unreadDot";
+          meta.appendChild(dot);
+        }
+
         const badge = document.createElement("span");
         badge.className = "badge " + cls;
         badge.textContent = label;
 
         const small = document.createElement("span");
-        small.textContent = t.category;
+        small.textContent = t.queue;
 
         meta.appendChild(badge);
         meta.appendChild(small);
@@ -1166,6 +1487,7 @@
 
         const tags = document.createElement("div");
         tags.className = "ticket__tags";
+
         (t.tags||[]).slice(0,3).forEach(tag=>{
           const tg = document.createElement("div");
           tg.className = "tag";
@@ -1174,7 +1496,7 @@
             e.stopPropagation();
             state.filters.tag = normalizeTag(tag);
             save();
-            renderAll();
+            renderAll({ keepChatScroll:true });
           });
           tags.appendChild(tg);
         });
@@ -1186,11 +1508,11 @@
         elTicketList.appendChild(wrap);
       });
 
+      // if filtered list doesn't include selected, select first available
       const hasSelected = tickets.some(t=>t.id===state.selectedId);
       if(!hasSelected && tickets.length){
         state.selectedId = tickets[0].id;
         save();
-        renderAll();
       }
 
       if(!tickets.length){
@@ -1202,15 +1524,28 @@
       }
     }
 
-    function getSnippet(t){
-      const msgs = t.messages || [];
-      const last = [...msgs].reverse().find(m => m.type !== "sys");
-      if(!last) return "Sem mensagens.";
-      return (last.type==="me" ? "Você: " : "") + last.text.slice(0,90);
+    function renderTicketsPreserveScroll(){
+      const prev = elTicketList.scrollTop;
+      renderTickets();
+      elTicketList.scrollTop = prev;
+    }
+
+    // Render chat
+    function formatTime(ts){
+      try{
+        const d = new Date(ts);
+        const hh = String(d.getHours()).padStart(2,"0");
+        const mm = String(d.getMinutes()).padStart(2,"0");
+        return `${hh}:${mm}`;
+      }catch{
+        return "";
+      }
     }
 
     function renderChat(){
       const t = getSelected();
+      if(!t){ elChat.innerHTML=""; return; }
+
       elChat.innerHTML = "";
 
       const sysTop = (t.messages||[]).find(m => m.type==="sys");
@@ -1236,7 +1571,23 @@
 
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent = formatTime(m.at || t.createdAt);
+
+        // delete button for own messages
+        if(m.type==="me"){
+          const del = document.createElement("button");
+          del.className = "delBtn";
+          del.type = "button";
+          del.textContent = "APAGAR";
+          del.addEventListener("click", (e)=>{
+            e.stopPropagation();
+            deleteMsg(m.id);
+          });
+          meta.appendChild(del);
+        }
+
+        const time = document.createElement("span");
+        time.textContent = formatTime(m.at || t.createdAt);
+        meta.appendChild(time);
 
         bubble.appendChild(meta);
         row.appendChild(bubble);
@@ -1248,28 +1599,27 @@
       elChat.scrollTop = elChat.scrollHeight;
     }
 
-    function formatTime(ts){
-      try{
-        const d = new Date(ts);
-        const hh = String(d.getHours()).padStart(2,"0");
-        const mm = String(d.getMinutes()).padStart(2,"0");
-        return `${hh}:${mm}`;
-      }catch{
-        return "";
-      }
+    // Right panel
+    function hashId(id){
+      const s = "4c6b26f3a71e" + id.replace(/\D/g,"");
+      return s.slice(0,12) + "-4...";
     }
 
     function renderRightPanel(){
       const t = getSelected();
-      const activeTab = document.querySelector(".tab.active")?.dataset?.tab || "info";
+      if(!t){ elPanelBody.innerHTML=""; return; }
 
+      // Stats
       document.getElementById("statSpent").textContent = String(t.spent ?? 13);
       document.getElementById("statOrders").textContent = String(t.orders ?? 1);
       document.getElementById("statItems").textContent = String(t.items ?? 1);
 
+      const activeTab = document.querySelector(".tab.active")?.dataset?.tab || "info";
+
       if(activeTab === "info"){
         elPanelBody.innerHTML = `
-          <div class="row"><div class="k">Pedido</div><div class="v">${t.category}</div></div>
+          <div class="row"><div class="k">Fila</div><div class="v">${t.queue}</div></div>
+          <div class="row"><div class="k">Categoria</div><div class="v">${t.category}</div></div>
           <div class="row"><div class="k">Data</div><div class="v">${new Date(t.createdAt).toLocaleString("pt-BR")}</div></div>
           <div class="row"><div class="k">ID Pedido</div><div class="v">${hashId(t.id)}</div></div>
           <div class="row"><div class="k">Valor Total</div><div class="v" style="color:${t.status==="paid" ? "var(--good)" : "rgba(255,255,255,.9)"}">${t.total}</div></div>
@@ -1283,17 +1633,63 @@
           <div class="row"><div class="k">Item</div><div class="v">${t.item}</div></div>
           <div class="row"><div class="k">Categoria</div><div class="v">${t.category}</div></div>
           <div class="row"><div class="k">Status</div><div class="v">${statusBadge(t.status)[0]}</div></div>
+          <div class="row"><div class="k">Fila</div><div class="v">${t.queue}</div></div>
           <div class="row"><div class="k">Quantidade</div><div class="v">1</div></div>
         `;
       } else {
+        // Actions tab: move queue + email notify demo + archive info
         elPanelBody.innerHTML = `
-          <div class="row"><div class="k">Ações rápidas</div><div class="v"></div></div>
-          <div class="muted">• LIBERAR: marca como lido e adiciona evento no chat.</div>
-          <div class="muted" style="margin-top:6px">• RESOLVER: marca como PAGO e adiciona tag ENTREGUE.</div>
-          <div class="muted" style="margin-top:6px">• Clique nas tags para filtrar.</div>
+          <div class="row"><div class="k">Mover para fila</div><div class="v"></div></div>
+          <select id="queueSelect" class="select" style="margin-top:6px">
+            ${QUEUES.filter(q=>q.id!=="all").map(q=>`<option value="${q.id}" ${q.id===t.queue?"selected":""}>${q.label}</option>`).join("")}
+          </select>
+
+          <div class="row" style="margin-top:12px"><div class="k">Notificar cliente</div><div class="v"></div></div>
+          <div class="muted">Botão de e-mail aqui é DEMO. Para e-mail real precisa backend.</div>
+          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
+            <button class="btn small ghost" id="btnEmail">ENVIAR E-MAIL</button>
+            <button class="btn small" id="btnPing">NOTIFICAÇÃO (DEMO)</button>
+          </div>
+
+          <div class="row" style="margin-top:12px"><div class="k">Auto-remover</div><div class="v"></div></div>
+          <div class="muted">
+            Se marcado como ENTREGUE, este chat será removido automaticamente após 1 hora para limpar a fila.
+          </div>
         `;
+
+        const qs = document.getElementById("queueSelect");
+        qs.addEventListener("change", ()=>{
+          const nv = qs.value;
+          t.queue = nv;
+          t.tags = uniqueTags([...(t.tags||[]), nv]);
+          save();
+          toast("Fila atualizada", `Ticket movido para: ${nv}`, "📦");
+          renderTicketsPreserveScroll();
+          renderQueueTabs();
+          renderTagCloud();
+        });
+
+        document.getElementById("btnEmail").addEventListener("click", ()=>{
+          const email = t.clientEmail && t.clientEmail !== "-" ? t.clientEmail : null;
+          if(!email){
+            toast("E-mail indisponível", "Este ticket não tem e-mail cadastrado.", "✉️");
+            return;
+          }
+          // demo
+          toast("E-mail (DEMO)", `Simulando envio para ${email}`, "📨");
+          t.messages.push({ id: rid(), type:"sys", text:`(DEMO) E-mail enviado para o cliente: ${email}` });
+          t.lastSeenMsgCount = t.messages.length;
+          save();
+          renderChat();
+          scrollChatBottom();
+        });
+
+        document.getElementById("btnPing").addEventListener("click", ()=>{
+          toast("Notificação (DEMO)", "Simulando lembrete tipo bot do Discord.", "🤖");
+        });
       }
 
+      // Ticket tags (removable)
       elTicketTags.innerHTML = "";
       (t.tags || []).forEach(tag=>{
         const tg = document.createElement("div");
@@ -1312,21 +1708,209 @@
       }
     }
 
-    function hashId(id){
-      const s = "4c6b26f3a71e" + id.replace(/\D/g,"");
-      return s.slice(0,12) + "-4...";
+    // Toast + sound
+    function toast(title, msg, icon="🟣"){
+      const t = document.createElement("div");
+      t.className = "toast";
+      t.innerHTML = `
+        <div class="ticon">${icon}</div>
+        <div>
+          <div><b>${escapeHtml(title)}</b></div>
+          <div class="tmeta">${escapeHtml(msg)}</div>
+        </div>
+      `;
+      elToasts.appendChild(t);
+
+      // auto remove
+      setTimeout(()=> {
+        t.style.opacity = "0";
+        t.style.transform = "translateY(-6px)";
+        t.style.transition = "all .18s ease";
+        setTimeout(()=> t.remove(), 220);
+      }, 2600);
     }
 
-    function renderAll(){
+    function escapeHtml(s){
+      return String(s)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    function playBeep(){
+      if(!state.filters.soundOn) return;
+      try{
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const ctx = new AudioCtx();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "sine";
+        o.frequency.value = 740;
+        g.gain.value = 0.05;
+        o.connect(g); g.connect(ctx.destination);
+        o.start();
+        setTimeout(()=>{ o.stop(); ctx.close(); }, 120);
+      }catch{}
+    }
+
+    // Auto-remove delivered chats after 1h
+    function cleanupDelivered(){
+      const before = state.tickets.length;
+      const now = Date.now();
+      state.tickets = state.tickets.filter(t=>{
+        if(t.status !== "paid") return true;
+        const hasEntregue = (t.tags||[]).map(normalizeTag).includes("ENTREGUE");
+        if(!hasEntregue) return true;
+        if(!t.deliveredAt) return true;
+        return (now - t.deliveredAt) < AUTO_REMOVE_DELIVERED_MS;
+      });
+
+      const after = state.tickets.length;
+      if(after !== before){
+        // selected removed?
+        const still = state.tickets.some(x=>x.id===state.selectedId);
+        if(!still){
+          state.selectedId = state.tickets[0]?.id || null;
+        }
+        save();
+        toast("Limpeza automática", "Chats ENTREGUES removidos (após 1 hora).", "🧹");
+        renderAll({ keepChatScroll:true });
+      }
+    }
+
+    // Notifications when customer replies
+    function detectNewCustomerMessages(){
+      const selected = getSelected();
+      state.tickets.forEach(t=>{
+        const msgCount = (t.messages||[]).length;
+        const lastSeen = t.lastSeenMsgCount || 0;
+
+        if(msgCount > lastSeen){
+          // check if new messages contain "them"
+          const newMsgs = t.messages.slice(lastSeen);
+          const hasThem = newMsgs.some(m => m.type === "them");
+          if(hasThem){
+            t.unread = true;
+
+            // Don't spam toast for the currently open ticket if user is at bottom
+            const isOpen = selected && selected.id === t.id;
+            if(!isOpen){
+              toast("Cliente respondeu", `${t.name}: ${newMsgs.find(m=>m.type==="them")?.text?.slice(0,80) || "Nova mensagem"}`, "💬");
+              playBeep();
+            }
+          }
+
+          // Update lastSeen only if ticket is open
+          if(selected && selected.id === t.id){
+            t.lastSeenMsgCount = msgCount;
+            t.unread = false;
+          }
+        }
+      });
+    }
+
+    // Simulate incoming messages for demo
+    const SIM_REPLIES = [
+      "Oi, tô aqui! Conseguiu ver?",
+      "Eu mandei o link agora, confere por favor",
+      "Tem previsão de entrega?",
+      "Meu nick é esse mesmo, tá certo?",
+      "Se precisar eu mando print",
+      "Conseguiu achar a gamepass?",
+      "Posso esperar, só me avisa aqui",
+      "Opa, respondi no discord também",
+    ];
+
+    function simulateIncoming(){
+      // pick one eligible ticket with pending status sometimes
+      if(Math.random() > SIMULATE_REPLY_PROB) return;
+
+      const candidates = state.tickets.filter(t => t.status === "pending");
+      if(!candidates.length) return;
+
+      const t = candidates[Math.floor(Math.random()*candidates.length)];
+      const txt = SIM_REPLIES[Math.floor(Math.random()*SIM_REPLIES.length)];
+      t.messages.push({ id: rid(), type:"them", text: txt, at: Date.now() });
+
+      // unread will be handled by detectNewCustomerMessages
+      save();
+    }
+
+    // Render all
+    function renderAll({ keepChatScroll=true } = {}){
+      renderQueueTabs();
       renderStatusPills();
       renderTagCloud();
-      renderTickets();
-      renderChat();
+
+      // preserve list scroll always (fix jump)
+      renderTicketsPreserveScroll();
+
+      if(keepChatScroll){
+        const prev = elChat.scrollTop;
+        renderChat();
+        elChat.scrollTop = prev;
+      }else{
+        renderChat();
+      }
+
       renderRightPanel();
     }
 
-    renderAll();
-    setTimeout(scrollChatBottom, 60);
+    // Initial render
+    renderAll({ keepChatScroll:false });
+    setTimeout(()=> scrollChatBottom(), 60);
+
+    // Queue tab default
+    if(!state.filters.queue) state.filters.queue = "all";
+
+    // Close filters on outside click (optional)
+    document.addEventListener("click", (e)=>{
+      if(!elFilters.classList.contains("open")) return;
+      const isInside = elFilters.contains(e.target) || e.target.id === "btnFilters";
+      if(!isInside) elFilters.classList.remove("open");
+    });
+
+    // Auto-refresh loop
+    setInterval(()=>{
+      cleanupDelivered();
+
+      // simulate + detect
+      simulateIncoming();
+      detectNewCustomerMessages();
+
+      // fast update UI (no need close/open)
+      // preserve scroll positions:
+      const listScroll = elTicketList.scrollTop;
+      const chatScroll = elChat.scrollTop;
+      const atBottom = (elChat.scrollHeight - elChat.scrollTop - elChat.clientHeight) < 80;
+
+      renderQueueTabs();
+      renderTickets();
+      elTicketList.scrollTop = listScroll;
+
+      renderChat();
+      if(atBottom) scrollChatBottom();
+      else elChat.scrollTop = chatScroll;
+
+      renderRightPanel();
+
+      save();
+    }, POLL_MS);
+
+    // When user focuses/open chat, mark as read
+    elChat.addEventListener("click", ()=>{
+      const t = getSelected();
+      if(!t) return;
+      t.unread = false;
+      t.lastSeenMsgCount = (t.messages||[]).length;
+      save();
+      renderTicketsPreserveScroll();
+      renderQueueTabs();
+    });
+
+    // Filters: status + tag also require preserving scroll (already handled in renderAll)
   </script>
 </body>
 </html>
