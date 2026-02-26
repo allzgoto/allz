@@ -3,28 +3,30 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Shadow Fight 2 — Entry</title>
+<title>Shadow Fight 2 — Hub</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@500;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
-
+button,input{font:inherit}
 :root{
-  --ember: rgba(255,140,70,1);
-  --goldA: #fff2de;
-  --goldB: #d9a56a;
-  --goldC: #a8642c;
+  /* 🔥 MAIS ESCURO / MENOS LARANJA */
+  --ember: rgba(165, 86, 44, 1);
+  --ember2: rgba(120, 62, 32, 1);
+  --emberGlow: rgba(165,86,44,.22);
 
-  /* layout */
-  --bg0:#000;
-  --line:rgba(255,255,255,.10);
-  --panelA:rgba(10,10,12,.78);
-  --panelB:rgba(255,255,255,.05);
-  --txt:rgba(255,255,255,.86);
-  --muted:rgba(255,255,255,.55);
-  --radius:18px;
+  --goldA:#fff2de;
+  --goldB:#d9a56a;
+  --goldC:#8a4a1f;
+
+  --ui: rgba(14,14,16,0.70);
+  --ui2: rgba(0,0,0,0.34);
+  --line: rgba(255,255,255,0.10);
+  --line2: rgba(255,255,255,0.07);
+  --txt: rgba(255,255,255,0.84);
+  --muted: rgba(255,255,255,0.52);
 }
 
 /* ===== VIDEO ===== */
@@ -39,13 +41,30 @@ html,body{width:100%;height:100%;overflow:hidden;background:#000}
 }
 body.entered #mainVideo{
   opacity:1;
-  filter:contrast(1.06) saturate(0.92) blur(3px) brightness(0.82);
+  filter:contrast(1.06) saturate(0.90) blur(6px) brightness(0.55);
 }
 body.scrollOpen #mainVideo,
 body.socialOpen #mainVideo,
 body.playlistsOpen #mainVideo,
 body.adminOpen #mainVideo{
-  filter:contrast(1.06) saturate(0.92) blur(7px) brightness(0.52);
+  filter:contrast(1.06) saturate(0.88) blur(9px) brightness(0.42);
+}
+
+/* ===== GLOBAL VIGNETTE + GRAIN ===== */
+#vignette{
+  position:fixed; inset:0; z-index:2;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,0.06), transparent 40%),
+    radial-gradient(circle at 70% 65%, rgba(255,255,255,0.05), transparent 44%),
+    radial-gradient(circle at center, transparent 44%, rgba(0,0,0,0.78) 100%);
+  mix-blend-mode: normal;
+}
+#grain{
+  position:fixed; inset:-20%; z-index:3; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
+  opacity:.18;
+  transform:rotate(2deg);
 }
 
 /* ===== ENTRY ===== */
@@ -80,7 +99,7 @@ body.adminOpen #mainVideo{
   border-radius:16px;
   overflow:hidden;
   box-shadow:
-    0 0 0 1px rgba(255,170,90,0.1),
+    0 0 0 1px rgba(255,170,90,0.07),
     0 40px 140px rgba(0,0,0,0.95);
   transition:transform 450ms ease;
 }
@@ -122,23 +141,13 @@ body.strikeOn #strike{opacity:0.95}
   font-size: clamp(26px, 3.2vw, 44px);
   letter-spacing:7px;
   text-transform:uppercase;
-
-  background: linear-gradient(
-    to bottom,
-    var(--goldA) 0%,
-    #f0cfa2 18%,
-    var(--goldB) 45%,
-    var(--goldC) 68%,
-    #f6d5a8 100%
-  );
+  background: linear-gradient(to bottom, var(--goldA) 0%, #f0cfa2 18%, var(--goldB) 45%, var(--goldC) 68%, #f6d5a8 100%);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
-
   text-shadow:
     0 2px 0 #000,
-    0 0 10px rgba(255,140,70,0.55),
-    0 0 34px rgba(255,100,0,0.35);
-
+    0 0 10px rgba(165,86,44,0.45),
+    0 0 34px rgba(165,86,44,0.22);
   position:relative;
   animation:pulse 2.6s ease-in-out infinite;
 }
@@ -146,10 +155,7 @@ body.strikeOn #strike{opacity:0.95}
   content:"";
   position:absolute;
   inset:-14px -42px;
-  background:
-    radial-gradient(circle at center,
-      rgba(255,120,0,0.14),
-      rgba(0,0,0,0.75));
+  background: radial-gradient(circle at center, rgba(165,86,44,0.12), rgba(0,0,0,0.75));
   z-index:-2;
   filter:blur(18px);
   border-radius:60px;
@@ -160,12 +166,7 @@ body.strikeOn #strike{opacity:0.95}
   position:absolute;
   inset:-8px -58px;
   z-index:-1;
-  background: linear-gradient(120deg,
-    transparent 0%,
-    rgba(255,255,255,0.10) 35%,
-    rgba(255,255,255,0.22) 50%,
-    rgba(255,255,255,0.10) 65%,
-    transparent 100%);
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.08) 35%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.08) 65%, transparent 100%);
   transform:translateX(-70%);
   filter:blur(8px);
   opacity:0.55;
@@ -194,11 +195,10 @@ body.strikeOn #strike{opacity:0.95}
   justify-content:center;
   padding:6px 10px;
   border-radius:10px;
-  border:1px solid rgba(255,170,90,0.22);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.10), rgba(0,0,0,0.72));
+  border:1px solid rgba(165,86,44,0.16);
+  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.10), rgba(0,0,0,0.72));
   box-shadow:
-    inset 0 0 14px rgba(255,140,70,0.08),
+    inset 0 0 14px rgba(165,86,44,0.06),
     0 10px 40px rgba(0,0,0,0.55);
   color:rgba(255,220,190,0.80);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
@@ -206,215 +206,228 @@ body.strikeOn #strike{opacity:0.95}
   letter-spacing:1px;
 }
 .kbdEnter svg{ width:14px;height:14px; margin-left:7px; opacity:0.9; }
-
 @keyframes pulse{ 0%,100%{transform:translateY(0);opacity:.88} 50%{transform:translateY(-3px);opacity:1} }
 @keyframes blink{ 0%,49%{opacity:.22} 50%,100%{opacity:.62} }
-
 body.strikeOn .introUI{ opacity:0; transition:opacity 300ms ease; }
-
 body.entered #entry{
   opacity:0;
   pointer-events:none;
   transition:opacity 900ms ease;
 }
 
-/* =========================================================
-   NEW: APP LAYOUT (sidebar + center + right panel)
-   ========================================================= */
-#appUI{
-  position:fixed;
-  inset:16px;
-  z-index:55;
-  display:grid;
-  grid-template-columns: 240px 1fr 300px;
-  gap:16px;
-  pointer-events:none;
+/* =========================
+   HUB LAYOUT (menu estilo imagem)
+   ========================= */
+#hub{
+  position:fixed; inset:0;
+  z-index:20;
   opacity:0;
-  transform: translateY(6px);
-  transition:opacity 420ms ease, transform 520ms cubic-bezier(.12,.92,.12,1);
+  pointer-events:none;
+  transition:opacity 700ms ease;
 }
-body.entered #appUI{
-  opacity:1;
-  transform: translateY(0);
-  pointer-events:auto;
+body.entered #hub{ opacity:1; pointer-events:auto; }
+
+.hubShell{
+  position:absolute; inset:16px;
+  display:grid;
+  grid-template-columns: 260px 1fr 320px;
+  gap:14px;
 }
 
-.uiPanel{
-  border-radius: var(--radius);
-  border:1px solid var(--line);
+/* glass panel base */
+.panelGlass{
+  border-radius:18px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.10), rgba(0,0,0,0.86)),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.60));
+    radial-gradient(circle at 20% 20%, rgba(165,86,44,0.10), transparent 55%),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.20));
+  border:1px solid var(--line);
   box-shadow:
-    0 34px 160px rgba(0,0,0,0.85),
-    inset 0 0 22px rgba(255,140,70,0.05);
+    0 44px 180px rgba(0,0,0,0.75),
+    inset 0 0 22px rgba(0,0,0,0.35);
+  backdrop-filter: blur(16px);
   overflow:hidden;
 }
 
-#leftBar{ display:flex; flex-direction:column; }
-.brandRow{
+/* LEFT NAV */
+.nav{
+  display:flex;
+  flex-direction:column;
+  padding:14px;
+  gap:12px;
+}
+.navTop{
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:16px 16px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
+  justify-content:space-between;
+  padding:6px 6px 10px;
 }
-.brandDot{
-  width:16px;height:16px;border-radius:5px;
-  background: rgba(255,140,70,0.70);
-  box-shadow: 0 0 22px rgba(255,140,70,0.20);
+.brand{
+  display:flex; flex-direction:column; gap:4px;
 }
-.brandRow b{
-  color:rgba(255,255,255,0.88);
-  letter-spacing:1px;
+.brand b{
+  color:rgba(255,255,255,0.80);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
   font-size:12px;
   text-transform:uppercase;
 }
-.navList{ padding:10px; display:flex; flex-direction:column; gap:6px; }
+.brand span{
+  color:rgba(255,255,255,0.42);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:800;
+  font-size:12px;
+}
+
+/* moved volume + fullscreen here (✅) */
+.navTools{ display:flex; gap:8px; }
+.toolBtn{
+  width:40px;height:40px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.30);
+  box-shadow: 0 14px 44px rgba(0,0,0,0.50);
+  cursor:pointer;
+  display:grid; place-items:center;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.toolBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.16); }
+.toolBtn svg{ width:20px;height:20px; opacity:.92; }
+
+.navList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:0 4px;
+}
 .navItem{
   width:100%;
   border:none;
   cursor:pointer;
   text-align:left;
-  padding:10px 10px;
-  border-radius:14px;
-  background: transparent;
-  border:1px solid transparent;
-  color:rgba(255,255,255,0.62);
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.22);
+  color:rgba(255,255,255,0.82);
   display:flex;
   align-items:center;
-  gap:12px;
+  justify-content:space-between;
+  gap:10px;
+  transition: transform .16s ease, background .16s ease, border-color .16s ease;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   letter-spacing:1px;
-  font-size:12px;
   text-transform:uppercase;
-  transition: transform .16s ease, background .16s ease, border-color .16s ease, color .16s ease;
-  position:relative;
+  font-size:12px;
 }
-.navItem .ico{ width:18px; height:18px; display:grid; place-items:center; opacity:.9; }
-.navItem:hover{
-  transform: translateX(1px);
-  background: rgba(255,255,255,0.05);
-  color:rgba(255,255,255,0.80);
-}
+.navItem:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.05); }
 .navItem.active{
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.10);
-  color:rgba(255,255,255,0.90);
-}
-.navItem.active::before{
-  content:"";
-  position:absolute;
-  left:-10px; top:50%;
-  transform:translateY(-50%);
-  width:4px; height:26px;
-  border-radius:999px;
-  background: rgba(255,140,70,0.9);
-  box-shadow: 0 0 18px rgba(255,140,70,0.22);
-}
-.badgeMini{
-  margin-left:auto;
-  min-width:22px;
-  height:18px;
-  padding:0 6px;
-  border-radius:999px;
-  background: rgba(255,140,70,0.14);
-  border:1px solid rgba(255,140,70,0.20);
-  color: rgba(255,255,255,0.84);
-  font-size:11px;
-  display:grid;
-  place-items:center;
-}
-
-.leftFooter{
-  margin-top:auto;
-  padding:14px;
-  border-top:1px solid rgba(255,255,255,0.08);
-}
-.userChip{
-  display:flex; align-items:center; gap:10px;
-  padding:10px;
-  border-radius:16px;
-  background: rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
-}
-.avatar{
-  width:34px; height:34px; border-radius:12px;
-  background: rgba(255,255,255,0.08);
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.10);
-}
-.avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-.userText b{ font-size:12px; color:rgba(255,255,255,0.88); }
-.userText small{ display:block; margin-top:2px; font-size:11px; color:rgba(255,255,255,0.55); }
-
-#centerStage{
-  padding:10px;
-  overflow:auto;
-  border-radius: var(--radius);
-}
-.centerHero{
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.10);
+  border-color: rgba(255,255,255,0.18);
   background:
-    radial-gradient(circle at 25% 25%, rgba(255,140,70,0.14), rgba(0,0,0,0.35)),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.35));
-  box-shadow: inset 0 0 26px rgba(0,0,0,0.55);
-  overflow:hidden;
-  position:relative;
-  min-height:340px;
+    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.16), rgba(0,0,0,0.24));
 }
-.centerHero::after{
+.badge{
+  font-size:10px;
+  letter-spacing:1px;
+  opacity:.70;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+}
+
+/* profile card bottom */
+.navFoot{
+  margin-top:auto;
+  padding:10px 6px 4px;
+}
+.profileCard{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  padding:12px 12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.30);
+  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+}
+.pfp{
+  width:44px;height:44px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.12);
+  overflow:hidden;
+  background: rgba(255,255,255,0.06);
+}
+.pfp img{ width:100%;height:100%;object-fit:cover;display:block; }
+.pmeta{ display:flex; flex-direction:column; gap:2px; }
+.pmeta b{
+  color:rgba(255,255,255,0.86);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  font-size:14px;
+}
+.pmeta span{
+  color:rgba(255,255,255,0.55);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:1px;
+  font-size:11px;
+}
+
+/* CENTER MAIN */
+.main{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.hero{
+  flex:0 0 auto;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  overflow:hidden;
+  min-height: 190px;
+  background:
+    radial-gradient(circle at 22% 26%, rgba(165,86,44,0.18), transparent 58%),
+    radial-gradient(circle at 70% 40%, rgba(255,255,255,0.06), transparent 52%),
+    linear-gradient(to bottom, rgba(0,0,0,0.38), rgba(0,0,0,0.72));
+  box-shadow: inset 0 0 34px rgba(0,0,0,0.55);
+  position:relative;
+}
+.hero::after{
   content:"";
   position:absolute; inset:0;
   background:
-    radial-gradient(circle at center, rgba(0,0,0,0.10), rgba(0,0,0,0.72)),
-    linear-gradient(to bottom, rgba(0,0,0,0.20), transparent 45%, rgba(0,0,0,0.65));
+    radial-gradient(circle at center, transparent 48%, rgba(0,0,0,0.55) 100%);
   pointer-events:none;
+  opacity:.9;
 }
-.heroTop{
-  position:absolute;
-  left:14px; top:14px;
-  display:flex;
-  gap:8px;
+.heroInner{
+  position:relative;
   z-index:2;
-}
-.pill{
-  font-size:11px;
-  padding:6px 10px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.74);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-.heroContent{
-  position:absolute;
-  left:16px; right:16px; bottom:16px;
-  z-index:2;
+  padding:18px;
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
-  gap:14px;
+  gap:16px;
+  height:100%;
 }
-.heroText h2{
+.heroText{
+  max-width: 70%;
+}
+.heroText h1{
   font-family:"Cinzel", serif;
-  letter-spacing:2px;
+  font-weight:800;
+  letter-spacing:3px;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.92);
-  font-size:22px;
+  color:rgba(255,255,255,0.88);
+  font-size:20px;
 }
 .heroText p{
-  margin-top:6px;
-  color:rgba(255,255,255,0.62);
+  margin-top:8px;
+  color:rgba(255,255,255,0.58);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:650;
-  max-width:620px;
-  line-height:1.35;
+  font-weight:700;
   font-size:13px;
+  line-height:1.35;
 }
 .heroActions{
   display:flex;
@@ -422,178 +435,181 @@ body.entered #appUI{
   flex-wrap:wrap;
   justify-content:flex-end;
 }
-.heroBtn{
+.pillBtn{
   border:none;
   cursor:pointer;
   padding:10px 12px;
-  border-radius:14px;
+  border-radius:999px;
   border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.30);
-  color:rgba(255,255,255,0.84);
+  background: rgba(0,0,0,0.34);
+  color:rgba(255,255,255,0.80);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   letter-spacing:1px;
   text-transform:uppercase;
   font-size:12px;
-  transition: transform .15s ease, background .15s ease, filter .15s ease;
+  transition: transform .15s ease, background .15s ease;
 }
-.heroBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); filter:brightness(1.05); }
-.heroBtn.primary{
-  background: radial-gradient(circle at 30% 30%, rgba(255,140,70,0.22), rgba(0,0,0,0.30));
-  border-color: rgba(255,255,255,0.18);
+.pillBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.06); }
+.pillBtn.primary{
+  background:
+    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.18), rgba(0,0,0,0.34));
+  border-color: rgba(255,255,255,0.14);
 }
 
 .sectionTitle{
-  margin:14px 6px 10px;
-  font-size:12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 6px;
+}
+.sectionTitle b{
+  color:rgba(255,255,255,0.62);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   letter-spacing:2px;
   text-transform:uppercase;
-  color: rgba(255,255,255,0.68);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size:11px;
 }
-.grid{
+.trending{
+  flex:1;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.20);
+  box-shadow: inset 0 0 26px rgba(0,0,0,0.50);
+  padding:14px;
+  overflow:hidden;
+}
+.cards{
+  margin-top:12px;
   display:grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
   gap:12px;
-  padding:0 6px 18px;
 }
-.tile{
-  height:118px;
-  border-radius:18px;
-  background: rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
+.card{
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  min-height:84px;
   box-shadow: inset 0 0 18px rgba(0,0,0,0.45);
-  position:relative;
-  overflow:hidden;
 }
-.tile::after{
-  content:"";
-  position:absolute; inset:-60%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,140,70,0.16), transparent 55%);
-  opacity:.9;
-  transform: translateX(-20%);
+@media (max-width: 1100px){
+  .hubShell{ grid-template-columns: 240px 1fr 300px; }
+  .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 880px){
+  .hubShell{ grid-template-columns: 1fr; }
+  .nav{ display:none; }
 }
 
-#rightPanel{ padding:14px; display:flex; flex-direction:column; gap:12px; }
-.searchBox{
-  display:flex; align-items:center; gap:10px;
-  padding:10px 12px;
-  border-radius:16px;
-  background: rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.10);
-}
-.searchBox input{
-  width:100%;
-  border:none; outline:none;
-  background: transparent;
-  color: rgba(255,255,255,0.85);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:12px;
-}
-.panelTitle{
-  margin-top:2px;
-  font-size:12px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  color: rgba(255,255,255,0.68);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-.friends{
+/* RIGHT PANEL (sem friends) */
+.right{
+  padding:14px;
   display:flex;
   flex-direction:column;
+  gap:12px;
+}
+.searchBar{
+  display:flex;
+  align-items:center;
   gap:10px;
-  overflow:auto;
-  padding-right:4px;
-  max-height: calc(100vh - 210px);
-}
-.friend{
-  display:flex; align-items:center; gap:10px;
-  padding:10px;
+  padding:12px 12px;
   border-radius:18px;
-  background: rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-}
-.friend .p{
-  width:36px;height:36px;border-radius:14px;
-  background: rgba(255,255,255,0.08);
-  overflow:hidden;
   border:1px solid rgba(255,255,255,0.10);
-  display:grid; place-items:center;
+  background: rgba(0,0,0,0.22);
 }
-.friend .p img{ width:100%; height:100%; object-fit:cover; display:block; }
-.fText b{ font-size:12px; display:block; color:rgba(255,255,255,0.90); }
-.fText small{ font-size:11px; color: rgba(255,255,255,0.55); }
-.tagSmall{
-  margin-left:auto;
-  font-size:10px;
-  padding:5px 8px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
+.searchBar svg{ width:18px;height:18px; opacity:.85; }
+.searchInput{
+  flex:1;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:rgba(255,255,255,0.86);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:800;
+}
+.searchInput::placeholder{ color:rgba(255,255,255,0.40); }
+
+.rightTitle{
+  padding:0 6px;
+  color:rgba(255,255,255,0.62);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:11px;
+}
+
+.relics{
+  flex:1;
+  border-radius:18px;
   border:1px solid rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.70);
+  background: rgba(0,0,0,0.20);
+  box-shadow: inset 0 0 26px rgba(0,0,0,0.50);
+  padding:12px;
+  overflow:auto;
+}
+.relic{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  margin-bottom:10px;
+}
+.relic b{
+  color:rgba(255,255,255,0.80);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  font-size:13px;
+}
+.relic span{
+  color:rgba(255,255,255,0.52);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   letter-spacing:1px;
+  font-size:11px;
+}
+.relicTag{
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.10);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.26));
+  color:rgba(255,255,255,0.70);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:1px;
+  font-size:10px;
   text-transform:uppercase;
 }
 
-/* responsive */
-@media (max-width: 1040px){
-  #appUI{ grid-template-columns: 220px 1fr; }
-  #rightPanel{ display:none; }
-  .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-@media (max-width: 720px){
-  #appUI{ inset:12px; grid-template-columns: 1fr; }
-  #leftBar{ display:none; }
-  .grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-
-/* ===== OLD TOP BUTTONS: keep working, but hide visually (layout replaces them) ===== */
-#scrollBtn,#adminBtn,#menuWrap{ opacity:0 !important; pointer-events:none !important; }
-
-/* ===== VOLUME (top-left) ===== */
-#grimoire{ position:fixed; left:14px; top:14px; z-index:60; user-select:none; }
-.grimoireBtn{
-  width:44px; height:44px;
-  border-radius:12px;
-  border:1px solid rgba(255,170,90,0.18);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.16), rgba(0,0,0,0.78)),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
-  box-shadow:
-    0 14px 44px rgba(0,0,0,0.75),
-    0 0 22px rgba(255,140,70,0.14),
-    inset 0 0 14px rgba(255,140,70,0.10);
-  display:grid;
-  place-items:center;
-  cursor:pointer;
-  transition:transform .2s ease;
-}
-.grimoireBtn:hover{ transform:scale(1.05); }
-.grimoireIcon{ width:21px; height:21px; }
-.grimoireIcon svg{ width:100%; height:100%; display:block; }
-.panel{
+/* =========================
+   VOLUME POPOVER (dentro da sidebar)
+   ========================= */
+#volPop{
   position:absolute;
-  left:0;
-  top:54px;
-  width:200px;
+  top:58px;
+  right:0;
+  width:220px;
   padding:10px;
-  border-radius:12px;
-  border:1px solid rgba(255,170,90,0.18);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,0.10);
   background:
-    radial-gradient(circle at 20% 20%, rgba(255,140,70,0.10), rgba(0,0,0,0.86)),
+    radial-gradient(circle at 20% 20%, rgba(165,86,44,0.10), rgba(0,0,0,0.82)),
     linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
-  box-shadow:
-    0 26px 110px rgba(0,0,0,0.86),
-    inset 0 0 22px rgba(255,140,70,0.07);
-  transform-origin: 0% 0%;
-  transform: scale(0.92) translateY(8px);
+  box-shadow: 0 26px 110px rgba(0,0,0,0.82);
   opacity:0;
+  transform: translateY(10px) scale(0.96);
   pointer-events:none;
-  transition:opacity 180ms ease, transform 220ms ease;
+  transition: opacity 160ms ease, transform 200ms ease;
+  z-index:999;
 }
-#grimoire.open .panel{ opacity:1; transform: scale(1) translateY(0); pointer-events:auto; }
-.row{ display:flex; align-items:center; gap:10px; }
+.navToolsWrap{ position:relative; }
+.navToolsWrap.open #volPop{
+  opacity:1;
+  transform: translateY(0px) scale(1);
+  pointer-events:auto;
+}
+.volRow{ display:flex; align-items:center; gap:10px; }
 .volValue{
   min-width:44px;
   text-align:right;
@@ -609,8 +625,8 @@ body.entered #appUI{
   border-radius:99px;
   outline:none;
   background:
-    linear-gradient(to right, rgba(255,140,70,0.9) var(--p,8%), rgba(255,255,255,0.10) var(--p,8%));
-  border:1px solid rgba(255,170,90,0.16);
+    linear-gradient(to right, rgba(165,86,44,0.85) var(--p,8%), rgba(255,255,255,0.10) var(--p,8%));
+  border:1px solid rgba(255,255,255,0.10);
   box-shadow: inset 0 0 18px rgba(0,0,0,0.65);
 }
 #vol::-webkit-slider-thumb{
@@ -620,7 +636,7 @@ body.entered #appUI{
   border-radius:50%;
   background: radial-gradient(circle at 30% 30%, #fff2de, #d9a56a 55%, #8a4a1f);
   border:1px solid rgba(0,0,0,0.55);
-  box-shadow: 0 0 16px rgba(255,140,70,0.30);
+  box-shadow: 0 0 16px rgba(165,86,44,0.22);
   cursor:pointer;
 }
 #vol::-moz-range-thumb{
@@ -628,59 +644,22 @@ body.entered #appUI{
   border-radius:50%;
   background: radial-gradient(circle at 30% 30%, #fff2de, #d9a56a 55%, #8a4a1f);
   border:1px solid rgba(0,0,0,0.55);
-  box-shadow: 0 0 16px rgba(255,140,70,0.30);
+  box-shadow: 0 0 16px rgba(165,86,44,0.22);
   cursor:pointer;
 }
 
-/* ===== FULLSCREEN (abaixo do volume) ===== */
-#fsWrap{
-  position:fixed;
-  left:14px;
-  top:68px;
-  z-index:60;
-  user-select:none;
-  transition: transform 220ms ease;
-}
-#grimoire.open ~ #fsWrap{ transform: translateY(70px); }
-.fsBtn{
-  width:44px;height:44px;
-  border-radius:12px;
-  border:1px solid rgba(255,170,90,0.18);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.12), rgba(0,0,0,0.80)),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.55));
-  box-shadow:
-    0 14px 44px rgba(0,0,0,0.75),
-    0 0 22px rgba(255,140,70,0.12);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  transition:transform .2s ease, opacity .2s ease;
-}
-.fsBtn:hover{ transform:scale(1.05); }
-.fsBtn svg{ width:22px;height:22px; opacity:.9; }
-
-/* ===== OVERLAY BASE ===== */
+/* =========================
+   OVERLAYS (mantidos)
+   ========================= */
 @keyframes dimIn{ from{opacity:0} to{opacity:1} }
 
 /* ===== OVERLAY DO PERGAMINHO ===== */
-#scrollOverlay{
-  position:fixed; inset:0;
-  z-index:80;
-  display:none;
-}
+#scrollOverlay{ position:fixed; inset:0; z-index:80; display:none; }
 body.scrollOpen #scrollOverlay{ display:block; }
-#scrollOverlay .dim{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.55);
-}
+#scrollOverlay .dim{ position:absolute; inset:0; background:rgba(0,0,0,0.55); }
 
-/* ===== SOCIAL OVERLAY (mais moderno) ===== */
-#socialOverlay{
-  position:fixed; inset:0;
-  z-index:90;
-  display:none;
-}
+/* ===== SOCIAL OVERLAY ===== */
+#socialOverlay{ position:fixed; inset:0; z-index:90; display:none; }
 body.socialOpen #socialOverlay{ display:block; }
 #socialOverlay .dim{
   position:absolute; inset:0;
@@ -688,8 +667,6 @@ body.socialOpen #socialOverlay{ display:block; }
   backdrop-filter: blur(3px);
   animation:dimIn 240ms ease both;
 }
-
-/* Card shell */
 .smCard{
   position:absolute;
   left:50%;
@@ -709,26 +686,20 @@ body.socialOpen #socialOverlay{ display:block; }
   from{ opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px); }
   to{ opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
 }
-/* top accent */
 .smAccent{
   position:absolute; inset:0 0 auto 0;
   height:120px;
   background:
-    radial-gradient(circle at 20% 30%, rgba(255,140,70,0.22), transparent 52%),
-    radial-gradient(circle at 80% 10%, rgba(255,255,255,0.10), transparent 55%),
-    linear-gradient(to bottom, rgba(255,255,255,0.06), transparent 70%);
+    radial-gradient(circle at 20% 30%, rgba(165,86,44,0.18), transparent 52%),
+    radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08), transparent 55%),
+    linear-gradient(to bottom, rgba(255,255,255,0.05), transparent 70%);
   pointer-events:none;
 }
 .smCard::after{
   content:"";
   position:absolute;
   inset:-70%;
-  background: linear-gradient(120deg,
-    transparent 0%,
-    rgba(255,255,255,0.08) 40%,
-    rgba(255,255,255,0.16) 50%,
-    rgba(255,255,255,0.08) 60%,
-    transparent 100%);
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.07) 60%, transparent 100%);
   transform:translateX(-45%) rotate(12deg);
   opacity:0;
   pointer-events:none;
@@ -739,20 +710,12 @@ body.socialOpen #socialOverlay{ display:block; }
   25%{ opacity:.9; }
   100%{ opacity:0; transform:translateX(45%) rotate(12deg); }
 }
-
 .smHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   padding:18px 18px 12px;
-  position:relative;
-  z-index:2;
+  position:relative; z-index:2;
 }
-.smTitle{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-}
+.smTitle{ display:flex; flex-direction:column; gap:4px; }
 .smTitle b{
   color:rgba(255,255,255,0.78);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
@@ -766,10 +729,8 @@ body.socialOpen #socialOverlay{ display:block; }
   font-weight:700;
   font-size:12px;
 }
-
 .smClose{
-  border:none;
-  cursor:pointer;
+  border:none; cursor:pointer;
   padding:8px 12px;
   border-radius:999px;
   background: rgba(255,255,255,0.06);
@@ -778,23 +739,15 @@ body.socialOpen #socialOverlay{ display:block; }
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 .smClose:hover{ background: rgba(255,255,255,0.09); }
-
 .smBody{
   padding:6px 18px 18px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  position:relative;
-  z-index:2;
+  display:flex; flex-direction:column; gap:14px;
+  position:relative; z-index:2;
 }
-
 .smProfile{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  text-align:center;
-  gap:10px;
-  padding-top:2px;
+  display:flex; flex-direction:column;
+  align-items:center; text-align:center;
+  gap:10px; padding-top:2px;
 }
 .smAvatar{
   width:88px;height:88px;
@@ -809,8 +762,8 @@ body.socialOpen #socialOverlay{ display:block; }
   content:"";
   position:absolute; inset:-2px;
   border-radius:50%;
-  border:1px solid rgba(255,140,70,0.20);
-  box-shadow: 0 0 26px rgba(255,140,70,0.18);
+  border:1px solid rgba(165,86,44,0.18);
+  box-shadow: 0 0 26px rgba(165,86,44,0.14);
   pointer-events:none;
 }
 .smAvatar img{ width:100%;height:100%; object-fit:cover; display:block; }
@@ -840,7 +793,6 @@ body.socialOpen #socialOverlay{ display:block; }
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 .smLoc svg{ width:14px;height:14px; opacity:.9; }
-
 .smIcons{
   display:flex;
   justify-content:center;
@@ -864,7 +816,7 @@ body.socialOpen #socialOverlay{ display:block; }
 .smIconBtn::after{
   content:"";
   position:absolute; inset:-80%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.18), transparent 55%);
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.16), transparent 55%);
   opacity:0;
   transition:opacity .18s ease;
 }
@@ -872,18 +824,13 @@ body.socialOpen #socialOverlay{ display:block; }
   transform: translateY(-1px);
   background: rgba(255,255,255,0.08);
   filter: brightness(1.06);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 26px rgba(255,140,70,0.10);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 26px rgba(165,86,44,0.08);
 }
 .smIconBtn:hover::after{ opacity:1; }
 .smIconBtn:active{ transform: translateY(0px) scale(0.98); }
 .smIconBtn svg{ width:20px;height:20px; opacity:.92; }
 
-.smGrid{
-  display:grid;
-  grid-template-columns: 1fr;
-  gap:12px;
-}
-
+.smGrid{ display:grid; grid-template-columns: 1fr; gap:12px; }
 .smSection{
   border-radius:18px;
   padding:14px;
@@ -892,9 +839,7 @@ body.socialOpen #socialOverlay{ display:block; }
   box-shadow: inset 0 0 22px rgba(0,0,0,0.35);
 }
 .smSectionTitle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   color:rgba(255,255,255,0.65);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   letter-spacing:2px;
@@ -903,9 +848,7 @@ body.socialOpen #socialOverlay{ display:block; }
   margin-bottom:10px;
 }
 .smStatusPill{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
+  display:inline-flex; align-items:center; gap:8px;
   padding:6px 10px;
   border-radius:999px;
   background: rgba(255,255,255,0.06);
@@ -919,7 +862,6 @@ body.socialOpen #socialOverlay{ display:block; }
 .smStatusPill[data-status="idle"] .smDot{ background:#f2c94c; }
 .smStatusPill[data-status="dnd"] .smDot{ background:#ff5b5b; }
 .smStatusPill[data-status="offline"] .smDot{ background:#777; }
-
 .smRow{ display:flex; align-items:center; gap:12px; }
 .smDiscIcon{
   width:46px; height:46px;
@@ -955,7 +897,7 @@ body.socialOpen #socialOverlay{ display:block; }
   font-size:11px;
 }
 
-/* ===== PERGAMINHO ===== */
+/* ===== PERGAMINHO (mantido) ===== */
 .scroll{
   position:absolute;
   left:50%;
@@ -1095,7 +1037,6 @@ body.scrollOpen .scroll{
 .scrollLog .mestre{ color:rgba(70,34,12,0.86); }
 .scrollLog .shadow{ color:rgba(20,20,20,0.92); }
 .scrollLog .titan{ color:rgba(55,25,10,0.86); }
-
 .scrollInputBar{
   display:flex;
   align-items:center;
@@ -1121,7 +1062,6 @@ body.scrollOpen .scroll{
   color:rgba(20,10,0,0.92);
 }
 #cmdInput::placeholder{ color:rgba(20,10,0,0.45); }
-
 .typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
 .cursor{
   display:inline-block;
@@ -1133,7 +1073,6 @@ body.scrollOpen .scroll{
   animation:cur 0.8s steps(1,end) infinite;
 }
 @keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
-
 .outputLine{
   margin:0 0 10px 0;
   color:rgba(20,10,0,0.92);
@@ -1145,7 +1084,6 @@ body.scrollOpen .scroll{
   letter-spacing:0.6px;
   color:rgba(60,28,8,0.74);
 }
-
 body.scrollOpen .scrollPaper{
   animation:unroll 520ms cubic-bezier(.12,.92,.12,1) both;
 }
@@ -1156,11 +1094,7 @@ body.scrollOpen .scrollPaper{
 }
 
 /* ===== PLAYLISTS OVERLAY ===== */
-#playlistsOverlay{
-  position:fixed; inset:0;
-  z-index:95;
-  display:none;
-}
+#playlistsOverlay{ position:fixed; inset:0; z-index:95; display:none; }
 body.playlistsOpen #playlistsOverlay{ display:block; }
 #playlistsOverlay .dim{
   position:absolute; inset:0;
@@ -1169,8 +1103,7 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
   animation:dimIn 240ms ease both;
 }
 .plShell{
-  position:absolute;
-  left:50%; top:50%;
+  position:absolute; left:50%; top:50%;
   transform:translate(-50%,-50%) scale(.96);
   width:min(980px, 94vw);
   height:min(620px, 84vh);
@@ -1188,9 +1121,7 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
   to{opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0);}
 }
 .plTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   padding:18px 18px 12px;
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
@@ -1208,8 +1139,7 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
   text-transform:uppercase;
 }
 .plClose{
-  border:none;
-  cursor:pointer;
+  border:none; cursor:pointer;
   padding:8px 12px;
   border-radius:999px;
   background: rgba(255,255,255,0.06);
@@ -1268,7 +1198,7 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
 .plItem.active{
   border-color: rgba(255,255,255,0.22);
   background:
-    radial-gradient(circle at 30% 30%, rgba(255,140,70,0.18), rgba(0,0,0,0.28));
+    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.28));
 }
 .plRight{
   border-radius:18px;
@@ -1277,24 +1207,14 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
   overflow:hidden;
   position:relative;
 }
-.plFrame{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:none;
-}
+.plFrame{ position:absolute; inset:0; width:100%; height:100%; border:none; }
 @media (max-width: 860px){
   .plBody{ grid-template-columns: 1fr; }
   .plLeft{ max-height: 200px; }
 }
 
 /* ===== ADMIN OVERLAY ===== */
-#adminOverlay{
-  position:fixed; inset:0;
-  z-index:98;
-  display:none;
-}
+#adminOverlay{ position:fixed; inset:0; z-index:98; display:none; }
 body.adminOpen #adminOverlay{ display:block; }
 #adminOverlay .dim{
   position:absolute; inset:0;
@@ -1318,9 +1238,7 @@ body.adminOpen #adminOverlay{ display:block; }
   animation:hubIn 320ms cubic-bezier(.12,.92,.12,1) both;
 }
 .adTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   padding:18px 18px 12px;
   border-bottom:1px solid rgba(255,255,255,0.08);
 }
@@ -1338,8 +1256,7 @@ body.adminOpen #adminOverlay{ display:block; }
   text-transform:uppercase;
 }
 .adClose{
-  border:none;
-  cursor:pointer;
+  border:none; cursor:pointer;
   padding:8px 12px;
   border-radius:999px;
   background: rgba(255,255,255,0.06);
@@ -1348,11 +1265,7 @@ body.adminOpen #adminOverlay{ display:block; }
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 .adClose:hover{ background: rgba(255,255,255,0.09); }
-.adBody{
-  height:calc(100% - 62px);
-  padding:16px;
-  overflow:auto;
-}
+.adBody{ height:calc(100% - 62px); padding:16px; overflow:auto; }
 .adPanel{
   border-radius:18px;
   border:1px solid rgba(255,255,255,0.10);
@@ -1387,17 +1300,11 @@ body.adminOpen #adminOverlay{ display:block; }
 }
 .adInput:focus{
   border-color: rgba(255,255,255,0.22);
-  box-shadow: 0 0 0 3px rgba(255,140,70,0.10);
+  box-shadow: 0 0 0 3px rgba(165,86,44,0.10);
 }
-.adActions{
-  display:flex;
-  gap:10px;
-  margin-top:14px;
-  flex-wrap:wrap;
-}
+.adActions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .adBtn{
-  border:none;
-  cursor:pointer;
+  border:none; cursor:pointer;
   padding:10px 12px;
   border-radius:14px;
   border:1px solid rgba(255,255,255,0.10);
@@ -1411,7 +1318,7 @@ body.adminOpen #adminOverlay{ display:block; }
 }
 .adBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
 .adBtn.primary{
-  background: radial-gradient(circle at 30% 30%, rgba(255,140,70,0.20), rgba(0,0,0,0.35));
+  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.16), rgba(0,0,0,0.35));
   border-color: rgba(255,255,255,0.18);
 }
 .adMsg{
@@ -1473,6 +1380,12 @@ body.adminOpen #adminOverlay{ display:block; }
 
 <audio id="bgAudio" src="https://files.catbox.moe/99fu05.m4a" preload="auto"></audio>
 
+<div id="vignette" aria-hidden="true"></div>
+<div id="grain" aria-hidden="true"></div>
+
+<!-- =========================
+     ENTRY
+     ========================= -->
 <section id="entry" tabindex="0" aria-label="Entrada Shadow Fight 2">
   <div class="bgFill"></div>
   <canvas id="ashCanvas"></canvas>
@@ -1502,174 +1415,154 @@ body.adminOpen #adminOverlay{ display:block; }
   </div>
 </section>
 
-<!-- =========================================================
-     NEW: APP UI (menu estilo imagem)
-     ========================================================= -->
-<div id="appUI" aria-label="Shadow Fight UI">
-  <!-- LEFT -->
-  <aside id="leftBar" class="uiPanel">
-    <div class="brandRow">
-      <span class="brandDot" aria-hidden="true"></span>
-      <b>S F 2 • HUB</b>
-    </div>
+<!-- =========================
+     HUB
+     ========================= -->
+<section id="hub" aria-label="Hub Shadow Fight 2">
+  <div class="hubShell">
 
-    <div class="navList" role="navigation" aria-label="Menu lateral">
-      <button class="navItem active" id="navHome" type="button">
-        <span class="ico">⌂</span> <span>Home</span>
-      </button>
-
-      <button class="navItem" id="navLore" type="button">
-        <span class="ico">📜</span> <span>Lore</span>
-      </button>
-
-      <button class="navItem" id="navSocial" type="button">
-        <span class="ico">⛓</span> <span>Social</span>
-        <span class="badgeMini" id="badgeSocial">V2</span>
-      </button>
-
-      <button class="navItem" id="navPlaylists" type="button">
-        <span class="ico">♫</span> <span>Playlists</span>
-        <span class="badgeMini">2.1</span>
-      </button>
-
-      <button class="navItem" id="navArchives" type="button">
-        <span class="ico">▣</span> <span>Archives</span>
-      </button>
-
-      <button class="navItem" id="navAdmin" type="button">
-        <span class="ico">🔒</span> <span>Admin</span>
-      </button>
-    </div>
-
-    <div class="leftFooter">
-      <div class="userChip">
-        <span class="avatar">
-          <img src="https://files.catbox.moe/5lkce6.gif" alt="Avatar">
-        </span>
-        <div class="userText">
-          <b>Allz</b>
-          <small>awake and unafraid</small>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- CENTER -->
-  <main id="centerStage" class="uiPanel" aria-label="Conteúdo central">
-    <section class="centerHero" aria-label="Destaque">
-      <div class="heroTop">
-        <div class="pill">Combat</div>
-        <div class="pill">Lore</div>
-        <div class="pill">Shadow</div>
-      </div>
-
-      <div class="heroContent">
-        <div class="heroText">
-          <h2>SHADOW FIGHT 2</h2>
-          <p>Hub sombrio: pergaminho (lore), social media, playlists e admin. Tudo sem UI moderna neon — só sombra, cinza e brasa.</p>
+    <!-- LEFT NAV -->
+    <aside class="panelGlass nav" aria-label="Menu lateral">
+      <div class="navTop">
+        <div class="brand">
+          <b>SF2 • HUB</b>
+          <span>sombras • pergaminhos • brasas</span>
         </div>
 
-        <div class="heroActions">
-          <button class="heroBtn primary" id="heroOpenLore" type="button">Abrir Lore</button>
-          <button class="heroBtn" id="heroOpenSocial" type="button">Social</button>
-          <button class="heroBtn" id="heroOpenPlaylists" type="button">Playlists</button>
-        </div>
-      </div>
-    </section>
+        <!-- ✅ Volume + Fullscreen aqui -->
+        <div class="navToolsWrap" id="navToolsWrap">
+          <div class="navTools">
+            <button class="toolBtn" id="volBtn" aria-label="Volume">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="rgba(255,220,190,0.85)"/>
+                <path d="M16 9c1 .8 1.5 1.8 1.5 3s-.5 2.2-1.5 3" stroke="rgba(165,86,44,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M18.5 7.5c1.6 1.5 2.5 3 2.5 4.5s-.9 3-2.5 4.5" stroke="rgba(165,86,44,0.55)" stroke-width="1.4" stroke-linecap="round"/>
+              </svg>
+            </button>
 
-    <div class="sectionTitle">Trending now</div>
-    <div class="grid" aria-label="Cards">
-      <div class="tile" title="Placeholder"></div>
-      <div class="tile" title="Placeholder"></div>
-      <div class="tile" title="Placeholder"></div>
-      <div class="tile" title="Placeholder"></div>
-    </div>
-  </main>
+            <button class="toolBtn" id="fsBtn" aria-label="Tela cheia">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M9 4H6a2 2 0 0 0-2 2v3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M15 4h3a2 2 0 0 1 2 2v3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M9 20H6a2 2 0 0 1-2-2v-3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M15 20h3a2 2 0 0 0 2-2v-3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
 
-  <!-- RIGHT -->
-  <aside id="rightPanel" class="uiPanel" aria-label="Painel direito">
-    <div class="searchBox" role="search">
-      <span aria-hidden="true">🔎</span>
-      <input id="uiSearch" placeholder="Search" autocomplete="off" />
-    </div>
-
-    <div class="panelTitle">Friends</div>
-
-    <div class="friends" id="friendsList" aria-label="Lista de amigos">
-      <div class="friend">
-        <span class="p"><img src="https://files.catbox.moe/5lkce6.gif" alt=""></span>
-        <div class="fText">
-          <b>CrimsonTiger67</b>
-          <small>Join</small>
-        </div>
-        <span class="tagSmall">roblox</span>
-      </div>
-
-      <div class="friend">
-        <span class="p"></span>
-        <div class="fText">
-          <b>IceDragon</b>
-          <small>Playing</small>
-        </div>
-        <span class="tagSmall">valorant</span>
-      </div>
-
-      <div class="friend">
-        <span class="p"></span>
-        <div class="fText">
-          <b>NeonNovs</b>
-          <small>Offline</small>
+          <div id="volPop" aria-label="Painel de volume">
+            <div class="volRow">
+              <input id="vol" type="range" min="0" max="100" value="8" />
+              <div class="volValue" id="volValue">8%</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="friend">
-        <span class="p"></span>
-        <div class="fText">
-          <b>phoenix_rising</b>
-          <small>Playing</small>
+      <nav class="navList" aria-label="Seções">
+        <button class="navItem active" id="navHome">Home <span class="badge">•</span></button>
+        <button class="navItem" id="navLore">Lore <span class="badge">V2</span></button>
+        <button class="navItem" id="navSocial">Social <span class="badge">V2</span></button>
+        <button class="navItem" id="navPlaylists">Playlists <span class="badge">2.1</span></button>
+        <button class="navItem" id="navArchives">Archives <span class="badge">—</span></button>
+        <button class="navItem" id="navAdmin">Admin <span class="badge">•</span></button>
+      </nav>
+
+      <div class="navFoot">
+        <div class="profileCard">
+          <div class="pfp"><img src="https://files.catbox.moe/5lkce6.gif" alt="Allz"></div>
+          <div class="pmeta">
+            <b>Allz</b>
+            <span>awake and unafraid</span>
+          </div>
         </div>
-        <span class="tagSmall">sf2</span>
       </div>
-    </div>
-  </aside>
-</div>
+    </aside>
 
-<!-- ===== VOLUME ===== -->
-<div id="grimoire" aria-label="Controle de volume">
-  <button class="grimoireBtn" id="grimBtn" aria-label="Abrir controle de volume">
-    <span class="grimoireIcon" aria-hidden="true">
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="rgba(255,220,190,0.85)"/>
-        <path d="M16 9c1 .8 1.5 1.8 1.5 3s-.5 2.2-1.5 3" stroke="rgba(255,140,70,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M18.5 7.5c1.6 1.5 2.5 3 2.5 4.5s-.9 3-2.5 4.5" stroke="rgba(255,140,70,0.55)" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-    </span>
-  </button>
+    <!-- CENTER -->
+    <main class="panelGlass main" aria-label="Conteúdo">
+      <section class="hero" aria-label="Hero">
+        <div class="heroInner">
+          <div class="heroText">
+            <h1>Shadow Fight 2</h1>
+            <p>
+              Hub sombrio: pergaminho (lore), social media, playlists e admin.
+              Tudo sem UI moderna neon — só sombra, cinza e brasa.
+            </p>
+          </div>
 
-  <div class="panel">
-    <div class="row">
-      <input id="vol" type="range" min="0" max="100" value="8" />
-      <div class="volValue" id="volValue">8%</div>
-    </div>
+          <div class="heroActions">
+            <button class="pillBtn primary" id="heroLore">Abrir Lore</button>
+            <button class="pillBtn" id="heroSocial">Social</button>
+            <button class="pillBtn" id="heroPlaylists">Playlists</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="sectionTitle">
+        <b>Trending now</b>
+        <b style="opacity:.45">placeholder</b>
+      </div>
+
+      <section class="trending" aria-label="Trending">
+        <div class="cards">
+          <div class="card"></div>
+          <div class="card"></div>
+          <div class="card"></div>
+          <div class="card"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- RIGHT (substitui friends) -->
+    <aside class="panelGlass right" aria-label="Painel lateral">
+      <div class="searchBar" aria-label="Buscar">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="rgba(255,255,255,0.75)" stroke-width="1.6"/>
+          <path d="M16.5 16.5 21 21" stroke="rgba(165,86,44,0.85)" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <input class="searchInput" placeholder="Search" spellcheck="false" />
+      </div>
+
+      <div class="rightTitle">Relics / Intel</div>
+
+      <div class="relics" aria-label="Relics">
+        <div class="relic">
+          <div>
+            <b>Pergaminho Selado</b>
+            <span>voz nas sombras</span>
+          </div>
+          <div class="relicTag">lore</div>
+        </div>
+
+        <div class="relic">
+          <div>
+            <b>Mapa da Arena</b>
+            <span>rotas • capítulos</span>
+          </div>
+          <div class="relicTag">archive</div>
+        </div>
+
+        <div class="relic">
+          <div>
+            <b>Registro de Brasas</b>
+            <span>métricas locais</span>
+          </div>
+          <div class="relicTag">admin</div>
+        </div>
+
+        <div class="relic">
+          <div>
+            <b>Ritual do Som</b>
+            <span>playlists • foco</span>
+          </div>
+          <div class="relicTag">2.1</div>
+        </div>
+      </div>
+    </aside>
+
   </div>
-</div>
-
-<!-- ===== FULLSCREEN ===== -->
-<div id="fsWrap" aria-label="Tela cheia">
-  <button class="fsBtn" id="fsBtn" aria-label="Ativar/desativar tela cheia">
-    <svg viewBox="0 0 24 24" fill="none">
-      <path d="M9 4H6a2 2 0 0 0-2 2v3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M15 4h3a2 2 0 0 1 2 2v3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M9 20H6a2 2 0 0 1-2-2v-3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M15 20h3a2 2 0 0 0 2-2v-3" stroke="rgba(255,220,190,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-    </svg>
-  </button>
-</div>
-
-<!-- ===== (mantidos, porém escondidos pelo CSS) BOTÕES ANTIGOS ===== -->
-<button id="scrollBtn" aria-label="Abrir pergaminho (lore)"></button>
-<button id="adminBtn" aria-label="Abrir admin"></button>
-<div id="menuWrap" aria-label="Menu"></div>
+</section>
 
 <!-- ===== OVERLAY DO PERGAMINHO ===== -->
 <div id="scrollOverlay" aria-hidden="true">
@@ -2023,8 +1916,7 @@ async function start(){
       await mainVideo.play();
     }catch(e){}
     document.body.classList.add("entered");
-
-    // abre social automaticamente (igual seu original)
+    // abre social sozinho (como tava antes)
     setTimeout(()=> openSocialOverlay(), 900);
   }, 1050);
 }
@@ -2034,10 +1926,40 @@ entry.addEventListener("keydown", (e)=>{
 });
 
 /* =========================
-   VOLUME
+   NAV + HERO BUTTONS
    ========================= */
-const grimoire = document.getElementById("grimoire");
-const grimBtn = document.getElementById("grimBtn");
+const navHome = document.getElementById("navHome");
+const navLore = document.getElementById("navLore");
+const navSocial = document.getElementById("navSocial");
+const navPlaylists = document.getElementById("navPlaylists");
+const navArchives = document.getElementById("navArchives");
+const navAdmin = document.getElementById("navAdmin");
+
+function setActiveNav(btn){
+  [navHome,navLore,navSocial,navPlaylists,navArchives,navAdmin].forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+document.getElementById("heroLore").addEventListener("click", ()=>{ setActiveNav(navLore); openScroll(); });
+document.getElementById("heroSocial").addEventListener("click", ()=>{ setActiveNav(navSocial); openSocialOverlay(); });
+document.getElementById("heroPlaylists").addEventListener("click", ()=>{ setActiveNav(navPlaylists); openPlaylistsOverlay(); });
+
+navHome.addEventListener("click", ()=>{ setActiveNav(navHome); closeAllOverlays(); resumeBgAudio(); });
+navLore.addEventListener("click", ()=>{ setActiveNav(navLore); openScroll(); });
+navSocial.addEventListener("click", ()=>{ setActiveNav(navSocial); openSocialOverlay(); });
+navPlaylists.addEventListener("click", ()=>{ setActiveNav(navPlaylists); openPlaylistsOverlay(); });
+navArchives.addEventListener("click", ()=>{
+  setActiveNav(navArchives);
+  closeAllOverlays();
+  alert("Archives (placeholder) — V2.1");
+});
+navAdmin.addEventListener("click", ()=>{ setActiveNav(navAdmin); openAdminOverlay(); });
+
+/* =========================
+   VOLUME (popover na sidebar)
+   ========================= */
+const navToolsWrap = document.getElementById("navToolsWrap");
+const volBtn = document.getElementById("volBtn");
 const vol = document.getElementById("vol");
 const volValue = document.getElementById("volValue");
 
@@ -2047,12 +1969,13 @@ function setSliderVisual(v){
 }
 setSliderVisual(8);
 
-grimBtn.addEventListener("click",(e)=>{
+volBtn.addEventListener("click",(e)=>{
   e.stopPropagation();
-  grimoire.classList.toggle("open");
+  if(!document.body.classList.contains("entered")) return;
+  navToolsWrap.classList.toggle("open");
 });
 document.addEventListener("click",(e)=>{
-  if(!grimoire.contains(e.target)) grimoire.classList.remove("open");
+  if(!navToolsWrap.contains(e.target)) navToolsWrap.classList.remove("open");
 });
 vol.addEventListener("input", ()=>{
   const v = Number(vol.value);
@@ -2109,14 +2032,8 @@ function openSocialOverlay(){
 
   fetchLanyard();
   setTimeout(()=>socialClose.focus(), 80);
-
-  // highlight sidebar
-  setActiveNav("navSocial");
 }
-function closeSocialOverlay(){
-  closeOverlay("socialOpen");
-  setActiveNav("navHome");
-}
+function closeSocialOverlay(){ closeOverlay("socialOpen"); }
 
 socialClose.addEventListener("click", closeSocialOverlay);
 socialOverlay.addEventListener("click",(e)=>{
@@ -2191,21 +2108,9 @@ const plList = document.getElementById("plList");
 const plFrame = document.getElementById("plFrame");
 
 const PLAYLISTS = [
-  {
-    name: "Shadow Vibes",
-    desc: "sombras • combate • foco",
-    embed: "https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator"
-  },
-  {
-    name: "Midnight",
-    desc: "noite • chill • dark",
-    embed: "https://open.spotify.com/embed/playlist/37i9dQZF1DX4fpCWaHOned?utm_source=generator"
-  },
-  {
-    name: "Favorites",
-    desc: "minhas faixas",
-    embed: "https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator"
-  }
+  { name:"Shadow Vibes", desc:"sombras • combate • foco", embed:"https://open.spotify.com/embed/playlist/37i9dQZF1DX0XUsuxWHRQd?utm_source=generator" },
+  { name:"Midnight", desc:"noite • chill • dark", embed:"https://open.spotify.com/embed/playlist/37i9dQZF1DX4fpCWaHOned?utm_source=generator" },
+  { name:"Favorites", desc:"minhas faixas", embed:"https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" }
 ];
 
 function escapeHtml(s){
@@ -2246,12 +2151,10 @@ function openPlaylistsOverlay(){
   setActivePlaylist(safe);
 
   setTimeout(()=>plClose.focus(), 80);
-  setActiveNav("navPlaylists");
 }
 function closePlaylistsOverlay(){
   plFrame.src = "about:blank";
   closeOverlay("playlistsOpen");
-  setActiveNav("navHome");
 }
 plClose.addEventListener("click", closePlaylistsOverlay);
 playlistsOverlay.addEventListener("click",(e)=>{
@@ -2262,7 +2165,6 @@ playlistsOverlay.addEventListener("click",(e)=>{
    ADMIN OVERLAY
    ========================= */
 const adClose = document.getElementById("adClose");
-
 const adLogin = document.getElementById("adLogin");
 const adDash = document.getElementById("adDash");
 const adMsg = document.getElementById("adMsg");
@@ -2321,7 +2223,7 @@ function showAdminDash(){
 }
 function openAdminOverlay(){
   if(!document.body.classList.contains("entered")) return;
-  metricInc("m_admin_opens"); // opcional
+  metricInc("m_admin_opens");
   openOverlay("adminOpen");
   setTimeout(()=>adClose.focus(), 80);
 
@@ -2331,13 +2233,9 @@ function openAdminOverlay(){
     showAdminLogin("Acesso restrito.");
     setTimeout(()=>adUser.focus(), 120);
   }
+}
+function closeAdminOverlay(){ closeOverlay("adminOpen"); }
 
-  setActiveNav("navAdmin");
-}
-function closeAdminOverlay(){
-  closeOverlay("adminOpen");
-  setActiveNav("navHome");
-}
 adClose.addEventListener("click", closeAdminOverlay);
 adminOverlay.addEventListener("click",(e)=>{
   if(e.target.classList.contains("dim")) closeAdminOverlay();
@@ -2464,12 +2362,8 @@ function openScroll(){
   setTimeout(()=>cmdInput.focus(), 80);
   if(!typedOnce) startTyping();
   else cursor.style.display = "none";
-  setActiveNav("navLore");
 }
-function closeScroll(){
-  closeOverlay("scrollOpen");
-  setActiveNav("navHome");
-}
+function closeScroll(){ closeOverlay("scrollOpen"); }
 
 scrollClose.addEventListener("click", closeScroll);
 scrollOverlay.addEventListener("click",(e)=>{
@@ -2518,62 +2412,11 @@ cmdInput.addEventListener("keydown", (e)=>{
    ========================= */
 document.addEventListener("keydown",(e)=>{
   if(e.key !== "Escape") return;
-
+  navToolsWrap.classList.remove("open");
   if(document.body.classList.contains("adminOpen")) return closeAdminOverlay();
   if(document.body.classList.contains("playlistsOpen")) return closePlaylistsOverlay();
   if(document.body.classList.contains("socialOpen")) return closeSocialOverlay();
   if(document.body.classList.contains("scrollOpen")) return closeScroll();
-});
-
-/* =========================
-   NEW: SIDEBAR / CENTER BUTTONS
-   ========================= */
-const navHome = document.getElementById("navHome");
-const navLore = document.getElementById("navLore");
-const navSocial = document.getElementById("navSocial");
-const navPlaylists = document.getElementById("navPlaylists");
-const navArchives = document.getElementById("navArchives");
-const navAdmin = document.getElementById("navAdmin");
-
-const heroOpenLore = document.getElementById("heroOpenLore");
-const heroOpenSocial = document.getElementById("heroOpenSocial");
-const heroOpenPlaylists = document.getElementById("heroOpenPlaylists");
-
-function setActiveNav(id){
-  const items = [navHome, navLore, navSocial, navPlaylists, navArchives, navAdmin];
-  items.forEach(el => el?.classList.toggle("active", el?.id === id));
-}
-function goHome(){
-  closeAllOverlays();
-  resumeBgAudio();
-  setActiveNav("navHome");
-}
-
-navHome.addEventListener("click", goHome);
-navLore.addEventListener("click", openScroll);
-navSocial.addEventListener("click", openSocialOverlay);
-navPlaylists.addEventListener("click", openPlaylistsOverlay);
-navAdmin.addEventListener("click", openAdminOverlay);
-navArchives.addEventListener("click", ()=>{
-  if(!document.body.classList.contains("entered")) return;
-  setActiveNav("navArchives");
-  alert("Archives (placeholder) — V2.1");
-});
-
-heroOpenLore.addEventListener("click", openScroll);
-heroOpenSocial.addEventListener("click", openSocialOverlay);
-heroOpenPlaylists.addEventListener("click", openPlaylistsOverlay);
-
-/* search (filtra friends) */
-const uiSearch = document.getElementById("uiSearch");
-const friendsList = document.getElementById("friendsList");
-uiSearch?.addEventListener("input", ()=>{
-  const q = uiSearch.value.trim().toLowerCase();
-  const cards = [...friendsList.querySelectorAll(".friend")];
-  cards.forEach(card=>{
-    const t = card.innerText.toLowerCase();
-    card.style.display = t.includes(q) ? "" : "none";
-  });
 });
 
 /* =========================
