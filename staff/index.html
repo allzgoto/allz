@@ -5,6 +5,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Staff Panel — Conversas</title>
 
+  <!-- Fonte boa (resolve “fonte esquisita”) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg:#0a0b0f;
@@ -18,7 +23,7 @@
       --bad:#ff4d4d;
       --shadow:0 18px 60px rgba(0,0,0,.65);
       --radius:18px;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      --sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -33,13 +38,13 @@
       overflow:hidden;
     }
 
-    /* canvas background e*/
+    /* canvas background */
     #embers{
       position:fixed;
       inset:0;
       z-index:0;
       pointer-events:none;
-      opacity:.85; /* mais nítido */
+      opacity:.85;
     }
 
     .app{
@@ -85,7 +90,6 @@
     .brand__sub{font-size:12px;color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
     .left__actions{display:flex; gap:8px; flex:0 0 auto}
 
-    /* botão (área clicável inteira) */
     .iconbtn{
       width:44px;height:44px;
       border-radius:14px;
@@ -104,7 +108,6 @@
     .iconbtn:hover{background:rgba(255,255,255,.06)}
     .iconbtn:active{transform:translateY(1px)}
 
-    /* Queue tabs */
     .queues{
       padding:10px 12px 0;
       display:flex;
@@ -204,7 +207,6 @@
       display:inline-block;
     }
 
-    /* Filters drawer */
     .filters{
       position:absolute;
       top:0; right:-320px;
@@ -343,7 +345,6 @@
       box-shadow:0 0 0 6px rgba(179,0,255,.12);
     }
 
-    /* Mobile-only back button */
     .mBack{
       display:none;
       height:38px;
@@ -361,7 +362,6 @@
     .mBack:hover{background:rgba(255,255,255,.06)}
     .mBack svg{pointer-events:none}
 
-    /* Notification bell + panel */
     .bell{
       width:44px;height:44px;
       border-radius:14px;
@@ -469,35 +469,41 @@
       font-size:13px;
     }
 
-    /* ====== BOLHAS (compactas + bonitas) ====== */
-    .msgRow{ display:flex; margin:4px 0 !important; }
+    /* ====== BOLHAS (SLIM / menor / fonte boa) ====== */
+    .msgRow{ display:flex; margin:3px 0 !important; }
     .msgRow.me{ justify-content:flex-end; }
+
     .bubble{
-      max-width: min(420px, 54vw) !important;
-      padding: 9px 11px !important;
-      border-radius: 14px !important;
+      max-width: min(340px, 44vw) !important;
+      padding: 7px 9px !important;
+      border-radius: 12px !important;
 
       border: 1px solid rgba(255,255,255,.07);
       background: rgba(255,255,255,.045);
-      color: rgba(255,255,255,.90);
+      color: rgba(255,255,255,.92);
 
-      line-height: 1.22 !important;
-      font-size: 12.5px !important;
+      line-height: 1.18 !important;
+      font-size: 12px !important;
+      font-weight: 600;
+      letter-spacing: .1px;
 
-      box-shadow: 0 10px 30px rgba(0,0,0,.38);
-      white-space: pre-wrap;
+      box-shadow: 0 10px 28px rgba(0,0,0,.36);
+      white-space: normal !important;
+      word-break: break-word;
       position: relative;
     }
+
     .bubble.me{
-      background: linear-gradient(180deg, rgba(179,0,255,.92), rgba(179,0,255,.72)) !important;
+      background: linear-gradient(180deg, rgba(179,0,255,.92), rgba(179,0,255,.70)) !important;
       border-color: rgba(255,255,255,.14);
-      color: #fff;
-      padding: 9px 11px !important;
+      color:#fff;
     }
+
     .bubble .meta{
-      margin-top: 6px !important;
-      font-size: 10.5px !important;
-      color: rgba(255,255,255,.78);
+      margin-top: 5px !important;
+      font-size: 10px !important;
+      font-weight: 700;
+      color: rgba(255,255,255,.72);
       display:flex;
       gap:10px;
       justify-content:flex-end;
@@ -533,6 +539,8 @@
       background:rgba(255,255,255,.03);
       color:var(--text);
       outline:none;
+      font-family:var(--sans);
+      font-weight:600;
     }
     .send{
       width:44px;height:44px;
@@ -646,9 +654,10 @@
       background:rgba(255,255,255,.03);
       color:var(--text);
       outline:none;
+      font-family:var(--sans);
+      font-weight:600;
     }
 
-    /* Toast */
     .toasts{
       position:fixed;
       right:14px;
@@ -686,7 +695,6 @@
       flex:0 0 auto;
     }
 
-    /* Scrollbars */
     .list::-webkit-scrollbar, .chat::-webkit-scrollbar, .filters::-webkit-scrollbar, .notiPanel::-webkit-scrollbar{width:10px}
     .list::-webkit-scrollbar-thumb, .chat::-webkit-scrollbar-thumb, .filters::-webkit-scrollbar-thumb, .notiPanel::-webkit-scrollbar-thumb{
       background:rgba(255,255,255,.08);
@@ -694,9 +702,7 @@
       background-clip:padding-box;
       border-radius:999px;
     }
-    .list::-webkit-scrollbar-track, .chat::-webkit-scrollbar-track, .filters::-webkit-scrollbar-track, .notiPanel::-webkit-scrollbar-track{
-      background:transparent;
-    }
+    .list::-webkit-scrollbar-track, .chat::-webkit-scrollbar-track, .filters::-webkit-scrollbar-track, .notiPanel::-webkit-scrollbar-track{background:transparent}
 
     /* MOBILE */
     .mNav{
@@ -727,6 +733,7 @@
       justify-content:center;
       gap:8px;
       outline:none;
+      font-family:var(--sans);
     }
     .mNav button.active{
       border-color:rgba(179,0,255,.45);
@@ -790,7 +797,7 @@
       }
 
       .mBack{display:inline-flex}
-      .bubble{ max-width: 78vw !important; } /* mobile compacto e bonito */
+      .bubble{ max-width: 72vw !important; }
     }
   </style>
 </head>
@@ -799,7 +806,6 @@
   <canvas id="embers"></canvas>
   <div class="toasts" id="toasts"></div>
 
-  <!-- Mobile bottom nav -->
   <div class="mNav" id="mNav">
     <button id="mNavList" class="active" type="button" title="Conversas">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -824,7 +830,6 @@
   </div>
 
   <div class="app">
-    <!-- LEFT -->
     <aside class="left" id="paneLeft">
       <div class="left__header">
         <div class="brand">
@@ -851,7 +856,6 @@
 
       <div class="list" id="ticketList"></div>
 
-      <!-- FILTERS DRAWER -->
       <div class="filters" id="filters">
         <div class="filters__header">
           <div class="filters__title">Filtros</div>
@@ -909,7 +913,6 @@
       </div>
     </aside>
 
-    <!-- CENTER -->
     <main class="center" id="paneCenter">
       <div class="center__top">
         <button class="mBack" id="btnMobileBack" type="button" title="Voltar para conversas">
@@ -964,7 +967,6 @@
       </div>
     </main>
 
-    <!-- RIGHT -->
     <aside class="right" id="paneRight">
       <div class="stats">
         <div class="stat">
@@ -1138,7 +1140,6 @@
         };
       });
 
-      // “entregue” e sem não-lido
       extra[0].tags = uniqueTags(["ENTREGUE","MM2"]);
       extra[0].status = "paid";
       extra[0].deliveredAt = Date.now() - (30*60*1000);
@@ -1256,7 +1257,6 @@
         .replaceAll("'","&#039;");
     }
 
-    // Notifications
     function addNotification({ticketId, title, text}){
       const n = { id: rid(), ticketId, title, text, ts: Date.now(), read:false };
       state.notifications.unshift(n);
@@ -1318,7 +1318,6 @@
       });
     }
 
-    // Helpers
     function statusBadgeClass(status){
       if(status==="paid") return "good";
       if(status==="pending") return "warn";
@@ -1367,7 +1366,7 @@
       const now=Date.now();
       let arr=state.tickets.slice().filter(t=>{
         if(!t.deliveredAt) return true;
-        return (now - t.deliveredAt) < AUTO_REMOVE_DELIVERED_MS;
+        return (now - t.deliveredAt) < (60*60*1000);
       });
       arr=arr.filter(ticketMatches);
       if(state.filters.sort==="old") arr.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0));
@@ -1381,7 +1380,6 @@
       return Array.from(new Set(tags)).sort((a,b)=>a.localeCompare(b));
     }
 
-    // Render left
     function renderQueueTabs(){
       const f=state.filters;
       const baseFilter=(t)=>{
@@ -1475,7 +1473,6 @@
       });
     }
 
-    // Render chat
     function renderChat(){
       const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t){ chatEl.innerHTML=""; return; }
@@ -1520,7 +1517,6 @@
       chatEl.scrollTop = chatEl.scrollHeight;
     }
 
-    // Render right panel
     function renderPanel(){
       const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t){ panelBody.innerHTML=""; return; }
@@ -1586,7 +1582,6 @@
       renderNotifications();
     }
 
-    // Right panel tabs
     document.querySelectorAll(".tab").forEach(tab=>{
       tab.addEventListener("click", ()=>{
         document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
@@ -1597,7 +1592,6 @@
       });
     });
 
-    // Filters open/close
     btnFilters.addEventListener("click",(e)=>{ e.preventDefault(); filters.classList.add("open"); });
     btnCloseFilters.addEventListener("click",()=>filters.classList.remove("open"));
 
@@ -1608,7 +1602,6 @@
       }
     });
 
-    // Search/toggles
     searchInput.value = state.filters.search || "";
     searchInput.addEventListener("input", ()=>{
       state.filters.search = searchInput.value;
@@ -1628,7 +1621,6 @@
     demoSim.addEventListener("change", ()=>{ state.filters.demo=!!demoSim.checked; saveState(); });
     sortBy.addEventListener("change", ()=>{ state.filters.sort=sortBy.value; saveState(); renderAll(); });
 
-    // Send message
     function sendMessage(){
       const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
@@ -1646,7 +1638,6 @@
       if(e.key==="Enter"){ e.preventDefault(); sendMessage(); }
     });
 
-    // Add tag
     function addTag(){
       const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
@@ -1663,7 +1654,6 @@
       if(e.key==="Enter"){ e.preventDefault(); addTag(); }
     });
 
-    // Liberar / Resolver
     btnLiberar.addEventListener("click", ()=>{
       const t=state.tickets.find(x=>x.id===state.activeTicketId);
       if(!t) return;
@@ -1684,7 +1674,6 @@
       renderAll();
     });
 
-    // Bell panel
     btnBell.addEventListener("click",(e)=>{
       e.preventDefault();
       notiPanel.classList.toggle("open");
@@ -1693,7 +1682,6 @@
     btnMarkAllRead.addEventListener("click", ()=> markAllNotificationsRead());
     btnClearNoti.addEventListener("click", ()=> clearNotifications());
 
-    // click outside close
     document.addEventListener("click",(e)=>{
       const target=e.target;
       if(notiPanel.classList.contains("open")){
@@ -1706,7 +1694,6 @@
       }
     });
 
-    // Mobile nav
     mNavList.addEventListener("click", ()=> setView("list"));
     mNavChat.addEventListener("click", ()=> setView("chat"));
     mNavDetails.addEventListener("click", ()=> setView("details"));
@@ -1756,7 +1743,6 @@
     renderAll();
     setInterval(simulateClientReply, POLL_MS);
 
-    // ===== Fundo com "cometinhas/brasas" (mais nítido) =====
     (function embersBackground(){
       const canvas = document.getElementById("embers");
       if(!canvas) return;
@@ -1771,7 +1757,7 @@
       window.addEventListener("resize", resize);
       resize();
 
-      const N = 52; // um pouco mais cheio
+      const N = 52;
       const parts = Array.from({length:N}, ()=>spawn(true));
 
       function spawn(init=false){
@@ -1781,7 +1767,7 @@
         const drift = (-0.35 + Math.random()*0.7) * dpr;
         const len = (10 + Math.random()*28) * dpr;
         const size = (0.9 + Math.random()*1.9) * dpr;
-        const alpha = 0.16 + Math.random()*0.26; // mais forte
+        const alpha = 0.16 + Math.random()*0.26;
         return {x,y,speed,drift,len,size,alpha};
       }
 
@@ -1798,7 +1784,6 @@
           p.x += p.drift;
           p.y += p.speed;
 
-          // traço com cor mais viva
           ctx.beginPath();
           ctx.strokeStyle = `rgba(255, 0, 212, ${p.alpha})`;
           ctx.lineWidth = p.size;
@@ -1807,7 +1792,6 @@
           ctx.lineTo(p.x - p.drift*10, p.y - p.len);
           ctx.stroke();
 
-          // pontinho quente
           ctx.beginPath();
           ctx.fillStyle = `rgba(179, 0, 255, ${Math.min(0.55, p.alpha*2.1)})`;
           ctx.arc(p.x, p.y, p.size*0.9, 0, Math.PI*2);
