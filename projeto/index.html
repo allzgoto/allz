@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Personal Hub — V2.2</title>
+<title>Personal Hub — V2.3</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600;700;800;900&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 
@@ -12,27 +12,26 @@
 html,body{width:100%;height:100%;overflow:hidden;background:#000}
 button,input{font:inherit}
 :root{
-  /* Paleta V2.2 (mais preto / cinza moderno, brasa só como acento) */
+  /* Paleta V2.3 (mais preto / cinza, menos vidro) */
   --bg:#050506;
   --panel:#0b0c0f;
   --panel2:#0f1116;
-  --panelSoft: rgba(10,11,14,0.78);
-  --centerGlass: rgba(14,16,20,0.42);
+  --panelSoft: rgba(8,9,11,0.90);
+  --centerGlass: rgba(14,16,20,0.44);
 
   --line: rgba(255,255,255,0.10);
   --line2: rgba(255,255,255,0.07);
-  --txt: rgba(255,255,255,0.88);
+  --txt: rgba(255,255,255,0.90);
   --muted: rgba(255,255,255,0.56);
   --faint: rgba(255,255,255,0.40);
 
   --ember: rgba(165, 86, 44, 1);
-  --ember2: rgba(120, 62, 32, 1);
   --emberGlow: rgba(165,86,44,.22);
 
   --radius:18px;
   --radius2:22px;
 
-  --shadowA: 0 30px 140px rgba(0,0,0,0.78);
+  --shadowA: 0 30px 140px rgba(0,0,0,0.82);
   --shadowB: inset 0 0 0 1px rgba(255,255,255,0.05);
 }
 
@@ -48,13 +47,23 @@ button,input{font:inherit}
 }
 body.entered #mainVideo{
   opacity:1;
-  filter:contrast(1.06) saturate(0.86) blur(10px) brightness(0.35);
+  filter:contrast(1.06) saturate(0.86) blur(10px) brightness(0.33);
 }
-body.scrollOpen #mainVideo,
-body.socialOpen #mainVideo,
-body.playlistsOpen #mainVideo,
-body.adminOpen #mainVideo{
-  filter:contrast(1.06) saturate(0.82) blur(14px) brightness(0.26);
+
+/* Quando "cinema mode" (só a edit) */
+body.cinemaMode #mainVideo{
+  opacity:1;
+  filter:contrast(1.10) saturate(0.92) blur(0px) brightness(1);
+}
+body.cinemaMode #hub,
+body.cinemaMode #vignette,
+body.cinemaMode #grain{
+  opacity:0 !important;
+  pointer-events:none !important;
+}
+body.cinemaMode #cineHint{
+  opacity:1;
+  pointer-events:auto;
 }
 
 /* ===== GLOBAL VIGNETTE + GRAIN ===== */
@@ -64,15 +73,17 @@ body.adminOpen #mainVideo{
   background:
     radial-gradient(circle at 50% 40%, rgba(255,255,255,0.04), transparent 48%),
     radial-gradient(circle at center, transparent 42%, rgba(0,0,0,0.88) 100%);
+  transition:opacity 450ms ease;
 }
 #grain{
   position:fixed; inset:-20%; z-index:3; pointer-events:none;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
   opacity:.14;
   transform:rotate(2deg);
+  transition:opacity 450ms ease;
 }
 
-/* ===== ENTRY V2.2 (preto + brasas + ENTER) ===== */
+/* ===== ENTRY (preto + brasas + ENTER) ===== */
 #entry{
   position:fixed; inset:0;
   z-index:10;
@@ -106,7 +117,7 @@ body.adminOpen #mainVideo{
   cursor:pointer;
   padding:16px 22px;
   border-radius:999px;
-  background: rgba(10,11,14,0.72);
+  background: rgba(10,11,14,0.74);
   border:1px solid rgba(255,255,255,0.12);
   box-shadow: 0 30px 140px rgba(0,0,0,0.85), inset 0 0 0 1px rgba(255,255,255,0.04);
   color: rgba(255,255,255,0.90);
@@ -153,7 +164,7 @@ body.adminOpen #mainVideo{
   font-size: 11px;
 }
 
-/* Slash transition (bem sutil, sem “gif”) */
+/* Slash transition */
 #slash{
   position:absolute; inset:-40%;
   z-index:4;
@@ -168,16 +179,16 @@ body.adminOpen #mainVideo{
       transparent 54%,
       transparent 100%);
   opacity:0;
-  transform: translateX(-35%) rotate(0deg);
+  transform: translateX(-35%);
   filter: blur(2px);
 }
 body.strikeOn #slash{
   animation: slashIn 520ms ease both;
 }
 @keyframes slashIn{
-  0%{ opacity:0; transform: translateX(-35%) rotate(0deg); }
+  0%{ opacity:0; transform: translateX(-35%); }
   22%{ opacity:1; }
-  100%{ opacity:0; transform: translateX(35%) rotate(0deg); }
+  100%{ opacity:0; transform: translateX(35%); }
 }
 
 body.entered #entry{
@@ -186,7 +197,7 @@ body.entered #entry{
   transition:opacity 900ms ease;
 }
 
-/* ===== HUB SHELL ===== */
+/* ===== HUB ===== */
 #hub{
   position:fixed; inset:0;
   z-index:20;
@@ -203,7 +214,6 @@ body.entered #hub{ opacity:1; pointer-events:auto; }
   gap:14px;
 }
 
-/* Panel base (menos “vidro”, mais sólido) */
 .panel{
   border-radius: var(--radius2);
   background: var(--panelSoft);
@@ -212,7 +222,7 @@ body.entered #hub{ opacity:1; pointer-events:auto; }
   overflow:hidden;
 }
 .panelStrong{
-  background: rgba(7,8,10,0.92);
+  background: rgba(6,7,9,0.94);
   border-color: rgba(255,255,255,0.10);
 }
 .panelCenter{
@@ -221,315 +231,185 @@ body.entered #hub{ opacity:1; pointer-events:auto; }
   backdrop-filter: blur(10px);
 }
 
-/* LEFT NAV (mais escuro, moderno) */
-.nav{
-  display:flex;
-  flex-direction:column;
-  padding:14px;
-  gap:12px;
-}
-.navHead{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  padding:6px 6px 10px;
-}
-.brand{
-  display:flex; flex-direction:column; gap:4px;
-}
+/* LEFT NAV */
+.nav{display:flex;flex-direction:column;padding:14px;gap:12px}
+.navHead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:6px 6px 10px}
+.brand{display:flex;flex-direction:column;gap:4px}
 .brand b{
   color:rgba(255,255,255,0.86);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:2px;
-  font-size:12px;
-  text-transform:uppercase;
+  letter-spacing:2px;font-size:12px;text-transform:uppercase
 }
 .brand span{
   color:rgba(255,255,255,0.42);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:800;
-  font-size:12px;
+  font-weight:800;font-size:12px
 }
-
-.navTools{
-  display:flex; gap:8px;
-}
+.navTools{display:flex;gap:8px}
 .toolBtn{
-  width:42px;height:42px;
-  border-radius:14px;
+  width:42px;height:42px;border-radius:14px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.03);
   box-shadow: 0 18px 60px rgba(0,0,0,0.55);
-  cursor:pointer;
-  display:grid; place-items:center;
+  cursor:pointer;display:grid;place-items:center;
   transition: transform .15s ease, background .15s ease, border-color .15s ease;
 }
-.toolBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.16); }
-.toolBtn:active{ transform:translateY(0px) scale(0.98); }
-.toolBtn svg{ width:20px;height:20px; opacity:.95; }
+.toolBtn:hover{transform:translateY(-1px);background: rgba(255,255,255,0.06);border-color: rgba(255,255,255,0.16)}
+.toolBtn:active{transform:translateY(0px) scale(0.98)}
+.toolBtn svg{width:20px;height:20px;opacity:.95}
 
-.navList{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  padding:0 4px;
-}
+.navList{display:flex;flex-direction:column;gap:8px;padding:0 4px}
 .navItem{
   width:100%;
-  border:none;
-  cursor:pointer;
-  text-align:left;
-  padding:12px 12px;
-  border-radius:16px;
+  border:none;cursor:pointer;text-align:left;
+  padding:12px 12px;border-radius:16px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.30);
   color:rgba(255,255,255,0.84);
-  display:flex;
-  align-items:center;
-  gap:10px;
+  display:flex;align-items:center;gap:10px;
   transition: transform .16s ease, background .16s ease, border-color .16s ease;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  font-size:12px;
+  letter-spacing:1px;text-transform:uppercase;font-size:12px;
   position:relative;
 }
-.navItem svg{ width:18px;height:18px; opacity:.9; flex:0 0 auto; }
-.navItem .rightBits{ margin-left:auto; display:flex; align-items:center; gap:8px; }
+.navItem svg{width:18px;height:18px;opacity:.9;flex:0 0 auto}
+.navItem .rightBits{margin-left:auto;display:flex;align-items:center;gap:8px}
 .badge{
-  font-size:10px;
-  letter-spacing:1px;
-  opacity:.72;
-  padding:4px 8px;
-  border-radius:999px;
+  font-size:10px;letter-spacing:1px;opacity:.72;
+  padding:4px 8px;border-radius:999px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.04);
 }
-.navItem:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.05); }
+.navItem:hover{transform:translateY(-1px);background: rgba(255,255,255,0.05)}
 .navItem.active{
   border-color: rgba(255,255,255,0.18);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.34));
+  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.34));
 }
 .navItem.active::before{
-  content:"";
-  position:absolute;
-  left:10px; top:10px; bottom:10px;
-  width:3px;
-  border-radius:999px;
+  content:"";position:absolute;left:10px;top:10px;bottom:10px;width:3px;border-radius:999px;
   background: rgba(165,86,44,0.80);
   box-shadow: 0 0 18px rgba(165,86,44,0.20);
 }
 
-.navFoot{
-  margin-top:auto;
-  padding:10px 6px 4px;
-}
+.navFoot{margin-top:auto;padding:10px 6px 4px}
 .profileCard{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  padding:12px 12px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
+  display:flex;gap:12px;align-items:center;padding:12px 12px;
+  border-radius:18px;border:1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.34);
   box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
 }
-.pfp{
-  width:44px;height:44px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.12);
-  overflow:hidden;
-  background: rgba(255,255,255,0.06);
-}
-.pfp img{ width:100%;height:100%;object-fit:cover;display:block; }
-.pmeta{ display:flex; flex-direction:column; gap:2px; }
+.pfp{width:44px;height:44px;border-radius:14px;border:1px solid rgba(255,255,255,0.12);overflow:hidden;background: rgba(255,255,255,0.06)}
+.pfp img{width:100%;height:100%;object-fit:cover;display:block}
+.pmeta{display:flex;flex-direction:column;gap:2px}
 .pmeta b{
   color:rgba(255,255,255,0.90);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-  font-size:14px;
+  font-weight:900;font-size:14px;
 }
 .pmeta span{
   color:rgba(255,255,255,0.55);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
+  letter-spacing:1px;font-size:11px;
 }
 
-/* CENTER MAIN */
-.main{
-  padding:14px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
+/* CENTER */
+.main{padding:14px;display:flex;flex-direction:column;gap:14px}
 .topBar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:12px 12px;
-  border-radius:18px;
+  display:flex;align-items:center;gap:10px;
+  padding:12px 12px;border-radius:18px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.26);
 }
-.topBar svg{ width:18px;height:18px; opacity:.85; }
+.topBar svg{width:18px;height:18px;opacity:.85}
 .searchInput{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
+  flex:1;border:none;outline:none;background:transparent;
   color:rgba(255,255,255,0.86);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight:800;
 }
-.searchInput::placeholder{ color:rgba(255,255,255,0.40); }
+.searchInput::placeholder{color:rgba(255,255,255,0.40)}
 
 .hero{
-  flex:0 0 auto;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  overflow:hidden;
-  min-height: 190px;
+  border-radius:18px;border:1px solid rgba(255,255,255,0.10);
+  overflow:hidden;min-height: 190px;
   background:
     radial-gradient(circle at 22% 26%, rgba(165,86,44,0.12), transparent 58%),
     radial-gradient(circle at 72% 42%, rgba(255,255,255,0.06), transparent 54%),
-    linear-gradient(to bottom, rgba(0,0,0,0.44), rgba(0,0,0,0.78));
+    linear-gradient(to bottom, rgba(0,0,0,0.44), rgba(0,0,0,0.82));
   box-shadow: inset 0 0 34px rgba(0,0,0,0.62);
   position:relative;
 }
 .hero::after{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at center, transparent 46%, rgba(0,0,0,0.62) 100%);
+  content:"";position:absolute;inset:0;
+  background: radial-gradient(circle at center, transparent 46%, rgba(0,0,0,0.62) 100%);
   pointer-events:none;
-  opacity:1;
 }
 .heroInner{
-  position:relative;
-  z-index:2;
-  padding:18px;
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap:16px;
-  height:100%;
+  position:relative;z-index:2;padding:18px;
+  display:flex;align-items:flex-end;justify-content:space-between;gap:16px;height:100%;
 }
-.heroText{
-  max-width: 72%;
-}
+.heroText{max-width:72%}
 .heroText h1{
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  color:rgba(255,255,255,0.90);
-  font-size:20px;
+  font-family:"Cinzel", serif;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+  color:rgba(255,255,255,0.90);font-size:20px;
 }
 .heroText p{
-  margin-top:8px;
-  color:rgba(255,255,255,0.62);
+  margin-top:8px;color:rgba(255,255,255,0.62);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
-  font-size:13px;
-  line-height:1.35;
+  font-weight:700;font-size:13px;line-height:1.35;
 }
-.heroActions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:flex-end;
-}
+.heroActions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .pillBtn{
-  border:none;
-  cursor:pointer;
-  padding:10px 12px;
-  border-radius:999px;
+  border:none;cursor:pointer;padding:10px 12px;border-radius:999px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.30);
   color:rgba(255,255,255,0.84);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  font-size:12px;
+  letter-spacing:1px;text-transform:uppercase;font-size:12px;
   transition: transform .15s ease, background .15s ease, border-color .15s ease;
 }
-.pillBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.16); }
+.pillBtn:hover{transform:translateY(-1px);background: rgba(255,255,255,0.06);border-color: rgba(255,255,255,0.16)}
 .pillBtn.primary{
-  background:
-    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.16), rgba(0,0,0,0.34));
+  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.16), rgba(0,0,0,0.34));
   border-color: rgba(255,255,255,0.14);
 }
 
-.sectionTitle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 6px;
-}
+.sectionTitle{display:flex;align-items:center;justify-content:space-between;padding:0 6px}
 .sectionTitle b{
   color:rgba(255,255,255,0.58);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:11px;
+  letter-spacing:2px;text-transform:uppercase;font-size:11px;
 }
 .trending{
-  flex:1;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
+  flex:1;border-radius:18px;border:1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.24);
   box-shadow: inset 0 0 26px rgba(0,0,0,0.55);
-  padding:14px;
-  overflow:hidden;
+  padding:14px;overflow:hidden;
 }
-.cards{
-  margin-top:12px;
-  display:grid;
-  grid-template-columns: repeat(4, minmax(0,1fr));
-  gap:12px;
-}
+.cards{margin-top:12px;display:grid;grid-template-columns: repeat(4, minmax(0,1fr));gap:12px}
 .card{
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
+  border-radius:16px;border:1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.03);
   min-height:84px;
   box-shadow: inset 0 0 18px rgba(0,0,0,0.50);
 }
 
-/* RIGHT PANEL (mais útil, mais escuro) */
-.right{
-  padding:14px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
+/* RIGHT */
+.right{padding:14px;display:flex;flex-direction:column;gap:12px}
 .rightTitle{
-  padding:0 6px;
-  color:rgba(255,255,255,0.62);
+  padding:0 6px;color:rgba(255,255,255,0.62);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:11px;
+  letter-spacing:2px;text-transform:uppercase;font-size:11px;
 }
 .rightList{
-  flex:1;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
+  flex:1;border-radius:18px;border:1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.24);
   box-shadow: inset 0 0 26px rgba(0,0,0,0.55);
-  padding:12px;
-  overflow:auto;
+  padding:12px;overflow:auto;
 }
 .item{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:12px 12px;
-  border-radius:16px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 12px;border-radius:16px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.03);
   margin-bottom:10px;
@@ -537,29 +417,43 @@ body.entered #hub{ opacity:1; pointer-events:auto; }
 .item b{
   color:rgba(255,255,255,0.84);
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-  font-size:13px;
+  font-weight:900;font-size:13px;
 }
 .item span{
   color:rgba(255,255,255,0.54);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
+  letter-spacing:1px;font-size:11px;
 }
 .tag{
-  padding:6px 10px;
-  border-radius:999px;
+  padding:6px 10px;border-radius:999px;
   border:1px solid rgba(255,255,255,0.10);
-  background:
-    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.28));
+  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.28));
   color:rgba(255,255,255,0.72);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:10px;
-  text-transform:uppercase;
+  letter-spacing:1px;font-size:10px;text-transform:uppercase;
 }
 
-/* RESPONSIVO */
+/* Cinema hint */
+#cineHint{
+  position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+  z-index:999;
+  opacity:0;
+  pointer-events:none;
+  padding:10px 12px;
+  border-radius:999px;
+  background: rgba(0,0,0,0.52);
+  border:1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 24px 90px rgba(0,0,0,0.78);
+  color: rgba(255,255,255,0.78);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  letter-spacing:1px;
+  font-size:11px;
+  text-transform:uppercase;
+  transition:opacity 300ms ease;
+}
+#cineHint b{ color: rgba(255,255,255,0.92); }
+
+/* Responsivo */
 @media (max-width: 1100px){
   .hubShell{ grid-template-columns: 260px 1fr 320px; }
   .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
@@ -568,9 +462,12 @@ body.entered #hub{ opacity:1; pointer-events:auto; }
   .hubShell{ grid-template-columns: 1fr; }
   .nav{ display:none; }
 }
+@media (prefers-reduced-motion: reduce){
+  #slash{ display:none; }
+}
 
 /* =========================
-   OVERLAYS (mantidos)
+   OVERLAYS
    ========================= */
 @keyframes dimIn{ from{opacity:0} to{opacity:1} }
 @keyframes popIn{
@@ -578,12 +475,7 @@ body.entered #hub{ opacity:1; pointer-events:auto; }
   to{ opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
 }
 
-/* ===== OVERLAY DO PERGAMINHO ===== */
-#scrollOverlay{ position:fixed; inset:0; z-index:80; display:none; }
-body.scrollOpen #scrollOverlay{ display:block; }
-#scrollOverlay .dim{ position:absolute; inset:0; background:rgba(0,0,0,0.68); backdrop-filter: blur(2px); animation:dimIn 220ms ease both; }
-
-/* ===== SOCIAL OVERLAY (refeito, mais “clean” e bonito) ===== */
+/* SOCIAL OVERLAY */
 #socialOverlay{ position:fixed; inset:0; z-index:90; display:none; }
 body.socialOpen #socialOverlay{ display:block; }
 #socialOverlay .dim{
@@ -593,9 +485,7 @@ body.socialOpen #socialOverlay{ display:block; }
   animation:dimIn 240ms ease both;
 }
 .smCard{
-  position:absolute;
-  left:50%;
-  top:50%;
+  position:absolute; left:50%; top:50%;
   transform:translate(-50%,-50%);
   width:min(620px, 94vw);
   border-radius:28px;
@@ -607,33 +497,21 @@ body.socialOpen #socialOverlay{ display:block; }
   animation: popIn 320ms cubic-bezier(.12,.92,.12,1) both;
 }
 .smCard::before{
-  content:"";
-  position:absolute; inset:0;
+  content:""; position:absolute; inset:0;
   background:
     radial-gradient(circle at 30% 20%, rgba(165,86,44,0.14), transparent 54%),
     radial-gradient(circle at 80% 0%, rgba(255,255,255,0.07), transparent 55%),
     radial-gradient(circle at 50% 55%, transparent 44%, rgba(0,0,0,0.70) 100%);
   pointer-events:none;
 }
-.smTop{
-  position:relative;
-  z-index:2;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 14px 10px;
-}
+.smTop{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:14px 14px 10px}
 .smTop b{
   color: rgba(255,255,255,0.70);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:12px;
+  letter-spacing:2px;text-transform:uppercase;font-size:12px;
 }
 .smClose{
-  border:none; cursor:pointer;
-  padding:8px 12px;
-  border-radius:999px;
+  border:none; cursor:pointer; padding:8px 12px; border-radius:999px;
   background: rgba(255,255,255,0.05);
   color:rgba(255,255,255,0.78);
   border:1px solid rgba(255,255,255,0.10);
@@ -643,34 +521,21 @@ body.socialOpen #socialOverlay{ display:block; }
 .smClose:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.08); }
 .smClose:active{ transform:translateY(0px) scale(.98); }
 
-.smBody{
-  position:relative;
-  z-index:2;
-  padding: 10px 18px 18px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:12px;
-}
+.smBody{position:relative;z-index:2;padding: 10px 18px 18px;display:flex;flex-direction:column;align-items:center;gap:12px}
 .smAvatar{
-  width:92px;height:92px;
-  border-radius:50%;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,0.14);
+  width:92px;height:92px;border-radius:50%;
+  overflow:hidden;border:1px solid rgba(255,255,255,0.14);
   background: rgba(255,255,255,0.06);
   box-shadow: 0 18px 90px rgba(0,0,0,0.78);
   position:relative;
 }
 .smAvatar::after{
-  content:"";
-  position:absolute; inset:-2px;
-  border-radius:50%;
+  content:""; position:absolute; inset:-2px; border-radius:50%;
   border:1px solid rgba(165,86,44,0.16);
   box-shadow: 0 0 26px rgba(165,86,44,0.10);
   pointer-events:none;
 }
 .smAvatar img{ width:100%; height:100%; object-fit:cover; display:block; }
-
 .smName{
   margin-top:2px;
   font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -680,18 +545,10 @@ body.socialOpen #socialOverlay{ display:block; }
   letter-spacing: 0.2px;
   text-transform: lowercase;
 }
-.smBio{
-  color: rgba(255,255,255,0.66);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
-  font-size: 14px;
-}
+.smBio{ color: rgba(255,255,255,0.66); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight:700; font-size: 14px; }
 .smLoc{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 12px;
-  border-radius:999px;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:7px 12px; border-radius:999px;
   background: rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.10);
   color: rgba(255,255,255,0.74);
@@ -701,53 +558,27 @@ body.socialOpen #socialOverlay{ display:block; }
 .smLoc svg{ width:14px;height:14px; opacity:.9; }
 
 .smDiscordCard{
-  width:100%;
-  max-width: 520px;
-  margin-top:8px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.12);
+  width:100%; max-width: 520px; margin-top:8px;
+  border-radius:18px; border:1px solid rgba(255,255,255,0.12);
   background: rgba(255,255,255,0.03);
   box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
-  padding:12px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+  padding:12px; display:flex; align-items:center; justify-content:space-between; gap:12px;
 }
-.smDiscLeft{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
+.smDiscLeft{ display:flex; align-items:center; gap:12px; }
 .smDiscIcon{
-  width:44px;height:44px;
-  border-radius:16px;
-  overflow:hidden;
+  width:44px;height:44px;border-radius:16px; overflow:hidden;
   background:rgba(255,255,255,0.06);
   border:1px solid rgba(255,255,255,0.10);
-  display:grid;
-  place-items:center;
-  flex:0 0 auto;
+  display:grid; place-items:center; flex:0 0 auto;
 }
 #dAvatar{ width:100%; height:100%; display:none; object-fit:cover; border-radius:16px; }
 .smDiscText{ display:flex; flex-direction:column; gap:2px; }
-.smDiscName{
-  color:rgba(255,255,255,0.92);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-  font-size:14px;
-}
-.smDiscSub{
-  color:rgba(255,255,255,0.58);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
-}
+.smDiscName{ color:rgba(255,255,255,0.92); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; font-weight:900; font-size:14px; }
+.smDiscSub{ color:rgba(255,255,255,0.58); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; letter-spacing:1px; font-size:11px; }
 
 .smStatusPill{
   display:inline-flex; align-items:center; gap:8px;
-  padding:7px 10px;
-  border-radius:999px;
+  padding:7px 10px; border-radius:999px;
   background: rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.10);
   color:rgba(255,255,255,0.80);
@@ -761,25 +592,14 @@ body.socialOpen #socialOverlay{ display:block; }
 .smStatusPill[data-status="dnd"] .smDot{ background:#ff5b5b; }
 .smStatusPill[data-status="offline"] .smDot{ background:#777; }
 
-.smIcons{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin-top:10px;
-  flex-wrap:wrap;
-}
+.smIcons{ display:flex; justify-content:center; gap:10px; margin-top:10px; flex-wrap:wrap; }
 .smIconBtn{
-  width:46px;height:46px;
-  border-radius:16px;
+  width:46px;height:46px;border-radius:16px;
   background: rgba(255,255,255,0.05);
   border:1px solid rgba(255,255,255,0.10);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
+  cursor:pointer; display:grid; place-items:center;
   transition: transform .15s ease, background .15s ease, box-shadow .15s ease;
-  position:relative;
-  overflow:hidden;
-  text-decoration:none;
+  position:relative; overflow:hidden; text-decoration:none;
 }
 .smIconBtn:hover{
   transform: translateY(-1px);
@@ -790,226 +610,22 @@ body.socialOpen #socialOverlay{ display:block; }
 .smIconBtn svg{ width:20px;height:20px; opacity:.92; }
 
 .smBottomRow{
-  width:100%;
-  max-width: 520px;
-  margin-top:6px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  width:100%; max-width: 520px; margin-top:6px;
+  display:flex; align-items:center; justify-content:space-between;
   color: rgba(255,255,255,0.42);
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
+  letter-spacing:1px; font-size:11px;
 }
 .viewsPill{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:6px 10px;
-  border-radius:999px;
+  display:inline-flex; align-items:center; gap:8px;
+  padding:6px 10px; border-radius:999px;
   border:1px solid rgba(255,255,255,0.10);
   background: rgba(255,255,255,0.04);
   color: rgba(255,255,255,0.58);
 }
 .viewsPill svg{ width:14px;height:14px; opacity:.9; }
 
-/* ===== PERGAMINHO (mantido do seu código, sem mexer na lógica) ===== */
-.scroll{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.92);
-  width:min(860px, 92vw);
-  height:min(560px, 80vh);
-  opacity:0;
-  transition:opacity 220ms ease, transform 320ms cubic-bezier(.12,.92,.12,1);
-  pointer-events:none;
-}
-body.scrollOpen .scroll{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-  pointer-events:auto;
-}
-.scrollPaper{
-  position:absolute; inset:0;
-  border-radius:18px;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(90,35,10,0.40), transparent 42%),
-    radial-gradient(circle at 92% 14%, rgba(80,28,8,0.38), transparent 46%),
-    radial-gradient(circle at 18% 92%, rgba(80,28,8,0.34), transparent 48%),
-    radial-gradient(circle at 90% 90%, rgba(80,28,8,0.36), transparent 50%),
-    radial-gradient(circle at 28% 38%, rgba(0,0,0,0.08), transparent 38%),
-    radial-gradient(circle at 70% 62%, rgba(0,0,0,0.07), transparent 42%),
-    radial-gradient(circle at 55% 28%, rgba(0,0,0,0.06), transparent 44%),
-    repeating-linear-gradient(12deg,
-      rgba(0,0,0,0.03) 0px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(255,255,255,0.02) 3px,
-      rgba(255,255,255,0.02) 5px),
-    linear-gradient(0deg, #cdb081, #eedcb6 22%, #e6cc9f 58%, #c7a572);
-  box-shadow:
-    0 40px 160px rgba(0,0,0,0.85),
-    inset 0 0 0 1px rgba(0,0,0,0.18),
-    inset 0 0 90px rgba(95,45,10,0.22);
-  filter:contrast(1.06) saturate(0.92);
-  overflow:hidden;
-}
-.scrollPaper::after{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
-    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.20) 100%);
-  pointer-events:none;
-  mix-blend-mode:multiply;
-  opacity:.95;
-}
-.scrollMask{
-  position:absolute; inset:0;
-  clip-path: polygon(
-    2% 5%, 6% 2%, 12% 4%, 20% 2%, 28% 4%, 36% 2%, 44% 4%, 52% 2%, 60% 4%, 68% 2%, 76% 4%, 84% 2%, 92% 4%, 98% 8%,
-    97% 18%, 99% 26%, 97% 34%, 99% 42%, 97% 50%, 99% 58%, 97% 66%, 99% 74%, 97% 82%, 98% 92%,
-    92% 96%, 86% 98%, 78% 96%, 70% 98%, 62% 96%, 54% 98%, 46% 96%, 38% 98%, 30% 96%, 22% 98%, 14% 96%, 8% 98%, 3% 94%,
-    2% 86%, 1% 78%, 3% 70%, 1% 62%, 3% 54%, 1% 46%, 3% 38%, 1% 30%, 3% 22%, 1% 14%
-  );
-}
-.scrollInner{
-  position:absolute; inset:0;
-  padding:26px 30px 18px;
-  font-family: "Cormorant Garamond", serif;
-  color:rgba(35,18,8,0.90);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
-}
-.scrollTop{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:10px;
-  padding-right:6px;
-}
-.scrollTitle{
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  font-size:13px;
-  color:rgba(40,22,8,0.92);
-  text-shadow:0 1px 0 rgba(255,255,255,0.25);
-}
-.scrollClose{
-  border:none;
-  background:transparent;
-  padding:6px 10px;
-  cursor:pointer;
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:12px;
-  color:rgba(45,24,10,0.55);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
-  outline: 2px solid rgba(45,24,10,0.28);
-  outline-offset: -2px;
-  border-radius:10px;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.08) inset,
-    0 1px 0 rgba(255,255,255,0.18);
-  opacity:0.9;
-  transform:rotate(-1.5deg);
-}
-.scrollClose:hover{
-  opacity:1;
-  outline-color: rgba(45,24,10,0.38);
-  color:rgba(45,24,10,0.62);
-}
-.scrollBody{
-  height:calc(100% - 44px);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  overflow:hidden;
-}
-.scrollLog{
-  flex:1;
-  overflow:auto;
-  padding-right:10px;
-  line-height:1.55;
-  font-size:16px;
-  letter-spacing:0.2px;
-  color:rgba(35,18,8,0.90);
-  filter: contrast(1.02);
-}
-.scrollLog .who{
-  font-family:"IM Fell English", serif;
-  font-weight:400;
-  font-style:italic;
-  letter-spacing:0.6px;
-  text-transform:uppercase;
-  color:rgba(60,28,10,0.86);
-  margin-right:6px;
-  font-size: 0.90em;
-}
-.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
-.scrollLog .shadow{ color:rgba(20,20,20,0.92); }
-.scrollLog .titan{ color:rgba(55,25,10,0.86); }
-.scrollInputBar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.07);
-  border:1px solid rgba(0,0,0,0.14);
-}
-.prompt{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-weight:900;
-  color:rgba(20,10,0,0.85);
-  letter-spacing:1px;
-}
-#cmdInput{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:13px;
-  color:rgba(20,10,0,0.92);
-}
-#cmdInput::placeholder{ color:rgba(20,10,0,0.45); }
-.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
-.cursor{
-  display:inline-block;
-  width:10px;
-  height:16px;
-  transform:translateY(3px);
-  background:rgba(20,10,0,0.62);
-  margin-left:4px;
-  animation:cur 0.8s steps(1,end) infinite;
-}
-@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
-.outputLine{
-  margin:0 0 10px 0;
-  color:rgba(20,10,0,0.92);
-  font-size:15px;
-}
-.outputLine .sys{
-  font-family:"IM Fell English", serif;
-  font-style:italic;
-  letter-spacing:0.6px;
-  color:rgba(60,28,8,0.74);
-}
-body.scrollOpen .scrollPaper{
-  animation:unroll 520ms cubic-bezier(.12,.92,.12,1) both;
-}
-@keyframes unroll{
-  0%{ filter:blur(1px) contrast(1.02) saturate(.9); transform:scaleY(.70); }
-  55%{ transform:scaleY(1.02); }
-  100%{ filter:blur(0) contrast(1.06) saturate(.92); transform:scaleY(1); }
-}
-
-/* ===== PLAYLISTS OVERLAY (mantido igual seu) ===== */
+/* PLAYLISTS OVERLAY (mantido) */
 #playlistsOverlay{ position:fixed; inset:0; z-index:95; display:none; }
 body.playlistsOpen #playlistsOverlay{ display:block; }
 #playlistsOverlay .dim{
@@ -1129,7 +745,7 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
   .plLeft{ max-height: 200px; }
 }
 
-/* ===== ADMIN OVERLAY (mantido igual seu) ===== */
+/* ADMIN OVERLAY */
 #adminOverlay{ position:fixed; inset:0; z-index:98; display:none; }
 body.adminOpen #adminOverlay{ display:block; }
 #adminOverlay .dim{
@@ -1280,10 +896,6 @@ body.adminOpen #adminOverlay{ display:block; }
   .adGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
   .adLoginGrid{ grid-template-columns: 1fr; }
 }
-
-@media (prefers-reduced-motion: reduce){
-  #slash{ display:none; }
-}
 </style>
 </head>
 
@@ -1298,10 +910,10 @@ body.adminOpen #adminOverlay{ display:block; }
 <div id="vignette" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 
-<!-- =========================
-     ENTRY V2.2
-     ========================= -->
-<section id="entry" tabindex="0" aria-label="Entrada V2.2">
+<div id="cineHint" aria-hidden="true">cinema mode • aperte <b>V</b> pra voltar</div>
+
+<!-- ENTRY -->
+<section id="entry" tabindex="0" aria-label="Entrada V2.3">
   <canvas id="emberCanvas"></canvas>
   <div id="slash" aria-hidden="true"></div>
 
@@ -1314,9 +926,7 @@ body.adminOpen #adminOverlay{ display:block; }
   </div>
 </section>
 
-<!-- =========================
-     HUB
-     ========================= -->
+<!-- HUB -->
 <section id="hub" aria-label="Personal Hub">
   <div class="hubShell">
 
@@ -1329,47 +939,26 @@ body.adminOpen #adminOverlay{ display:block; }
         </div>
 
         <div class="navTools">
-          <!-- ✅ MUTE (sem slider) -->
+          <!-- MUTE -->
           <button class="toolBtn" id="muteBtn" aria-label="Mutar / Ativar áudio">
-            <svg id="muteIcon" viewBox="0 0 24 24" fill="none">
-              <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="rgba(255,255,255,0.85)"/>
-              <path d="M16 9c1 .8 1.5 1.8 1.5 3s-.5 2.2-1.5 3" stroke="rgba(165,86,44,0.75)" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M18.5 7.5c1.6 1.5 2.5 3 2.5 4.5s-.9 3-2.5 4.5" stroke="rgba(165,86,44,0.45)" stroke-width="1.4" stroke-linecap="round"/>
-            </svg>
+            <svg id="muteIcon" viewBox="0 0 24 24" fill="none"></svg>
           </button>
 
-          <!-- ✅ FULLSCREEN -->
-          <button class="toolBtn" id="fsBtn" aria-label="Tela cheia">
+          <!-- ✅ CINEMA MODE (troca fullscreen) -->
+          <button class="toolBtn" id="cineBtn" aria-label="Cinema mode (só a edit)">
             <svg viewBox="0 0 24 24" fill="none">
-              <path d="M9 4H6a2 2 0 0 0-2 2v3" stroke="rgba(255,255,255,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M15 4h3a2 2 0 0 1 2 2v3" stroke="rgba(255,255,255,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M9 20H6a2 2 0 0 1-2-2v-3" stroke="rgba(255,255,255,0.9)" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M15 20h3a2 2 0 0 0 2-2v-3" stroke="rgba(255,255,255,0.9)" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M4 7h16v10H4V7Z" stroke="rgba(255,255,255,0.9)" stroke-width="1.6" />
+              <path d="M7 7v10M17 7v10" stroke="rgba(255,255,255,0.5)" stroke-width="1.4" />
+              <path d="M10 12h4" stroke="rgba(165,86,44,0.85)" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
           </button>
         </div>
       </div>
 
       <nav class="navList" aria-label="Seções">
-        <button class="navItem active" id="navHome">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M4 11.5 12 5l8 6.5V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8.5Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linejoin="round"/>
-          </svg>
-          Home
-          <span class="rightBits"><span class="badge">•</span></span>
-        </button>
+        <!-- ✅ HOME removido -->
 
-        <button class="navItem" id="navLore">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M7 4h10v16H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/>
-            <path d="M9 8h6" stroke="rgba(165,86,44,0.75)" stroke-width="1.6" stroke-linecap="round"/>
-            <path d="M9 12h6" stroke="rgba(255,255,255,0.55)" stroke-width="1.6" stroke-linecap="round"/>
-          </svg>
-          Lore
-          <span class="rightBits"><span class="badge">V2</span></span>
-        </button>
-
-        <button class="navItem" id="navSocial">
+        <button class="navItem active" id="navSocial">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M7 20a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/>
             <path d="M17 11a4 4 0 1 1 0-8 4 4 0 0 1 0 8Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/>
@@ -1441,9 +1030,9 @@ body.adminOpen #adminOverlay{ display:block; }
           </div>
 
           <div class="heroActions">
-            <button class="pillBtn primary" id="heroLore">Abrir Lore</button>
-            <button class="pillBtn" id="heroSocial">Social</button>
+            <button class="pillBtn primary" id="heroSocial">Social</button>
             <button class="pillBtn" id="heroPlaylists">Playlists</button>
+            <button class="pillBtn" id="heroFocus">Focus</button>
           </div>
         </div>
       </section>
@@ -1471,7 +1060,7 @@ body.adminOpen #adminOverlay{ display:block; }
         <div class="item">
           <div>
             <b>Status do Hub</b>
-            <span>cinematic • dark • v2.2</span>
+            <span>cinematic • dark • v2.3</span>
           </div>
           <div class="tag">system</div>
         </div>
@@ -1484,20 +1073,21 @@ body.adminOpen #adminOverlay{ display:block; }
           <div class="tag">notes</div>
         </div>
 
+        <!-- ✅ Lore removido / substituído -->
         <div class="item">
           <div>
-            <b>Pergaminho Selado</b>
-            <span>terminal • lore • comandos</span>
+            <b>Focus Mode</b>
+            <span>escurecer UI • manter vídeo</span>
           </div>
-          <div class="tag">lore</div>
+          <div class="tag">focus</div>
         </div>
 
         <div class="item">
           <div>
             <b>Ritual do Som</b>
-            <span>playlists • foco</span>
+            <span>mute toggle • vol fixo 4%</span>
           </div>
-          <div class="tag">2.1</div>
+          <div class="tag">audio</div>
         </div>
 
         <div class="item">
@@ -1513,39 +1103,7 @@ body.adminOpen #adminOverlay{ display:block; }
   </div>
 </section>
 
-<!-- ===== OVERLAY DO PERGAMINHO ===== -->
-<div id="scrollOverlay" aria-hidden="true">
-  <div class="dim"></div>
-
-  <div class="scroll" role="dialog" aria-label="Pergaminho">
-    <div class="scrollMask">
-      <div class="scrollPaper">
-        <div class="scrollInner">
-          <div class="scrollTop">
-            <div class="scrollTitle">Pergaminho — Vozes nas Sombras</div>
-            <button class="scrollClose" id="scrollClose">FECHAR</button>
-          </div>
-
-          <div class="scrollBody">
-            <div class="scrollLog" id="scrollLog">
-              <div class="typeLine" id="typeLine"></div><span class="cursor" id="cursor"></span>
-              <div id="out"></div>
-            </div>
-
-            <div class="scrollInputBar">
-              <div class="prompt">&gt;</div>
-              <input id="cmdInput" autocomplete="off" spellcheck="false"
-                     placeholder="digite um comando (ex: social, arquivo, lore, ajuda) e ENTER">
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== SOCIAL MEDIA OVERLAY (NOVO) ===== -->
+<!-- SOCIAL OVERLAY -->
 <div id="socialOverlay" aria-hidden="true">
   <div class="dim"></div>
 
@@ -1601,13 +1159,11 @@ body.adminOpen #adminOverlay{ display:block; }
             <path d="M14 4v10.2a3.2 3.2 0 1 1-2.2-3.05V8.2c-.3 0-.6-.02-.9-.07V5.1A7.6 7.6 0 0 0 14 4Z" fill="rgba(255,255,255,0.85)"/>
           </svg>
         </a>
-
         <a class="smIconBtn" href="https://open.spotify.com/user/allzdeadd" target="_blank" rel="noopener" aria-label="Spotify">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.9.9 0 0 1-1.24.3c-2.8-1.7-6.3-2.1-10.3-1.2a.9.9 0 0 1-.4-1.75c4.4-1 8.3-.5 11.5 1.4.42.25.56.8.3 1.25Zm1.3-3a1 1 0 0 1-1.37.33c-3.2-2-8-2.6-11.6-1.4a1 1 0 0 1-.6-1.9c4.1-1.3 9.3-.7 13 1.6.47.3.62.92.33 1.37Zm.1-3.2c-3.8-2.3-10-2.5-13.6-1.4a1.1 1.1 0 0 1-.65-2.1c4.2-1.3 11.1-1 15.5 1.7a1.1 1.1 0 1 1-1.1 1.8Z" fill="rgba(255,255,255,0.85)"/>
           </svg>
         </a>
-
         <a class="smIconBtn" href="https://instagram.com/allzdeadd" target="_blank" rel="noopener" aria-label="Instagram">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/>
@@ -1615,14 +1171,12 @@ body.adminOpen #adminOverlay{ display:block; }
             <path d="M17.6 6.4h.01" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round"/>
           </svg>
         </a>
-
         <a class="smIconBtn" href="https://x.com/allzdeadd" target="_blank" rel="noopener" aria-label="X">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M5 19L19 5" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/>
             <path d="M7 5h5l5 14h-5L7 5Z" fill="rgba(255,255,255,0.75)"/>
           </svg>
         </a>
-
         <a class="smIconBtn" href="https://allzdeadd" target="_blank" rel="noopener" aria-label="Link">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M10 13a4 4 0 0 1 0-6l1-1a4 4 0 0 1 6 6l-1 1" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
@@ -1645,7 +1199,7 @@ body.adminOpen #adminOverlay{ display:block; }
   </div>
 </div>
 
-<!-- ===== PLAYLISTS OVERLAY ===== -->
+<!-- PLAYLISTS OVERLAY -->
 <div id="playlistsOverlay" aria-hidden="true">
   <div class="dim"></div>
 
@@ -1673,7 +1227,7 @@ body.adminOpen #adminOverlay{ display:block; }
   </div>
 </div>
 
-<!-- ===== ADMIN OVERLAY ===== -->
+<!-- ADMIN OVERLAY -->
 <div id="adminOverlay" aria-hidden="true">
   <div class="dim"></div>
 
@@ -1695,11 +1249,12 @@ body.adminOpen #adminOverlay{ display:block; }
           <div class="adLoginGrid">
             <div>
               <div class="adLabel">Usuário</div>
-              <input class="adInput" id="adUser" autocomplete="off" spellcheck="false" placeholder="Sombra">
+              <!-- ✅ placeholders corrigidos -->
+              <input class="adInput" id="adUser" autocomplete="off" spellcheck="false" placeholder="Digite o usuário">
             </div>
             <div>
               <div class="adLabel">Senha</div>
-              <input class="adInput" id="adPass" type="password" autocomplete="off" placeholder="Projeto26">
+              <input class="adInput" id="adPass" type="password" autocomplete="off" placeholder="Digite a senha">
             </div>
           </div>
 
@@ -1735,15 +1290,14 @@ const enterBtn = document.getElementById("enterBtn");
 const mainVideo = document.getElementById("mainVideo");
 const bgAudio = document.getElementById("bgAudio");
 
-/* ===== ÁUDIO FIXO 4% + MUTE TOGGLE ===== */
 const DEFAULT_VOL = 0.04;
 let isMuted = (localStorage.getItem("hub_muted") || "0") === "1";
 bgAudio.volume = DEFAULT_VOL;
 bgAudio.muted = isMuted;
 
-/* Ícone de mute (troca visual) */
 const muteBtn = document.getElementById("muteBtn");
 const muteIcon = document.getElementById("muteIcon");
+
 function setMuteUI(){
   if(isMuted){
     muteIcon.innerHTML = `
@@ -1786,8 +1340,7 @@ for(let i=0;i<EMBER_N;i++){
     r: Math.random()*2.2 + 0.6,
     v: Math.random()*0.9 + 0.35,
     drift: (Math.random()-0.5)*0.35,
-    tw: Math.random()*0.8 + 0.2,
-    hue: Math.random()
+    tw: Math.random()*0.8 + 0.2
   });
 }
 function drawEmbers(){
@@ -1814,7 +1367,7 @@ function drawEmbers(){
 drawEmbers();
 
 /* =========================
-   ÁUDIO pause/resume (mantém a regra: abrir overlay = muta)
+   ÁUDIO (abrir overlay pausa)
    ========================= */
 let audioWasPlaying = false;
 function pauseBgAudio(){
@@ -1825,7 +1378,7 @@ function pauseBgAudio(){
 }
 async function resumeBgAudio(){
   try{
-    if(isMuted) return;                 // ✅ se estiver mutado, não volta sozinho
+    if(isMuted) return;
     if(audioWasPlaying){
       bgAudio.volume = DEFAULT_VOL;
       await bgAudio.play();
@@ -1834,37 +1387,31 @@ async function resumeBgAudio(){
 }
 
 /* =========================
-   OVERLAYS helpers
+   OVERLAYS
    ========================= */
-const scrollOverlay = document.getElementById("scrollOverlay");
 const socialOverlay = document.getElementById("socialOverlay");
 const playlistsOverlay = document.getElementById("playlistsOverlay");
 const adminOverlay = document.getElementById("adminOverlay");
 
-const overlayFlags = ["scrollOpen","socialOpen","playlistsOpen","adminOpen"];
+const overlayFlags = ["socialOpen","playlistsOpen","adminOpen"];
 
 function closeAllOverlays(){
   document.body.classList.remove(...overlayFlags);
-  scrollOverlay?.setAttribute("aria-hidden","true");
   socialOverlay?.setAttribute("aria-hidden","true");
   playlistsOverlay?.setAttribute("aria-hidden","true");
   adminOverlay?.setAttribute("aria-hidden","true");
 }
-
 function openOverlay(flag){
   if(!document.body.classList.contains("entered")) return;
   closeAllOverlays();
   pauseBgAudio();
   document.body.classList.add(flag);
-  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","false");
   if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","false");
   if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","false");
   if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","false");
 }
-
 function closeOverlay(flag){
   document.body.classList.remove(flag);
-  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","true");
   if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","true");
   if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","true");
   if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","true");
@@ -1872,7 +1419,7 @@ function closeOverlay(flag){
 }
 
 /* =========================
-   CLICK / ENTER (entry)
+   ENTRY
    ========================= */
 let started=false;
 async function start(){
@@ -1895,49 +1442,44 @@ async function start(){
       await mainVideo.play();
     }catch(e){}
     document.body.classList.add("entered");
-    // abre social sozinho (como você quer manter)
+    // abre social sozinho
     setTimeout(()=> openSocialOverlay(), 850);
   }, 520);
 }
 
 entry.addEventListener("pointerdown", (e)=>{
-  // evita double disparo quando clicar no botão
   if(e.target === enterBtn) return;
   start();
 });
 enterBtn.addEventListener("click", (e)=>{ e.stopPropagation(); start(); });
-
 entry.addEventListener("keydown", (e)=>{
   if(e.key==="Enter" || e.key===" "){ e.preventDefault(); start(); }
 });
 
 /* =========================
-   NAV + HERO BUTTONS
+   NAV
    ========================= */
-const navHome = document.getElementById("navHome");
-const navLore = document.getElementById("navLore");
 const navSocial = document.getElementById("navSocial");
 const navPlaylists = document.getElementById("navPlaylists");
 const navArchives = document.getElementById("navArchives");
 const navAdmin = document.getElementById("navAdmin");
 
 function setActiveNav(btn){
-  [navHome,navLore,navSocial,navPlaylists,navArchives,navAdmin].forEach(b=>b.classList.remove("active"));
+  [navSocial,navPlaylists,navArchives,navAdmin].forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
 }
 
-document.getElementById("heroLore").addEventListener("click", ()=>{ setActiveNav(navLore); openScroll(); });
 document.getElementById("heroSocial").addEventListener("click", ()=>{ setActiveNav(navSocial); openSocialOverlay(); });
 document.getElementById("heroPlaylists").addEventListener("click", ()=>{ setActiveNav(navPlaylists); openPlaylistsOverlay(); });
+document.getElementById("heroFocus").addEventListener("click", ()=>{ toggleCinemaMode(true); });
 
-navHome.addEventListener("click", ()=>{ setActiveNav(navHome); closeAllOverlays(); resumeBgAudio(); });
-navLore.addEventListener("click", ()=>{ setActiveNav(navLore); openScroll(); });
 navSocial.addEventListener("click", ()=>{ setActiveNav(navSocial); openSocialOverlay(); });
 navPlaylists.addEventListener("click", ()=>{ setActiveNav(navPlaylists); openPlaylistsOverlay(); });
 navArchives.addEventListener("click", ()=>{
   setActiveNav(navArchives);
   closeAllOverlays();
-  alert("Archives (placeholder) — V2.2");
+  resumeBgAudio();
+  alert("Archives (placeholder) — V2.3");
 });
 navAdmin.addEventListener("click", ()=>{ setActiveNav(navAdmin); openAdminOverlay(); });
 
@@ -1953,35 +1495,58 @@ muteBtn.addEventListener("click", (e)=>{
   bgAudio.muted = isMuted;
   setMuteUI();
 
-  // Se desmutar e não estiver em overlay, volta o áudio
-  if(!isMuted && !document.body.classList.contains("scrollOpen") && !document.body.classList.contains("socialOpen")
-     && !document.body.classList.contains("playlistsOpen") && !document.body.classList.contains("adminOpen")){
-    try{
-      bgAudio.volume = DEFAULT_VOL;
-      bgAudio.play();
-    }catch(e){}
+  const anyOverlay =
+    document.body.classList.contains("socialOpen") ||
+    document.body.classList.contains("playlistsOpen") ||
+    document.body.classList.contains("adminOpen");
+
+  if(!isMuted && !anyOverlay && !document.body.classList.contains("cinemaMode")){
+    try{ bgAudio.volume = DEFAULT_VOL; bgAudio.play(); }catch(e){}
   }else{
     pauseBgAudio();
   }
 });
 
 /* =========================
-   FULLSCREEN
+   CINEMA MODE (troca fullscreen)
    ========================= */
-const fsBtn = document.getElementById("fsBtn");
-async function toggleFullscreen(){
-  try{
-    if(!document.fullscreenElement){
-      await document.documentElement.requestFullscreen();
-    }else{
-      await document.exitFullscreen();
+const cineBtn = document.getElementById("cineBtn");
+const cineHint = document.getElementById("cineHint");
+
+function toggleCinemaMode(forceOn=null){
+  const goingOn = forceOn === null ? !document.body.classList.contains("cinemaMode") : forceOn;
+
+  if(goingOn){
+    closeAllOverlays();
+    pauseBgAudio(); // sem áudio enquanto só vídeo
+    document.body.classList.add("cinemaMode");
+    cineHint.setAttribute("aria-hidden","false");
+    // deixa o vídeo com qualidade “normal”
+    try{
+      mainVideo.muted = true;
+      mainVideo.play();
+    }catch(e){}
+  }else{
+    document.body.classList.remove("cinemaMode");
+    cineHint.setAttribute("aria-hidden","true");
+    // volta áudio se não mutado
+    if(!isMuted){
+      try{ bgAudio.volume = DEFAULT_VOL; bgAudio.play(); }catch(e){}
     }
-  }catch(e){}
+  }
 }
-fsBtn.addEventListener("click", (e)=>{ e.stopPropagation(); toggleFullscreen(); });
+cineBtn.addEventListener("click", (e)=>{ e.stopPropagation(); toggleCinemaMode(); });
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key === "v" || e.key === "V"){
+    if(document.body.classList.contains("entered")){
+      toggleCinemaMode();
+    }
+  }
+});
 
 /* =========================
-   SOCIAL OVERLAY
+   SOCIAL
    ========================= */
 const socialClose = document.getElementById("socialClose");
 const smViews = document.getElementById("smViews");
@@ -1999,9 +1564,9 @@ function incLocal(key){
   localStorage.setItem(key, String(v));
   return v;
 }
-
 function openSocialOverlay(){
   if(!document.body.classList.contains("entered")) return;
+  if(document.body.classList.contains("cinemaMode")) toggleCinemaMode(false);
   metricInc("m_social_opens");
   openOverlay("socialOpen");
 
@@ -2040,7 +1605,6 @@ function setUpdatedNow(){
 async function fetchLanyard(){
   statusToPill("idle");
   setUpdatedNow();
-
   try{
     const r = await fetch(LANYARD_URL, { cache:"no-store" });
     if(!r.ok) throw new Error("lanyard http");
@@ -2074,12 +1638,12 @@ async function fetchLanyard(){
     }
     setUpdatedNow();
   }catch(e){
-    // mantém fallback
+    // fallback
   }
 }
 
 /* =========================
-   PLAYLISTS OVERLAY
+   PLAYLISTS
    ========================= */
 const plClose = document.getElementById("plClose");
 const plList = document.getElementById("plList");
@@ -2090,16 +1654,9 @@ const PLAYLISTS = [
   { name:"Midnight", desc:"noite • chill • dark", embed:"https://open.spotify.com/embed/playlist/37i9dQZF1DX4fpCWaHOned?utm_source=generator" },
   { name:"Favorites", desc:"minhas faixas", embed:"https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" }
 ];
-
 function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 }
-
 function renderPlaylistList(){
   plList.innerHTML = "";
   PLAYLISTS.forEach((p, idx)=>{
@@ -2120,6 +1677,7 @@ function setActivePlaylist(i){
 }
 function openPlaylistsOverlay(){
   if(!document.body.classList.contains("entered")) return;
+  if(document.body.classList.contains("cinemaMode")) toggleCinemaMode(false);
   metricInc("m_playlists_opens");
   openOverlay("playlistsOpen");
 
@@ -2140,7 +1698,7 @@ playlistsOverlay.addEventListener("click",(e)=>{
 });
 
 /* =========================
-   ADMIN OVERLAY
+   ADMIN
    ========================= */
 const adClose = document.getElementById("adClose");
 const adLogin = document.getElementById("adLogin");
@@ -2176,9 +1734,9 @@ function buildAdminMetrics(){
   const metrics = [
     { key:"m_site_opens", label:"Site Opens" },
     { key:"m_social_opens", label:"Social Opens" },
-    { key:"m_scroll_opens", label:"Scroll Opens" },
     { key:"m_playlists_opens", label:"Playlists Opens" },
-    { key:"m_admin_logins", label:"Admin Logins" }
+    { key:"m_admin_logins", label:"Admin Logins" },
+    { key:"sm_views", label:"Social Views" }
   ];
   adGrid.innerHTML = "";
   metrics.forEach(m=>{
@@ -2201,6 +1759,7 @@ function showAdminDash(){
 }
 function openAdminOverlay(){
   if(!document.body.classList.contains("entered")) return;
+  if(document.body.classList.contains("cinemaMode")) toggleCinemaMode(false);
   metricInc("m_admin_opens");
   openOverlay("adminOpen");
   setTimeout(()=>adClose.focus(), 80);
@@ -2220,7 +1779,8 @@ adminOverlay.addEventListener("click",(e)=>{
 });
 
 adLoginHint.addEventListener("click", ()=>{
-  adMsg.textContent = "Usuário fixo: Sombra • Senha: Projeto26";
+  // ✅ dica sem vazar credenciais no placeholder
+  adMsg.textContent = "Dica: é um nome e uma palavra-chave do seu projeto.";
 });
 function tryLogin(){
   const u = (adUser.value || "").trim();
@@ -2240,7 +1800,7 @@ adPass.addEventListener("keydown",(e)=>{
   if(e.key==="Enter") tryLogin();
 });
 adResetBtn.addEventListener("click", ()=>{
-  const keys = ["m_site_opens","m_social_opens","m_scroll_opens","m_playlists_opens","m_admin_logins"];
+  const keys = ["m_site_opens","m_social_opens","m_playlists_opens","m_admin_logins","sm_views"];
   keys.forEach(k=> localStorage.removeItem(k));
   buildAdminMetrics();
   adMsg.textContent = "Métricas resetadas.";
@@ -2251,141 +1811,6 @@ adLogoutBtn.addEventListener("click", ()=>{
 });
 
 /* =========================
-   PERGAMINHO (mesma lógica)
-   ========================= */
-const scrollClose = document.getElementById("scrollClose");
-const scrollLog = document.getElementById("scrollLog");
-const typeLine = document.getElementById("typeLine");
-const cursor = document.getElementById("cursor");
-const out = document.getElementById("out");
-const cmdInput = document.getElementById("cmdInput");
-
-let typing = false;
-let typedOnce = false;
-
-const loreLines = [
-  `<span class="who mestre">MESTRE:</span> A arena está silenciosa... mas as sombras nunca dormem.`,
-  `<span class="who shadow">SHADOW:</span> Eu sinto o vazio se abrindo. Algo me chama do outro lado.`,
-  `<span class="who titan">TITAN:</span> Você acha que pode escapar? Eu já marquei seu destino.`,
-  `<span class="who mestre">MESTRE:</span> Não responda ao medo. Use-o. Transforme-o em lâmina.`,
-  `<span class="who shadow">SHADOW:</span> Então... eu entro. E se eu cair, que as sombras me devorem.`,
-  `<span class="who titan">TITAN:</span> Venha. Eu quero ouvir seu silêncio gritar.`
-];
-
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function scrollToBottom(){ scrollLog.scrollTop = scrollLog.scrollHeight; }
-
-function writeOut(html){
-  const line = document.createElement("div");
-  line.className = "outputLine";
-  line.innerHTML = html;
-  out.appendChild(line);
-  scrollToBottom();
-}
-function finishTypingNow(){
-  typing = false;
-  cursor.style.display = "none";
-  typeLine.innerHTML = loreLines.map(l => `<div class="typeLine">${l}</div>`).join("");
-  const hasHint = out.textContent.includes("Digite ajuda");
-  if(!hasHint){
-    writeOut(`<span class="sys">SISTEMA:</span> Digite <b>ajuda</b> para ver comandos.`);
-  }
-}
-async function startTyping(){
-  if(typing) return;
-  typing = true;
-  typedOnce = true;
-
-  typeLine.innerHTML = "";
-  out.innerHTML = "";
-  cursor.style.display = "inline-block";
-
-  for(let i=0; i<loreLines.length; i++){
-    if(!typing) break;
-
-    const plain = loreLines[i].replace(/<[^>]*>/g, "");
-    const holder = document.createElement("div");
-    holder.className = "typeLine";
-    typeLine.appendChild(holder);
-
-    let acc = "";
-    for(let c=0; c<plain.length; c++){
-      if(!typing) break;
-      acc += plain[c];
-      holder.textContent = acc;
-      scrollToBottom();
-      await sleep(12 + Math.random()*18);
-    }
-    if(!typing) break;
-
-    holder.innerHTML = loreLines[i];
-    scrollToBottom();
-    await sleep(220 + Math.random()*220);
-  }
-
-  if(typing){
-    typing = false;
-    cursor.style.display = "none";
-    scrollToBottom();
-    writeOut(`<span class="sys">SISTEMA:</span> Digite <b>ajuda</b> para ver comandos.`);
-  }else{
-    scrollToBottom();
-  }
-}
-
-function openScroll(){
-  if(!document.body.classList.contains("entered")) return;
-  metricInc("m_scroll_opens");
-  openOverlay("scrollOpen");
-  setTimeout(()=>cmdInput.focus(), 80);
-  if(!typedOnce) startTyping();
-  else cursor.style.display = "none";
-}
-function closeScroll(){ closeOverlay("scrollOpen"); }
-
-scrollClose.addEventListener("click", closeScroll);
-scrollOverlay.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("dim")) closeScroll();
-});
-
-cmdInput.addEventListener("keydown", (e)=>{
-  if(e.key !== "Enter") return;
-  const raw = cmdInput.value.trim();
-  if(!raw) return;
-  cmdInput.value = "";
-
-  if(typing) finishTypingNow();
-
-  writeOut(`<span class="sys">VOCÊ:</span> ${escapeHtml(raw)}`);
-  const cmd = raw.toLowerCase();
-
-  if(cmd === "ajuda" || cmd === "help" || cmd === "?"){
-    writeOut(`<span class="sys">COMANDOS:</span> <b>social</b>, <b>arquivo</b>, <b>lore</b>, <b>fechar</b>`);
-    return;
-  }
-  if(cmd === "fechar" || cmd === "close" || cmd === "exit"){
-    writeOut(`<span class="sys">SISTEMA:</span> Pergaminho selado.`);
-    setTimeout(closeScroll, 250);
-    return;
-  }
-  if(cmd === "social"){
-    writeOut(`<span class="sys">SISTEMA:</span> Abrindo SOCIAL MEDIA...`);
-    setTimeout(openSocialOverlay, 250);
-    return;
-  }
-  if(cmd === "arquivo" || cmd === "archive"){
-    writeOut(`<span class="sys">SISTEMA:</span> (placeholder) Abrindo ARQUIVO...`);
-    return;
-  }
-  if(cmd === "lore"){
-    writeOut(`<span class="sys">SISTEMA:</span> Você já ouviu as vozes... agora escolha um caminho.`);
-    return;
-  }
-
-  writeOut(`<span class="sys">SISTEMA:</span> Comando desconhecido. Digite <b>ajuda</b>.`);
-});
-
-/* =========================
    ESC fecha overlays
    ========================= */
 document.addEventListener("keydown",(e)=>{
@@ -2393,7 +1818,6 @@ document.addEventListener("keydown",(e)=>{
   if(document.body.classList.contains("adminOpen")) return closeAdminOverlay();
   if(document.body.classList.contains("playlistsOpen")) return closePlaylistsOverlay();
   if(document.body.classList.contains("socialOpen")) return closeSocialOverlay();
-  if(document.body.classList.contains("scrollOpen")) return closeScroll();
 });
 
 /* =========================
