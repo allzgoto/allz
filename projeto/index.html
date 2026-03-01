@@ -3,33 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Allz — Hub</title>
+<title>ALLZ • HUB</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Cormorant+Garamond:wght@500;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&family=Cinzel:wght@600;800&display=swap" rel="stylesheet">
 
 <style>
+/* =========================
+   RESET + THEME
+   ========================= */
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{width:100%;height:100%;overflow:hidden;background:#000}
+html,body{width:100%;height:100%;overflow:hidden;background:#050506}
 button,input{font:inherit}
 :root{
-  /* mais moderno/escuro + laranja queimado bem sutil */
-  --ember: rgba(165, 86, 44, 1);
-  --ember2: rgba(110, 56, 28, 1);
-  --emberGlow: rgba(165,86,44,.18);
+  --bg:#07070a;
+  --bg2:#0b0c10;
 
-  --bg0:#070709;
-  --bg1:#0b0c0f;
-  --ui: rgba(14,14,16,0.72);
-  --ui2: rgba(0,0,0,0.38);
+  --panel:#121218;      /* mais sólido */
+  --panel2:#161621;     /* variação */
+  --panel3:#0e0e14;     /* header */
+  --edge:rgba(255,255,255,.08);
+  --edge2:rgba(255,255,255,.06);
 
-  --line: rgba(255,255,255,0.10);
-  --line2: rgba(255,255,255,0.07);
+  --txt:rgba(255,255,255,.90);
+  --muted:rgba(255,255,255,.55);
 
-  --txt: rgba(255,255,255,0.86);
-  --muted: rgba(255,255,255,0.55);
+  --ember: rgba(215, 103, 52, 1);
+  --ember2: rgba(155, 72, 34, 1);
+  --glow: rgba(215, 103, 52, .22);
+  --glow2: rgba(215, 103, 52, .12);
+
+  --r:18px;
+  --r2:22px;
 }
 
-/* ===== VIDEO ===== */
+/* =========================
+   BACKGROUND VIDEO
+   ========================= */
 #mainVideo{
   position:fixed; inset:0;
   width:100%; height:100%;
@@ -37,1052 +46,737 @@ button,input{font:inherit}
   z-index:0;
   opacity:0;
   transition:opacity 900ms ease, filter 900ms ease;
-  filter:contrast(1.05) saturate(0.95);
+  filter:contrast(1.05) saturate(.9);
 }
 body.entered #mainVideo{
   opacity:1;
-  filter:contrast(1.06) saturate(0.88) blur(7px) brightness(0.45);
-}
-body.scrollOpen #mainVideo,
-body.socialOpen #mainVideo,
-body.playlistsOpen #mainVideo,
-body.adminOpen #mainVideo{
-  filter:contrast(1.06) saturate(0.84) blur(10px) brightness(0.36);
+  filter:contrast(1.06) saturate(.85) blur(10px) brightness(.30);
 }
 
-/* ===== EMBERS CANVAS (global) ===== */
-#emberCanvas{
+/* =========================
+   CANVAS FIRE LAYER
+   ========================= */
+#fireCanvas{
   position:fixed; inset:0;
   z-index:1;
   pointer-events:none;
 }
+#heat{
+  position:fixed; inset:0;
+  z-index:2;
+  pointer-events:none;
+  opacity:.55;
+  background:
+    radial-gradient(ellipse at 50% 110%, rgba(215,103,52,.25), transparent 55%),
+    radial-gradient(ellipse at 20% 120%, rgba(215,103,52,.14), transparent 60%),
+    radial-gradient(ellipse at 80% 120%, rgba(215,103,52,.14), transparent 60%);
+  mix-blend-mode: screen;
+  filter: blur(18px);
+}
 
-/* ===== GLOBAL VIGNETTE + GRAIN ===== */
+/* =========================
+   VIGNETTE + GRAIN
+   ========================= */
 #vignette{
-  position:fixed; inset:0; z-index:2;
+  position:fixed; inset:0; z-index:3;
   pointer-events:none;
   background:
-    radial-gradient(circle at 35% 20%, rgba(255,255,255,0.06), transparent 40%),
-    radial-gradient(circle at 75% 70%, rgba(255,255,255,0.05), transparent 44%),
-    radial-gradient(circle at center, transparent 42%, rgba(0,0,0,0.82) 100%);
-  mix-blend-mode: normal;
+    radial-gradient(circle at 50% 45%, transparent 36%, rgba(0,0,0,.78) 76%, rgba(0,0,0,.92) 100%),
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.05), transparent 38%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,.04), transparent 40%);
 }
 #grain{
-  position:fixed; inset:-20%; z-index:3; pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.18'/%3E%3C/svg%3E");
-  opacity:.16;
+  position:fixed; inset:-25%; z-index:4; pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.22'/%3E%3C/svg%3E");
+  opacity:.14;
   transform:rotate(2deg);
 }
 
 /* =========================
-   ENTRY (V2.2) — preto/minimal
+   ENTRY (PRETO TOTAL)
    ========================= */
 #entry{
   position:fixed; inset:0;
-  z-index:10;
+  z-index:50;
+  display:grid; place-items:center;
   cursor:pointer;
-  background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.04), transparent 55%), #000;
-  display:grid;
-  place-items:center;
-}
-.entryInner{
-  width:min(940px, 92vw);
-  height:min(520px, 84vh);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.09);
   background:
-    radial-gradient(circle at 20% 20%, rgba(165,86,44,0.10), transparent 55%),
-    radial-gradient(circle at 80% 25%, rgba(255,255,255,0.06), transparent 52%),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.58));
-  box-shadow:
-    0 60px 220px rgba(0,0,0,0.92),
-    inset 0 0 30px rgba(0,0,0,0.45);
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.05), transparent 45%),
+    #000;
+}
+.entryBox{
+  width:min(920px, 92vw);
+  height:min(520px, 84vh);
+  border-radius:28px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,255,255,.06), transparent 42%),
+    linear-gradient(to bottom, rgba(255,255,255,.04), rgba(0,0,0,.72));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow: 0 70px 240px rgba(0,0,0,.92);
   position:relative;
   overflow:hidden;
 }
-.entryInner::after{
+.entryBox::before{
   content:"";
   position:absolute; inset:0;
   background:
-    radial-gradient(circle at center, transparent 42%, rgba(0,0,0,0.72) 100%),
-    linear-gradient(to bottom, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
+    radial-gradient(circle at 50% 70%, rgba(215,103,52,.10), transparent 55%),
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,.05), transparent 45%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,.04), transparent 50%);
+  opacity:.65;
   pointer-events:none;
 }
-.entryMark{
-  position:absolute;
-  left:50%; top:18%;
-  transform:translateX(-50%);
-  width:110px; height:110px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background:
-    radial-gradient(circle at 35% 35%, rgba(255,255,255,0.08), transparent 55%),
-    radial-gradient(circle at 50% 50%, rgba(165,86,44,0.10), rgba(0,0,0,0.68));
-  box-shadow: 0 26px 110px rgba(0,0,0,0.85);
-  display:grid;
-  place-items:center;
-}
-.entryMark svg{ width:44px;height:44px; opacity:.9; }
-
 .entryCenter{
   position:absolute; inset:0;
-  display:grid;
-  place-items:center;
+  display:grid; place-items:center;
   text-align:center;
-  z-index:2;
-  pointer-events:none;
+  padding:22px;
 }
 .entryTitle{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-weight:800;
-  letter-spacing:3px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  letter-spacing:10px;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.74);
+  color:rgba(255,255,255,.78);
   font-size:12px;
 }
-.entryBtn{
-  pointer-events:auto;
-  margin-top:16px;
-  border:none;
-  cursor:pointer;
-  padding:14px 18px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.12);
-  background: rgba(0,0,0,0.35);
-  color:rgba(255,255,255,0.88);
-  box-shadow: 0 24px 120px rgba(0,0,0,0.80), inset 0 0 22px rgba(0,0,0,0.55);
-  font-family:"Cinzel", serif;
+.entryMain{
+  margin-top:18px;
+  font-family: "Cinzel", serif;
   font-weight:800;
   letter-spacing:6px;
   text-transform:uppercase;
-  transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+  color:rgba(255,255,255,.92);
+  font-size:36px;
+}
+.entrySub{
+  margin-top:10px;
+  color:rgba(255,255,255,.55);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:650;
+  line-height:1.4;
+  font-size:14px;
+}
+.entryBtnRow{
+  margin-top:18px;
+  display:flex; gap:12px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.entryBtn{
+  border:none; cursor:pointer;
+  padding:14px 18px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.45);
+  color:rgba(255,255,255,.90);
+  box-shadow: 0 20px 120px rgba(0,0,0,.85);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.entryBtn.primary{
+  background:
+    radial-gradient(circle at 30% 30%, rgba(215,103,52,.20), rgba(0,0,0,.50));
+  border-color: rgba(255,255,255,.18);
 }
 .entryBtn:hover{
   transform: translateY(-1px);
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.18);
-  box-shadow: 0 24px 140px rgba(0,0,0,0.88), 0 0 30px rgba(165,86,44,0.10);
+  background: rgba(255,255,255,.06);
+  border-color: rgba(255,255,255,.18);
 }
 .entryHint{
   margin-top:14px;
-  color:rgba(255,255,255,0.42);
-  font-size:11px;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  color:rgba(255,255,255,.40);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  font-size:12px;
 }
 .kbd{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
+  display:inline-flex; align-items:center; justify-content:center;
   padding:6px 10px;
   border-radius:12px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.30);
-  color:rgba(255,255,255,0.70);
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.35);
   margin:0 6px;
 }
-body.entered #entry{
-  opacity:0;
-  pointer-events:none;
-  transition:opacity 900ms ease;
-}
+
+body.entered #entry{ opacity:0; pointer-events:none; transition:opacity 900ms ease; }
 
 /* =========================
-   HUB
+   HUB LAYOUT (MAIS “APP”)
    ========================= */
 #hub{
   position:fixed; inset:0;
   z-index:20;
   opacity:0;
   pointer-events:none;
-  transition:opacity 700ms ease;
+  transition: opacity 650ms ease;
 }
 body.entered #hub{ opacity:1; pointer-events:auto; }
 
-.hubShell{
-  position:absolute; inset:16px;
+.shell{
+  position:absolute; inset:14px;
   display:grid;
-  grid-template-columns: 270px 1fr 340px;
+  grid-template-columns: 280px 1fr 340px;
   gap:14px;
 }
 
-/* glass panel base */
-.panelGlass{
-  border-radius:18px;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(165,86,44,0.08), transparent 55%),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), rgba(0,0,0,0.22));
-  border:1px solid var(--line);
-  box-shadow:
-    0 44px 180px rgba(0,0,0,0.78),
-    inset 0 0 22px rgba(0,0,0,0.38);
-  backdrop-filter: blur(18px);
+/* Base panel mais sólido */
+.panel{
+  border-radius: var(--r2);
+  background: linear-gradient(to bottom, rgba(255,255,255,.03), rgba(0,0,0,.10)), var(--panel);
+  border:1px solid var(--edge);
+  box-shadow: 0 40px 160px rgba(0,0,0,.78);
   overflow:hidden;
 }
 
-/* LEFT NAV (mais “stream” / espaçamento melhor) */
+/* =========================
+   LEFT NAV
+   ========================= */
 .nav{
   display:flex;
   flex-direction:column;
-  padding:14px;
-  gap:12px;
 }
-.navTop{
+.navHeader{
+  padding:16px 16px 12px;
+  background: var(--panel3);
+  border-bottom:1px solid var(--edge2);
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:6px 6px 10px;
+  gap:10px;
 }
 .brand{
   display:flex; flex-direction:column; gap:4px;
 }
 .brand b{
-  color:rgba(255,255,255,0.82);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  color:rgba(255,255,255,.86);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:2px;
-  font-size:12px;
   text-transform:uppercase;
+  font-size:12px;
 }
 .brand span{
-  color:rgba(255,255,255,0.44);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:800;
+  color:rgba(255,255,255,.45);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
   font-size:12px;
 }
-
-/* tools: MUTE + FULLSCREEN */
-.navTools{ display:flex; gap:8px; }
-.toolBtn{
+.tools{ display:flex; gap:10px; }
+.iconBtn{
   width:40px;height:40px;
   border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.30);
-  box-shadow: 0 14px 44px rgba(0,0,0,0.50);
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
   cursor:pointer;
   display:grid; place-items:center;
-  transition: transform .15s ease, background .15s ease, border-color .15s ease, filter .15s ease;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
 }
-.toolBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.16); }
-.toolBtn:active{ transform:translateY(0px) scale(0.98); }
-.toolBtn svg{ width:20px;height:20px; opacity:.92; }
-.toolBtn[data-on="false"]{ filter:grayscale(0.2) opacity(0.92); }
-.toolBtn[data-on="true"]{ filter:brightness(1.02); }
+.iconBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.16); }
+.iconBtn svg{ width:20px;height:20px; opacity:.92; }
+.iconBtn[data-on="false"]{ filter: grayscale(.25) opacity(.9); }
 
 .navList{
-  display:flex;
-  flex-direction:column;
+  padding:14px;
+  display:flex; flex-direction:column;
   gap:10px;
-  padding:0 4px;
 }
 .navItem{
-  width:100%;
-  border:none;
-  cursor:pointer;
+  border:none; cursor:pointer;
   text-align:left;
-  padding:12px 12px;
+  padding:14px 14px;
   border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.22);
-  color:rgba(255,255,255,0.82);
+  background: rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
+  color:rgba(255,255,255,.84);
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:10px;
-  transition: transform .16s ease, background .16s ease, border-color .16s ease;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:1px;
   text-transform:uppercase;
   font-size:12px;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
 }
-.navItem:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.05); }
+.navItem:hover{ transform: translateY(-1px); background: rgba(255,255,255,.06); }
 .navItem.active{
-  border-color: rgba(255,255,255,0.18);
   background:
-    radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.24));
+    radial-gradient(circle at 22% 30%, rgba(215,103,52,.18), rgba(255,255,255,.03));
+  border-color: rgba(255,255,255,.16);
 }
 .badge{
   font-size:10px;
   letter-spacing:1px;
-  opacity:.70;
-  padding:4px 8px;
+  opacity:.7;
+  padding:6px 10px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
 }
 
-/* profile card bottom */
-.navFoot{
+/* profile bottom */
+.navFooter{
   margin-top:auto;
-  padding:10px 6px 4px;
+  padding:14px;
 }
-.profileCard{
+.profile{
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.03);
+  padding:12px;
   display:flex;
   gap:12px;
   align-items:center;
-  padding:12px 12px;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.30);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
 }
 .pfp{
-  width:44px;height:44px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.12);
+  width:46px;height:46px;
+  border-radius:16px;
   overflow:hidden;
-  background: rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
 }
 .pfp img{ width:100%;height:100%;object-fit:cover;display:block; }
-.pmeta{ display:flex; flex-direction:column; gap:2px; }
 .pmeta b{
-  color:rgba(255,255,255,0.88);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  display:block;
+  color:rgba(255,255,255,.92);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight:900;
   font-size:14px;
 }
 .pmeta span{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
+  display:block;
+  margin-top:2px;
+  color:rgba(255,255,255,.55);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  font-size:12px;
 }
 
-/* CENTER MAIN */
-.main{
-  padding:14px;
+/* =========================
+   CENTER
+   ========================= */
+.center{
   display:flex;
   flex-direction:column;
   gap:14px;
+  padding:14px;
 }
-
-/* topbar (inspirado nos prints) */
 .topbar{
-  flex:0 0 auto;
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px;
+  padding:12px;
   border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.22);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
-  padding:10px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
+  background: rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.08);
 }
-.searchWrap{
+.search{
   flex:1;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.08);
-  background: rgba(0,0,0,0.28);
+  display:flex; align-items:center; gap:10px;
+  padding:12px 12px;
+  border-radius:16px;
+  background: rgba(0,0,0,.22);
+  border:1px solid rgba(255,255,255,.08);
 }
-.searchWrap svg{ width:18px;height:18px; opacity:.85; }
-.searchInput{
+.search svg{ width:18px;height:18px; opacity:.85; }
+.search input{
   flex:1;
-  border:none;
-  outline:none;
+  border:none; outline:none;
   background:transparent;
-  color:rgba(255,255,255,0.88);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:rgba(255,255,255,.90);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight:800;
 }
-.searchInput::placeholder{ color:rgba(255,255,255,0.40); }
-
-.topActions{ display:flex; align-items:center; gap:10px; }
-.chip{
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.25);
-  color:rgba(255,255,255,0.78);
-  padding:10px 12px;
+.search input::placeholder{ color:rgba(255,255,255,.40); }
+.pills{ display:flex; gap:10px; align-items:center; }
+.pill{
   border-radius:999px;
-  font-size:12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  padding:10px 12px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  color:rgba(255,255,255,.75);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:1px;
   text-transform:uppercase;
+  font-size:11px;
+}
+.pill.accent{
+  border-color: rgba(215,103,52,.18);
+  box-shadow: 0 0 0 3px rgba(215,103,52,.06) inset;
 }
 
+/* hero */
 .hero{
-  flex:0 0 auto;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  overflow:hidden;
-  min-height: 200px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
   background:
-    radial-gradient(circle at 22% 26%, rgba(165,86,44,0.14), transparent 58%),
-    radial-gradient(circle at 70% 40%, rgba(255,255,255,0.06), transparent 52%),
-    linear-gradient(to bottom, rgba(0,0,0,0.32), rgba(0,0,0,0.72));
-  box-shadow: inset 0 0 34px rgba(0,0,0,0.55);
+    radial-gradient(circle at 18% 30%, rgba(215,103,52,.18), transparent 55%),
+    radial-gradient(circle at 70% 30%, rgba(255,255,255,.06), transparent 50%),
+    linear-gradient(to bottom, rgba(255,255,255,.03), rgba(0,0,0,.22)),
+    var(--panel2);
+  box-shadow: inset 0 0 22px rgba(0,0,0,.35);
+  min-height: 210px;
+  overflow:hidden;
   position:relative;
 }
 .hero::after{
   content:"";
   position:absolute; inset:0;
-  background: radial-gradient(circle at center, transparent 48%, rgba(0,0,0,0.58) 100%);
+  background: radial-gradient(circle at center, transparent 48%, rgba(0,0,0,.55) 100%);
   pointer-events:none;
-  opacity:.92;
 }
 .heroInner{
-  position:relative;
-  z-index:2;
+  position:relative; z-index:2;
+  height:100%;
   padding:18px;
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
   gap:16px;
-  height:100%;
 }
 .heroText{ max-width: 72%; }
 .heroText h1{
-  font-family:"Cinzel", serif;
+  font-family: "Cinzel", serif;
   font-weight:800;
-  letter-spacing:3px;
+  letter-spacing:4px;
   text-transform:uppercase;
-  color:rgba(255,255,255,0.90);
-  font-size:20px;
+  color:rgba(255,255,255,.92);
+  font-size:22px;
 }
 .heroText p{
-  margin-top:8px;
-  color:rgba(255,255,255,0.60);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  margin-top:10px;
+  color:rgba(255,255,255,.58);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight:700;
-  font-size:13px;
   line-height:1.35;
+  font-size:13px;
 }
 .heroActions{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
+  display:flex; gap:10px; flex-wrap:wrap;
   justify-content:flex-end;
 }
-.pillBtn{
-  border:none;
-  cursor:pointer;
-  padding:10px 12px;
+.actionBtn{
+  border:none; cursor:pointer;
+  padding:12px 14px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.34);
-  color:rgba(255,255,255,0.82);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.22);
+  color:rgba(255,255,255,.82);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:1px;
   text-transform:uppercase;
-  font-size:12px;
-  transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+  font-size:11px;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
 }
-.pillBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.16); }
-.pillBtn.primary{
-  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.34));
-  border-color: rgba(255,255,255,0.14);
-  box-shadow: 0 10px 50px rgba(0,0,0,0.55);
+.actionBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.16); }
+.actionBtn.primary{
+  background: radial-gradient(circle at 30% 30%, rgba(215,103,52,.22), rgba(0,0,0,.24));
+  border-color: rgba(255,255,255,.16);
 }
 
-.sectionTitle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 6px;
+/* trending */
+.sectionRow{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 4px;
+  margin-top:2px;
 }
-.sectionTitle b{
-  color:rgba(255,255,255,0.62);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+.sectionRow b{
+  color:rgba(255,255,255,.58);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:2px;
   text-transform:uppercase;
   font-size:11px;
 }
-.trending{
-  flex:1;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.20);
-  box-shadow: inset 0 0 26px rgba(0,0,0,0.50);
+.grid{
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+  box-shadow: inset 0 0 22px rgba(0,0,0,.35);
   padding:14px;
+  flex:1;
   overflow:hidden;
 }
 .cards{
-  margin-top:12px;
   display:grid;
   grid-template-columns: repeat(4, minmax(0,1fr));
   gap:12px;
 }
 .card{
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-  min-height:84px;
-  box-shadow: inset 0 0 18px rgba(0,0,0,0.45);
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(215,103,52,.10), transparent 60%),
+    rgba(0,0,0,.18);
+  min-height: 96px;
+  position:relative;
+  overflow:hidden;
+}
+.card::after{
+  content:"";
+  position:absolute; inset:0;
+  background: radial-gradient(circle at center, transparent 52%, rgba(0,0,0,.55) 100%);
+  pointer-events:none;
 }
 
-/* RIGHT PANEL */
+/* =========================
+   RIGHT PANEL
+   ========================= */
 .right{
   padding:14px;
   display:flex;
   flex-direction:column;
   gap:12px;
 }
-.rightTitle{
-  padding:0 6px;
-  color:rgba(255,255,255,0.62);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+.rTitle{
+  color:rgba(255,255,255,.65);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:2px;
   text-transform:uppercase;
   font-size:11px;
+  padding:4px 4px 0;
 }
-.relics{
-  flex:1;
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.20);
-  box-shadow: inset 0 0 26px rgba(0,0,0,0.50);
+.stack{
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.02);
+  box-shadow: inset 0 0 22px rgba(0,0,0,.35);
   padding:12px;
   overflow:auto;
+  flex:1;
 }
-.relic{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:12px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-  margin-bottom:10px;
-}
-.relic b{
-  color:rgba(255,255,255,0.84);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-  font-size:13px;
-}
-.relic span{
-  color:rgba(255,255,255,0.52);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
-}
-.relicTag{
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.12), rgba(0,0,0,0.26));
-  color:rgba(255,255,255,0.70);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:10px;
-  text-transform:uppercase;
-}
-
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1100px){
-  .hubShell{ grid-template-columns: 250px 1fr 320px; }
-  .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-}
-@media (max-width: 880px){
-  .hubShell{ grid-template-columns: 1fr; }
-  .nav{ display:none; }
-}
-
-/* =========================
-   OVERLAYS (mantidos)
-   ========================= */
-@keyframes dimIn{ from{opacity:0} to{opacity:1} }
-
-/* ===== OVERLAY DO PERGAMINHO ===== */
-#scrollOverlay{ position:fixed; inset:0; z-index:80; display:none; }
-body.scrollOpen #scrollOverlay{ display:block; }
-#scrollOverlay .dim{ position:absolute; inset:0; background:rgba(0,0,0,0.55); }
-
-/* ===== SOCIAL OVERLAY ===== */
-#socialOverlay{ position:fixed; inset:0; z-index:90; display:none; }
-body.socialOpen #socialOverlay{ display:block; }
-#socialOverlay .dim{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.82);
-  backdrop-filter: blur(3px);
-  animation:dimIn 240ms ease both;
-}
-.smCard{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.94);
-  width:min(560px, 92vw);
-  border-radius:24px;
-  background: rgba(14,14,16,0.86);
-  border:1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 46px 210px rgba(0,0,0,0.88);
-  backdrop-filter: blur(18px);
-  overflow:hidden;
-  opacity:0;
-  animation:smIn 320ms cubic-bezier(.12,.92,.12,1) both;
-}
-@keyframes smIn{
-  from{ opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px); }
-  to{ opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0); }
-}
-.smAccent{
-  position:absolute; inset:0 0 auto 0;
-  height:120px;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(165,86,44,0.16), transparent 52%),
-    radial-gradient(circle at 80% 10%, rgba(255,255,255,0.08), transparent 55%),
-    linear-gradient(to bottom, rgba(255,255,255,0.05), transparent 70%);
-  pointer-events:none;
-}
-.smCard::after{
-  content:"";
-  position:absolute;
-  inset:-70%;
-  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.07) 40%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.07) 60%, transparent 100%);
-  transform:translateX(-45%) rotate(12deg);
-  opacity:0;
-  pointer-events:none;
-  animation:smShine 1.1s ease-in-out 120ms both;
-}
-@keyframes smShine{
-  0%{ opacity:0; transform:translateX(-45%) rotate(12deg); }
-  25%{ opacity:.9; }
-  100%{ opacity:0; transform:translateX(45%) rotate(12deg); }
-}
-.smHead{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:18px 18px 12px;
-  position:relative; z-index:2;
-}
-.smTitle{ display:flex; flex-direction:column; gap:4px; }
-.smTitle b{
-  color:rgba(255,255,255,0.78);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:2px;
-  font-size:12px;
-  text-transform:uppercase;
-}
-.smTitle span{
-  color:rgba(255,255,255,0.42);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
-  font-size:12px;
-}
-.smClose{
-  border:none; cursor:pointer;
-  padding:8px 12px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  color:rgba(255,255,255,0.78);
-  border:1px solid rgba(255,255,255,0.10);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-.smClose:hover{ background: rgba(255,255,255,0.09); }
-.smBody{
-  padding:6px 18px 18px;
-  display:flex; flex-direction:column; gap:14px;
-  position:relative; z-index:2;
-}
-.smProfile{
-  display:flex; flex-direction:column;
-  align-items:center; text-align:center;
-  gap:10px; padding-top:2px;
-}
-.smAvatar{
-  width:88px;height:88px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,0.14);
-  box-shadow: 0 18px 90px rgba(0,0,0,0.78);
-  overflow:hidden;
-  background: rgba(255,255,255,0.06);
-  position:relative;
-}
-.smAvatar::after{
-  content:"";
-  position:absolute; inset:-2px;
-  border-radius:50%;
-  border:1px solid rgba(165,86,44,0.16);
-  box-shadow: 0 0 26px rgba(165,86,44,0.12);
-  pointer-events:none;
-}
-.smAvatar img{ width:100%;height:100%; object-fit:cover; display:block; }
-.smName{
-  font-size: clamp(26px, 5vw, 40px);
-  letter-spacing:0.4px;
-  color:rgba(255,255,255,0.94);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-}
-.smBio{
-  color:rgba(255,255,255,0.70);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:650;
-  font-size:14px;
-}
-.smLoc{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  padding:7px 12px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  color:rgba(255,255,255,0.75);
-  font-size:12px;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-.smLoc svg{ width:14px;height:14px; opacity:.9; }
-.smIcons{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin-top:6px;
-  flex-wrap:wrap;
-}
-.smIconBtn{
-  width:48px;height:48px;
-  border-radius:16px;
-  background: rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  cursor:pointer;
-  display:grid;
-  place-items:center;
-  transition: transform .15s ease, filter .15s ease, background .15s ease, box-shadow .15s ease;
-  position:relative;
-  overflow:hidden;
-  text-decoration:none;
-}
-.smIconBtn::after{
-  content:"";
-  position:absolute; inset:-80%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.16), transparent 55%);
-  opacity:0;
-  transition:opacity .18s ease;
-}
-.smIconBtn:hover{
-  transform: translateY(-1px);
-  background: rgba(255,255,255,0.08);
-  filter: brightness(1.06);
-  box-shadow: 0 10px 40px rgba(0,0,0,0.55), 0 0 26px rgba(165,86,44,0.08);
-}
-.smIconBtn:hover::after{ opacity:1; }
-.smIconBtn:active{ transform: translateY(0px) scale(0.98); }
-.smIconBtn svg{ width:20px;height:20px; opacity:.92; }
-
-.smGrid{ display:grid; grid-template-columns: 1fr; gap:12px; }
-.smSection{
+.tile{
   border-radius:18px;
-  padding:14px;
-  background: rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.10);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.35);
-}
-.smSectionTitle{
-  display:flex; align-items:center; justify-content:space-between;
-  color:rgba(255,255,255,0.65);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:2px;
-  font-size:12px;
-  text-transform:uppercase;
-  margin-bottom:10px;
-}
-.smStatusPill{
-  display:inline-flex; align-items:center; gap:8px;
-  padding:6px 10px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  color:rgba(255,255,255,0.78);
-  font-size:12px;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-}
-.smDot{ width:10px;height:10px; border-radius:50%; background:#777; }
-.smStatusPill[data-status="online"] .smDot{ background:#3bd671; }
-.smStatusPill[data-status="idle"] .smDot{ background:#f2c94c; }
-.smStatusPill[data-status="dnd"] .smDot{ background:#ff5b5b; }
-.smStatusPill[data-status="offline"] .smDot{ background:#777; }
-.smRow{ display:flex; align-items:center; gap:12px; }
-.smDiscIcon{
-  width:46px; height:46px;
-  border-radius:16px;
-  overflow:hidden;
-  background:rgba(255,255,255,0.06);
-  border:1px solid rgba(255,255,255,0.10);
-  box-shadow: inset 0 0 18px rgba(0,0,0,0.55);
-  display:grid;
-  place-items:center;
-  flex:0 0 auto;
-}
-#dAvatar{ width:100%; height:100%; display:none; object-fit:cover; border-radius:16px; }
-.smDiscText{ display:flex; flex-direction:column; gap:2px; }
-.smDiscName{
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:900;
-  font-size:14px;
-}
-.smDiscSub{
-  color:rgba(255,255,255,0.62);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:650;
-  font-size:12px;
-}
-.smFoot{
-  margin-top:8px;
-  text-align:center;
-  color:rgba(255,255,255,0.45);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  letter-spacing:1px;
-  font-size:11px;
-}
-
-/* ===== PERGAMINHO (mantido) ===== */
-.scroll{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.92);
-  width:min(860px, 92vw);
-  height:min(560px, 80vh);
-  opacity:0;
-  transition:opacity 220ms ease, transform 320ms cubic-bezier(.12,.92,.12,1);
-  pointer-events:none;
-}
-body.scrollOpen .scroll{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-  pointer-events:auto;
-}
-.scrollPaper{
-  position:absolute; inset:0;
-  border-radius:18px;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(90,35,10,0.40), transparent 42%),
-    radial-gradient(circle at 92% 14%, rgba(80,28,8,0.38), transparent 46%),
-    radial-gradient(circle at 18% 92%, rgba(80,28,8,0.34), transparent 48%),
-    radial-gradient(circle at 90% 90%, rgba(80,28,8,0.36), transparent 50%),
-    radial-gradient(circle at 28% 38%, rgba(0,0,0,0.08), transparent 38%),
-    radial-gradient(circle at 70% 62%, rgba(0,0,0,0.07), transparent 42%),
-    radial-gradient(circle at 55% 28%, rgba(0,0,0,0.06), transparent 44%),
-    repeating-linear-gradient(12deg,
-      rgba(0,0,0,0.03) 0px,
-      rgba(0,0,0,0.03) 2px,
-      rgba(255,255,255,0.02) 3px,
-      rgba(255,255,255,0.02) 5px),
-    linear-gradient(0deg, #cdb081, #eedcb6 22%, #e6cc9f 58%, #c7a572);
-  box-shadow:
-    0 40px 160px rgba(0,0,0,0.85),
-    inset 0 0 0 1px rgba(0,0,0,0.18),
-    inset 0 0 90px rgba(95,45,10,0.22);
-  filter:contrast(1.06) saturate(0.92);
-  overflow:hidden;
-}
-.scrollPaper::after{
-  content:"";
-  position:absolute; inset:0;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,0.08), transparent 55%),
-    radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.20) 100%);
-  pointer-events:none;
-  mix-blend-mode:multiply;
-  opacity:.95;
-}
-.scrollMask{
-  position:absolute; inset:0;
-  clip-path: polygon(
-    2% 5%, 6% 2%, 12% 4%, 20% 2%, 28% 4%, 36% 2%, 44% 4%, 52% 2%, 60% 4%, 68% 2%, 76% 4%, 84% 2%, 92% 4%, 98% 8%,
-    97% 18%, 99% 26%, 97% 34%, 99% 42%, 97% 50%, 99% 58%, 97% 66%, 99% 74%, 97% 82%, 98% 92%,
-    92% 96%, 86% 98%, 78% 96%, 70% 98%, 62% 96%, 54% 98%, 46% 96%, 38% 98%, 30% 96%, 22% 98%, 14% 96%, 8% 98%, 3% 94%,
-    2% 86%, 1% 78%, 3% 70%, 1% 62%, 3% 54%, 1% 46%, 3% 38%, 1% 30%, 3% 22%, 1% 14%
-  );
-}
-.scrollInner{
-  position:absolute; inset:0;
-  padding:26px 30px 18px;
-  font-family: "Cormorant Garamond", serif;
-  color:rgba(35,18,8,0.90);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.18);
-}
-.scrollTop{
+  border:1px solid rgba(255,255,255,.08);
+  background: rgba(0,0,0,.20);
+  padding:12px;
   display:flex;
   align-items:center;
   justify-content:space-between;
   gap:12px;
   margin-bottom:10px;
-  padding-right:6px;
 }
-.scrollTitle{
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:3px;
-  text-transform:uppercase;
-  font-size:13px;
-  color:rgba(40,22,8,0.92);
-  text-shadow:0 1px 0 rgba(255,255,255,0.25);
-}
-.scrollClose{
-  border:none;
-  background:transparent;
-  padding:6px 10px;
-  cursor:pointer;
-  font-family:"Cinzel", serif;
-  font-weight:800;
-  letter-spacing:2px;
-  text-transform:uppercase;
-  font-size:12px;
-  color:rgba(45,24,10,0.55);
-  text-shadow: 0 1px 0 rgba(255,255,255,0.25);
-  outline: 2px solid rgba(45,24,10,0.28);
-  outline-offset: -2px;
-  border-radius:10px;
-  box-shadow:
-    0 0 0 1px rgba(0,0,0,0.08) inset,
-    0 1px 0 rgba(255,255,255,0.18);
-  opacity:0.9;
-  transform:rotate(-1.5deg);
-}
-.scrollClose:hover{
-  opacity:1;
-  outline-color: rgba(45,24,10,0.38);
-  color:rgba(45,24,10,0.62);
-}
-.scrollBody{
-  height:calc(100% - 44px);
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  overflow:hidden;
-}
-.scrollLog{
-  flex:1;
-  overflow:auto;
-  padding-right:10px;
-  line-height:1.55;
-  font-size:16px;
-  letter-spacing:0.2px;
-  color:rgba(35,18,8,0.90);
-  filter: contrast(1.02);
-}
-.scrollLog .who{
-  font-family:"IM Fell English", serif;
-  font-weight:400;
-  font-style:italic;
-  letter-spacing:0.6px;
-  text-transform:uppercase;
-  color:rgba(60,28,10,0.86);
-  margin-right:6px;
-  font-size: 0.90em;
-}
-.scrollLog .mestre{ color:rgba(70,34,12,0.86); }
-.scrollLog .shadow{ color:rgba(20,20,20,0.92); }
-.scrollLog .titan{ color:rgba(55,25,10,0.86); }
-.scrollInputBar{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.07);
-  border:1px solid rgba(0,0,0,0.14);
-}
-.prompt{
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+.tile b{
+  color:rgba(255,255,255,.88);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight:900;
-  color:rgba(20,10,0,0.85);
-  letter-spacing:1px;
-}
-#cmdInput{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
   font-size:13px;
-  color:rgba(20,10,0,0.92);
 }
-#cmdInput::placeholder{ color:rgba(20,10,0,0.45); }
-.typeLine{ margin:0 0 10px 0; white-space:pre-wrap; }
-.cursor{
-  display:inline-block;
-  width:10px;
-  height:16px;
-  transform:translateY(3px);
-  background:rgba(20,10,0,0.62);
-  margin-left:4px;
-  animation:cur 0.8s steps(1,end) infinite;
+.tile span{
+  display:block;
+  margin-top:4px;
+  color:rgba(255,255,255,.55);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  font-size:12px;
 }
-@keyframes cur{ 0%,49%{opacity:0} 50%,100%{opacity:1} }
-.outputLine{
-  margin:0 0 10px 0;
-  color:rgba(20,10,0,0.92);
-  font-size:15px;
-}
-.outputLine .sys{
-  font-family:"IM Fell English", serif;
-  font-style:italic;
-  letter-spacing:0.6px;
-  color:rgba(60,28,8,0.74);
-}
-body.scrollOpen .scrollPaper{
-  animation:unroll 520ms cubic-bezier(.12,.92,.12,1) both;
-}
-@keyframes unroll{
-  0%{ filter:blur(1px) contrast(1.02) saturate(.9); transform:scaleY(.70); }
-  55%{ transform:scaleY(1.02); }
-  100%{ filter:blur(0) contrast(1.06) saturate(.92); transform:scaleY(1); }
+.tag{
+  border-radius:999px;
+  padding:8px 10px;
+  border:1px solid rgba(255,255,255,.10);
+  background: radial-gradient(circle at 30% 30%, rgba(215,103,52,.18), rgba(0,0,0,.20));
+  color:rgba(255,255,255,.75);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-size:10px;
 }
 
-/* ===== PLAYLISTS OVERLAY ===== */
-#playlistsOverlay{ position:fixed; inset:0; z-index:95; display:none; }
+/* =========================
+   OVERLAYS (MANTIDOS)
+   ========================= */
+.overlay{ position:fixed; inset:0; z-index:80; display:none; }
+.overlay .dim{ position:absolute; inset:0; background:rgba(0,0,0,.86); backdrop-filter: blur(2px); }
+body.scrollOpen #scrollOverlay{ display:block; }
+body.socialOpen #socialOverlay{ display:block; }
 body.playlistsOpen #playlistsOverlay{ display:block; }
-#playlistsOverlay .dim{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.86);
-  backdrop-filter: blur(3px);
-  animation:dimIn 240ms ease both;
-}
-.plShell{
-  position:absolute; left:50%; top:50%;
+body.adminOpen #adminOverlay{ display:block; }
+
+/* Dialog base */
+.dialog{
+  position:absolute;
+  left:50%; top:50%;
   transform:translate(-50%,-50%) scale(.96);
   width:min(980px, 94vw);
   height:min(620px, 84vh);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(12,12,14,0.80);
-  box-shadow: 0 44px 180px rgba(0,0,0,0.88);
-  backdrop-filter: blur(18px);
+  border-radius:26px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(14,14,18,.92);
+  box-shadow: 0 50px 220px rgba(0,0,0,.90);
   overflow:hidden;
   opacity:0;
-  animation:hubIn 320ms cubic-bezier(.12,.92,.12,1) both;
+  animation: popIn 260ms cubic-bezier(.12,.92,.12,1) both;
 }
-@keyframes hubIn{
-  from{opacity:0; transform:translate(-50%,-50%) scale(.92); filter:blur(10px);}
-  to{opacity:1; transform:translate(-50%,-50%) scale(1); filter:blur(0);}
+@keyframes popIn{
+  from{ opacity:0; transform:translate(-50%,-50%) scale(.92); filter: blur(10px); }
+  to{ opacity:1; transform:translate(-50%,-50%) scale(1); filter: blur(0); }
 }
-.plTop{
+.dTop{
+  padding:16px 16px 12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
   display:flex; align-items:center; justify-content:space-between;
-  padding:18px 18px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
+  gap:10px;
+  background: rgba(0,0,0,.22);
 }
-.plTitle{ display:flex; flex-direction:column; gap:6px; }
-.plTitle b{
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size:18px;
+.dTitle b{
+  display:block;
+  color:rgba(255,255,255,.92);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  font-size:16px;
 }
-.plTitle span{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+.dTitle span{
+  display:block;
+  margin-top:4px;
+  color:rgba(255,255,255,.55);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
   font-size:12px;
+}
+.closeBtn{
+  border:none; cursor:pointer;
+  padding:10px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color:rgba(255,255,255,.78);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   letter-spacing:1px;
   text-transform:uppercase;
+  font-size:11px;
 }
-.plClose{
-  border:none; cursor:pointer;
-  padding:8px 12px;
+.closeBtn:hover{ background: rgba(255,255,255,.08); }
+
+/* SOCIAL */
+.smBody{
+  padding:16px;
+  height:calc(100% - 62px);
+  overflow:auto;
+}
+.smCard{
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  padding:16px;
+}
+.smProfile{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.smAvatar{
+  width:84px; height:84px;
+  border-radius:22px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+}
+.smAvatar img{ width:100%;height:100%;object-fit:cover;display:block; }
+.smName{
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  font-size:22px;
+  color:rgba(255,255,255,.92);
+}
+.smBio{
+  margin-top:4px;
+  color:rgba(255,255,255,.58);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  font-size:13px;
+}
+.smRow{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.linkBtn{
+  width:46px;height:46px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  display:grid; place-items:center;
+  cursor:pointer;
+  text-decoration:none;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.linkBtn:hover{ transform:translateY(-1px); background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.16); }
+.linkBtn svg{ width:20px;height:20px; opacity:.9; }
+
+.discordBox{
+  margin-top:14px;
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.20);
+  padding:14px;
+}
+.statusPill{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:8px 10px;
   border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  color:rgba(255,255,255,0.78);
-  border:1px solid rgba(255,255,255,0.10);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color:rgba(255,255,255,.78);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:10px;
 }
-.plClose:hover{ background: rgba(255,255,255,0.09); }
+.dot{ width:10px;height:10px;border-radius:50%; background:#777; }
+.statusPill[data-status="online"] .dot{ background:#3bd671; }
+.statusPill[data-status="idle"] .dot{ background:#f2c94c; }
+.statusPill[data-status="dnd"] .dot{ background:#ff5b5b; }
+.statusPill[data-status="offline"] .dot{ background:#777; }
+
+.dRow{
+  margin-top:12px;
+  display:flex; align-items:center; gap:12px;
+}
+.dIcon{
+  width:52px;height:52px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  overflow:hidden;
+}
+#dAvatar{ width:100%;height:100%;object-fit:cover;display:none; }
+.dInfo b{
+  display:block;
+  color:rgba(255,255,255,.92);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  font-size:14px;
+}
+.dInfo span{
+  display:block;
+  margin-top:2px;
+  color:rgba(255,255,255,.55);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  font-size:12px;
+}
+#smUpdatedAt{
+  margin-top:10px;
+  color:rgba(255,255,255,.45);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  font-size:12px;
+}
+
+/* PLAYLISTS */
 .plBody{
   height:calc(100% - 62px);
   display:grid;
@@ -1091,288 +785,281 @@ body.playlistsOpen #playlistsOverlay{ display:block; }
   padding:14px;
 }
 .plLeft{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
   padding:12px;
   overflow:auto;
 }
 .plHint{
-  margin-bottom:10px;
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
+  color:rgba(255,255,255,.55);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
   text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:11px;
+  margin-bottom:10px;
 }
-.plList{ display:flex; flex-direction:column; gap:10px; }
 .plItem{
   width:100%;
-  border:none;
-  cursor:pointer;
+  border:none; cursor:pointer;
   text-align:left;
-  padding:12px 12px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.25);
-  color:rgba(255,255,255,0.88);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:800;
-  letter-spacing:.2px;
-  transition: transform .16s ease, background .16s ease, border-color .16s ease;
+  padding:12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color:rgba(255,255,255,.88);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:900;
+  transition: transform .15s ease, background .15s ease;
+  margin-bottom:10px;
 }
 .plItem small{
   display:block;
   margin-top:4px;
-  font-weight:600;
-  color:rgba(255,255,255,0.55);
-  font-size:12px;
+  color:rgba(255,255,255,.55);
+  font-weight:700;
 }
-.plItem:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
+.plItem:hover{ transform:translateY(-1px); background: rgba(255,255,255,.07); }
 .plItem.active{
-  border-color: rgba(255,255,255,0.22);
-  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.12), rgba(0,0,0,0.28));
+  background: radial-gradient(circle at 30% 30%, rgba(215,103,52,.22), rgba(255,255,255,.04));
+  border-color: rgba(255,255,255,.16);
 }
 .plRight{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.25);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
   overflow:hidden;
   position:relative;
 }
-.plFrame{ position:absolute; inset:0; width:100%; height:100%; border:none; }
-@media (max-width: 860px){
-  .plBody{ grid-template-columns: 1fr; }
-  .plLeft{ max-height: 200px; }
+#plFrame{ position:absolute; inset:0; width:100%; height:100%; border:none; }
+
+/* SCROLL (pergaminho) — mantém vibe */
+.scrollBody{
+  height:calc(100% - 62px);
+  padding:14px;
+  overflow:auto;
+}
+.scrollPaper{
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(90,35,10,.38), transparent 42%),
+    radial-gradient(circle at 92% 14%, rgba(80,28,8,.34), transparent 46%),
+    linear-gradient(0deg, #cdb081, #eedcb6 22%, #e6cc9f 58%, #c7a572);
+  border:1px solid rgba(0,0,0,.18);
+  box-shadow: 0 30px 120px rgba(0,0,0,.78), inset 0 0 70px rgba(95,45,10,.22);
+  overflow:hidden;
+}
+.scrollInner{
+  padding:18px 18px 14px;
+  color:rgba(35,18,8,.92);
+  font-family: "Cinzel", serif;
+}
+.scrollInner b{
+  display:block;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:12px;
+}
+.scrollInner p{
+  margin-top:10px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  font-weight:700;
+  color:rgba(35,18,8,.85);
+  line-height:1.6;
+  font-size:14px;
+}
+.cmdBar{
+  margin-top:12px;
+  display:flex; gap:10px; align-items:center;
+  padding:10px 12px;
+  border-radius:16px;
+  background: rgba(0,0,0,.08);
+  border:1px solid rgba(0,0,0,.14);
+}
+.cmdBar .prompt{
+  font-weight:900;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+#cmdInput{
+  flex:1;
+  border:none; outline:none;
+  background:transparent;
+  color:rgba(35,18,8,.92);
+  font-weight:800;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
-/* ===== ADMIN OVERLAY ===== */
-#adminOverlay{ position:fixed; inset:0; z-index:98; display:none; }
-body.adminOpen #adminOverlay{ display:block; }
-#adminOverlay .dim{
-  position:absolute; inset:0;
-  background:rgba(0,0,0,0.88);
-  backdrop-filter: blur(3px);
-  animation:dimIn 240ms ease both;
-}
-.adShell{
-  position:absolute;
-  left:50%; top:50%;
-  transform:translate(-50%,-50%) scale(.96);
-  width:min(840px, 94vw);
-  height:min(560px, 84vh);
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(12,12,14,0.82);
-  box-shadow: 0 44px 180px rgba(0,0,0,0.90);
-  backdrop-filter: blur(18px);
-  overflow:hidden;
-  opacity:0;
-  animation:hubIn 320ms cubic-bezier(.12,.92,.12,1) both;
-}
-.adTop{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:18px 18px 12px;
-  border-bottom:1px solid rgba(255,255,255,0.08);
-}
-.adTitle{ display:flex; flex-direction:column; gap:6px; }
-.adTitle b{
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-size:18px;
-}
-.adTitle span{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-}
-.adClose{
-  border:none; cursor:pointer;
-  padding:8px 12px;
-  border-radius:999px;
-  background: rgba(255,255,255,0.06);
-  color:rgba(255,255,255,0.78);
-  border:1px solid rgba(255,255,255,0.10);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-}
-.adClose:hover{ background: rgba(255,255,255,0.09); }
-.adBody{ height:calc(100% - 62px); padding:16px; overflow:auto; }
+/* ADMIN */
+.adBody{ height:calc(100% - 62px); padding:14px; overflow:auto; }
 .adPanel{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.04);
-  box-shadow: inset 0 0 22px rgba(0,0,0,0.45);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
   padding:16px;
 }
-.adLoginGrid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:12px;
-  margin-top:12px;
-}
+.adRow{ display:grid; grid-template-columns: 1fr 1fr; gap:12px; margin-top:12px; }
 .adLabel{
-  color:rgba(255,255,255,0.65);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
+  color:rgba(255,255,255,.55);
+  font-weight:900;
   letter-spacing:1px;
   text-transform:uppercase;
+  font-size:11px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   margin-bottom:6px;
 }
 .adInput{
   width:100%;
   padding:12px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.35);
-  color:rgba(255,255,255,0.88);
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.24);
+  color:rgba(255,255,255,.90);
   outline:none;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
+  font-weight:800;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 .adInput:focus{
-  border-color: rgba(255,255,255,0.22);
-  box-shadow: 0 0 0 3px rgba(165,86,44,0.10);
+  border-color: rgba(255,255,255,.18);
+  box-shadow: 0 0 0 3px rgba(215,103,52,.10);
 }
 .adActions{ display:flex; gap:10px; margin-top:14px; flex-wrap:wrap; }
 .adBtn{
   border:none; cursor:pointer;
-  padding:10px 12px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.35);
-  color:rgba(255,255,255,0.84);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(255,255,255,.04);
+  color:rgba(255,255,255,.82);
+  font-weight:900;
   letter-spacing:1px;
   text-transform:uppercase;
-  font-size:12px;
-  transition: transform .15s ease, background .15s ease;
+  font-size:11px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
-.adBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); }
+.adBtn:hover{ background: rgba(255,255,255,.08); }
 .adBtn.primary{
-  background: radial-gradient(circle at 30% 30%, rgba(165,86,44,0.14), rgba(0,0,0,0.35));
-  border-color: rgba(255,255,255,0.18);
+  background: radial-gradient(circle at 30% 30%, rgba(215,103,52,.24), rgba(255,255,255,.04));
+  border-color: rgba(255,255,255,.16);
 }
 .adMsg{
-  margin-top:12px;
-  color:rgba(255,255,255,0.68);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight:700;
+  color:rgba(255,255,255,.70);
+  font-weight:800;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
-.adDash{ display:none; }
-.adGrid{
+.adDash{ display:none; margin-top:10px; }
+.metrics{
+  margin-top:12px;
   display:grid;
   grid-template-columns: repeat(3, minmax(0,1fr));
   gap:12px;
-  margin-top:12px;
 }
-.adMetric{
-  border-radius:18px;
-  border:1px solid rgba(255,255,255,0.10);
-  background: rgba(0,0,0,0.28);
+.metric{
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
   padding:14px;
 }
-.adMetric .k{
-  color:rgba(255,255,255,0.55);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-  font-size:12px;
-  letter-spacing:1px;
+.metric .k{
+  color:rgba(255,255,255,.55);
+  font-weight:900;
   text-transform:uppercase;
+  letter-spacing:1px;
+  font-size:11px;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
-.adMetric .v{
+.metric .v{
   margin-top:8px;
   font-size:30px;
-  color:rgba(255,255,255,0.92);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
   font-weight:900;
+  color:rgba(255,255,255,.92);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
-.adUpdated{
+#adUpdated{
   margin-top:10px;
-  color:rgba(255,255,255,0.45);
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  color:rgba(255,255,255,.45);
+  font-weight:700;
   font-size:12px;
-}
-@media (max-width: 820px){
-  .adGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .adLoginGrid{ grid-template-columns: 1fr; }
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
 }
 
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 1150px){
+  .shell{ grid-template-columns: 260px 1fr 320px; }
+  .cards{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+@media (max-width: 900px){
+  .shell{ grid-template-columns: 1fr; }
+  .panel.nav{ display:none; }
+  .metrics{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .plBody{ grid-template-columns: 1fr; }
+}
 @media (prefers-reduced-motion: reduce){
-  #grain{ display:none; }
+  #grain, #heat{ display:none; }
 }
 </style>
 </head>
 
 <body>
 
-<video id="mainVideo"
-  src="https://files.catbox.moe/klaol5.webm"
-  playsinline preload="auto" loop></video>
-
-<!-- mantém áudio separado (como você já tinha) -->
+<video id="mainVideo" src="https://files.catbox.moe/klaol5.webm" playsinline preload="auto" loop muted></video>
 <audio id="bgAudio" src="https://files.catbox.moe/99fu05.m4a" preload="auto"></audio>
 
-<canvas id="emberCanvas" aria-hidden="true"></canvas>
+<canvas id="fireCanvas" aria-hidden="true"></canvas>
+<div id="heat" aria-hidden="true"></div>
 <div id="vignette" aria-hidden="true"></div>
 <div id="grain" aria-hidden="true"></div>
 
-<!-- =========================
-     ENTRY (V2.2)
-     ========================= -->
-<section id="entry" tabindex="0" aria-label="Entrada">
-  <div class="entryInner" role="button" aria-label="Entrar no HUB">
-    <div class="entryMark" aria-hidden="true">
-      <!-- detalhe leve “shadow” -->
-      <svg viewBox="0 0 24 24" fill="none">
-        <path d="M12 3c4.6 0 8.2 3.6 8.2 8.2 0 4.2-3 7.5-7.4 8.1-.4.1-.8-.2-.9-.6l-.6-2.4c-.1-.4.1-.9.5-1.1 2.2-1 3.6-3.2 3.6-5.8 0-3.6-2.6-6.1-6.4-6.1-2 0-3.8.8-5.1 2.2" stroke="rgba(255,255,255,0.72)" stroke-width="1.6" stroke-linecap="round"/>
-        <path d="M6.2 11.6c0 3.6 2.6 6.1 6.4 6.1" stroke="rgba(165,86,44,0.75)" stroke-width="1.6" stroke-linecap="round"/>
-      </svg>
-    </div>
-
+<!-- ENTRY -->
+<section id="entry" tabindex="0">
+  <div class="entryBox">
     <div class="entryCenter">
-      <div>
-        <div class="entryTitle">PERSONAL HUB • CINEMATIC</div>
-        <button class="entryBtn" id="enterBtn" type="button">ENTER</button>
-        <div class="entryHint">
-          pressione <span class="kbd">ENTER</span> ou clique
-        </div>
+      <div class="entryTitle">PERSONAL • VAULT • HUB</div>
+      <div class="entryMain">ALLZ</div>
+      <div class="entrySub">
+        Um lugar pra guardar coisas pessoais, gostos, jogos e links —<br>
+        com estética Shadow Fight 2 (adulto, pesado, sem neon).
       </div>
+
+      <div class="entryBtnRow">
+        <button class="entryBtn primary" id="enterBtn" type="button">ENTER</button>
+        <button class="entryBtn" id="enterLore" type="button">LORE</button>
+        <button class="entryBtn" id="enterSocial" type="button">SOCIAL</button>
+      </div>
+
+      <div class="entryHint">Pressione <span class="kbd">ENTER</span> ou clique</div>
     </div>
   </div>
 </section>
 
-<!-- =========================
-     HUB
-     ========================= -->
-<section id="hub" aria-label="Hub">
-  <div class="hubShell">
+<!-- HUB -->
+<section id="hub">
+  <div class="shell">
 
-    <!-- LEFT NAV -->
-    <aside class="panelGlass nav" aria-label="Menu lateral">
-      <div class="navTop">
+    <!-- LEFT -->
+    <aside class="panel nav">
+      <div class="navHeader">
         <div class="brand">
           <b>ALLZ • HUB</b>
           <span>sombras • links • projetos</span>
         </div>
-
-        <div class="navTools">
-          <!-- ✅ Mute (no lugar do slider) -->
-          <button class="toolBtn" id="muteBtn" aria-label="Mutar áudio" data-on="true">
-            <svg id="icVolOn" viewBox="0 0 24 24" fill="none">
+        <div class="tools">
+          <button class="iconBtn" id="muteBtn" aria-label="Mutar áudio" data-on="true">
+            <svg id="icOn" viewBox="0 0 24 24" fill="none">
               <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="rgba(255,255,255,0.86)"/>
-              <path d="M16 9c1 .8 1.5 1.8 1.5 3s-.5 2.2-1.5 3" stroke="rgba(165,86,44,0.75)" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M18.5 7.5c1.6 1.5 2.5 3 2.5 4.5s-.9 3-2.5 4.5" stroke="rgba(165,86,44,0.45)" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M16 9c1 .8 1.5 1.8 1.5 3s-.5 2.2-1.5 3" stroke="rgba(215,103,52,0.85)" stroke-width="1.6" stroke-linecap="round"/>
+              <path d="M18.5 7.5c1.6 1.5 2.5 3 2.5 4.5s-.9 3-2.5 4.5" stroke="rgba(215,103,52,0.55)" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
-            <svg id="icVolOff" viewBox="0 0 24 24" fill="none" style="display:none">
+            <svg id="icOff" viewBox="0 0 24 24" fill="none" style="display:none">
               <path d="M4 10v4h4l5 4V6L8 10H4Z" fill="rgba(255,255,255,0.75)"/>
-              <path d="M16 9l5 6" stroke="rgba(255,255,255,0.70)" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M21 9l-5 6" stroke="rgba(255,255,255,0.70)" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M16 9l5 6" stroke="rgba(255,255,255,0.78)" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M21 9l-5 6" stroke="rgba(255,255,255,0.78)" stroke-width="1.8" stroke-linecap="round"/>
             </svg>
           </button>
 
-          <button class="toolBtn" id="fsBtn" aria-label="Tela cheia">
+          <button class="iconBtn" id="fsBtn" aria-label="Tela cheia">
             <svg viewBox="0 0 24 24" fill="none">
               <path d="M9 4H6a2 2 0 0 0-2 2v3" stroke="rgba(255,255,255,0.86)" stroke-width="1.6" stroke-linecap="round"/>
               <path d="M15 4h3a2 2 0 0 1 2 2v3" stroke="rgba(255,255,255,0.86)" stroke-width="1.6" stroke-linecap="round"/>
@@ -1383,17 +1070,17 @@ body.adminOpen #adminOverlay{ display:block; }
         </div>
       </div>
 
-      <nav class="navList" aria-label="Seções">
+      <div class="navList">
         <button class="navItem active" id="navHome">Home <span class="badge">•</span></button>
         <button class="navItem" id="navLore">Lore <span class="badge">V2</span></button>
         <button class="navItem" id="navSocial">Social <span class="badge">V2</span></button>
         <button class="navItem" id="navPlaylists">Playlists <span class="badge">2.1</span></button>
         <button class="navItem" id="navArchives">Archives <span class="badge">—</span></button>
         <button class="navItem" id="navAdmin">Admin <span class="badge">•</span></button>
-      </nav>
+      </div>
 
-      <div class="navFoot">
-        <div class="profileCard">
+      <div class="navFooter">
+        <div class="profile">
           <div class="pfp"><img src="https://files.catbox.moe/5lkce6.gif" alt="Allz"></div>
           <div class="pmeta">
             <b>Allz</b>
@@ -1404,99 +1091,96 @@ body.adminOpen #adminOverlay{ display:block; }
     </aside>
 
     <!-- CENTER -->
-    <main class="panelGlass main" aria-label="Conteúdo">
-
-      <div class="topbar" aria-label="Topo">
-        <div class="searchWrap" aria-label="Buscar">
+    <main class="panel center">
+      <div class="topbar">
+        <div class="search">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="rgba(255,255,255,0.75)" stroke-width="1.6"/>
-            <path d="M16.5 16.5 21 21" stroke="rgba(165,86,44,0.78)" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M16.5 16.5 21 21" stroke="rgba(215,103,52,0.85)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
-          <input class="searchInput" placeholder="Search (placeholder)" spellcheck="false" />
+          <input placeholder="Search (placeholder)" spellcheck="false" />
         </div>
 
-        <div class="topActions">
-          <div class="chip">v2.2</div>
-          <div class="chip" style="border-color:rgba(165,86,44,0.18);">embers</div>
+        <div class="pills">
+          <div class="pill">v2.2</div>
+          <div class="pill accent">embers</div>
         </div>
       </div>
 
-      <section class="hero" aria-label="Hero">
+      <section class="hero">
         <div class="heroInner">
           <div class="heroText">
             <h1>Personal Hub</h1>
             <p>
               Central pra guardar coisas pessoais: links, gostos, jogos, projetos, social media (Discord ao vivo),
-              playlists e um “lore terminal” — visual adulto, escuro e cinematográfico.
+              playlists e um “lore terminal”. Menos transparência, mais peso.
             </p>
           </div>
-
           <div class="heroActions">
-            <button class="pillBtn primary" id="heroLore">Abrir Lore</button>
-            <button class="pillBtn" id="heroSocial">Social</button>
-            <button class="pillBtn" id="heroPlaylists">Playlists</button>
+            <button class="actionBtn primary" id="heroLore">Abrir Lore</button>
+            <button class="actionBtn" id="heroSocial">Social</button>
+            <button class="actionBtn" id="heroPlaylists">Playlists</button>
           </div>
         </div>
       </section>
 
-      <div class="sectionTitle">
+      <div class="sectionRow">
         <b>Trending now</b>
-        <b style="opacity:.45">placeholder</b>
+        <b style="opacity:.35">placeholder</b>
       </div>
 
-      <section class="trending" aria-label="Trending">
+      <section class="grid">
         <div class="cards">
-          <div class="card"></div>
-          <div class="card"></div>
-          <div class="card"></div>
-          <div class="card"></div>
+          <div class="card" title="card 1"></div>
+          <div class="card" title="card 2"></div>
+          <div class="card" title="card 3"></div>
+          <div class="card" title="card 4"></div>
         </div>
       </section>
     </main>
 
     <!-- RIGHT -->
-    <aside class="panelGlass right" aria-label="Painel lateral">
-      <div class="rightTitle">Relics / Intel</div>
-
-      <div class="relics" aria-label="Relics">
-        <div class="relic">
+    <aside class="panel right">
+      <div class="rTitle">Relics / Intel</div>
+      <div class="stack">
+        <div class="tile">
           <div>
             <b>Status do Hub</b>
             <span>cinematic • dark • v2.2</span>
           </div>
-          <div class="relicTag">system</div>
+          <div class="tag">system</div>
         </div>
 
-        <div class="relic">
+        <div class="tile">
           <div>
             <b>Notas Rápidas</b>
             <span>ideias • ajustes • backlog</span>
           </div>
-          <div class="relicTag">notes</div>
+          <div class="tag">notes</div>
         </div>
 
-        <div class="relic">
+        <div class="tile">
           <div>
             <b>Pergaminho Selado</b>
             <span>terminal • lore • comandos</span>
           </div>
-          <div class="relicTag">lore</div>
+          <div class="tag">lore</div>
         </div>
 
-        <div class="relic">
+        <div class="tile">
           <div>
             <b>Ritual do Som</b>
             <span>playlists • foco</span>
           </div>
-          <div class="relicTag">2.1</div>
+          <div class="tag">2.1</div>
         </div>
 
-        <div class="relic">
+        <div class="tile">
           <div>
             <b>Discord</b>
             <span>status ao vivo</span>
           </div>
-          <div class="relicTag">api</div>
+          <div class="tag">api</div>
         </div>
       </div>
     </aside>
@@ -1504,214 +1188,157 @@ body.adminOpen #adminOverlay{ display:block; }
   </div>
 </section>
 
-<!-- ===== OVERLAY DO PERGAMINHO ===== -->
-<div id="scrollOverlay" aria-hidden="true">
+<!-- SOCIAL -->
+<div class="overlay" id="socialOverlay" aria-hidden="true">
   <div class="dim"></div>
-
-  <div class="scroll" role="dialog" aria-label="Pergaminho">
-    <div class="scrollMask">
-      <div class="scrollPaper">
-        <div class="scrollInner">
-          <div class="scrollTop">
-            <div class="scrollTitle">Pergaminho — Vozes nas Sombras</div>
-            <button class="scrollClose" id="scrollClose">FECHAR</button>
-          </div>
-
-          <div class="scrollBody">
-            <div class="scrollLog" id="scrollLog">
-              <div class="typeLine" id="typeLine"></div><span class="cursor" id="cursor"></span>
-              <div id="out"></div>
-            </div>
-
-            <div class="scrollInputBar">
-              <div class="prompt">&gt;</div>
-              <input id="cmdInput" autocomplete="off" spellcheck="false"
-                     placeholder="digite um comando (ex: social, arquivo, lore, ajuda) e ENTER">
-            </div>
-          </div>
-
-        </div>
+  <div class="dialog" role="dialog" aria-label="Social Media">
+    <div class="dTop">
+      <div class="dTitle">
+        <b>Social Media</b>
+        <span>perfil • links • discord ao vivo</span>
       </div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== SOCIAL MEDIA OVERLAY ===== -->
-<div id="socialOverlay" aria-hidden="true">
-  <div class="dim"></div>
-
-  <div class="smCard" role="dialog" aria-label="Social Media">
-    <div class="smAccent" aria-hidden="true"></div>
-
-    <div class="smHead">
-      <div class="smTitle">
-        <b>SOCIAL MEDIA</b>
-        <span>perfil • links • status ao vivo</span>
-      </div>
-      <button class="smClose" id="socialClose">FECHAR</button>
+      <button class="closeBtn" id="socialClose">Fechar</button>
     </div>
 
     <div class="smBody">
-      <div class="smProfile">
-        <div class="smAvatar">
-          <img id="smAvatar" src="https://files.catbox.moe/5lkce6.gif" alt="Avatar Allz">
+      <div class="smCard">
+        <div class="smProfile">
+          <div class="smAvatar"><img src="https://files.catbox.moe/5lkce6.gif" alt="Avatar"></div>
+          <div>
+            <div class="smName">Allz</div>
+            <div class="smBio">awake and unafraid</div>
+            <div class="smRow" aria-label="Links">
+              <a class="linkBtn" href="https://tiktok.com/@allzdeadd" target="_blank" rel="noopener" aria-label="TikTok">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M14 4v10.2a3.2 3.2 0 1 1-2.2-3.05V8.2c-.3 0-.6-.02-.9-.07V5.1A7.6 7.6 0 0 0 14 4Z" fill="rgba(255,255,255,0.85)"/></svg>
+              </a>
+              <a class="linkBtn" href="https://open.spotify.com/user/allzdeadd" target="_blank" rel="noopener" aria-label="Spotify">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.9.9 0 0 1-1.24.3c-2.8-1.7-6.3-2.1-10.3-1.2a.9.9 0 0 1-.4-1.75c4.4-1 8.3-.5 11.5 1.4.42.25.56.8.3 1.25Zm1.3-3a1 1 0 0 1-1.37.33c-3.2-2-8-2.6-11.6-1.4a1 1 0 0 1-.6-1.9c4.1-1.3 9.3-.7 13 1.6.47.3.62.92.33 1.37Zm.1-3.2c-3.8-2.3-10-2.5-13.6-1.4a1.1 1.1 0 0 1-.65-2.1c4.2-1.3 11.1-1 15.5 1.7a1.1 1.1 0 1 1-1.1 1.8Z" fill="rgba(255,255,255,0.85)"/></svg>
+              </a>
+              <a class="linkBtn" href="https://instagram.com/allzdeadd" target="_blank" rel="noopener" aria-label="Instagram">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/><path d="M12 16.2A4.2 4.2 0 1 0 12 7.8a4.2 4.2 0 0 0 0 8.4Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/><path d="M17.6 6.4h.01" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round"/></svg>
+              </a>
+              <a class="linkBtn" href="https://x.com/allzdeadd" target="_blank" rel="noopener" aria-label="X">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M5 19L19 5" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/><path d="M7 5h5l5 14h-5L7 5Z" fill="rgba(255,255,255,0.75)"/></svg>
+              </a>
+            </div>
+          </div>
         </div>
 
-        <div class="smName" id="smName">Allz</div>
-        <div class="smBio" id="smBio">awake and unafraid</div>
-
-        <div class="smLoc" id="smLoc">
-          <svg viewBox="0 0 24 24" fill="none">
-            <path d="M12 21s7-5.2 7-12a7 7 0 0 0-14 0c0 6.8 7 12 7 12Z" stroke="rgba(255,255,255,0.75)" stroke-width="1.6"/>
-            <path d="M12 12a2.4 2.4 0 1 0 0-4.8 2.4 2.4 0 0 0 0 4.8Z" fill="rgba(255,255,255,0.65)"/>
-          </svg>
-          purgatório
-        </div>
-
-        <div class="smIcons" aria-label="Links">
-          <a class="smIconBtn" href="https://tiktok.com/@allzdeadd" target="_blank" rel="noopener" aria-label="TikTok">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M14 4v10.2a3.2 3.2 0 1 1-2.2-3.05V8.2c-.3 0-.6-.02-.9-.07V5.1A7.6 7.6 0 0 0 14 4Z" fill="rgba(255,255,255,0.85)"/>
-            </svg>
-          </a>
-
-          <a class="smIconBtn" href="https://open.spotify.com/user/allzdeadd" target="_blank" rel="noopener" aria-label="Spotify">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.6 14.4a.9.9 0 0 1-1.24.3c-2.8-1.7-6.3-2.1-10.3-1.2a.9.9 0 0 1-.4-1.75c4.4-1 8.3-.5 11.5 1.4.42.25.56.8.3 1.25Zm1.3-3a1 1 0 0 1-1.37.33c-3.2-2-8-2.6-11.6-1.4a1 1 0 0 1-.6-1.9c4.1-1.3 9.3-.7 13 1.6.47.3.62.92.33 1.37Zm.1-3.2c-3.8-2.3-10-2.5-13.6-1.4a1.1 1.1 0 0 1-.65-2.1c4.2-1.3 11.1-1 15.5 1.7a1.1 1.1 0 1 1-1.1 1.8Z" fill="rgba(255,255,255,0.85)"/>
-            </svg>
-          </a>
-
-          <a class="smIconBtn" href="https://instagram.com/allzdeadd" target="_blank" rel="noopener" aria-label="Instagram">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/>
-              <path d="M12 16.2A4.2 4.2 0 1 0 12 7.8a4.2 4.2 0 0 0 0 8.4Z" stroke="rgba(255,255,255,0.85)" stroke-width="1.6"/>
-              <path d="M17.6 6.4h.01" stroke="rgba(255,255,255,0.85)" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </a>
-
-          <a class="smIconBtn" href="https://x.com/allzdeadd" target="_blank" rel="noopener" aria-label="X">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M5 19L19 5" stroke="rgba(255,255,255,0.85)" stroke-width="1.8" stroke-linecap="round"/>
-              <path d="M7 5h5l5 14h-5L7 5Z" fill="rgba(255,255,255,0.75)"/>
-            </svg>
-          </a>
-
-          <a class="smIconBtn" href="https://allzdeadd" target="_blank" rel="noopener" aria-label="Link">
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M10 13a4 4 0 0 1 0-6l1-1a4 4 0 0 1 6 6l-1 1" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-              <path d="M14 11a4 4 0 0 1 0 6l-1 1a4 4 0 0 1-6-6l1-1" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <div class="smGrid">
-        <div class="smSection">
-          <div class="smSectionTitle">
-            <span>DISCORD STATUS</span>
-            <span class="smStatusPill" id="smStatusPill" data-status="idle">
-              <span class="smDot"></span>
-              <span id="smStatusText">Ausente</span>
-            </span>
+        <div class="discordBox" style="margin-top:14px">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <div style="color:rgba(255,255,255,.80);font-weight:900;font-family:Inter,system-ui;letter-spacing:1px;text-transform:uppercase;font-size:11px;">
+              Discord Status
+            </div>
+            <div class="statusPill" id="statusPill" data-status="idle"><span class="dot"></span><span id="statusText">Ausente</span></div>
           </div>
 
-          <div class="smRow">
-            <div class="smDiscIcon" aria-label="Avatar Discord">
-              <img id="dAvatar" alt="Avatar Discord">
-              <svg id="dFallback" viewBox="0 0 24 24" fill="none" style="width:22px;height:22px;opacity:.85">
-                <path d="M8.5 7.5c1.2-.9 2.5-1.3 3.5-1.3s2.3.4 3.5 1.3" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M7 17c1.5-1.2 3.2-1.7 5-1.7s3.5.5 5 1.7" stroke="rgba(255,255,255,0.85)" stroke-width="1.6" stroke-linecap="round"/>
-                <path d="M6 9.5c-1.2 2.9-1 5.8.6 8.5" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>
-                <path d="M18 9.5c1.2 2.9 1 5.8-.6 8.5" stroke="rgba(255,255,255,0.55)" stroke-width="1.4" stroke-linecap="round"/>
-              </svg>
-            </div>
-
-            <div class="smDiscText">
-              <div class="smDiscName" id="smDiscordName">Allz</div>
-              <div class="smDiscSub" id="smDiscordSub">@allzz.exe</div>
+          <div class="dRow">
+            <div class="dIcon"><img id="dAvatar" alt="Avatar Discord"></div>
+            <div class="dInfo">
+              <b id="dName">Allz</b>
+              <span id="dTag">@allzz.exe</span>
             </div>
           </div>
 
-          <div class="smFoot" id="smUpdatedAt">atualizando...</div>
+          <div id="smUpdatedAt">atualizando...</div>
         </div>
-
-        <div class="smFoot"><span id="smViews">0</span> views</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== PLAYLISTS OVERLAY ===== -->
-<div id="playlistsOverlay" aria-hidden="true">
+<!-- LORE / SCROLL -->
+<div class="overlay" id="scrollOverlay" aria-hidden="true">
   <div class="dim"></div>
-
-  <div class="plShell" role="dialog" aria-label="Playlists">
-    <div class="plTop">
-      <div class="plTitle">
-        <b>Playlists</b>
-        <span>pessoal • spotify • v2.1</span>
+  <div class="dialog" role="dialog" aria-label="Pergaminho">
+    <div class="dTop">
+      <div class="dTitle">
+        <b>Pergaminho — Lore Terminal</b>
+        <span>comandos: ajuda • social • fechar</span>
       </div>
-      <button class="plClose" id="plClose">FECHAR</button>
+      <button class="closeBtn" id="scrollClose">Fechar</button>
+    </div>
+    <div class="scrollBody">
+      <div class="scrollPaper">
+        <div class="scrollInner">
+          <b>Vozes nas sombras</b>
+          <p id="loreText">
+            “A arena está silenciosa... mas as sombras nunca dormem.”<br>
+            Digite um comando abaixo.
+          </p>
+          <div class="cmdBar">
+            <span class="prompt">&gt;</span>
+            <input id="cmdInput" placeholder="ajuda | social | fechar" autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYLISTS -->
+<div class="overlay" id="playlistsOverlay" aria-hidden="true">
+  <div class="dim"></div>
+  <div class="dialog" role="dialog" aria-label="Playlists">
+    <div class="dTop">
+      <div class="dTitle">
+        <b>Playlists</b>
+        <span>spotify embed • foco</span>
+      </div>
+      <button class="closeBtn" id="plClose">Fechar</button>
     </div>
 
     <div class="plBody">
       <div class="plLeft">
-        <div class="plHint">selecione uma playlist</div>
-        <div class="plList" id="plList"></div>
+        <div class="plHint">Selecione uma playlist</div>
+        <div id="plList"></div>
       </div>
-
       <div class="plRight">
-        <iframe class="plFrame" id="plFrame"
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"></iframe>
+        <iframe id="plFrame" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===== ADMIN OVERLAY ===== -->
-<div id="adminOverlay" aria-hidden="true">
+<!-- ADMIN -->
+<div class="overlay" id="adminOverlay" aria-hidden="true">
   <div class="dim"></div>
-
-  <div class="adShell" role="dialog" aria-label="Admin">
-    <div class="adTop">
-      <div class="adTitle">
+  <div class="dialog" role="dialog" aria-label="Admin">
+    <div class="dTop">
+      <div class="dTitle">
         <b>Admin</b>
-        <span>confidencial • métricas locais</span>
+        <span>métricas locais</span>
       </div>
-      <button class="adClose" id="adClose">FECHAR</button>
+      <button class="closeBtn" id="adClose">Fechar</button>
     </div>
 
     <div class="adBody">
       <div class="adPanel">
-
         <div id="adLogin">
           <div class="adMsg" id="adMsg">Acesso restrito.</div>
 
-          <div class="adLoginGrid">
+          <div class="adRow">
             <div>
               <div class="adLabel">Usuário</div>
-              <input class="adInput" id="adUser" autocomplete="off" spellcheck="false" placeholder="Sombra">
+              <input class="adInput" id="adUser" placeholder="Sombra" autocomplete="off">
             </div>
             <div>
               <div class="adLabel">Senha</div>
-              <input class="adInput" id="adPass" type="password" autocomplete="off" placeholder="Projeto26">
+              <input class="adInput" id="adPass" type="password" placeholder="Projeto26" autocomplete="off">
             </div>
           </div>
 
           <div class="adActions">
             <button class="adBtn primary" id="adLoginBtn">Entrar</button>
-            <button class="adBtn" id="adLoginHint">Dica</button>
+            <button class="adBtn" id="adHintBtn">Dica</button>
           </div>
         </div>
 
         <div class="adDash" id="adDash">
           <div class="adMsg">Dashboard confidencial.</div>
-
-          <div class="adGrid" id="adGrid"></div>
-          <div class="adUpdated" id="adUpdated">Atualizando...</div>
-
-          <div class="adActions" style="margin-top:14px">
+          <div class="metrics" id="metrics"></div>
+          <div id="adUpdated">Atualizando...</div>
+          <div class="adActions">
             <button class="adBtn" id="adResetBtn">Reset métricas</button>
             <button class="adBtn" id="adLogoutBtn">Sair</button>
           </div>
@@ -1724,131 +1351,50 @@ body.adminOpen #adminOverlay{ display:block; }
 
 <script>
 /* =========================
-   BASE
+   ELEMENTS
    ========================= */
 const entry = document.getElementById("entry");
 const enterBtn = document.getElementById("enterBtn");
+const enterLore = document.getElementById("enterLore");
+const enterSocial = document.getElementById("enterSocial");
+
 const mainVideo = document.getElementById("mainVideo");
 const bgAudio = document.getElementById("bgAudio");
 
-/* ===== ÁUDIO: padrão 4% (como você pediu) ===== */
+const muteBtn = document.getElementById("muteBtn");
+const icOn = document.getElementById("icOn");
+const icOff = document.getElementById("icOff");
+const fsBtn = document.getElementById("fsBtn");
+
+/* =========================
+   AUDIO (4%) + MUTE TOGGLE
+   ========================= */
+const MUTE_KEY = "hub_muted";
 let currentVol = 0.04;
 bgAudio.volume = currentVol;
 
-/* ===== MUTE toggle (sem slider) ===== */
-const muteBtn = document.getElementById("muteBtn");
-const icVolOn = document.getElementById("icVolOn");
-const icVolOff = document.getElementById("icVolOff");
-const MUTE_KEY = "hub_muted";
-
-/* estado inicial */
 let isMuted = localStorage.getItem(MUTE_KEY) === "1";
 applyMuteUI();
 
 function applyMuteUI(){
   bgAudio.muted = isMuted;
   muteBtn.dataset.on = String(!isMuted);
-  icVolOn.style.display = isMuted ? "none" : "block";
-  icVolOff.style.display = isMuted ? "block" : "none";
+  icOn.style.display = isMuted ? "none" : "block";
+  icOff.style.display = isMuted ? "block" : "none";
 }
 
-muteBtn.addEventListener("click",(e)=>{
+muteBtn.addEventListener("click", (e)=>{
   e.stopPropagation();
   isMuted = !isMuted;
   localStorage.setItem(MUTE_KEY, isMuted ? "1" : "0");
   applyMuteUI();
   if(document.body.classList.contains("entered")){
-    if(!isMuted){
-      resumeBgAudio(true);
-    }else{
-      pauseBgAudio();
-    }
+    if(isMuted) pauseBgAudio();
+    else resumeBgAudio(true);
   }
 });
 
-/* =========================
-   EMBERS (global canvas)
-   ========================= */
-const emberCanvas = document.getElementById("emberCanvas");
-const ectx = emberCanvas.getContext("2d");
-let EW=0, EH=0, DPR=1;
-
-function resizeEmbers(){
-  DPR = Math.min(2, window.devicePixelRatio || 1);
-  EW = innerWidth; EH = innerHeight;
-  emberCanvas.width = Math.floor(EW * DPR);
-  emberCanvas.height = Math.floor(EH * DPR);
-  emberCanvas.style.width = EW+"px";
-  emberCanvas.style.height = EH+"px";
-  ectx.setTransform(DPR,0,0,DPR,0,0);
-}
-resizeEmbers();
-addEventListener("resize", resizeEmbers);
-
-const embers = [];
-const EMBER_N = 120;
-
-function rnd(a,b){ return a + Math.random()*(b-a); }
-function spawnEmber(forceBottom=true){
-  const size = rnd(1.2, 3.6);
-  return {
-    x: rnd(0, EW),
-    y: forceBottom ? rnd(EH*0.65, EH+40) : rnd(0, EH),
-    r: size,
-    vy: rnd(0.25, 1.1),
-    vx: rnd(-0.25, 0.25),
-    life: rnd(0.55, 1.0),
-    tw: rnd(0.2, 1.0),
-    heat: rnd(0.25, 1.0)
-  };
-}
-for(let i=0;i<EMBER_N;i++) embers.push(spawnEmber(false));
-
-function drawEmbers(){
-  ectx.clearRect(0,0,EW,EH);
-
-  // leve "haze" quente na parte de baixo
-  const g = ectx.createRadialGradient(EW*0.5, EH*1.05, 10, EW*0.5, EH*1.05, EH*0.75);
-  g.addColorStop(0, "rgba(165,86,44,0.10)");
-  g.addColorStop(1, "rgba(0,0,0,0)");
-  ectx.fillStyle = g;
-  ectx.fillRect(0,0,EW,EH);
-
-  for(let i=0;i<embers.length;i++){
-    const p = embers[i];
-    p.y -= p.vy;
-    p.x += p.vx + Math.sin((p.y+ i*13)*0.003) * 0.15;
-
-    if(p.y < -60 || p.x < -80 || p.x > EW+80){
-      embers[i] = spawnEmber(true);
-      continue;
-    }
-
-    // alpha oscila bem sutil
-    const a = (0.10 + p.tw*0.14) * p.life;
-
-    // brilho discreto
-    ectx.beginPath();
-    ectx.fillStyle = `rgba(165,86,44,${a*0.9})`;
-    ectx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-    ectx.fill();
-
-    // glow suave (bem leve)
-    ectx.beginPath();
-    ectx.fillStyle = `rgba(165,86,44,${a*0.18})`;
-    ectx.arc(p.x, p.y, p.r*3.2, 0, Math.PI*2);
-    ectx.fill();
-  }
-
-  requestAnimationFrame(drawEmbers);
-}
-drawEmbers();
-
-/* =========================
-   ÁUDIO pause/resume (mantém lógica de mutar em overlays)
-   ========================= */
 let audioWasPlaying = false;
-
 function pauseBgAudio(){
   try{
     audioWasPlaying = !bgAudio.paused && !bgAudio.ended && bgAudio.currentTime > 0;
@@ -1866,87 +1412,184 @@ async function resumeBgAudio(force=false){
 }
 
 /* =========================
-   OVERLAYS helpers
+   FULLSCREEN
    ========================= */
-const scrollOverlay = document.getElementById("scrollOverlay");
-const socialOverlay = document.getElementById("socialOverlay");
-const playlistsOverlay = document.getElementById("playlistsOverlay");
-const adminOverlay = document.getElementById("adminOverlay");
+async function toggleFullscreen(){
+  try{
+    if(!document.fullscreenElement) await document.documentElement.requestFullscreen();
+    else await document.exitFullscreen();
+  }catch(e){}
+}
+fsBtn.addEventListener("click",(e)=>{ e.stopPropagation(); toggleFullscreen(); });
 
+/* =========================
+   FIRE CANVAS (mais forte)
+   ========================= */
+const fireCanvas = document.getElementById("fireCanvas");
+const ctx = fireCanvas.getContext("2d");
+let W=0,H=0,DPR=1;
+
+function resize(){
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  fireCanvas.width = Math.floor(W*DPR);
+  fireCanvas.height = Math.floor(H*DPR);
+  fireCanvas.style.width = W+"px";
+  fireCanvas.style.height = H+"px";
+  ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+resize();
+addEventListener("resize", resize);
+
+function rnd(a,b){ return a + Math.random()*(b-a); }
+
+const sparks = [];
+const SPARKS = 220; // mais denso
+for(let i=0;i<SPARKS;i++) sparks.push(makeSpark(false));
+
+function makeSpark(fromBottom=true){
+  const size = rnd(1.2, 3.6);
+  return {
+    x: rnd(0, W),
+    y: fromBottom ? rnd(H*0.65, H+60) : rnd(0, H),
+    r: size,
+    vy: rnd(0.35, 1.35),
+    vx: rnd(-0.35, 0.35),
+    tw: rnd(0.2, 1.0),
+    heat: rnd(0.35, 1.0)
+  };
+}
+
+let t=0;
+function drawFire(){
+  ctx.clearRect(0,0,W,H);
+
+  // glow base embaixo
+  const g = ctx.createRadialGradient(W*0.5, H*1.05, 10, W*0.5, H*1.05, H*0.78);
+  g.addColorStop(0, "rgba(215,103,52,0.22)");
+  g.addColorStop(0.55, "rgba(215,103,52,0.06)");
+  g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,W,H);
+
+  // “haze” ondulado (simula calor)
+  t += 0.006;
+  ctx.save();
+  ctx.globalAlpha = 0.10;
+  for(let i=0;i<4;i++){
+    const y = H*0.70 + i*32 + Math.sin(t+i)*10;
+    const gg = ctx.createLinearGradient(0,y-20,0,y+40);
+    gg.addColorStop(0, "rgba(215,103,52,0)");
+    gg.addColorStop(0.5, "rgba(215,103,52,0.12)");
+    gg.addColorStop(1, "rgba(215,103,52,0)");
+    ctx.fillStyle = gg;
+    ctx.fillRect(0, y-30, W, 70);
+  }
+  ctx.restore();
+
+  // sparks
+  for(let i=0;i<sparks.length;i++){
+    const p = sparks[i];
+    p.y -= p.vy;
+    p.x += p.vx + Math.sin((p.y+i*11)*0.003) * 0.25;
+
+    if(p.y < -80 || p.x < -120 || p.x > W+120){
+      sparks[i] = makeSpark(true);
+      continue;
+    }
+
+    const a = (0.10 + p.tw*0.18) * (0.65 + p.heat*0.35);
+
+    // core
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(215,103,52,${a})`;
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    ctx.fill();
+
+    // glow
+    ctx.beginPath();
+    ctx.fillStyle = `rgba(215,103,52,${a*0.22})`;
+    ctx.arc(p.x, p.y, p.r*4.0, 0, Math.PI*2);
+    ctx.fill();
+  }
+
+  requestAnimationFrame(drawFire);
+}
+drawFire();
+
+/* =========================
+   OVERLAYS (open/close)
+   ========================= */
 const overlayFlags = ["scrollOpen","socialOpen","playlistsOpen","adminOpen"];
 
 function closeAllOverlays(){
   document.body.classList.remove(...overlayFlags);
-  scrollOverlay?.setAttribute("aria-hidden","true");
-  socialOverlay?.setAttribute("aria-hidden","true");
-  playlistsOverlay?.setAttribute("aria-hidden","true");
-  adminOverlay?.setAttribute("aria-hidden","true");
+  setAria("scrollOverlay", true);
+  setAria("socialOverlay", true);
+  setAria("playlistsOverlay", true);
+  setAria("adminOverlay", true);
+}
+function setAria(id, hidden){
+  const el = document.getElementById(id);
+  if(el) el.setAttribute("aria-hidden", hidden ? "true" : "false");
 }
 
-function openOverlay(flag){
+function openOverlay(flag, id){
   if(!document.body.classList.contains("entered")) return;
   closeAllOverlays();
   pauseBgAudio();
   document.body.classList.add(flag);
-  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","false");
-  if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","false");
-  if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","false");
-  if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","false");
+  setAria(id, false);
 }
 
-function closeOverlay(flag){
+function closeOverlay(flag, id){
   document.body.classList.remove(flag);
-  if(flag==="scrollOpen") scrollOverlay.setAttribute("aria-hidden","true");
-  if(flag==="socialOpen") socialOverlay.setAttribute("aria-hidden","true");
-  if(flag==="playlistsOpen") playlistsOverlay.setAttribute("aria-hidden","true");
-  if(flag==="adminOpen") adminOverlay.setAttribute("aria-hidden","true");
+  setAria(id, true);
   resumeBgAudio();
 }
 
 /* =========================
-   CLICK / ENTER
+   START / ENTER
    ========================= */
 let started=false;
 async function start(){
   if(started) return;
   started=true;
 
-  // toca áudio (se não estiver mutado)
+  // áudio (se não mutado)
   try{
     if(!isMuted){
       bgAudio.currentTime = 0;
-      bgAudio.volume = currentVol; // 4%
+      bgAudio.volume = currentVol;
       await bgAudio.play();
     }
   }catch(e){}
 
-  // vídeo sempre mudo (só “edit de fundo”)
-  setTimeout(async ()=>{
-    try{
-      mainVideo.muted = true;
-      await mainVideo.play();
-    }catch(e){}
-    document.body.classList.add("entered");
-    // abre social sozinho (como você pediu manter)
-    setTimeout(()=> openSocialOverlay(), 900);
-  }, 500);
+  // vídeo (mudo sempre)
+  try{ await mainVideo.play(); }catch(e){}
+
+  document.body.classList.add("entered");
+
+  // abre social automaticamente (mantido)
+  setTimeout(()=> openSocial(), 900);
 }
 
-entry.addEventListener("pointerdown", (e)=>{
-  // evita clicar em botão duas vezes gerar comportamento estranho
-  if(e.target === enterBtn) return;
+entry.addEventListener("pointerdown",(e)=>{
+  // evita double click no botão
+  if(e.target === enterBtn || e.target === enterLore || e.target === enterSocial) return;
   start();
 });
-enterBtn.addEventListener("click", (e)=>{
-  e.stopPropagation();
-  start();
-});
-entry.addEventListener("keydown", (e)=>{
+enterBtn.addEventListener("click",(e)=>{ e.stopPropagation(); start(); });
+
+entry.addEventListener("keydown",(e)=>{
   if(e.key==="Enter" || e.key===" "){ e.preventDefault(); start(); }
 });
 
+enterLore.addEventListener("click",(e)=>{ e.stopPropagation(); start(); setTimeout(openScroll, 950); });
+enterSocial.addEventListener("click",(e)=>{ e.stopPropagation(); start(); setTimeout(openSocial, 950); });
+
 /* =========================
-   NAV + HERO BUTTONS
+   NAV + HERO
    ========================= */
 const navHome = document.getElementById("navHome");
 const navLore = document.getElementById("navLore");
@@ -1955,81 +1598,44 @@ const navPlaylists = document.getElementById("navPlaylists");
 const navArchives = document.getElementById("navArchives");
 const navAdmin = document.getElementById("navAdmin");
 
-function setActiveNav(btn){
+function setActive(btn){
   [navHome,navLore,navSocial,navPlaylists,navArchives,navAdmin].forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
 }
 
-document.getElementById("heroLore").addEventListener("click", ()=>{ setActiveNav(navLore); openScroll(); });
-document.getElementById("heroSocial").addEventListener("click", ()=>{ setActiveNav(navSocial); openSocialOverlay(); });
-document.getElementById("heroPlaylists").addEventListener("click", ()=>{ setActiveNav(navPlaylists); openPlaylistsOverlay(); });
+document.getElementById("heroLore").addEventListener("click", ()=>{ setActive(navLore); openScroll(); });
+document.getElementById("heroSocial").addEventListener("click", ()=>{ setActive(navSocial); openSocial(); });
+document.getElementById("heroPlaylists").addEventListener("click", ()=>{ setActive(navPlaylists); openPlaylists(); });
 
-navHome.addEventListener("click", ()=>{ setActiveNav(navHome); closeAllOverlays(); resumeBgAudio(); });
-navLore.addEventListener("click", ()=>{ setActiveNav(navLore); openScroll(); });
-navSocial.addEventListener("click", ()=>{ setActiveNav(navSocial); openSocialOverlay(); });
-navPlaylists.addEventListener("click", ()=>{ setActiveNav(navPlaylists); openPlaylistsOverlay(); });
-navArchives.addEventListener("click", ()=>{
-  setActiveNav(navArchives);
-  closeAllOverlays();
-  alert("Archives (placeholder) — V2.2");
-});
-navAdmin.addEventListener("click", ()=>{ setActiveNav(navAdmin); openAdminOverlay(); });
+navHome.addEventListener("click", ()=>{ setActive(navHome); closeAllOverlays(); resumeBgAudio(); });
+navLore.addEventListener("click", ()=>{ setActive(navLore); openScroll(); });
+navSocial.addEventListener("click", ()=>{ setActive(navSocial); openSocial(); });
+navPlaylists.addEventListener("click", ()=>{ setActive(navPlaylists); openPlaylists(); });
+navArchives.addEventListener("click", ()=>{ setActive(navArchives); closeAllOverlays(); alert("Archives (placeholder) — V2.2"); });
+navAdmin.addEventListener("click", ()=>{ setActive(navAdmin); openAdmin(); });
 
 /* =========================
-   FULLSCREEN
+   SOCIAL
    ========================= */
-const fsBtn = document.getElementById("fsBtn");
-async function toggleFullscreen(){
-  try{
-    if(!document.fullscreenElement){
-      await document.documentElement.requestFullscreen();
-    }else{
-      await document.exitFullscreen();
-    }
-  }catch(e){}
-}
-fsBtn.addEventListener("click", (e)=>{
-  e.stopPropagation();
-  toggleFullscreen();
-});
-
-/* =========================
-   SOCIAL OVERLAY
-   ========================= */
+const socialOverlay = document.getElementById("socialOverlay");
 const socialClose = document.getElementById("socialClose");
-const smViews = document.getElementById("smViews");
-const smStatusPill = document.getElementById("smStatusPill");
-const smStatusText = document.getElementById("smStatusText");
+const statusPill = document.getElementById("statusPill");
+const statusText = document.getElementById("statusText");
+const dAvatar = document.getElementById("dAvatar");
+const dName = document.getElementById("dName");
+const dTag = document.getElementById("dTag");
 const smUpdatedAt = document.getElementById("smUpdatedAt");
 
-const smDiscordName = document.getElementById("smDiscordName");
-const smDiscordSub = document.getElementById("smDiscordSub");
-const dAvatar = document.getElementById("dAvatar");
-const dFallback = document.getElementById("dFallback");
-
-function incLocal(key){
-  const v = Number(localStorage.getItem(key) || "0") + 1;
-  localStorage.setItem(key, String(v));
-  return v;
-}
-
-function openSocialOverlay(){
-  if(!document.body.classList.contains("entered")) return;
+function openSocial(){
+  openOverlay("socialOpen","socialOverlay");
   metricInc("m_social_opens");
-  openOverlay("socialOpen");
-
-  const v = incLocal("sm_views");
-  smViews.textContent = String(v);
-
   fetchLanyard();
-  setTimeout(()=>socialClose.focus(), 80);
+  setTimeout(()=>socialClose.focus(), 60);
 }
-function closeSocialOverlay(){ closeOverlay("socialOpen"); }
+function closeSocial(){ closeOverlay("socialOpen","socialOverlay"); }
 
-socialClose.addEventListener("click", closeSocialOverlay);
-socialOverlay.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("dim")) closeSocialOverlay();
-});
+socialClose.addEventListener("click", closeSocial);
+socialOverlay.addEventListener("click",(e)=>{ if(e.target.classList.contains("dim")) closeSocial(); });
 
 const LANYARD_USER_ID = "513830615225860096";
 const LANYARD_URL = `https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`;
@@ -2040,60 +1646,105 @@ function mapStatusPT(s){
   if(s === "dnd") return "Não perturbe";
   return "Offline";
 }
-function statusToPill(s){
-  smStatusPill.dataset.status = s || "offline";
-  smStatusText.textContent = mapStatusPT(s || "offline");
+function setStatus(s){
+  statusPill.dataset.status = s || "offline";
+  statusText.textContent = mapStatusPT(s || "offline");
 }
-function setUpdatedNow(){
+function setUpdated(){
   const d = new Date();
   const hh = String(d.getHours()).padStart(2,"0");
   const mm = String(d.getMinutes()).padStart(2,"0");
   smUpdatedAt.textContent = `atualizado às ${hh}:${mm}`;
 }
-async function fetchLanyard(){
-  statusToPill("idle");
-  setUpdatedNow();
 
+async function fetchLanyard(){
+  setStatus("idle");
+  setUpdated();
   try{
     const r = await fetch(LANYARD_URL, { cache:"no-store" });
-    if(!r.ok) throw new Error("lanyard http");
+    if(!r.ok) throw new Error("http");
     const j = await r.json();
     const data = j?.data;
-    if(!data) throw new Error("lanyard data");
+    if(!data) throw new Error("data");
 
-    const st = data.discord_status || "offline";
-    statusToPill(st);
+    setStatus(data.discord_status || "offline");
 
     const dn =
       data.discord_user?.global_name ||
       data.discord_user?.display_name ||
       data.discord_user?.username ||
       "Allz";
-    smDiscordName.textContent = dn;
-    smDiscordSub.textContent = "@allzz.exe";
+    dName.textContent = dn;
+    dTag.textContent = "@allzz.exe";
 
     const uid = data.discord_user?.id || LANYARD_USER_ID;
     const av = data.discord_user?.avatar;
     if(av){
-      const isAnim = av.startsWith("a_");
-      const ext = isAnim ? "gif" : "png";
-      const url = `https://cdn.discordapp.com/avatars/${uid}/${av}.${ext}?size=256`;
-      dAvatar.src = url;
+      const ext = av.startsWith("a_") ? "gif" : "png";
+      dAvatar.src = `https://cdn.discordapp.com/avatars/${uid}/${av}.${ext}?size=256`;
       dAvatar.style.display = "block";
-      dFallback.style.display = "none";
     }else{
       dAvatar.style.display = "none";
-      dFallback.style.display = "block";
     }
-    setUpdatedNow();
+    setUpdated();
   }catch(e){
-    // mantém fallback
+    // fallback ok
   }
 }
 
 /* =========================
-   PLAYLISTS OVERLAY
+   SCROLL / LORE
    ========================= */
+const scrollOverlay = document.getElementById("scrollOverlay");
+const scrollClose = document.getElementById("scrollClose");
+const cmdInput = document.getElementById("cmdInput");
+const loreText = document.getElementById("loreText");
+
+function openScroll(){
+  openOverlay("scrollOpen","scrollOverlay");
+  metricInc("m_scroll_opens");
+  setTimeout(()=>cmdInput.focus(), 60);
+}
+function closeScroll(){ closeOverlay("scrollOpen","scrollOverlay"); }
+
+scrollClose.addEventListener("click", closeScroll);
+scrollOverlay.addEventListener("click",(e)=>{ if(e.target.classList.contains("dim")) closeScroll(); });
+
+function escapeHtml(s){
+  return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+}
+
+cmdInput.addEventListener("keydown",(e)=>{
+  if(e.key !== "Enter") return;
+  const raw = cmdInput.value.trim();
+  if(!raw) return;
+  cmdInput.value = "";
+  const cmd = raw.toLowerCase();
+
+  if(cmd === "ajuda" || cmd === "help" || cmd === "?"){
+    loreText.innerHTML = `Comandos: <b>social</b>, <b>fechar</b>, <b>ajuda</b><br><br>
+      Extra: você pode transformar isso num “terminal” de links depois.`;
+    return;
+  }
+  if(cmd === "fechar" || cmd === "close"){
+    loreText.innerHTML = `Pergaminho selado.`;
+    setTimeout(closeScroll, 240);
+    return;
+  }
+  if(cmd === "social"){
+    loreText.innerHTML = `Abrindo Social...`;
+    setTimeout(openSocial, 240);
+    return;
+  }
+
+  loreText.innerHTML = `Comando desconhecido: <b>${escapeHtml(raw)}</b><br>
+    Digite <b>ajuda</b>.`;
+});
+
+/* =========================
+   PLAYLISTS
+   ========================= */
+const playlistsOverlay = document.getElementById("playlistsOverlay");
 const plClose = document.getElementById("plClose");
 const plList = document.getElementById("plList");
 const plFrame = document.getElementById("plFrame");
@@ -2104,68 +1755,51 @@ const PLAYLISTS = [
   { name:"Favorites", desc:"minhas faixas", embed:"https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator" }
 ];
 
-function escapeHtml(s){
-  return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-function renderPlaylistList(){
+function renderPlaylists(){
   plList.innerHTML = "";
   PLAYLISTS.forEach((p, idx)=>{
     const btn = document.createElement("button");
     btn.className = "plItem";
     btn.type = "button";
     btn.innerHTML = `${escapeHtml(p.name)}<small>${escapeHtml(p.desc)}</small>`;
-    btn.addEventListener("click", ()=> setActivePlaylist(idx));
+    btn.addEventListener("click", ()=> setPlaylist(idx));
     plList.appendChild(btn);
   });
 }
-function setActivePlaylist(i){
+function setPlaylist(i){
   const items = [...plList.querySelectorAll(".plItem")];
   items.forEach((el, idx)=> el.classList.toggle("active", idx===i));
-  const p = PLAYLISTS[i];
-  plFrame.src = p.embed;
+  plFrame.src = PLAYLISTS[i].embed;
   localStorage.setItem("pl_last", String(i));
 }
-function openPlaylistsOverlay(){
-  if(!document.body.classList.contains("entered")) return;
+function openPlaylists(){
+  openOverlay("playlistsOpen","playlistsOverlay");
   metricInc("m_playlists_opens");
-  openOverlay("playlistsOpen");
-
-  renderPlaylistList();
+  renderPlaylists();
   const last = Number(localStorage.getItem("pl_last") || "0");
-  const safe = Number.isFinite(last) ? Math.max(0, Math.min(last, PLAYLISTS.length-1)) : 0;
-  setActivePlaylist(safe);
-
-  setTimeout(()=>plClose.focus(), 80);
+  setPlaylist(Math.max(0, Math.min(last, PLAYLISTS.length-1)));
+  setTimeout(()=>plClose.focus(), 60);
 }
-function closePlaylistsOverlay(){
+function closePlaylists(){
   plFrame.src = "about:blank";
-  closeOverlay("playlistsOpen");
+  closeOverlay("playlistsOpen","playlistsOverlay");
 }
-plClose.addEventListener("click", closePlaylistsOverlay);
-playlistsOverlay.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("dim")) closePlaylistsOverlay();
-});
+plClose.addEventListener("click", closePlaylists);
+playlistsOverlay.addEventListener("click",(e)=>{ if(e.target.classList.contains("dim")) closePlaylists(); });
 
 /* =========================
-   ADMIN OVERLAY
+   ADMIN
    ========================= */
+const adminOverlay = document.getElementById("adminOverlay");
 const adClose = document.getElementById("adClose");
 const adLogin = document.getElementById("adLogin");
 const adDash = document.getElementById("adDash");
 const adMsg = document.getElementById("adMsg");
-
 const adUser = document.getElementById("adUser");
 const adPass = document.getElementById("adPass");
 const adLoginBtn = document.getElementById("adLoginBtn");
-const adLoginHint = document.getElementById("adLoginHint");
-
-const adGrid = document.getElementById("adGrid");
+const adHintBtn = document.getElementById("adHintBtn");
+const metricsEl = document.getElementById("metrics");
 const adUpdated = document.getElementById("adUpdated");
 const adResetBtn = document.getElementById("adResetBtn");
 const adLogoutBtn = document.getElementById("adLogoutBtn");
@@ -2178,239 +1812,94 @@ function nowHHMM(){
   const d = new Date();
   return `${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")}`;
 }
-function metricGet(key){ return Number(localStorage.getItem(key) || "0"); }
-function metricSet(key, v){ localStorage.setItem(key, String(v)); }
-function metricInc(key){
-  const v = metricGet(key)+1;
-  metricSet(key, v);
-  return v;
-}
-function buildAdminMetrics(){
-  const metrics = [
-    { key:"m_site_opens", label:"Site Opens" },
-    { key:"m_social_opens", label:"Social Opens" },
-    { key:"m_scroll_opens", label:"Scroll Opens" },
-    { key:"m_playlists_opens", label:"Playlists Opens" },
-    { key:"m_admin_logins", label:"Admin Logins" }
+function metricGet(k){ return Number(localStorage.getItem(k) || "0"); }
+function metricSet(k,v){ localStorage.setItem(k, String(v)); }
+function metricInc(k){ const v = metricGet(k)+1; metricSet(k,v); return v; }
+
+function buildMetrics(){
+  const list = [
+    {key:"m_site_opens", label:"Site Opens"},
+    {key:"m_social_opens", label:"Social Opens"},
+    {key:"m_scroll_opens", label:"Scroll Opens"},
+    {key:"m_playlists_opens", label:"Playlists Opens"},
+    {key:"m_admin_logins", label:"Admin Logins"}
   ];
-  adGrid.innerHTML = "";
-  metrics.forEach(m=>{
-    const card = document.createElement("div");
-    card.className = "adMetric";
-    card.innerHTML = `<div class="k">${escapeHtml(m.label)}</div><div class="v">${metricGet(m.key)}</div>`;
-    adGrid.appendChild(card);
+  metricsEl.innerHTML = "";
+  list.forEach(m=>{
+    const div = document.createElement("div");
+    div.className = "metric";
+    div.innerHTML = `<div class="k">${escapeHtml(m.label)}</div><div class="v">${metricGet(m.key)}</div>`;
+    metricsEl.appendChild(div);
   });
   adUpdated.textContent = `Atualizado às ${nowHHMM()}`;
 }
-function showAdminLogin(msg){
+
+function showLogin(msg){
   adLogin.style.display = "block";
   adDash.style.display = "none";
   if(msg) adMsg.textContent = msg;
 }
-function showAdminDash(){
+function showDash(){
   adLogin.style.display = "none";
   adDash.style.display = "block";
-  buildAdminMetrics();
+  buildMetrics();
 }
-function openAdminOverlay(){
-  if(!document.body.classList.contains("entered")) return;
-  metricInc("m_admin_opens");
-  openOverlay("adminOpen");
-  setTimeout(()=>adClose.focus(), 80);
 
+function openAdmin(){
+  openOverlay("adminOpen","adminOverlay");
+  metricInc("m_admin_opens");
   if(localStorage.getItem(ADMIN_OK_KEY)==="1"){
-    showAdminDash();
+    showDash();
   }else{
-    showAdminLogin("Acesso restrito.");
-    setTimeout(()=>adUser.focus(), 120);
+    showLogin("Acesso restrito.");
+    setTimeout(()=>adUser.focus(), 60);
   }
 }
-function closeAdminOverlay(){ closeOverlay("adminOpen"); }
+function closeAdmin(){ closeOverlay("adminOpen","adminOverlay"); }
 
-adClose.addEventListener("click", closeAdminOverlay);
-adminOverlay.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("dim")) closeAdminOverlay();
-});
+adClose.addEventListener("click", closeAdmin);
+adminOverlay.addEventListener("click",(e)=>{ if(e.target.classList.contains("dim")) closeAdmin(); });
 
-adLoginHint.addEventListener("click", ()=>{
-  adMsg.textContent = "Usuário fixo: Sombra • Senha: Projeto26";
-});
+adHintBtn.addEventListener("click", ()=>{ adMsg.textContent = "Usuário: Sombra • Senha: Projeto26"; });
+
 function tryLogin(){
-  const u = (adUser.value || "").trim();
-  const p = (adPass.value || "").trim();
-  if(u === ADMIN_USER && p === ADMIN_PASS){
-    localStorage.setItem(ADMIN_OK_KEY, "1");
+  const u = (adUser.value||"").trim();
+  const p = (adPass.value||"").trim();
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    localStorage.setItem(ADMIN_OK_KEY,"1");
     metricInc("m_admin_logins");
-    showAdminDash();
-    adUser.value = "";
-    adPass.value = "";
+    adUser.value=""; adPass.value="";
+    showDash();
   }else{
     adMsg.textContent = "Credenciais inválidas.";
   }
 }
 adLoginBtn.addEventListener("click", tryLogin);
-adPass.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter") tryLogin();
-});
+adPass.addEventListener("keydown",(e)=>{ if(e.key==="Enter") tryLogin(); });
+
 adResetBtn.addEventListener("click", ()=>{
-  const keys = ["m_site_opens","m_social_opens","m_scroll_opens","m_playlists_opens","m_admin_logins"];
-  keys.forEach(k=> localStorage.removeItem(k));
-  buildAdminMetrics();
+  ["m_site_opens","m_social_opens","m_scroll_opens","m_playlists_opens","m_admin_logins"].forEach(k=>localStorage.removeItem(k));
+  buildMetrics();
   adMsg.textContent = "Métricas resetadas.";
 });
 adLogoutBtn.addEventListener("click", ()=>{
   localStorage.removeItem(ADMIN_OK_KEY);
-  showAdminLogin("Sessão encerrada.");
+  showLogin("Sessão encerrada.");
 });
 
 /* =========================
-   PERGAMINHO
-   ========================= */
-const scrollClose = document.getElementById("scrollClose");
-const scrollLog = document.getElementById("scrollLog");
-const typeLine = document.getElementById("typeLine");
-const cursor = document.getElementById("cursor");
-const out = document.getElementById("out");
-const cmdInput = document.getElementById("cmdInput");
-
-let typing = false;
-let typedOnce = false;
-
-const loreLines = [
-  `<span class="who mestre">MESTRE:</span> A arena está silenciosa... mas as sombras nunca dormem.`,
-  `<span class="who shadow">SHADOW:</span> Eu sinto o vazio se abrindo. Algo me chama do outro lado.`,
-  `<span class="who titan">TITAN:</span> Você acha que pode escapar? Eu já marquei seu destino.`,
-  `<span class="who mestre">MESTRE:</span> Não responda ao medo. Use-o. Transforme-o em lâmina.`,
-  `<span class="who shadow">SHADOW:</span> Então... eu entro. E se eu cair, que as sombras me devorem.`,
-  `<span class="who titan">TITAN:</span> Venha. Eu quero ouvir seu silêncio gritar.`
-];
-
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function scrollToBottom(){ scrollLog.scrollTop = scrollLog.scrollHeight; }
-
-function writeOut(html){
-  const line = document.createElement("div");
-  line.className = "outputLine";
-  line.innerHTML = html;
-  out.appendChild(line);
-  scrollToBottom();
-}
-function finishTypingNow(){
-  typing = false;
-  cursor.style.display = "none";
-  typeLine.innerHTML = loreLines.map(l => `<div class="typeLine">${l}</div>`).join("");
-  const hasHint = out.textContent.includes("Digite ajuda");
-  if(!hasHint){
-    writeOut(`<span class="sys">SISTEMA:</span> Digite <b>ajuda</b> para ver comandos.`);
-  }
-}
-async function startTyping(){
-  if(typing) return;
-  typing = true;
-  typedOnce = true;
-
-  typeLine.innerHTML = "";
-  out.innerHTML = "";
-  cursor.style.display = "inline-block";
-
-  for(let i=0; i<loreLines.length; i++){
-    if(!typing) break;
-
-    const plain = loreLines[i].replace(/<[^>]*>/g, "");
-    const holder = document.createElement("div");
-    holder.className = "typeLine";
-    typeLine.appendChild(holder);
-
-    let acc = "";
-    for(let c=0; c<plain.length; c++){
-      if(!typing) break;
-      acc += plain[c];
-      holder.textContent = acc;
-      scrollToBottom();
-      await sleep(12 + Math.random()*18);
-    }
-    if(!typing) break;
-
-    holder.innerHTML = loreLines[i];
-    scrollToBottom();
-    await sleep(220 + Math.random()*220);
-  }
-
-  if(typing){
-    typing = false;
-    cursor.style.display = "none";
-    scrollToBottom();
-    writeOut(`<span class="sys">SISTEMA:</span> Digite <b>ajuda</b> para ver comandos.`);
-  }else{
-    scrollToBottom();
-  }
-}
-
-function openScroll(){
-  if(!document.body.classList.contains("entered")) return;
-  metricInc("m_scroll_opens");
-  openOverlay("scrollOpen");
-  setTimeout(()=>cmdInput.focus(), 80);
-  if(!typedOnce) startTyping();
-  else cursor.style.display = "none";
-}
-function closeScroll(){ closeOverlay("scrollOpen"); }
-
-scrollClose.addEventListener("click", closeScroll);
-scrollOverlay.addEventListener("click",(e)=>{
-  if(e.target.classList.contains("dim")) closeScroll();
-});
-
-cmdInput.addEventListener("keydown", (e)=>{
-  if(e.key !== "Enter") return;
-  const raw = cmdInput.value.trim();
-  if(!raw) return;
-  cmdInput.value = "";
-
-  if(typing) finishTypingNow();
-
-  writeOut(`<span class="sys">VOCÊ:</span> ${escapeHtml(raw)}`);
-  const cmd = raw.toLowerCase();
-
-  if(cmd === "ajuda" || cmd === "help" || cmd === "?"){
-    writeOut(`<span class="sys">COMANDOS:</span> <b>social</b>, <b>arquivo</b>, <b>lore</b>, <b>fechar</b>`);
-    return;
-  }
-  if(cmd === "fechar" || cmd === "close" || cmd === "exit"){
-    writeOut(`<span class="sys">SISTEMA:</span> Pergaminho selado.`);
-    setTimeout(closeScroll, 250);
-    return;
-  }
-  if(cmd === "social"){
-    writeOut(`<span class="sys">SISTEMA:</span> Abrindo SOCIAL MEDIA...`);
-    setTimeout(openSocialOverlay, 250);
-    return;
-  }
-  if(cmd === "arquivo" || cmd === "archive"){
-    writeOut(`<span class="sys">SISTEMA:</span> (placeholder) Abrindo ARQUIVO...`);
-    return;
-  }
-  if(cmd === "lore"){
-    writeOut(`<span class="sys">SISTEMA:</span> Você já ouviu as vozes... agora escolha um caminho.`);
-    return;
-  }
-
-  writeOut(`<span class="sys">SISTEMA:</span> Comando desconhecido. Digite <b>ajuda</b>.`);
-});
-
-/* =========================
-   ESC fecha overlays
+   ESC: fecha overlays
    ========================= */
 document.addEventListener("keydown",(e)=>{
-  if(e.key !== "Escape") return;
-  if(document.body.classList.contains("adminOpen")) return closeAdminOverlay();
-  if(document.body.classList.contains("playlistsOpen")) return closePlaylistsOverlay();
-  if(document.body.classList.contains("socialOpen")) return closeSocialOverlay();
+  if(e.key!=="Escape") return;
+  if(document.body.classList.contains("adminOpen")) return closeAdmin();
+  if(document.body.classList.contains("playlistsOpen")) return closePlaylists();
+  if(document.body.classList.contains("socialOpen")) return closeSocial();
   if(document.body.classList.contains("scrollOpen")) return closeScroll();
 });
 
 /* =========================
-   MÉTRICAS
+   METRICS base
    ========================= */
 metricInc("m_site_opens");
 </script>
