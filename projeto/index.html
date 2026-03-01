@@ -2,22 +2,21 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>ALLZ HUB</title>
 
   <style>
     :root{
       --bg:#050507;
       --glass: rgba(0,0,0,.38);
-      --line: rgba(255,255,255,.10);
-      --line2: rgba(255,255,255,.14);
       --text: rgba(255,255,255,.90);
       --muted: rgba(255,255,255,.60);
       --orange: rgba(255,140,50,.92);
-      --orangeSoft: rgba(255,140,50,.22);
 
-      --bevelTop: rgba(255,255,255,.22);
-      --bevelBot: rgba(0,0,0,.80);
+      /* XP-ish bevel */
+      --bevelTop: rgba(255,255,255,.26);
+      --bevelMid: rgba(255,255,255,.10);
+      --bevelBot: rgba(0,0,0,.88);
 
       --good:#43d17a;
       --idle:#f2c14e;
@@ -46,7 +45,7 @@
         radial-gradient(900px 520px at 55% 30%, rgba(255,140,50,.06), transparent 60%),
         radial-gradient(700px 420px at 40% 70%, rgba(255,255,255,.03), transparent 65%),
         linear-gradient(180deg, rgba(255,255,255,.02), transparent 40%, rgba(0,0,0,.18));
-      opacity:.9;
+      opacity:.95;
     }
     .bg-noise{
       position:fixed; inset:0;
@@ -66,7 +65,7 @@
     /* ===== ENTER (só a palavra) ===== */
     .enter{
       position:fixed; inset:0;
-      z-index:60;
+      z-index:80;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -83,6 +82,12 @@
       color: rgba(255,255,255,.86);
       text-shadow: 0 0 16px rgba(255,140,50,.10);
       position:relative;
+      transition: .14s ease;
+    }
+    .enter:hover .enter-word{
+      color: rgba(255,255,255,.95);
+      text-shadow: 0 0 22px rgba(255,140,50,.20);
+      filter: brightness(1.05);
     }
     .enter-word::after{
       content:"";
@@ -94,15 +99,11 @@
       background: rgba(255,140,50,.75);
       transform: translateY(-50%);
       opacity:.0;
-      animation: blink 1.1s infinite ease;
+      animation: blink 1.05s infinite ease;
     }
     @keyframes blink{
       0%,45%{ opacity:0; }
-      55%,100%{ opacity:.9; }
-    }
-    .enter:hover .enter-word{
-      color: rgba(255,255,255,.95);
-      text-shadow: 0 0 22px rgba(255,140,50,.18);
+      55%,100%{ opacity:.95; }
     }
 
     /* ===== APP ===== */
@@ -135,7 +136,7 @@
       opacity:.75;
     }
 
-    /* ===== MENU ESQUERDO (toolbox) ===== */
+    /* ===== MENU ESQUERDO (mais Paint) ===== */
     .menu{
       padding:12px;
       display:flex;
@@ -150,13 +151,13 @@
       border-radius:10px;
 
       border:1px solid rgba(255,255,255,.14);
-      border-top-color: rgba(255,255,255,.22);
-      border-left-color: rgba(255,255,255,.20);
-      border-right-color: rgba(0,0,0,.72);
-      border-bottom-color: rgba(0,0,0,.82);
+      border-top-color: var(--bevelTop);
+      border-left-color: var(--bevelTop);
+      border-right-color: rgba(0,0,0,.76);
+      border-bottom-color: rgba(0,0,0,.88);
 
       background:
-        linear-gradient(180deg, rgba(40,40,55,.60), rgba(12,12,18,.55));
+        linear-gradient(180deg, rgba(58,58,78,.55), rgba(12,12,18,.55));
     }
     .xp-titlebar .left{
       display:flex; align-items:center; gap:10px;
@@ -166,7 +167,7 @@
       text-transform:uppercase;
       color:rgba(255,255,255,.86);
     }
-    .mini-lights{ display:flex; gap:6px; opacity:.9; }
+    .mini-lights{ display:flex; gap:6px; opacity:.95; }
     .mini-lights span{
       width:10px; height:10px; border-radius:3px;
       border:1px solid rgba(255,255,255,.18);
@@ -174,7 +175,6 @@
       box-shadow: 0 0 0 2px rgba(0,0,0,.35) inset;
     }
     .mini-lights span:nth-child(2){ background: rgba(255,140,50,.14); }
-    .mini-lights span:nth-child(3){ background: rgba(255,255,255,.09); }
     .xp-titlebar .right{
       font-family:var(--mono);
       font-size:10px;
@@ -206,37 +206,57 @@
       padding:10px 10px;
       border-radius:10px;
 
-      border:1px solid rgba(255,255,255,.16);
-      border-top-color: rgba(255,255,255,.22);
-      border-left-color: rgba(255,255,255,.20);
-      border-right-color: rgba(0,0,0,.72);
-      border-bottom-color: rgba(0,0,0,.82);
+      border:1px solid rgba(255,255,255,.18);
+      border-top-color: var(--bevelTop);
+      border-left-color: var(--bevelTop);
+      border-right-color: rgba(0,0,0,.78);
+      border-bottom-color: rgba(0,0,0,.90);
 
       background:
-        linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)),
-        rgba(12,12,15,.55);
+        linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.02)),
+        rgba(12,12,15,.58);
 
-      transition: transform .12s ease, border-color .12s ease, filter .12s ease;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.07) inset,
+        0 -1px 0 rgba(0,0,0,.45) inset;
+
+      transition: transform .10s ease, border-color .12s ease, filter .12s ease, box-shadow .12s ease;
     }
     .toolbtn:hover{
       transform: translateY(-1px);
-      border-color: rgba(255,140,50,.30);
-      filter:brightness(1.06);
+      border-color: rgba(255,140,50,.32);
+      filter:brightness(1.07);
     }
+    /* pressed XP */
     .toolbtn:active{
-      transform: translateY(0px) scale(.99);
-      filter:brightness(1.02);
+      transform: translateY(0px);
+      box-shadow:
+        0 2px 0 rgba(0,0,0,.55) inset,
+        0 -1px 0 rgba(255,255,255,.05) inset;
+      filter:brightness(1.03);
     }
 
+    .toolbtn.active{
+      border-color: rgba(255,140,50,.50);
+      box-shadow:
+        0 0 0 1px rgba(255,140,50,.12) inset,
+        0 0 22px rgba(255,140,50,.10),
+        0 2px 0 rgba(0,0,0,.45) inset;
+    }
+
+    /* ícone “pixel/old” (sem depender de imagens) */
     .tool-ico{
       width:22px; height:22px;
       border-radius:6px;
       border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.05);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.06)),
+        rgba(255,255,255,.04);
       display:grid; place-items:center;
       font-family:var(--mono);
       font-size:12px;
-      color:rgba(255,255,255,.80);
+      color:rgba(255,255,255,.82);
+      image-rendering: pixelated;
     }
 
     .tool-label{
@@ -244,7 +264,7 @@
       font-size:11px;
       letter-spacing:.10em;
       text-transform:uppercase;
-      color:rgba(255,255,255,.86);
+      color:rgba(255,255,255,.88);
     }
 
     .profile{
@@ -316,31 +336,95 @@
       border-radius:10px;
 
       border:1px solid rgba(255,255,255,.16);
-      border-top-color: rgba(255,255,255,.22);
-      border-left-color: rgba(255,255,255,.20);
-      border-right-color: rgba(0,0,0,.72);
-      border-bottom-color: rgba(0,0,0,.82);
+      border-top-color: var(--bevelTop);
+      border-left-color: var(--bevelTop);
+      border-right-color: rgba(0,0,0,.78);
+      border-bottom-color: rgba(0,0,0,.90);
 
       background:
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
         rgba(12,12,15,.55);
 
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.10em;
       text-transform:uppercase;
-      color:rgba(255,255,255,.88);
+      color:rgba(255,255,255,.90);
 
-      transition: transform .12s ease, border-color .12s ease, filter .12s ease;
+      transition: transform .10s ease, border-color .12s ease, filter .12s ease, box-shadow .12s ease;
     }
-    .btn-bevel:hover{ transform: translateY(-1px); border-color: rgba(255,140,50,.30); filter:brightness(1.06); }
-    .btn-bevel:active{ transform: translateY(0px) scale(.99); filter:brightness(1.02); }
+    .btn-bevel:hover{ transform: translateY(-1px); border-color: rgba(255,140,50,.30); filter:brightness(1.07); }
+    .btn-bevel:active{
+      transform: translateY(0px);
+      box-shadow: 0 2px 0 rgba(0,0,0,.55) inset;
+      filter:brightness(1.03);
+    }
+
+    /* Barra fake “Arquivo Editar Exibir Ajuda” (AMV/2008 vibes) */
+    .menubar{
+      position:relative; z-index:1;
+      display:flex;
+      gap:14px;
+      align-items:center;
+
+      padding:8px 10px;
+      border-radius:12px;
+
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+
+      font-family:var(--mono);
+      font-size:11px;
+      letter-spacing:.08em;
+      color:rgba(255,255,255,.62);
+    }
+    .menubar .item{
+      cursor:default;
+      padding:4px 6px;
+      border-radius:8px;
+      border:1px solid transparent;
+    }
+    .menubar .item:hover{
+      border-color: rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      color:rgba(255,255,255,.76);
+    }
+    .menubar .sep{
+      margin-left:auto;
+      font-size:10px;
+      color:rgba(255,255,255,.45);
+      letter-spacing:.10em;
+    }
+
+    /* “marquee” sutil, lento */
+    .ticker{
+      position:relative;
+      height:18px;
+      overflow:hidden;
+      margin-left:8px;
+      flex:1;
+      mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+      opacity:.85;
+    }
+    .ticker span{
+      position:absolute;
+      white-space:nowrap;
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:.08em;
+      color:rgba(255,255,255,.55);
+      animation: scroll 22s linear infinite;
+    }
+    @keyframes scroll{
+      0%{ transform: translateX(100%); }
+      100%{ transform: translateX(-120%); }
+    }
 
     .stage{
       flex:1;
       display:grid;
       place-items:center;
-      padding:10px 6px;
+      padding:6px 6px 10px;
       position:relative;
       z-index:1;
     }
@@ -365,6 +449,7 @@
       background:#000;
     }
 
+    /* overlay AMV antigo + scanlines */
     .amv-overlay{
       position:absolute; inset:0;
       pointer-events:none;
@@ -376,7 +461,7 @@
       background:
         radial-gradient(900px 450px at 50% 50%, transparent 35%, rgba(0,0,0,.62) 78%),
         repeating-linear-gradient(0deg, rgba(255,255,255,.03), rgba(255,255,255,.03) 1px, transparent 1px, transparent 4px);
-      opacity:.75;
+      opacity:.78;
       mix-blend-mode:overlay;
     }
 
@@ -406,10 +491,49 @@
       opacity:.95;
     }
 
-    /* ===== MODAL “JANELA” (abre quando clica no menu) ===== */
+    /* “assinatura” + REC */
+    .rec{
+      position:absolute;
+      top:32px;
+      left:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      font-family:var(--mono);
+      font-size:11px;
+      letter-spacing:.10em;
+      color:rgba(255,255,255,.70);
+      text-shadow: 0 2px 12px rgba(0,0,0,.95);
+      opacity:.85;
+    }
+    .rec .dot{
+      width:7px; height:7px; border-radius:999px;
+      background: rgba(255,70,70,.65);
+      box-shadow: 0 0 10px rgba(255,70,70,.22);
+      animation: recblink 1.1s infinite ease;
+    }
+    @keyframes recblink{
+      0%,45%{ opacity:.15; }
+      55%,100%{ opacity:.95; }
+    }
+
+    .sig{
+      position:absolute;
+      bottom:10px;
+      right:12px;
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.45);
+      text-shadow: 0 2px 12px rgba(0,0,0,.95);
+      opacity:.85;
+    }
+
+    /* ===== MODAL “JANELA” ===== */
     .modal{
       position:fixed; inset:0;
-      z-index:55;
+      z-index:70;
       display:none;
       align-items:center;
       justify-content:center;
@@ -440,7 +564,7 @@
 
       border-bottom:1px solid rgba(255,255,255,.10);
       background:
-        linear-gradient(180deg, rgba(40,40,55,.55), rgba(12,12,18,.55));
+        linear-gradient(180deg, rgba(58,58,78,.55), rgba(12,12,18,.55));
 
       font-family:var(--mono);
       font-size:11px;
@@ -448,14 +572,12 @@
       text-transform:uppercase;
       color:rgba(255,255,255,.84);
     }
-
     .winbar .left{ display:flex; align-items:center; gap:10px; }
     .winbar .pilldot{
       width:7px; height:7px; border-radius:999px;
       background: rgba(255,140,50,.55);
       box-shadow: 0 0 12px rgba(255,140,50,.18);
     }
-    .winbar .right{ display:flex; align-items:center; gap:8px; }
 
     .close{
       all:unset;
@@ -465,23 +587,23 @@
       border-radius:10px;
 
       border:1px solid rgba(255,255,255,.16);
-      border-top-color: rgba(255,255,255,.22);
-      border-left-color: rgba(255,255,255,.20);
-      border-right-color: rgba(0,0,0,.72);
-      border-bottom-color: rgba(0,0,0,.82);
+      border-top-color: var(--bevelTop);
+      border-left-color: var(--bevelTop);
+      border-right-color: rgba(0,0,0,.78);
+      border-bottom-color: rgba(0,0,0,.90);
 
       background:
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
         rgba(12,12,15,.55);
 
       display:grid; place-items:center;
       font-family:var(--mono);
       font-size:12px;
       color:rgba(255,255,255,.78);
-      transition:.12s ease;
+      transition:.10s ease;
     }
-    .close:hover{ border-color: rgba(255,140,50,.30); transform: translateY(-1px); filter:brightness(1.06); }
-    .close:active{ transform: translateY(0px) scale(.99); }
+    .close:hover{ border-color: rgba(255,140,50,.30); transform: translateY(-1px); filter:brightness(1.07); }
+    .close:active{ transform: translateY(0px); box-shadow: 0 2px 0 rgba(0,0,0,.55) inset; }
 
     .winbody{
       padding:12px;
@@ -521,7 +643,6 @@
       text-transform:uppercase;
       color:rgba(255,255,255,.78);
     }
-
     .mini{
       font-family:var(--mono);
       font-size:11px;
@@ -581,13 +702,13 @@
       border-radius:10px;
 
       border:1px solid rgba(255,255,255,.16);
-      border-top-color: rgba(255,255,255,.22);
-      border-left-color: rgba(255,255,255,.20);
-      border-right-color: rgba(0,0,0,.72);
-      border-bottom-color: rgba(0,0,0,.82);
+      border-top-color: var(--bevelTop);
+      border-left-color: var(--bevelTop);
+      border-right-color: rgba(0,0,0,.78);
+      border-bottom-color: rgba(0,0,0,.90);
 
       background:
-        linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)),
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.02)),
         rgba(12,12,15,.55);
 
       color:rgba(255,255,255,.84);
@@ -595,17 +716,17 @@
       font-size:11px;
       letter-spacing:.10em;
       text-transform:uppercase;
-      transition:.12s ease;
+      transition:.10s ease;
     }
-    .linkbtn:hover{ border-color: rgba(255,140,50,.30); transform: translateY(-1px); filter:brightness(1.06); }
-    .linkbtn:active{ transform: translateY(0px); filter:brightness(1.02); }
+    .linkbtn:hover{ border-color: rgba(255,140,50,.30); transform: translateY(-1px); filter:brightness(1.07); }
+    .linkbtn:active{ transform: translateY(0px); box-shadow: 0 2px 0 rgba(0,0,0,.55) inset; }
 
-    /* ===== Discord widget (sem “separadores” pesados) ===== */
+    /* ===== Discord widget (mais janela) ===== */
     .discord-widget{
       position:fixed;
       left:12px;
       bottom:12px;
-      z-index:20;
+      z-index:25;
 
       width:min(330px, calc(100vw - 24px));
       border-radius:14px;
@@ -617,19 +738,18 @@
       box-shadow: 0 20px 60px rgba(0,0,0,.70);
       overflow:hidden;
     }
+
     .discord-widget .head{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
       padding:10px 10px;
-
       border-bottom:1px solid rgba(255,255,255,.10);
-      background:
-        linear-gradient(180deg, rgba(40,40,55,.55), rgba(12,12,18,.55));
+      background: linear-gradient(180deg, rgba(58,58,78,.55), rgba(12,12,18,.55));
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.12em;
       text-transform:uppercase;
-      color:rgba(255,255,255,.82);
+      color:rgba(255,255,255,.84);
     }
     .discord-widget .state{
       font-size:10px;
@@ -637,6 +757,7 @@
       letter-spacing:.10em;
       text-transform:uppercase;
     }
+
     .discord-widget .body{ padding:10px 10px 10px; }
 
     .discord-row{ display:flex; align-items:center; gap:10px; }
@@ -658,6 +779,7 @@
       text-transform:uppercase;
       color:rgba(255,255,255,.88);
     }
+
     .statusline{
       display:flex; align-items:center; gap:8px;
       margin-top:6px;
@@ -672,33 +794,30 @@
       box-shadow: 0 0 12px rgba(255,255,255,.08);
     }
 
-    .dlines{
+    .rows{
       margin-top:10px;
       display:grid;
       gap:8px;
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.02em;
-      color:rgba(255,255,255,.78);
     }
-    .dline{
+    .rowline{
       padding:8px 9px;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.18);
+      font-family:var(--mono);
+      font-size:11px;
+      color:rgba(255,255,255,.82);
+      letter-spacing:.02em;
+      line-height:1.35;
     }
-    .dline .k{
-      display:block;
+    .rowline b{
+      display:inline-block;
+      min-width:86px;
       font-size:10px;
       letter-spacing:.12em;
       text-transform:uppercase;
       color:rgba(255,255,255,.52);
-      margin-bottom:5px;
-    }
-    .dline .v{
-      color:rgba(255,255,255,.84);
-      line-height:1.35;
-      word-break:break-word;
+      margin-right:8px;
     }
 
     /* ===== ADMIN ===== */
@@ -738,6 +857,8 @@
         width:calc(100% - 28px);
         margin: 0 14px 14px;
       }
+      .menubar{ flex-wrap:wrap; }
+      .ticker{ flex-basis:100%; margin-left:0; }
     }
   </style>
 </head>
@@ -766,12 +887,12 @@
 
       <nav class="toolbox" id="nav">
         <button class="toolbtn" data-view="social">
-          <span class="tool-ico">👤</span>
+          <span class="tool-ico">☺</span>
           <span class="tool-label">social</span>
         </button>
 
         <button class="toolbtn" data-view="archives">
-          <span class="tool-ico">📁</span>
+          <span class="tool-ico">▦</span>
           <span class="tool-label">arquivos</span>
         </button>
 
@@ -801,24 +922,39 @@
         </div>
       </div>
 
+      <!-- upgrades: menubar + ticker -->
+      <div class="menubar" aria-hidden="true">
+        <div class="item">Arquivo</div>
+        <div class="item">Editar</div>
+        <div class="item">Exibir</div>
+        <div class="item">Ajuda</div>
+
+        <div class="ticker">
+          <span id="tickerText">ALLZ HUB — nostalgia internet antiga + UI dark moderna — Bandicam vibes — awake and unafraid —</span>
+        </div>
+
+        <div class="sep">ALLZ_2009</div>
+      </div>
+
       <section class="stage">
         <div class="video-shell">
-          <!-- autoplay muted ajuda a rodar (depois do ENTER a gente dá play também) -->
           <video id="amv" playsinline muted autoplay loop preload="auto">
             <source src="https://files.catbox.moe/fhahqy.mp4" type="video/mp4">
           </video>
 
           <div class="amv-overlay">
             <div class="bandicam">Bandicam.com</div>
+            <div class="rec"><span class="dot"></span>REC</div>
             <div class="timestamp" id="ts">00:00:00</div>
             <div class="caption">ALLZ HUB / awake and unafraid</div>
+            <div class="sig">ALLZ_2009</div>
           </div>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- MODAL / JANELA -->
+  <!-- MODAL / JANELAS -->
   <div class="modal" id="modal">
     <div class="window" role="dialog" aria-modal="true" aria-label="Janela">
       <div class="winbar">
@@ -840,7 +976,7 @@
               <div class="social-hero">
                 <div class="social-ava">ALLZ</div>
                 <div>
-                  <strong style="font-size:20px;">Allz</strong>
+                  <strong>Allz</strong>
                   <span>awake and unafraid</span>
                   <div class="pill"><span class="pdot"></span> purgatório</div>
                 </div>
@@ -955,7 +1091,7 @@
   <!-- DISCORD widget -->
   <div class="discord-widget" id="discordWidget">
     <div class="head">
-      <div>discord ao vivo</div>
+      <div>Discord - presença</div>
       <div class="state" id="lanyardState">conectando…</div>
     </div>
 
@@ -971,22 +1107,23 @@
         </div>
       </div>
 
-      <div class="dlines">
-        <div class="dline">
-          <span class="k">Atividade</span>
-          <div class="v" id="dAct">—</div>
-        </div>
-        <div class="dline">
-          <span class="k">Spotify</span>
-          <div class="v" id="dSpot">—</div>
-        </div>
+      <div class="rows">
+        <div class="rowline"><b>Status:</b> <span id="dStatus2">—</span></div>
+        <div class="rowline"><b>Atividade:</b> <span id="dAct">—</span></div>
+        <div class="rowline"><b>Spotify:</b> <span id="dSpot">—</span></div>
       </div>
     </div>
   </div>
 
-  <!-- áudio (começa após ENTER) -->
+  <!-- áudio -->
   <audio id="bgm" preload="auto" loop>
     <source src="https://files.catbox.moe/7es5uf.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- beep (XP click) -->
+  <audio id="beep" preload="auto">
+    <!-- base64 WAV curto (sem arquivo externo) -->
+    <source src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YVAAAAB8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fA==" type="audio/wav">
   </audio>
 
   <script>
@@ -996,11 +1133,10 @@
     const LANYARD_USER_ID = "513830615225860096";
     const LANYARD_HTTP = `https://api.lanyard.rest/v1/users/${LANYARD_USER_ID}`;
 
-    // Admin “gate” (front-end). Troque pra você:
+    // Admin gate (troca)
     const ADMIN_USER = "allz";
-    // SHA-256 em HEX da sua senha (não expõe senha em texto).
-    // Padrão atual: senha = "allz" (TROCA ISSO!)
-    const ADMIN_PASS_HASH = "a88c9e2d5e0f6d3cbb9f06e2e2c8e8f8e0c63c8b93d1f8f9df58bbdffb3c74a7"; // hash("allz")
+    // SHA-256 HEX (não expõe senha em texto). Padrão atual: "allz" (troca isso!)
+    const ADMIN_PASS_HASH = "a88c9e2d5e0f6d3cbb9f06e2e2c8e8f8e0c63c8b93d1f8f9df58bbdffb3c74a7";
 
     /*********************
      * ELEMENTOS
@@ -1010,12 +1146,12 @@
 
     const amv = document.getElementById("amv");
     const bgm = document.getElementById("bgm");
+    const beep = document.getElementById("beep");
     const muteBtn = document.getElementById("muteBtn");
 
     const modal = document.getElementById("modal");
     const closeWin = document.getElementById("closeWin");
     const winTitle = document.getElementById("winTitle");
-
     const nav = document.getElementById("nav");
 
     const ts = document.getElementById("ts");
@@ -1030,21 +1166,27 @@
       if(started) return;
       started = true;
 
+      // beep XP (bem baixo)
+      try{
+        beep.volume = 0.12;
+        beep.currentTime = 0;
+        await beep.play();
+      }catch(e){}
+
       enter.classList.add("hidden");
       app.style.display = "grid";
 
-      // vídeo: tenta garantir play
-      try {
+      // vídeo
+      try{
         amv.muted = true;
         amv.autoplay = true;
         amv.playsInline = true;
         await amv.play();
-      } catch(e) {
-        // fallback: tenta no primeiro clique depois
+      }catch(e){
         window.addEventListener("pointerdown", () => amv.play().catch(()=>{}), { once:true });
       }
 
-      // áudio: só depois do ENTER (gesto do user)
+      // música fixa 4% (após ENTER)
       bgm.volume = 0.04;
       try { await bgm.play(); }
       catch(e){
@@ -1105,17 +1247,28 @@
       admin: "ADMIN",
     };
 
+    function setActiveBtn(view){
+      [...nav.querySelectorAll("button[data-view]")].forEach(b=>{
+        b.classList.toggle("active", b.dataset.view === view);
+      });
+    }
+
+    async function uiClick(){
+      try{
+        beep.volume = 0.10;
+        beep.currentTime = 0;
+        await beep.play();
+      }catch(e){}
+    }
+
     function openWindow(view){
-      // pausa a música ao abrir janela
+      uiClick();
+
+      // pausa música ao abrir janela
       bgm.pause();
 
-      // ativa botão visualmente
-      [...nav.querySelectorAll("button[data-view]")].forEach(b=>{
-        b.style.boxShadow = "";
-        b.style.borderColor = "";
-      });
+      setActiveBtn(view);
 
-      // troca conteúdo
       Object.values(panes).forEach(p=>p.classList.add("hidden"));
       if(panes[view]) panes[view].classList.remove("hidden");
 
@@ -1123,9 +1276,10 @@
       modal.classList.add("open");
     }
 
-    function closeWindow(){
+    function closeWindowFn(){
+      uiClick();
+
       modal.classList.remove("open");
-      // volta música depois de fechar (se não estiver mutado)
       setTimeout(()=>{
         if(!muted) bgm.play().catch(()=>{});
       }, 220);
@@ -1137,24 +1291,21 @@
       openWindow(btn.dataset.view);
     });
 
-    closeWin.addEventListener("click", closeWindow);
-
-    // fechar clicando fora
+    closeWin.addEventListener("click", closeWindowFn);
     modal.addEventListener("click", (e)=>{
-      if(e.target === modal) closeWindow();
+      if(e.target === modal) closeWindowFn();
     });
-
-    // ESC fecha
     window.addEventListener("keydown", (e)=>{
-      if(e.key === "Escape" && modal.classList.contains("open")) closeWindow();
+      if(e.key === "Escape" && modal.classList.contains("open")) closeWindowFn();
     });
 
     /*********************
-     * DISCORD LIVE (LANYARD) - PT-BR
+     * DISCORD (LANYARD) - PT-BR
      *********************/
     const dAva = document.getElementById("dAva");
     const dName = document.getElementById("dName");
     const dStatus = document.getElementById("dStatus");
+    const dStatus2 = document.getElementById("dStatus2");
     const dDot = document.getElementById("dDot");
     const dAct = document.getElementById("dAct");
     const dSpot = document.getElementById("dSpot");
@@ -1173,12 +1324,7 @@
       return getCss("--offline");
     }
     function statusPtBr(s){
-      const map = {
-        online: "online",
-        idle: "ausente",
-        dnd: "não perturbe",
-        offline: "offline"
-      };
+      const map = { online:"online", idle:"ausente", dnd:"não perturbe", offline:"offline" };
       return map[s] || "offline";
     }
     function escapeHtml(str){
@@ -1203,12 +1349,15 @@
       dName.textContent = globalName;
 
       const st = data.discord_status || "offline";
-      dStatus.textContent = statusPtBr(st);
+      const stBr = statusPtBr(st);
+      dStatus.textContent = stBr;
+      dStatus2.textContent = stBr;
+
       const c = statusColor(st);
       dDot.style.background = c;
       dDot.style.boxShadow = `0 0 12px ${c}55`;
 
-      // activity principal (ignora custom status se existir outra)
+      // Atividade principal (ignora custom status se existir outra)
       const acts = Array.isArray(data.activities) ? data.activities : [];
       const filtered = acts.filter(a => a && a.type !== 4);
       const main = filtered[0] || acts[0];
@@ -1222,6 +1371,7 @@
         dAct.textContent = "—";
       }
 
+      // Spotify
       if(data.spotify){
         const sp = data.spotify;
         const song = sp.song || "—";
@@ -1253,11 +1403,7 @@
           const msg = JSON.parse(ev.data);
 
           if(msg.op === 1){
-            ws.send(JSON.stringify({
-              op: 2,
-              d: { subscribe_to_id: LANYARD_USER_ID }
-            }));
-
+            ws.send(JSON.stringify({ op: 2, d: { subscribe_to_id: LANYARD_USER_ID } }));
             const interval = msg.d.heartbeat_interval;
             setInterval(()=>{
               try{ ws.send(JSON.stringify({ op: 3, d: {} })); }catch(e){}
@@ -1270,19 +1416,18 @@
           }
         };
 
-        ws.onerror = ()=>{
+        ws.onerror = () => {
           if(!pollTimer){
             pollLanyard();
             pollTimer = setInterval(pollLanyard, 15000);
           }
         };
-        ws.onclose = ()=>{
+        ws.onclose = () => {
           if(!pollTimer){
             pollLanyard();
             pollTimer = setInterval(pollLanyard, 15000);
           }
         };
-
       }catch(e){
         pollLanyard();
         pollTimer = setInterval(pollLanyard, 15000);
@@ -1302,10 +1447,7 @@
       const u = document.getElementById("user").value.trim();
       const p = document.getElementById("pass").value;
 
-      if(!u || !p){
-        loginMsg.textContent = "preencha.";
-        return;
-      }
+      if(!u || !p){ loginMsg.textContent = "preencha."; return; }
 
       const hash = await sha256Hex(p);
 
@@ -1398,13 +1540,14 @@
     }
 
     /*********************
-     * EXTRA: tenta garantir vídeo em alguns browsers
+     * VISIBILITY: pausa/retoma
      *********************/
     document.addEventListener("visibilitychange", ()=>{
-      if(document.visibilityState === "visible" && started){
+      if(!started) return;
+      if(document.visibilityState === "visible"){
         amv.play().catch(()=>{});
         if(!muted) bgm.play().catch(()=>{});
-      } else {
+      }else{
         bgm.pause();
       }
     });
