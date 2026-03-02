@@ -7,9 +7,6 @@
 
   <style>
     :root{
-      --bg:#07080b;
-      --panel:#0f1117;
-      --panel2:#0b0d12;
       --stroke:rgba(255,255,255,.12);
       --stroke2:rgba(255,255,255,.08);
       --text:rgba(255,255,255,.92);
@@ -29,29 +26,46 @@
     body[data-theme="dark"]{
       --page:#06070a;
       --page2:#07080b;
-      --ink:#0a0c10;
-      --txt:#0b0c0f;
-      --xpbar:#0d0f14;
-      --xpedge:rgba(255,255,255,.12);
-      --xpfill:rgba(255,255,255,.06);
+      --panel: rgba(0,0,0,.20);
+      --panel2: rgba(0,0,0,.18);
+      --win: rgba(10,12,16,.88);
+      --bar: rgba(255,255,255,.06);
+      --edge: var(--stroke);
+      --edge2: var(--stroke2);
+      --t: var(--text);
+      --m: var(--muted);
+      --particle: rgba(255,255,255,0.14);
+      --dotRing: rgba(0,0,0,.25);
     }
+
     body[data-theme="xp"]{
       --page:#e9edf3;
       --page2:#f6f7fb;
-      --ink:#ffffff;
-      --txt:#111;
-      --xpbar:#e6e9f2;
-      --xpedge:rgba(0,0,0,.14);
-      --xpfill:rgba(0,0,0,.06);
+      --panel: rgba(255,255,255,.70);
+      --panel2: rgba(255,255,255,.72);
+      --win: rgba(245,247,252,.92);
+      --bar: rgba(0,0,0,.05);
+      --edge: rgba(0,0,0,.14);
+      --edge2: rgba(0,0,0,.10);
+      --t: rgba(0,0,0,.86);
+      --m: rgba(0,0,0,.55);
+      --particle: rgba(0,0,0,0.10);
+      --dotRing: rgba(255,255,255,.90);
     }
+
     body[data-theme="mix"]{
       --page:#eef1f7;
       --page2:#f8f9fc;
-      --ink:#0b0d12;
-      --txt:#111;
-      --xpbar:#eef1f7;
-      --xpedge:rgba(0,0,0,.14);
-      --xpfill:rgba(0,0,0,.06);
+      --panel: rgba(255,255,255,.70);
+      --panel2: rgba(255,255,255,.72);
+      --win: rgba(12,14,20,.86);
+      --bar: rgba(0,0,0,.05);
+      --edge: rgba(0,0,0,.14);
+      --edge2: rgba(0,0,0,.10);
+      --t: rgba(255,255,255,.92);
+      --m: rgba(255,255,255,.55);
+      --particle: rgba(0,0,0,0.10);
+      --dotRing: rgba(255,255,255,.90);
     }
 
     html,body{height:100%;}
@@ -59,12 +73,11 @@
       margin:0;
       background: radial-gradient(1200px 900px at 50% 40%, rgba(255,255,255,.06), transparent 55%),
                   linear-gradient(180deg, var(--page), var(--page2));
-      color:var(--text);
+      color:var(--t);
       font-family:var(--ui);
       overflow:hidden;
     }
 
-    /* partículas */
     #particles{
       position:fixed; inset:0;
       width:100%; height:100%;
@@ -73,7 +86,6 @@
       mix-blend-mode:screen;
     }
 
-    /* CRT flash */
     .crt{
       position:fixed; inset:0;
       pointer-events:none;
@@ -83,11 +95,11 @@
     }
     .crt.on{ opacity:1; }
 
-    /* ENTER screen */
+    /* ENTER */
     .enter{
       position:fixed; inset:0;
       display:grid; place-items:center;
-      background: #000;
+      background:#000;
       cursor:pointer;
       z-index:50;
       user-select:none;
@@ -113,7 +125,7 @@
     }
     @keyframes blink{ 50%{opacity:0} }
 
-    /* app layout */
+    /* app */
     .app{
       position:relative;
       height:100%;
@@ -126,35 +138,25 @@
 
     /* sidebar */
     .side{
-      background: rgba(0,0,0,.20);
-      border:1px solid var(--stroke);
+      background: var(--panel);
+      border:1px solid var(--edge);
       border-radius:18px;
       box-shadow:0 18px 50px rgba(0,0,0,.30);
       display:flex;
       flex-direction:column;
       overflow:hidden;
-    }
-    body[data-theme="xp"] .side,
-    body[data-theme="mix"] .side{
-      background: rgba(255,255,255,.70);
-      border:1px solid var(--xpedge);
+      backdrop-filter: blur(6px);
     }
 
     .sideTop{
       display:flex; align-items:center; justify-content:space-between;
       padding:10px 12px;
-      border-bottom:1px solid var(--stroke2);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+      border-bottom:1px solid var(--edge2);
+      background: linear-gradient(180deg, var(--bar), transparent);
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.10em;
-      opacity:.9;
-    }
-    body[data-theme="xp"] .sideTop,
-    body[data-theme="mix"] .sideTop{
-      border-bottom:1px solid var(--xpedge);
-      background: linear-gradient(180deg, rgba(0,0,0,.04), transparent);
-      color:rgba(0,0,0,.72);
+      opacity:.95;
     }
 
     .toolbox{
@@ -168,9 +170,9 @@
       display:flex; align-items:center; gap:10px;
       padding:10px 10px;
       border-radius:12px;
-      border:1px solid var(--stroke);
+      border:1px solid var(--edge);
       background: rgba(255,255,255,.05);
-      color:rgba(255,255,255,.90);
+      color:var(--t);
       cursor:pointer;
       transition:transform .10s ease, background .10s ease;
       font-family:var(--mono);
@@ -178,55 +180,46 @@
       letter-spacing:.08em;
       user-select:none;
     }
-    .toolbtn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.07); }
-    .toolbtn.active{ outline:2px solid rgba(255,255,255,.10); background:rgba(255,255,255,.09); }
-
     body[data-theme="xp"] .toolbtn,
     body[data-theme="mix"] .toolbtn{
-      border:1px solid var(--xpedge);
       background: rgba(0,0,0,.04);
-      color:rgba(0,0,0,.78);
     }
+    .toolbtn:hover{ transform:translateY(-1px); background:rgba(255,255,255,.07); }
+    .toolbtn.active{ outline:2px solid rgba(255,255,255,.10); background:rgba(255,255,255,.09); }
 
     .ico{
       width:18px; height:18px;
       border-radius:6px;
-      border:1px solid var(--stroke2);
-      background: rgba(0,0,0,.25);
+      border:1px solid var(--edge2);
+      background: rgba(0,0,0,.15);
       display:grid; place-items:center;
       font-size:12px;
       opacity:.95;
     }
     body[data-theme="xp"] .ico,
     body[data-theme="mix"] .ico{
-      border:1px solid var(--xpedge);
       background: rgba(255,255,255,.85);
       color:#111;
     }
 
-    /* discord mini (canto inferior esquerdo, minimal) */
+    /* Discord mini */
     .discordMini{
       margin-top:auto;
       padding:10px 12px 12px;
-      border-top:1px solid var(--stroke2);
+      border-top:1px solid var(--edge2);
       display:flex;
       align-items:center;
       gap:10px;
     }
-    body[data-theme="xp"] .discordMini,
-    body[data-theme="mix"] .discordMini{
-      border-top:1px solid var(--xpedge);
-    }
 
     .dA{
       width:38px;height:38px;border-radius:10px;
-      border:1px solid var(--stroke);
+      border:1px solid var(--edge);
       object-fit:cover;
       background: rgba(0,0,0,.25);
     }
     body[data-theme="xp"] .dA,
     body[data-theme="mix"] .dA{
-      border:1px solid var(--xpedge);
       background: rgba(255,255,255,.9);
     }
 
@@ -235,66 +228,47 @@
     .dot{
       width:9px;height:9px;border-radius:99px;
       background:var(--offline);
-      box-shadow:0 0 0 2px rgba(0,0,0,.25);
-    }
-    body[data-theme="xp"] .dot,
-    body[data-theme="mix"] .dot{
-      box-shadow:0 0 0 2px rgba(255,255,255,.9);
+      box-shadow:0 0 0 2px var(--dotRing);
     }
     .dName{
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.10em;
-      opacity:.95;
+      opacity:.98;
     }
     .dUser{
       font-family:var(--mono);
       font-size:10px;
-      color:var(--muted);
+      color:var(--m);
       letter-spacing:.06em;
       margin-top:2px;
     }
     .dStatus{
       font-family:var(--mono);
       font-size:10px;
-      color:var(--muted);
+      color:var(--m);
       letter-spacing:.06em;
       margin-top:4px;
       text-transform:lowercase;
     }
-    body[data-theme="xp"] .dUser,
-    body[data-theme="mix"] .dUser,
-    body[data-theme="xp"] .dStatus,
-    body[data-theme="mix"] .dStatus{
-      color:rgba(0,0,0,.55);
-    }
 
     /* main */
     .main{
-      background: rgba(0,0,0,.18);
-      border:1px solid var(--stroke);
+      background: var(--panel2);
+      border:1px solid var(--edge);
       border-radius:18px;
       box-shadow:0 18px 50px rgba(0,0,0,.30);
       overflow:hidden;
       display:flex;
       flex-direction:column;
-    }
-    body[data-theme="xp"] .main,
-    body[data-theme="mix"] .main{
-      background: rgba(255,255,255,.72);
-      border:1px solid var(--xpedge);
+      backdrop-filter: blur(6px);
     }
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
       padding:10px 12px;
-      border-bottom:1px solid var(--stroke2);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
-    }
-    body[data-theme="xp"] .topbar,
-    body[data-theme="mix"] .topbar{
-      border-bottom:1px solid var(--xpedge);
-      background: linear-gradient(180deg, rgba(0,0,0,.05), transparent);
+      border-bottom:1px solid var(--edge2);
+      background: linear-gradient(180deg, var(--bar), transparent);
     }
 
     .crumb{
@@ -302,20 +276,19 @@
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.10em;
-      opacity:.9;
+      opacity:.95;
     }
     .crumbDot{
       width:6px;height:6px;border-radius:99px;background:rgba(255,255,255,.65);
     }
-    body[data-theme="xp"] .crumbDot,
-    body[data-theme="mix"] .crumbDot{ background:rgba(0,0,0,.45); }
+    body[data-theme="xp"] .crumbDot{ background:rgba(0,0,0,.45); }
 
     .topBtns{ display:flex; gap:10px; align-items:center; }
 
     .btn{
-      border:1px solid var(--stroke);
+      border:1px solid var(--edge);
       background: rgba(255,255,255,.06);
-      color:rgba(255,255,255,.88);
+      color:var(--t);
       padding:8px 10px;
       border-radius:12px;
       cursor:pointer;
@@ -324,32 +297,24 @@
       letter-spacing:.10em;
       user-select:none;
     }
-    .btn:hover{ background:rgba(255,255,255,.09); }
-    body[data-theme="xp"] .btn,
-    body[data-theme="mix"] .btn{
-      border:1px solid var(--xpedge);
+    body[data-theme="xp"] .btn{
       background: rgba(255,255,255,.75);
       color:rgba(0,0,0,.80);
     }
+    .btn:hover{ background:rgba(255,255,255,.09); }
 
-    /* menu bar (Arquivo Editar etc) */
     .menubar{
       padding:8px 12px;
-      border-bottom:1px solid var(--stroke2);
+      border-bottom:1px solid var(--edge2);
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.08em;
-      color:var(--muted);
+      color:var(--m);
       display:flex;
       gap:18px;
     }
-    body[data-theme="xp"] .menubar,
-    body[data-theme="mix"] .menubar{
-      border-bottom:1px solid var(--xpedge);
-      color:rgba(0,0,0,.55);
-    }
 
-    /* video area */
+    /* stage */
     .stage{
       flex:1;
       display:grid;
@@ -361,15 +326,13 @@
       width:min(980px, 100%);
       aspect-ratio: 16 / 9;
       border-radius:18px;
-      border:1px solid var(--stroke);
+      border:1px solid var(--edge);
       background: rgba(0,0,0,.25);
       box-shadow:0 30px 80px rgba(0,0,0,.35);
       position:relative;
       overflow:hidden;
     }
-    body[data-theme="xp"] .videoShell,
-    body[data-theme="mix"] .videoShell{
-      border:1px solid var(--xpedge);
+    body[data-theme="xp"] .videoShell{
       background: rgba(255,255,255,.70);
     }
 
@@ -381,7 +344,7 @@
       display:block;
     }
 
-    /* bandicam vibe overlay */
+    /* bandicam HUD */
     .hud{
       position:absolute;
       inset:0;
@@ -404,20 +367,11 @@
       width:6px;height:6px;border-radius:99px;background:#ff3b3b;
       box-shadow:0 0 14px rgba(255,59,59,.45);
     }
-    .hud .tr{
-      position:absolute; top:10px; right:12px;
-      opacity:.9;
-    }
-    .hud .bl{
-      position:absolute; bottom:10px; left:12px;
-      opacity:.8;
-    }
-    .hud .br{
-      position:absolute; bottom:10px; right:12px;
-      opacity:.75;
-    }
+    .hud .tr{ position:absolute; top:10px; right:12px; opacity:.9; }
+    .hud .bl{ position:absolute; bottom:10px; left:12px; opacity:.8; }
+    .hud .br{ position:absolute; bottom:10px; right:12px; opacity:.75; }
 
-    /* modal overlay */
+    /* modal */
     .overlay{
       position:fixed; inset:0;
       display:none;
@@ -428,71 +382,61 @@
       padding:18px;
       box-sizing:border-box;
     }
-
     .window{
       width:min(980px, 100%);
       border-radius:18px;
-      border:1px solid var(--stroke);
-      background: rgba(10,12,16,.88);
+      border:1px solid var(--edge);
+      background: var(--win);
       box-shadow:0 40px 110px rgba(0,0,0,.55);
       overflow:hidden;
     }
-    body[data-theme="xp"] .window,
-    body[data-theme="mix"] .window{
-      background: rgba(245,247,252,.92);
-      border:1px solid var(--xpedge);
-    }
-
     .winTop{
       display:flex; align-items:center; justify-content:space-between;
       padding:10px 12px;
-      border-bottom:1px solid var(--stroke2);
-      background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+      border-bottom:1px solid var(--edge2);
+      background: linear-gradient(180deg, var(--bar), transparent);
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.10em;
     }
-    body[data-theme="xp"] .winTop,
-    body[data-theme="mix"] .winTop{
-      border-bottom:1px solid var(--xpedge);
-      background: linear-gradient(180deg, rgba(0,0,0,.05), transparent);
+    body[data-theme="xp"] .winTop{
       color:rgba(0,0,0,.78);
     }
-
-    .winLeftTitle{
-      display:flex; align-items:center; gap:10px;
-    }
+    .winLeftTitle{ display:flex; align-items:center; gap:10px; }
     .winBullet{
       width:7px;height:7px;border-radius:99px;background:rgba(255,255,255,.65);
     }
-    body[data-theme="xp"] .winBullet,
-    body[data-theme="mix"] .winBullet{ background:rgba(0,0,0,.45); }
+    body[data-theme="xp"] .winBullet{ background:rgba(0,0,0,.45); }
 
     .xbtn{
       width:34px;height:30px;
       border-radius:10px;
-      border:1px solid var(--stroke);
+      border:1px solid var(--edge);
       background: rgba(255,255,255,.06);
       cursor:pointer;
       display:grid; place-items:center;
-      color:rgba(255,255,255,.90);
+      color:var(--t);
       user-select:none;
     }
-    body[data-theme="xp"] .xbtn,
-    body[data-theme="mix"] .xbtn{
-      border:1px solid var(--xpedge);
+    body[data-theme="xp"] .xbtn{
       background: rgba(255,255,255,.78);
       color:rgba(0,0,0,.75);
     }
 
     .winBody{ padding:16px; }
-
     .hidden{ display:none !important; }
 
-    /* playlist UI (Spotify-like) */
+    .hint{
+      font-family:var(--mono);
+      font-size:10px;
+      letter-spacing:.06em;
+      color:var(--m);
+    }
+
+    /* playlists */
     .plWrap{
       display:grid;
-      grid-template-columns: 270px 1fr 320px;
+      grid-template-columns: 280px 1fr;
       gap:14px;
       min-height:540px;
     }
@@ -501,54 +445,24 @@
     }
 
     .plCol{
-      border:1px solid var(--stroke2);
+      border:1px solid var(--edge2);
       border-radius:16px;
       background: rgba(255,255,255,.03);
       overflow:hidden;
     }
-    body[data-theme="xp"] .plCol,
-    body[data-theme="mix"] .plCol{
-      border:1px solid var(--xpedge);
-      background: rgba(255,255,255,.72);
-    }
+    body[data-theme="xp"] .plCol{ background: rgba(255,255,255,.72); }
 
     .plColHead{
       padding:10px 12px;
-      border-bottom:1px solid var(--stroke2);
+      border-bottom:1px solid var(--edge2);
       font-family:var(--mono);
       font-size:11px;
       letter-spacing:.10em;
-      color:var(--muted);
+      color:var(--m);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:10px;
-    }
-    body[data-theme="xp"] .plColHead,
-    body[data-theme="mix"] .plColHead{
-      border-bottom:1px solid var(--xpedge);
-      color:rgba(0,0,0,.55);
-    }
-
-    .btnBevel{
-      border:1px solid var(--stroke);
-      background: rgba(255,255,255,.06);
-      color:rgba(255,255,255,.88);
-      padding:8px 10px;
-      border-radius:12px;
-      cursor:pointer;
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.10em;
-      user-select:none;
-      white-space:nowrap;
-    }
-    .btnBevel:hover{ background:rgba(255,255,255,.09); }
-    body[data-theme="xp"] .btnBevel,
-    body[data-theme="mix"] .btnBevel{
-      border:1px solid var(--xpedge);
-      background: rgba(255,255,255,.85);
-      color:rgba(0,0,0,.78);
     }
 
     .plList{
@@ -568,24 +482,16 @@
       user-select:none;
     }
     .plItem:hover{ background:rgba(255,255,255,.04); border-color:rgba(255,255,255,.06); }
-    body[data-theme="xp"] .plItem:hover,
-    body[data-theme="mix"] .plItem:hover{
-      background: rgba(0,0,0,.04);
-      border-color: rgba(0,0,0,.08);
-    }
+    body[data-theme="xp"] .plItem:hover{ background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.08); }
 
     .plCover{
       width:42px;height:42px;border-radius:12px;
       object-fit:cover;
-      border:1px solid var(--stroke2);
+      border:1px solid var(--edge2);
       background: rgba(0,0,0,.25);
       flex:0 0 auto;
     }
-    body[data-theme="xp"] .plCover,
-    body[data-theme="mix"] .plCover{
-      border:1px solid var(--xpedge);
-      background: rgba(255,255,255,.85);
-    }
+    body[data-theme="xp"] .plCover{ background: rgba(255,255,255,.85); }
 
     .plMeta{ min-width:0; display:flex; flex-direction:column; gap:4px; }
     .plName{
@@ -600,11 +506,9 @@
     .plSub{
       font-family:var(--mono);
       font-size:10px;
-      color:var(--muted);
+      color:var(--m);
       letter-spacing:.06em;
     }
-    body[data-theme="xp"] .plSub,
-    body[data-theme="mix"] .plSub{ color:rgba(0,0,0,.55); }
 
     .plCenter{
       padding:14px;
@@ -617,32 +521,25 @@
       gap:12px;
       margin-top:12px;
     }
-
     .plCard{
-      text-decoration:none;
-      color:inherit;
-      border:1px solid var(--stroke2);
+      border:1px solid var(--edge2);
       background: rgba(255,255,255,.03);
       border-radius:16px;
       overflow:hidden;
       box-shadow:0 16px 40px rgba(0,0,0,.25);
       transition:transform .10s ease, background .10s ease;
+      cursor:pointer;
+      user-select:none;
     }
     .plCard:hover{ transform:translateY(-2px); background:rgba(255,255,255,.05); }
-    body[data-theme="xp"] .plCard,
-    body[data-theme="mix"] .plCard{
-      border:1px solid var(--xpedge);
-      background: rgba(255,255,255,.80);
-    }
-    body[data-theme="xp"] .plCard:hover,
-    body[data-theme="mix"] .plCard:hover{
-      background: rgba(255,255,255,.92);
-    }
+    body[data-theme="xp"] .plCard{ background: rgba(255,255,255,.80); }
+    body[data-theme="xp"] .plCard:hover{ background: rgba(255,255,255,.92); }
 
     .plCardImg{
       aspect-ratio:1/1;
       background: rgba(0,0,0,.35);
       display:grid; place-items:center;
+      overflow:hidden;
     }
     .plCardImg img{ width:100%; height:100%; object-fit:cover; display:block; }
     .plCardBody{ padding:10px; }
@@ -658,21 +555,39 @@
       margin-top:6px;
       font-family:var(--mono);
       font-size:10px;
-      color:var(--muted);
+      color:var(--m);
       letter-spacing:.06em;
     }
-    body[data-theme="xp"] .plCardFoot,
-    body[data-theme="mix"] .plCardFoot{ color:rgba(0,0,0,.55); }
 
-    .hint{
+    .embedBox{
+      margin-top:14px;
+      border:1px solid var(--edge2);
+      border-radius:16px;
+      overflow:hidden;
+      background: rgba(0,0,0,.25);
+    }
+    body[data-theme="xp"] .embedBox{ background: rgba(255,255,255,.85); }
+    .embedBox iframe{ width:100%; height:380px; border:0; display:block; }
+
+    .btnRow{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:16px; }
+    .btnBevel{
+      border:1px solid var(--edge);
+      background: rgba(255,255,255,.06);
+      color:var(--t);
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
       font-family:var(--mono);
-      font-size:10px;
-      letter-spacing:.06em;
-      color:var(--muted);
+      font-size:11px;
+      letter-spacing:.10em;
+      user-select:none;
+      white-space:nowrap;
     }
-    body[data-theme="xp"] .hint,
-    body[data-theme="mix"] .hint{ color:rgba(0,0,0,.55); }
-
+    body[data-theme="xp"] .btnBevel{
+      background: rgba(255,255,255,.85);
+      color:rgba(0,0,0,.78);
+    }
+    .btnBevel:hover{ background:rgba(255,255,255,.09); }
   </style>
 </head>
 
@@ -740,7 +655,6 @@
 
       <section class="stage">
         <div class="videoShell">
-          <!-- ✅ loop aqui -->
           <video id="amvVideo" playsinline preload="auto" muted loop></video>
 
           <div class="hud">
@@ -757,7 +671,7 @@
     </main>
   </div>
 
-  <!-- OVERLAY / MODAL -->
+  <!-- MODAL -->
   <div class="overlay" id="overlay">
     <div class="window" role="dialog" aria-modal="true">
       <div class="winTop">
@@ -772,18 +686,18 @@
         <!-- SOCIAL -->
         <div id="view-social">
           <div style="display:grid;place-items:center;padding:10px 0 14px">
-            <div style="width:min(520px,100%);border:1px solid var(--stroke2);border-radius:18px;background:rgba(255,255,255,.03);padding:18px">
+            <div style="width:min(560px,100%);border:1px solid var(--edge2);border-radius:18px;background:rgba(255,255,255,.03);padding:18px">
               <div style="display:grid;place-items:center;gap:12px">
                 <img src="https://files.catbox.moe/ce9qvw.gif" alt=""
-                     style="width:112px;height:112px;border-radius:99px;border:1px solid var(--stroke);object-fit:cover;background:rgba(0,0,0,.25)" />
+                     style="width:112px;height:112px;border-radius:99px;border:1px solid var(--edge);object-fit:cover;background:rgba(0,0,0,.25)" />
 
                 <div style="font-family:var(--mono);letter-spacing:.14em;font-size:18px;opacity:.92">allz</div>
                 <div class="hint" style="font-size:11px;opacity:.9">awake and unafraid</div>
                 <div class="hint" style="font-size:11px">purgatório</div>
 
-                <div style="width:100%;margin-top:8px;border-top:1px solid var(--stroke2);padding-top:12px;display:flex;justify-content:space-between;gap:10px;align-items:center">
+                <div style="width:100%;margin-top:8px;border-top:1px solid var(--edge2);padding-top:12px;display:flex;justify-content:space-between;gap:10px;align-items:center">
                   <div style="display:flex;align-items:center;gap:10px">
-                    <img id="rowDiscordAvatar" alt="" style="width:34px;height:34px;border-radius:12px;border:1px solid var(--stroke2);object-fit:cover;background:rgba(0,0,0,.25)"/>
+                    <img id="rowDiscordAvatar" alt="" style="width:34px;height:34px;border-radius:12px;border:1px solid var(--edge2);object-fit:cover;background:rgba(0,0,0,.25)"/>
                     <div style="display:flex;flex-direction:column;gap:4px">
                       <div style="display:flex;gap:8px;align-items:center">
                         <div id="rowDiscordDot" class="dot" style="width:8px;height:8px"></div>
@@ -799,12 +713,12 @@
                   </div>
                 </div>
 
-                <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;justify-content:center">
-                  <button class="btnBevel" data-link="https://tiktok.com" class="iconbtn">TIKTOK</button>
-                  <button class="btnBevel" data-link="https://open.spotify.com" class="iconbtn">SPOTIFY</button>
-                  <button class="btnBevel" data-link="https://instagram.com" class="iconbtn">INSTAGRAM</button>
-                  <button class="btnBevel" data-link="https://store.steampowered.com" class="iconbtn">STEAM</button>
-                  <button class="btnBevel" data-link="https://x.com" class="iconbtn">X</button>
+                <div class="btnRow">
+                  <button class="btnBevel" data-link="https://tiktok.com">TIKTOK</button>
+                  <button class="btnBevel" data-link="https://open.spotify.com">SPOTIFY</button>
+                  <button class="btnBevel" data-link="https://instagram.com">INSTAGRAM</button>
+                  <button class="btnBevel" data-link="https://store.steampowered.com">STEAM</button>
+                  <button class="btnBevel" data-link="https://x.com">X</button>
                 </div>
               </div>
             </div>
@@ -814,54 +728,51 @@
         <!-- ARQUIVOS -->
         <div id="view-archives" class="hidden">
           <div class="hint">Área simples pra guardar jogos / progresso / arquivos.</div>
-          <div style="margin-top:12px;border:1px solid var(--stroke2);border-radius:16px;padding:12px;background:rgba(255,255,255,.03)">
+          <div style="margin-top:12px;border:1px solid var(--edge2);border-radius:16px;padding:12px;background:rgba(255,255,255,.03)">
             <div class="hint">• Em breve: cards + pastas + links</div>
           </div>
         </div>
 
-        <!-- PLAYLISTS (Spotify-like + importar playlists) -->
+        <!-- PLAYLISTS (PÚBLICO: cards + player embed + link) -->
         <div id="view-playlists" class="hidden">
           <div class="plWrap">
-            <!-- left column -->
             <div class="plCol">
               <div class="plColHead">
-                <div>BIBLIOTECA</div>
-                <div style="display:flex;gap:10px">
-                  <button class="btnBevel" id="spLoginBtn">CONECTAR</button>
-                  <button class="btnBevel" id="spLogoutBtn">SAIR</button>
-                </div>
+                <div>BIBLIOTECA (PÚBLICO)</div>
+                <div class="hint">cards + player</div>
               </div>
-              <div class="plList" id="spList">
-                <div class="hint" id="spStatus">status: desconectado (clique em CONECTAR)</div>
-                <div style="height:10px"></div>
-                <div class="hint">Dica: abre esse modal e conecta uma vez.</div>
+              <div class="plList" id="pubList">
+                <!-- preenchido via JS -->
               </div>
             </div>
 
-            <!-- center -->
             <div class="plCol">
               <div class="plColHead">
                 <div>PLAYLISTS</div>
-                <div class="hint">grid</div>
+                <div class="hint" id="pubNow">—</div>
               </div>
-              <div class="plCenter">
-                <div class="hint">Aqui vai aparecer suas playlists do Spotify.</div>
-                <div class="plGrid" id="spGrid"></div>
-              </div>
-            </div>
 
-            <!-- right column -->
-            <div class="plCol">
-              <div class="plColHead">
-                <div>INFO</div>
-                <div class="hint">now</div>
-              </div>
-              <div style="padding:12px">
-                <div class="hint">• Visual estilo Spotify + vibe XP</div>
-                <div class="hint">• Import real via Spotify Web API</div>
-                <div class="hint">• Sem backend (PKCE)</div>
-                <div style="height:12px"></div>
-                <div class="hint">Obs: Spotify não libera tocar tudo via API sem SDK e Premium. Aqui o foco é catálogo/organização.</div>
+              <div class="plCenter">
+                <div class="hint">
+                  Sem login, sem API. Você só cola seus links aqui e todo mundo consegue ver.
+                </div>
+
+                <div class="plGrid" id="pubGrid"></div>
+
+                <div class="embedBox" id="embedBox" style="display:none">
+                  <iframe id="spotifyEmbed" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                          loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+                </div>
+
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                  <button class="btnBevel" id="openOnSpotifyBtn" style="display:none">ABRIR NO SPOTIFY</button>
+                  <button class="btnBevel" id="copyLinkBtn" style="display:none">COPIAR LINK</button>
+                </div>
+
+                <div style="height:10px"></div>
+                <div class="hint">
+                  Obs: se você quiser “auto-importar” playlists, aí volta a precisar do login/API (burocracia). Aqui é o modo sem dor de cabeça.
+                </div>
               </div>
             </div>
           </div>
@@ -869,15 +780,17 @@
 
         <!-- ADMIN -->
         <div id="view-admin" class="hidden">
-          <div class="hint">Login simples (só pra você).</div>
+          <div class="hint">Login simples (só pra você). (Placeholder)</div>
           <div style="margin-top:12px;display:grid;gap:10px;max-width:420px">
-            <input id="admUser" placeholder="Usuário" style="padding:10px;border-radius:12px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--text);font-family:var(--mono)" />
-            <input id="admPass" type="password" placeholder="Senha" style="padding:10px;border-radius:12px;border:1px solid var(--stroke);background:rgba(0,0,0,.25);color:var(--text);font-family:var(--mono)" />
+            <input id="admUser" placeholder="Usuário"
+                   style="padding:10px;border-radius:12px;border:1px solid var(--edge);background:rgba(0,0,0,.25);color:var(--t);font-family:var(--mono)" />
+            <input id="admPass" type="password" placeholder="Senha"
+                   style="padding:10px;border-radius:12px;border:1px solid var(--edge);background:rgba(0,0,0,.25);color:var(--t);font-family:var(--mono)" />
             <button class="btnBevel" id="loginBtn">ENTRAR</button>
             <div class="hint" id="loginMsg"></div>
+            <div class="hint" style="opacity:.8">Dica: dá pra trocar isso depois por backend de verdade.</div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -897,12 +810,31 @@
       lanyardEndpoint: "https://api.lanyard.rest/v1/users/513830615225860096",
       lanyardPollMs: 5000,
 
-      themeDefault: "dark",
       themeCycle: ["dark", "mix", "xp"],
 
-      adminUser: "allz",
-      adminHashHex: "3d3c3f7a1d5c8d3b0e7fcb2a1f1b0dba7e6df7d54f54f2b6f4bf5a8d0b2d9f38"
-    };
+      // ✅ PLAYLISTS PÚBLICAS (sem API)
+      // Troca pelos SEUS links do Spotify (playlist/album/track).
+ 
+   PUBLIC_PLAYLISTS: [
+  {
+    title: "Track 1",
+    subtitle: "spotify track",
+    cover: "",
+    url: "https://open.spotify.com/track/3ubIkwW8FXdv1TsriICJBe"
+  },
+  {
+    title: "Track 2",
+    subtitle: "spotify track",
+    cover: "",
+    url: "https://open.spotify.com/track/2OZVskV28xxJjjhQqKTLSg"
+  },
+  {
+    title: "Track 3",
+    subtitle: "spotify track",
+    cover: "",
+    url: "https://open.spotify.com/track/21qg0IBZf8R12qHd9A3AA4"
+  }
+]
 
     /********************
      * ELEMENTOS
@@ -948,22 +880,29 @@
     const copyStatusBtn = document.getElementById("copyStatusBtn");
     const openDiscordBtn = document.getElementById("openDiscordBtn");
 
-    // Admin
+    // Admin (placeholder)
     const admUser = document.getElementById("admUser");
     const admPass = document.getElementById("admPass");
     const loginBtn = document.getElementById("loginBtn");
     const loginMsg = document.getElementById("loginMsg");
+
+    // Playlists public
+    const pubList = document.getElementById("pubList");
+    const pubGrid = document.getElementById("pubGrid");
+    const pubNow = document.getElementById("pubNow");
+    const embedBox = document.getElementById("embedBox");
+    const spotifyEmbed = document.getElementById("spotifyEmbed");
+    const openOnSpotifyBtn = document.getElementById("openOnSpotifyBtn");
+    const copyLinkBtn = document.getElementById("copyLinkBtn");
 
     /********************
      * ESTADO
      ********************/
     let hasEntered = false;
     let isMuted = false;
-    let currentThemeIndex = 0;
+    let themeIndex = 0;
 
-    const themeStart = CONFIG.themeCycle.indexOf(CONFIG.themeDefault);
-    currentThemeIndex = themeStart >= 0 ? themeStart : 0;
-    applyTheme(CONFIG.themeCycle[currentThemeIndex], true);
+    applyTheme(CONFIG.themeCycle[themeIndex], true);
 
     /********************
      * ENTER
@@ -1009,8 +948,8 @@
      * TEMA
      ********************/
     themeBtn.addEventListener("click", () => {
-      currentThemeIndex = (currentThemeIndex + 1) % CONFIG.themeCycle.length;
-      applyTheme(CONFIG.themeCycle[currentThemeIndex]);
+      themeIndex = (themeIndex + 1) % CONFIG.themeCycle.length;
+      applyTheme(CONFIG.themeCycle[themeIndex]);
     });
 
     function applyTheme(t, initial=false){
@@ -1024,11 +963,10 @@
 
     /********************
      * MODAL
-     * música pausa ao abrir menus; volta ao fechar
+     * música pausa ao abrir; volta ao fechar
      ********************/
     function openModal(viewKey){
       overlay.style.display = "flex";
-
       try { bgAudio.pause(); } catch(e){}
       try { amvVideo.pause(); } catch(e){}
 
@@ -1043,19 +981,12 @@
       const btn = toolBtns.find(b => b.dataset.view === viewKey);
       if(btn) btn.classList.add("active");
 
-      // ✅ Spotify: carrega playlists ao abrir PLAYLISTS
-      if(viewKey === "playlists"){
-        window.ALLZ_loadPlaylists?.();
-      }
+      if(viewKey === "playlists") renderPublicPlaylists();
     }
 
     function closeModalFn(){
       overlay.style.display = "none";
       crumbTitle.textContent = "ALLZ HUB";
-
-      toolBtns.forEach(b => b.classList.remove("active"));
-      const socialBtn = toolBtns.find(b => b.dataset.view === "social");
-      if(socialBtn) socialBtn.classList.add("active");
 
       if(hasEntered){
         try { amvVideo.play(); } catch(e){}
@@ -1175,9 +1106,7 @@
 
         copyStatusBtn.onclick = async () => {
           const txt = `${globalName} ${username} — ${st.txt} — ${activityText.textContent}`;
-          try{
-            await navigator.clipboard.writeText(txt);
-          }catch{}
+          try{ await navigator.clipboard.writeText(txt); }catch{}
         };
 
       }catch(err){
@@ -1189,34 +1118,125 @@
     }
 
     /********************
-     * ADMIN (hash)
+     * PLAYLISTS PÚBLICAS
+     * - cards + lista + embed
      ********************/
-    async function sha256Hex(str){
-      const enc = new TextEncoder().encode(str);
-      const buf = await crypto.subtle.digest("SHA-256", enc);
-      return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+      }[c]));
     }
 
-    loginBtn.addEventListener("click", async ()=>{
-      loginMsg.textContent = "";
-      const u = (admUser.value || "").trim();
-      const p = (admPass.value || "").trim();
-      if(!u || !p){
-        loginMsg.textContent = "preenche usuário e senha.";
+    function parseSpotifyEmbed(url){
+      try{
+        const u = new URL(url);
+        if(u.hostname !== "open.spotify.com") return null;
+        const parts = u.pathname.split("/").filter(Boolean); // [type, id]
+        if(parts.length < 2) return null;
+        const type = parts[0]; // playlist/album/track/artist
+        const id = parts[1];
+        // embed
+        return {
+          type, id,
+          embedUrl: `https://open.spotify.com/embed/${type}/${id}?utm_source=generator`,
+          cleanUrl: `https://open.spotify.com/${type}/${id}`
+        };
+      }catch{
+        return null;
+      }
+    }
+
+    function selectPublicPlaylist(item){
+      const parsed = parseSpotifyEmbed(item.url);
+      pubNow.textContent = item.title || "—";
+
+      if(parsed){
+        embedBox.style.display = "block";
+        spotifyEmbed.src = parsed.embedUrl;
+
+        openOnSpotifyBtn.style.display = "inline-block";
+        copyLinkBtn.style.display = "inline-block";
+
+        openOnSpotifyBtn.onclick = () => window.open(parsed.cleanUrl, "_blank", "noopener,noreferrer");
+        copyLinkBtn.onclick = async () => {
+          try{ await navigator.clipboard.writeText(parsed.cleanUrl); }catch{}
+        };
+      }else{
+        embedBox.style.display = "none";
+        spotifyEmbed.removeAttribute("src");
+        openOnSpotifyBtn.style.display = "none";
+        copyLinkBtn.style.display = "none";
+      }
+    }
+
+    function renderPublicPlaylists(){
+      const items = Array.isArray(CONFIG.PUBLIC_PLAYLISTS) ? CONFIG.PUBLIC_PLAYLISTS : [];
+
+      if(!items.length){
+        pubList.innerHTML = `<div class="hint">Sem playlists ainda. Cola seus links no CONFIG.PUBLIC_PLAYLISTS.</div>`;
+        pubGrid.innerHTML = "";
+        embedBox.style.display = "none";
         return;
       }
-      const input = `${u}:${p}`;
-      const hex = await sha256Hex(input);
 
-      if(u.toLowerCase() === CONFIG.adminUser.toLowerCase() && hex === CONFIG.adminHashHex){
-        loginMsg.textContent = "ok. acesso liberado.";
-      }else{
-        loginMsg.textContent = "usuário ou senha incorretos.";
-      }
+      pubList.innerHTML = items.map((pl, idx) => {
+        const cover = pl.cover ? `<img class="plCover" src="${escapeHtml(pl.cover)}" alt="">`
+                               : `<div class="plCover" style="display:grid;place-items:center;font-family:var(--mono);font-size:10px;opacity:.7">♪</div>`;
+        const sub = pl.subtitle ? escapeHtml(pl.subtitle) : "playlist";
+        return `
+          <div class="plItem" data-idx="${idx}">
+            ${cover}
+            <div class="plMeta">
+              <div class="plName">${escapeHtml(pl.title || "playlist")}</div>
+              <div class="plSub">${sub}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      pubGrid.innerHTML = items.map((pl, idx) => {
+        const img = pl.cover ? `<img src="${escapeHtml(pl.cover)}" alt="">`
+                             : `<div style="font-family:var(--mono);opacity:.7">sem capa</div>`;
+        return `
+          <div class="plCard" data-idx="${idx}">
+            <div class="plCardImg">${img}</div>
+            <div class="plCardBody">
+              <div class="plCardTitle">${escapeHtml(pl.title || "playlist")}</div>
+              <div class="plCardFoot">${escapeHtml(pl.subtitle || "spotify")}</div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // handlers
+      pubList.querySelectorAll(".plItem").forEach(el=>{
+        el.addEventListener("click", ()=>{
+          const idx = Number(el.getAttribute("data-idx"));
+          selectPublicPlaylist(items[idx]);
+        });
+      });
+      pubGrid.querySelectorAll(".plCard").forEach(el=>{
+        el.addEventListener("click", ()=>{
+          const idx = Number(el.getAttribute("data-idx"));
+          selectPublicPlaylist(items[idx]);
+        });
+      });
+
+      // auto-select 1ª
+      selectPublicPlaylist(items[0]);
+    }
+
+    /********************
+     * ADMIN placeholder
+     ********************/
+    loginBtn.addEventListener("click", ()=>{
+      const u = (admUser.value||"").trim();
+      const p = (admPass.value||"").trim();
+      loginMsg.textContent = (u && p) ? "ok (placeholder)." : "preenche usuário e senha.";
     });
 
     /********************
-     * Partículas neutras (sem laranja)
+     * Partículas neutras
      ********************/
     const canvas = document.getElementById("particles");
     const ctx = canvas.getContext("2d");
@@ -1239,10 +1259,7 @@
 
     function tick(){
       ctx.clearRect(0,0,W,H);
-      let col = "rgba(255,255,255,0.14)";
-      const theme = document.body.getAttribute("data-theme");
-      if(theme === "xp" || theme === "mix") col = "rgba(0,0,0,0.10)";
-      ctx.fillStyle = col;
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue("--particle").trim() || "rgba(255,255,255,.12)";
 
       for(const p of particles){
         p.x += p.vx;
@@ -1260,121 +1277,6 @@
       requestAnimationFrame(tick);
     }
     tick();
-  </script>
-
-  <!-- ✅ SPOTIFY: módulo PKCE + carregar playlists -->
-  <script type="module">
-    import { spotifyLogin, spotifyLogout, getStoredToken, spotifyApi } from "./spotify-auth.js";
-
-    const spLoginBtn = document.getElementById("spLoginBtn");
-    const spLogoutBtn = document.getElementById("spLogoutBtn");
-    const spStatus = document.getElementById("spStatus");
-    const spGrid = document.getElementById("spGrid");
-    const spList = document.getElementById("spList");
-
-    function setStatus(txt){
-      if(spStatus) spStatus.textContent = txt;
-    }
-
-    function renderList(items){
-      // lista da esquerda (biblioteca)
-      const header = `
-        <div class="hint" id="spStatus">${spStatus?.textContent || ""}</div>
-        <div style="height:10px"></div>
-      `;
-      const rows = items.map(pl => {
-        const img = pl.images?.[0]?.url || "";
-        const name = pl.name || "playlist";
-        const tracks = pl.tracks?.total ?? 0;
-        const link = pl.external_urls?.spotify || "#";
-
-        return `
-          <div class="plItem" onclick="window.open('${link}','_blank','noopener,noreferrer')">
-            ${img ? `<img class="plCover" src="${img}" alt="">` : `<div class="plCover" style="display:grid;place-items:center;font-family:var(--mono);font-size:10px;opacity:.7">sem</div>`}
-            <div class="plMeta">
-              <div class="plName">${escapeHtml(name)}</div>
-              <div class="plSub">${tracks} músicas</div>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      spList.innerHTML = header + rows;
-    }
-
-    function renderGrid(items){
-      spGrid.innerHTML = items.map(pl => {
-        const img = pl.images?.[0]?.url || "";
-        const name = pl.name || "playlist";
-        const tracks = pl.tracks?.total ?? 0;
-        const link = pl.external_urls?.spotify || "#";
-
-        return `
-          <a class="plCard" href="${link}" target="_blank" rel="noopener noreferrer">
-            <div class="plCardImg">
-              ${img ? `<img src="${img}" alt="">` : `<div style="font-family:var(--mono);opacity:.7">sem capa</div>`}
-            </div>
-            <div class="plCardBody">
-              <div class="plCardTitle">${escapeHtml(name)}</div>
-              <div class="plCardFoot">${tracks} músicas</div>
-            </div>
-          </a>
-        `;
-      }).join("");
-    }
-
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, (c) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
-      }[c]));
-    }
-
-    async function loadPlaylists(){
-      spGrid.innerHTML = "";
-      setStatus("status: carregando playlists…");
-
-      const tok = getStoredToken();
-      if(!tok){
-        setStatus("status: desconectado (clique em CONECTAR)");
-        spList.innerHTML = `<div class="hint">status: desconectado (clique em CONECTAR)</div>`;
-        return;
-      }
-
-      // perfil
-      const me = await spotifyApi("/me");
-      setStatus(`status: conectado como ${me.display_name || me.id}`);
-
-      // playlists paginadas
-      let items = [];
-      let url = "/me/playlists?limit=50";
-      while(url){
-        const data = await spotifyApi(url.replace("https://api.spotify.com/v1",""));
-        items = items.concat(data.items || []);
-        url = data.next;
-        if(items.length > 250) break;
-      }
-
-      renderList(items);
-      renderGrid(items);
-    }
-
-    spLoginBtn?.addEventListener("click", () => spotifyLogin());
-    spLogoutBtn?.addEventListener("click", () => {
-      spotifyLogout();
-      setStatus("status: desconectado");
-      spGrid.innerHTML = "";
-      spList.innerHTML = `<div class="hint">status: desconectado (clique em CONECTAR)</div>`;
-    });
-
-    // expõe pro script normal chamar quando abrir o modal
-    window.ALLZ_loadPlaylists = () => loadPlaylists().catch(err => setStatus("erro: " + err.message));
-
-    // se já tiver token, prepara
-    if(getStoredToken()){
-      loadPlaylists().catch(err => setStatus("erro: " + err.message));
-    }else{
-      setStatus("status: desconectado (clique em CONECTAR)");
-    }
   </script>
 </body>
 </html>
