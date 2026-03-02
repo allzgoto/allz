@@ -3,7 +3,7 @@
 const SPOTIFY_CLIENT_ID = "3f682745e06146c89c695b2af9831b02";
 
 // IMPORTANTE: tem que bater 100% com o Redirect URI no Spotify Dev
-const REDIRECT_URI = "https://allzgoto.github.io/allz/projeto/callback";
+const REDIRECT_URI = "https://allzgoto.github.io/allz/projeto/callback.html";
 
 // Escopos pra ler suas playlists
 const SCOPES = [
