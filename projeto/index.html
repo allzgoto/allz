@@ -7,131 +7,137 @@
 
   <style>
     /* =========================
-       ALLZ HUB V2 — VISUAL REFIT
-       (mantém a lógica/IDs)
+       ALLZ HUB V2 — XP/2009 FUSION
+       (mantém lógica e IDs)
        ========================= */
 
     :root{
-      /* base */
-      --ui: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Helvetica Neue", Helvetica, sans-serif;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      /* XP-ish stacks */
+      --ui: Tahoma, "Segoe UI", Verdana, Arial, system-ui, -apple-system, sans-serif;
+      --mono: "Lucida Console", Consolas, ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
 
-      /* shared tokens */
-      --stroke: rgba(255,255,255,.14);
-      --stroke2: rgba(255,255,255,.09);
-      --text: rgba(255,255,255,.92);
-      --muted: rgba(255,255,255,.56);
+      --radius: 16px;
+      --radius2: 12px;
 
+      /* status */
       --good:#3ad97a;
       --idle:#f3c645;
       --dnd:#ff4d4d;
       --offline:#7a7f8c;
 
-      --radius: 16px;
-      --radius2: 12px;
-
-      /* bevel */
-      --bevelHi: rgba(255,255,255,.16);
-      --bevelLo: rgba(0,0,0,.38);
-
-      /* subtle “old web” noise grid */
+      /* grid/noise */
       --gridA: rgba(255,255,255,.035);
       --gridB: rgba(0,0,0,.06);
+
+      /* crt lines */
+      --crtLines: rgba(255,255,255,.05);
     }
 
     /* ========= THEMES ========= */
     body[data-theme="dark"]{
-      --page:#05060a;
-      --page2:#070812;
+      --page:#04050a;
+      --page2:#070814;
 
-      --panel: rgba(8,10,16,.58);
-      --panel2: rgba(8,10,16,.52);
-      --win: rgba(10,12,18,.90);
+      --panel: rgba(10,12,18,.62);
+      --panel2: rgba(10,12,18,.56);
+      --win: rgba(10,12,18,.92);
 
-      --bar: rgba(255,255,255,.08);
-      --edge: var(--stroke);
-      --edge2: var(--stroke2);
-      --t: var(--text);
-      --m: var(--muted);
+      --bar: rgba(255,255,255,.10);
+      --edge: rgba(255,255,255,.15);
+      --edge2: rgba(255,255,255,.09);
+
+      --t: rgba(255,255,255,.92);
+      --m: rgba(255,255,255,.58);
 
       --particle: rgba(255,255,255,0.14);
       --dotRing: rgba(0,0,0,.28);
 
-      --xpBlue: rgba(120,170,255,.16);
-      --xpBlue2: rgba(120,170,255,.08);
-      --accent: rgba(140,180,255,.75);
+      --xpBlue: rgba(120,170,255,.18);
+      --xpBlue2: rgba(120,170,255,.10);
 
-      --crtLines: rgba(255,255,255,.05);
-      --shadow: rgba(0,0,0,.48);
-      --shadow2: rgba(0,0,0,.32);
+      --shadow: rgba(0,0,0,.52);
+      --shadow2: rgba(0,0,0,.34);
 
-      --btnBg: rgba(255,255,255,.06);
-      --btnBg2: rgba(255,255,255,.09);
+      --btnBg: rgba(255,255,255,.07);
+      --btnBg2: rgba(255,255,255,.11);
 
-      --videoFrame: rgba(0,0,0,.45);
+      --videoFrame: rgba(0,0,0,.50);
+
+      --bevelHi: rgba(255,255,255,.16);
+      --bevelLo: rgba(0,0,0,.52);
+      --bevelEdge: rgba(255,255,255,.08);
     }
 
     body[data-theme="xp"]{
       --page:#e9edf3;
       --page2:#f6f7fb;
 
-      --panel: rgba(255,255,255,.76);
-      --panel2: rgba(255,255,255,.72);
-      --win: rgba(245,247,252,.96);
+      --panel: rgba(255,255,255,.82);
+      --panel2: rgba(255,255,255,.76);
+      --win: rgba(245,247,252,.98);
 
-      --bar: rgba(0,0,0,.06);
-      --edge: rgba(0,0,0,.16);
-      --edge2: rgba(0,0,0,.11);
+      --bar: rgba(0,0,0,.07);
+      --edge: rgba(0,0,0,.18);
+      --edge2: rgba(0,0,0,.12);
+
       --t: rgba(0,0,0,.86);
-      --m: rgba(0,0,0,.56);
+      --m: rgba(0,0,0,.58);
 
       --particle: rgba(0,0,0,0.10);
       --dotRing: rgba(255,255,255,.95);
 
-      --xpBlue: rgba(36,90,200,.18);
-      --xpBlue2: rgba(36,90,200,.10);
-      --accent: rgba(22,60,150,.80);
+      --xpBlue: rgba(25,80,190,.20);
+      --xpBlue2: rgba(25,80,190,.12);
 
-      --crtLines: rgba(0,0,0,.05);
       --shadow: rgba(0,0,0,.18);
       --shadow2: rgba(0,0,0,.12);
 
-      --btnBg: rgba(255,255,255,.84);
-      --btnBg2: rgba(255,255,255,.92);
+      --btnBg: rgba(255,255,255,.88);
+      --btnBg2: rgba(255,255,255,.96);
 
-      --videoFrame: rgba(255,255,255,.88);
+      --videoFrame: rgba(255,255,255,.92);
+
+      --bevelHi: rgba(255,255,255,.70);
+      --bevelLo: rgba(0,0,0,.18);
+      --bevelEdge: rgba(0,0,0,.06);
+
+      --crtLines: rgba(0,0,0,.05);
     }
 
     body[data-theme="mix"]{
-      /* hybrid: fundo XP, janelas dark */
       --page:#eef1f7;
       --page2:#f8f9fc;
 
-      --panel: rgba(255,255,255,.74);
-      --panel2: rgba(255,255,255,.70);
-      --win: rgba(12,14,20,.90);
+      --panel: rgba(255,255,255,.78);
+      --panel2: rgba(255,255,255,.72);
+      --win: rgba(12,14,20,.92);
 
-      --bar: rgba(0,0,0,.06);
-      --edge: rgba(0,0,0,.16);
-      --edge2: rgba(0,0,0,.11);
+      --bar: rgba(0,0,0,.07);
+      --edge: rgba(0,0,0,.18);
+      --edge2: rgba(0,0,0,.12);
+
       --t: rgba(255,255,255,.92);
       --m: rgba(255,255,255,.58);
 
       --particle: rgba(0,0,0,0.10);
       --dotRing: rgba(255,255,255,.95);
 
-      --xpBlue: rgba(22,60,150,.18);
-      --xpBlue2: rgba(22,60,150,.10);
-      --accent: rgba(120,170,255,.80);
+      --xpBlue: rgba(25,80,190,.18);
+      --xpBlue2: rgba(25,80,190,.10);
 
-      --crtLines: rgba(255,255,255,.05);
-      --shadow: rgba(0,0,0,.26);
+      --shadow: rgba(0,0,0,.28);
       --shadow2: rgba(0,0,0,.18);
 
-      --btnBg: rgba(255,255,255,.86);
-      --btnBg2: rgba(255,255,255,.94);
+      --btnBg: rgba(255,255,255,.90);
+      --btnBg2: rgba(255,255,255,.97);
 
-      --videoFrame: rgba(0,0,0,.40);
+      --videoFrame: rgba(0,0,0,.45);
+
+      --bevelHi: rgba(255,255,255,.22);
+      --bevelLo: rgba(0,0,0,.48);
+      --bevelEdge: rgba(0,0,0,.06);
+
+      --crtLines: rgba(255,255,255,.05);
     }
 
     html,body{height:100%;}
@@ -145,27 +151,17 @@
         linear-gradient(180deg, var(--page), var(--page2));
     }
 
-    /* old-web texture: subtle grid + noise */
+    /* vignette + old web texture */
     body::before{
       content:"";
       position:fixed; inset:0;
       pointer-events:none;
       background:
+        radial-gradient(1200px 900px at 50% 40%, transparent 40%, rgba(0,0,0,.25) 92%),
         linear-gradient(transparent 0, transparent 2px, var(--gridA) 2px, var(--gridA) 3px) 0 0/100% 6px,
         linear-gradient(90deg, transparent 0, transparent 2px, var(--gridB) 2px, var(--gridB) 3px) 0 0/8px 100%;
-      opacity:.55;
+      opacity:.80;
       mix-blend-mode:overlay;
-      z-index:1;
-    }
-    body::after{
-      content:"";
-      position:fixed; inset:-20%;
-      pointer-events:none;
-      background:
-        radial-gradient(circle at 20% 30%, rgba(255,255,255,.05), transparent 38%),
-        radial-gradient(circle at 80% 60%, rgba(255,255,255,.035), transparent 42%);
-      filter: blur(10px);
-      opacity:.65;
       z-index:1;
     }
 
@@ -179,7 +175,7 @@
       z-index:2;
     }
 
-    /* CRT overlay (optional) */
+    /* CRT overlay */
     .crt{
       position:fixed; inset:0;
       pointer-events:none;
@@ -206,7 +202,7 @@
     .enterCard{
       width:min(560px, 92vw);
       border-radius:18px;
-      padding:18px 18px 14px;
+      padding:16px 16px 14px;
       background:
         radial-gradient(700px 240px at 50% 0%, rgba(120,170,255,.14), transparent 60%),
         rgba(255,255,255,.03);
@@ -219,9 +215,9 @@
       content:"";
       position:absolute; inset:0;
       background:
-        linear-gradient(90deg, rgba(255,255,255,.05), transparent 35%),
+        linear-gradient(90deg, rgba(255,255,255,.06), transparent 40%),
         repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px);
-      opacity:.45;
+      opacity:.50;
       pointer-events:none;
     }
     .enterTop{
@@ -236,7 +232,7 @@
     }
     .enterBadge{
       display:flex; align-items:center; gap:10px;
-      padding:8px 10px;
+      padding:7px 9px;
       border:1px solid rgba(255,255,255,.10);
       background:rgba(255,255,255,.04);
       border-radius:12px;
@@ -255,11 +251,11 @@
       color:rgba(255,255,255,.92);
       position:relative;
       display:inline-block;
-      padding:10px 14px;
+      padding:9px 13px;
       border-radius:12px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(0,0,0,.35);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), inset 0 -1px 0 rgba(0,0,0,.55);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(0,0,0,.65);
       z-index:2;
     }
     .enterWord::after{
@@ -278,39 +274,25 @@
       font-family:var(--mono);
       font-size:10px;
       letter-spacing:.10em;
-      color:rgba(255,255,255,.68);
+      color:rgba(255,255,255,.70);
       opacity:.92;
       z-index:2;
       position:relative;
     }
 
-    /* ================= APP LAYOUT ================= */
+    /* ================= APP ================= */
     .app{
       position:relative;
       height:100%;
       display:none;
-      grid-template-columns: 270px 1fr;
+      grid-template-columns: 280px 1fr;
       gap:14px;
       padding:14px;
       box-sizing:border-box;
       z-index:10;
     }
 
-    /* “desktop rail” behind panels */
-    .app::before{
-      content:"";
-      position:absolute;
-      inset:14px;
-      border-radius:22px;
-      pointer-events:none;
-      background:
-        linear-gradient(180deg, var(--xpBlue), transparent 55%),
-        rgba(0,0,0,.00);
-      opacity:.85;
-      z-index:-1;
-    }
-
-    /* ================= XP-LIKE WINDOW CORE ================= */
+    /* ================= XP WINDOW CORE ================= */
     .xpWindow{
       border-radius: var(--radius);
       border:1px solid var(--edge);
@@ -320,6 +302,8 @@
       backdrop-filter: blur(7px);
       position:relative;
     }
+
+    /* stronger bevel (XP look) */
     .xpWindow::after{
       content:"";
       position:absolute; inset:0;
@@ -327,47 +311,57 @@
       border-radius:inherit;
       box-shadow:
         inset 0 1px 0 var(--bevelHi),
-        inset 0 -1px 0 var(--bevelLo);
-      opacity:.85;
+        inset 0 -1px 0 var(--bevelLo),
+        inset 1px 0 0 var(--bevelEdge),
+        inset -1px 0 0 var(--bevelEdge);
+      opacity:.95;
     }
 
-    /* titlebar (XP-ish, but dark-ready) */
+    /* titlebar: XP-ish */
     .xpBar{
       display:flex; align-items:center; justify-content:space-between;
-      padding:10px 12px;
+      padding:9px 10px;
       border-bottom:1px solid var(--edge2);
       background:
         linear-gradient(180deg, var(--bar), transparent),
-        radial-gradient(600px 60px at 30% 0%, var(--xpBlue2), transparent 70%);
+        radial-gradient(700px 60px at 20% 0%, var(--xpBlue2), transparent 70%);
+      position:relative;
+      z-index:1;
     }
+
     .xpTitle{
       display:flex; align-items:center; gap:10px;
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.12em;
-      opacity:.96;
+      font-family:var(--ui);
+      font-size:12px;
+      letter-spacing:.02em;
+      opacity:.98;
       user-select:none;
       white-space:nowrap;
     }
+    .xpTitle strong{
+      font-family:var(--ui);
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+
     .xpOrb{
       width:14px;height:14px;border-radius:6px;
       border:1px solid var(--edge2);
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.32), transparent 55%),
-        rgba(0,0,0,.16);
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.34), transparent 55%),
+        rgba(0,0,0,.14);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
     }
     body[data-theme="xp"] .xpOrb{
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), transparent 55%),
-        rgba(22,60,150,.20);
+        radial-gradient(circle at 30% 30%, rgba(255,255,255,.70), transparent 55%),
+        rgba(25,80,190,.20);
     }
 
-    .xpControls{
-      display:flex; align-items:center; gap:8px;
-    }
+    .xpControls{ display:flex; align-items:center; gap:7px; }
+
     .xpWinBtn{
-      width:34px;height:28px;
+      width:34px;height:26px;
       border-radius:10px;
       border:1px solid var(--edge);
       background: var(--btnBg);
@@ -377,17 +371,18 @@
       user-select:none;
       font-family:var(--mono);
       font-size:12px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
       transition: transform .08s ease, background .10s ease;
+      position:relative;
+      z-index:1;
     }
     .xpWinBtn:hover{ background: var(--btnBg2); transform: translateY(-1px); }
     .xpWinBtn:active{ transform: translateY(0px); }
 
     /* ================= SIDEBAR ================= */
-    .side{
-      display:flex;
-      flex-direction:column;
-    }
+    .side{ display:flex; flex-direction:column; }
 
     .toolbox{
       padding:12px;
@@ -399,64 +394,103 @@
     .toolbtn{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
-      padding:10px 10px;
+      padding:9px 10px;
       border-radius:14px;
       border:1px solid var(--edge);
       background: var(--btnBg);
       color:var(--t);
       cursor:pointer;
-      transition:transform .10s ease, background .10s ease;
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.10em;
       user-select:none;
       position:relative;
       overflow:hidden;
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
+      transition: transform .08s ease, background .10s ease;
     }
     .toolbtn::before{
       content:"";
       position:absolute; inset:0;
-      background: linear-gradient(90deg, rgba(255,255,255,.08), transparent 38%);
-      opacity:.50;
+      background: linear-gradient(90deg, rgba(255,255,255,.10), transparent 42%);
+      opacity:.55;
       pointer-events:none;
     }
     .toolbtn:hover{ transform:translateY(-1px); background: var(--btnBg2); }
     .toolbtn.active{
-      outline:2px solid rgba(120,170,255,.18);
+      outline:2px solid rgba(120,170,255,.22);
       background:
-        linear-gradient(180deg, rgba(120,170,255,.12), transparent 65%),
+        linear-gradient(180deg, rgba(120,170,255,.16), transparent 70%),
         var(--btnBg2);
     }
 
-    .toolLeft{
-      display:flex; align-items:center; gap:10px;
-      min-width:0;
-      position:relative;
-      z-index:2;
-    }
-    .ico{
-      width:18px; height:18px;
-      border-radius:6px;
-      border:1px solid var(--edge2);
-      background: rgba(0,0,0,.14);
-      display:grid; place-items:center;
-      font-size:12px;
-      opacity:.95;
-      flex:0 0 auto;
-    }
-    body[data-theme="xp"] .ico{
-      background: rgba(255,255,255,.92);
-      color:#111;
-    }
-
+    .toolLeft{ display:flex; align-items:center; gap:10px; min-width:0; position:relative; z-index:2; }
     .toolTag{
-      position:relative;
-      z-index:2;
+      position:relative; z-index:2;
+      font-family:var(--mono);
       font-size:10px;
       letter-spacing:.10em;
       color:var(--m);
       opacity:.9;
     }
+
+    /* XP 16px icon tile (SVG embutido) */
+    .ico{
+      width:18px; height:18px;
+      border-radius:4px;
+      border:1px solid var(--edge2);
+      background: rgba(0,0,0,.12);
+      display:grid; place-items:center;
+      flex:0 0 auto;
+      position:relative;
+      overflow:hidden;
+    }
+    .ico::before{
+      content:"";
+      width:16px;height:16px;
+      background-size:16px 16px;
+      background-repeat:no-repeat;
+      image-rendering: pixelated;
+      filter: none;
+    }
+
+    /* icon set */
+    .toolbtn[data-view="social"] .ico::before{
+      background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'>\
+<rect x='1' y='2' width='14' height='12' rx='2' fill='%232a5bd7'/>\
+<rect x='2' y='3' width='12' height='3' fill='%23ffffff' opacity='0.35'/>\
+<circle cx='6' cy='8' r='2' fill='%23ffffff'/>\
+<rect x='9' y='7' width='4' height='2' fill='%23ffffff'/>\
+</svg>");
+    }
+    .toolbtn[data-view="archives"] .ico::before{
+      background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'>\
+<rect x='2' y='4' width='12' height='10' rx='2' fill='%238a8f9b'/>\
+<rect x='2' y='3' width='12' height='3' rx='1' fill='%23d9dde7'/>\
+<rect x='4' y='8' width='8' height='1' fill='%23ffffff' opacity='0.7'/>\
+<rect x='4' y='10' width='6' height='1' fill='%23ffffff' opacity='0.7'/>\
+</svg>");
+    }
+    .toolbtn[data-view="playlists"] .ico::before{
+      background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'>\
+<rect x='2' y='2' width='12' height='12' rx='2' fill='%230b0c10'/>\
+<rect x='3' y='3' width='10' height='3' fill='%2325a6ff' opacity='0.8'/>\
+<path d='M6 6v6a1.5 1.5 0 1 1-1-1.4V6h6v4.8a1.5 1.5 0 1 1-1-1.4V6H6z' fill='%23ffffff'/>\
+</svg>");
+    }
+    .toolbtn[data-view="admin"] .ico::before{
+      background-image:url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'>\
+<rect x='3' y='7' width='10' height='7' rx='2' fill='%238b1a1a'/>\
+<rect x='5' y='3' width='6' height='5' rx='2' fill='%23d9dde7'/>\
+<circle cx='8' cy='10' r='1' fill='%23ffffff'/>\
+</svg>");
+    }
+
+    body[data-theme="xp"] .ico{ background: rgba(255,255,255,.92); }
+    body[data-theme="mix"] .ico{ background: rgba(255,255,255,.86); }
 
     /* Discord mini */
     .discordMini{
@@ -466,17 +500,17 @@
       display:flex;
       align-items:center;
       gap:10px;
-      background: linear-gradient(180deg, transparent, rgba(0,0,0,.08));
-    }
-    body[data-theme="xp"] .discordMini{
-      background: linear-gradient(180deg, transparent, rgba(0,0,0,.04));
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,.06));
+      position:relative;
+      z-index:1;
     }
 
     .dA{
-      width:40px;height:40px;border-radius:12px;
+      width:40px;height:40px;border-radius:10px;
       border:1px solid var(--edge);
       object-fit:cover;
       background: rgba(0,0,0,.22);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
     }
     body[data-theme="xp"] .dA{ background: rgba(255,255,255,.95); }
 
@@ -489,14 +523,14 @@
       flex:0 0 auto;
     }
     .dName{
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.10em;
-      opacity:.98;
+      font-family:var(--ui);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:.04em;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width:170px;
+      max-width:175px;
     }
     .dUser,.dStatus{
       font-family:var(--mono);
@@ -508,26 +542,23 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      max-width:190px;
+      max-width:200px;
     }
 
     /* ================= MAIN ================= */
-    .main{
-      display:flex;
-      flex-direction:column;
-      background: var(--panel2);
-    }
+    .main{ display:flex; flex-direction:column; background: var(--panel2); }
 
     .crumb{
       display:flex; align-items:center; gap:10px;
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.12em;
-      opacity:.95;
+      font-family:var(--ui);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:.04em;
+      opacity:.98;
       user-select:none;
     }
     .crumbDot{
-      width:6px;height:6px;border-radius:99px;background:rgba(255,255,255,.70);
+      width:7px;height:7px;border-radius:99px;background:rgba(255,255,255,.70);
     }
     body[data-theme="xp"] .crumbDot{ background:rgba(0,0,0,.48); }
 
@@ -537,35 +568,52 @@
       border:1px solid var(--edge);
       background: var(--btnBg);
       color:var(--t);
-      padding:8px 10px;
-      border-radius:12px;
+      padding:7px 10px;
+      border-radius:10px;
       cursor:pointer;
-      font-family:var(--mono);
+      font-family:var(--ui);
+      font-weight:700;
       font-size:11px;
-      letter-spacing:.12em;
+      letter-spacing:.06em;
       user-select:none;
       white-space:nowrap;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
       transition: transform .08s ease, background .10s ease;
+      position:relative;
+      z-index:1;
     }
     .btn:hover{ background: var(--btnBg2); transform: translateY(-1px); }
     .btn:active{ transform: translateY(0px); }
 
+    /* XP menubar vibe */
     .menubar{
-      padding:8px 12px;
+      padding:7px 10px;
       border-bottom:1px solid var(--edge2);
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.10em;
-      color:var(--m);
       display:flex;
-      gap:18px;
+      gap:0;
       user-select:none;
       background:
         linear-gradient(180deg, rgba(0,0,0,.06), transparent);
+      position:relative;
+      z-index:1;
     }
     body[data-theme="dark"] .menubar{
       background: linear-gradient(180deg, rgba(255,255,255,.06), transparent);
+    }
+    .menubar > div{
+      font-family:var(--ui);
+      font-size:12px;
+      padding:4px 10px;
+      border-radius:8px;
+      color:var(--m);
+      position:relative;
+      cursor:default;
+    }
+    .menubar > div:hover{
+      background: rgba(120,170,255,.14);
+      color: var(--t);
     }
 
     /* stage */
@@ -576,12 +624,13 @@
       padding:16px;
       box-sizing:border-box;
       position:relative;
+      z-index:1;
     }
 
     .videoShell{
       width:min(980px, 100%);
       aspect-ratio: 16 / 9;
-      border-radius: 18px;
+      border-radius: 16px;
       border:1px solid var(--edge);
       background: var(--videoFrame);
       box-shadow:0 34px 95px var(--shadow);
@@ -589,20 +638,19 @@
       overflow:hidden;
     }
     .videoShell::before{
-      /* “moldura” bevel + XP hint */
       content:"";
       position:absolute; inset:0;
       pointer-events:none;
       border-radius:inherit;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.12),
-        inset 0 -1px 0 rgba(0,0,0,.55),
-        inset 0 0 0 10px rgba(0,0,0,.18);
-      opacity:.90;
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo),
+        inset 0 0 0 10px rgba(0,0,0,.16);
+      opacity:.95;
     }
     body[data-theme="xp"] .videoShell::before{
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.55),
+        inset 0 1px 0 rgba(255,255,255,.70),
         inset 0 -1px 0 rgba(0,0,0,.18),
         inset 0 0 0 10px rgba(0,0,0,.06);
     }
@@ -615,28 +663,28 @@
       display:block;
     }
 
-    /* tape / timestamp strip (nostalgia) */
+    /* tape strip */
     .tape{
       position:absolute;
       top:12px; left:12px;
       padding:6px 10px;
-      border-radius:12px;
+      border-radius:10px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.32);
       font-family:var(--mono);
       font-size:10px;
       letter-spacing:.10em;
-      color:rgba(255,255,255,.82);
+      color:rgba(255,255,255,.84);
       z-index:2;
       backdrop-filter: blur(3px);
     }
     body[data-theme="xp"] .tape{
-      background: rgba(255,255,255,.78);
+      background: rgba(255,255,255,.82);
       color: rgba(0,0,0,.72);
       border-color: rgba(0,0,0,.14);
     }
 
-    /* bandicam HUD */
+    /* HUD */
     .hud{
       position:absolute;
       inset:0;
@@ -649,10 +697,9 @@
       z-index:2;
     }
     body[data-theme="xp"] .hud{
-      color: rgba(0,0,0,.70);
+      color: rgba(0,0,0,.72);
       text-shadow: 0 2px 10px rgba(255,255,255,.35);
     }
-
     .hud .tl{
       position:absolute; top:10px; left:12px;
       display:flex; flex-direction:column; gap:6px;
@@ -665,9 +712,10 @@
       width:6px;height:6px;border-radius:99px;background:#ff3b3b;
       box-shadow:0 0 14px rgba(255,59,59,.35);
     }
-    .hud .tr{ position:absolute; top:10px; right:12px; opacity:.9; }
-    .hud .bl{ position:absolute; bottom:10px; left:12px; opacity:.85; }
-    .hud .br{ position:absolute; bottom:10px; right:12px; opacity:.75; }
+    .hud .tr{ position:absolute; top:10px; right:12px; opacity:.92; text-align:right; }
+    .hud .bl{ position:absolute; bottom:10px; left:12px; opacity:.86; }
+    .hud .br{ position:absolute; bottom:10px; right:12px; opacity:.78; text-align:right; }
+    .hudSmall{ font-size:10px; opacity:.84; }
 
     /* ================= MODAL ================= */
     .overlay{
@@ -683,7 +731,7 @@
 
     .window{
       width:min(980px, 100%);
-      border-radius: 18px;
+      border-radius: 16px;
       border:1px solid var(--edge);
       background: var(--win);
       box-shadow:0 44px 120px rgba(0,0,0,.60);
@@ -696,34 +744,37 @@
       pointer-events:none;
       border-radius:inherit;
       box-shadow:
-        inset 0 1px 0 rgba(255,255,255,.14),
-        inset 0 -1px 0 rgba(0,0,0,.55);
-      opacity:.9;
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo),
+        inset 1px 0 0 var(--bevelEdge),
+        inset -1px 0 0 var(--bevelEdge);
+      opacity:.95;
     }
 
     .winTop{
       display:flex; align-items:center; justify-content:space-between;
-      padding:10px 12px;
+      padding:9px 10px;
       border-bottom:1px solid var(--edge2);
       background:
         linear-gradient(180deg, var(--bar), transparent),
-        radial-gradient(600px 60px at 30% 0%, var(--xpBlue2), transparent 70%);
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.12em;
+        radial-gradient(700px 60px at 20% 0%, var(--xpBlue2), transparent 70%);
+      font-family:var(--ui);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:.04em;
       position:relative;
       z-index:1;
     }
-
     .winLeftTitle{ display:flex; align-items:center; gap:10px; }
     .winBullet{
-      width:7px;height:7px;border-radius:99px;
+      width:8px;height:8px;border-radius:3px;
       background:rgba(255,255,255,.70);
+      border:1px solid rgba(0,0,0,.12);
     }
-    body[data-theme="xp"] .winBullet{ background:rgba(0,0,0,.48); }
+    body[data-theme="xp"] .winBullet{ background:rgba(25,80,190,.20); border-color: rgba(0,0,0,.12); }
 
     .xbtn{
-      width:34px;height:30px;
+      width:36px;height:26px;
       border-radius:10px;
       border:1px solid var(--edge);
       background: var(--btnBg);
@@ -731,10 +782,14 @@
       display:grid; place-items:center;
       color:var(--t);
       user-select:none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
       transition: transform .08s ease, background .10s ease;
       position:relative;
       z-index:1;
+      font-family:var(--mono);
+      font-size:12px;
     }
     .xbtn:hover{ background: var(--btnBg2); transform: translateY(-1px); }
     .xbtn:active{ transform: translateY(0px); }
@@ -752,7 +807,7 @@
     /* ================= PLAYLISTS ================= */
     .plWrap{
       display:grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 320px 1fr;
       gap:14px;
       min-height:540px;
     }
@@ -762,20 +817,22 @@
 
     .plCol{
       border:1px solid var(--edge2);
-      border-radius:16px;
+      border-radius:14px;
       background: rgba(255,255,255,.03);
       overflow:hidden;
       position:relative;
+      box-shadow: 0 16px 44px var(--shadow2);
     }
-    body[data-theme="xp"] .plCol{ background: rgba(255,255,255,.78); }
-    body[data-theme="mix"] .plCol{ background: rgba(255,255,255,.74); }
+    body[data-theme="xp"] .plCol{ background: rgba(255,255,255,.82); }
+    body[data-theme="mix"] .plCol{ background: rgba(255,255,255,.76); }
 
     .plColHead{
-      padding:10px 12px;
+      padding:9px 10px;
       border-bottom:1px solid var(--edge2);
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.12em;
+      font-family:var(--ui);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:.04em;
       color:var(--m);
       display:flex;
       align-items:center;
@@ -798,34 +855,29 @@
       gap:10px;
       align-items:center;
       padding:9px;
-      border-radius:14px;
-      border:1px solid transparent;
+      border-radius:12px;
+      border:1px solid var(--edge2);
       cursor:pointer;
       user-select:none;
       background: rgba(0,0,0,.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-      transition: transform .08s ease, background .10s ease, border-color .10s ease;
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
+      transition: transform .08s ease, background .10s ease;
     }
     body[data-theme="xp"] .plItem,
     body[data-theme="mix"] .plItem{ background: rgba(0,0,0,.04); }
     .plItem:hover{
       transform: translateY(-1px);
-      background: rgba(255,255,255,.05);
-      border-color: rgba(255,255,255,.08);
-    }
-    body[data-theme="xp"] .plItem:hover,
-    body[data-theme="mix"] .plItem:hover{
-      background: rgba(0,0,0,.05);
-      border-color: rgba(0,0,0,.10);
+      background: rgba(120,170,255,.10);
     }
 
     .plCover{
-      width:42px;height:42px;border-radius:12px;
-      object-fit:cover;
+      width:42px;height:42px;border-radius:10px;
       border:1px solid var(--edge2);
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.16), transparent 55%),
-        rgba(0,0,0,.22);
+        linear-gradient(180deg, rgba(255,255,255,.10), transparent),
+        rgba(0,0,0,.20);
       flex:0 0 auto;
       display:grid;
       place-items:center;
@@ -836,15 +888,16 @@
     body[data-theme="xp"] .plCover,
     body[data-theme="mix"] .plCover{
       background:
-        radial-gradient(circle at 30% 30%, rgba(255,255,255,.65), transparent 55%),
-        rgba(22,60,150,.10);
+        linear-gradient(180deg, rgba(255,255,255,.55), transparent),
+        rgba(25,80,190,.10);
     }
 
     .plMeta{ min-width:0; display:flex; flex-direction:column; gap:4px; }
     .plName{
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.08em;
+      font-family:var(--ui);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:.02em;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -865,7 +918,7 @@
 
     .plGrid{
       display:grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
       gap:12px;
       margin-top:12px;
     }
@@ -873,40 +926,33 @@
     .plCard{
       border:1px solid var(--edge2);
       background: rgba(0,0,0,.12);
-      border-radius:16px;
+      border-radius:14px;
       overflow:hidden;
       box-shadow:0 16px 42px var(--shadow2);
-      transition:transform .10s ease, background .10s ease, border-color .10s ease;
       cursor:pointer;
       user-select:none;
       position:relative;
+      transition: transform .10s ease, background .10s ease;
     }
-    body[data-theme="xp"] .plCard,
-    body[data-theme="mix"] .plCard{ background: rgba(255,255,255,.78); }
     .plCard::after{
       content:"";
       position:absolute; inset:0;
       pointer-events:none;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10), inset 0 -1px 0 rgba(0,0,0,.45);
-      opacity:.85;
       border-radius:inherit;
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
+      opacity:.92;
     }
-    .plCard:hover{
-      transform:translateY(-2px);
-      background: rgba(255,255,255,.05);
-      border-color: rgba(255,255,255,.10);
-    }
-    body[data-theme="xp"] .plCard:hover,
-    body[data-theme="mix"] .plCard:hover{
-      background: rgba(255,255,255,.92);
-      border-color: rgba(0,0,0,.12);
-    }
+    body[data-theme="xp"] .plCard,
+    body[data-theme="mix"] .plCard{ background: rgba(255,255,255,.84); }
+    .plCard:hover{ transform: translateY(-2px); background: rgba(120,170,255,.10); }
 
     .plCardImg{
       aspect-ratio:1/1;
       background:
-        linear-gradient(180deg, rgba(120,170,255,.14), transparent 60%),
-        rgba(0,0,0,.28);
+        linear-gradient(180deg, rgba(120,170,255,.16), transparent 65%),
+        rgba(0,0,0,.26);
       display:grid; place-items:center;
       overflow:hidden;
       font-family:var(--mono);
@@ -915,15 +961,16 @@
     body[data-theme="xp"] .plCardImg,
     body[data-theme="mix"] .plCardImg{
       background:
-        linear-gradient(180deg, rgba(22,60,150,.14), transparent 60%),
+        linear-gradient(180deg, rgba(25,80,190,.12), transparent 65%),
         rgba(0,0,0,.06);
     }
 
-    .plCardBody{ padding:10px; }
+    .plCardBody{ padding:10px; position:relative; z-index:1; }
     .plCardTitle{
-      font-family:var(--mono);
-      font-size:11px;
-      letter-spacing:.08em;
+      font-family:var(--ui);
+      font-weight:700;
+      font-size:12px;
+      letter-spacing:.02em;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -939,40 +986,42 @@
     .embedBox{
       margin-top:14px;
       border:1px solid var(--edge2);
-      border-radius:16px;
+      border-radius:14px;
       overflow:hidden;
       background: rgba(0,0,0,.22);
       box-shadow: 0 18px 50px var(--shadow2);
     }
     body[data-theme="xp"] .embedBox,
-    body[data-theme="mix"] .embedBox{ background: rgba(255,255,255,.88); }
+    body[data-theme="mix"] .embedBox{ background: rgba(255,255,255,.90); }
     .embedBox iframe{ width:100%; height:380px; border:0; display:block; }
 
     .btnBevel{
       border:1px solid var(--edge);
       background: var(--btnBg);
       color:var(--t);
-      padding:8px 10px;
-      border-radius:12px;
+      padding:7px 10px;
+      border-radius:10px;
       cursor:pointer;
-      font-family:var(--mono);
+      font-family:var(--ui);
+      font-weight:700;
       font-size:11px;
-      letter-spacing:.12em;
+      letter-spacing:.06em;
       user-select:none;
       white-space:nowrap;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
+      box-shadow:
+        inset 0 1px 0 var(--bevelHi),
+        inset 0 -1px 0 var(--bevelLo);
       transition: transform .08s ease, background .10s ease;
     }
     .btnBevel:hover{ background: var(--btnBg2); transform: translateY(-1px); }
     .btnBevel:active{ transform: translateY(0px); }
 
-    /* small focus ring for keyboard */
+    /* focus ring */
     .btn:focus-visible, .btnBevel:focus-visible, .toolbtn:focus-visible, .xbtn:focus-visible, .xpWinBtn:focus-visible{
       outline: 2px solid rgba(120,170,255,.35);
       outline-offset: 2px;
     }
 
-    /* responsive tweak */
     @media (max-width: 900px){
       body{ overflow:auto; }
       .app{
@@ -993,8 +1042,8 @@
   <div class="enter" id="enterScreen" role="button" aria-label="Entrar">
     <div class="enterCard">
       <div class="enterTop">
-        <div class="enterBadge"><span class="enterLED"></span> ALLZ HUB</div>
-        <div style="opacity:.75">2009 / hybrid</div>
+        <div class="enterBadge"><span class="enterLED"></span> <span style="letter-spacing:.10em">ALLZ HUB</span></div>
+        <div style="opacity:.78">XP / 2009 / hybrid</div>
       </div>
       <div class="enterWord">ENTER</div>
       <div class="enterHint">tecla [ENTER] ou clique • som sutil • CRT opcional</div>
@@ -1008,32 +1057,32 @@
       <div class="xpBar">
         <div class="xpTitle">
           <div class="xpOrb"></div>
-          <div>ALLZ.EXE</div>
+          <strong>ALLZ.EXE</strong>
         </div>
         <div class="xpControls">
-          <div class="xpWinBtn" id="crtBtn" title="CRT">▦</div>
-          <div class="xpWinBtn" title="Info">i</div>
+          <div class="xpWinBtn" id="crtBtn" title="CRT">CRT</div>
+          <div class="xpWinBtn" id="copyHubBtn" title="Copiar título">📋</div>
         </div>
       </div>
 
       <div class="toolbox">
         <div class="toolbtn active" data-view="social" tabindex="0">
-          <div class="toolLeft"><div class="ico">☻</div> <div style="min-width:0">SOCIAL</div></div>
+          <div class="toolLeft"><div class="ico"></div> <div style="min-width:0">SOCIAL</div></div>
           <div class="toolTag">open</div>
         </div>
 
         <div class="toolbtn" data-view="archives" tabindex="0">
-          <div class="toolLeft"><div class="ico">▦</div> <div style="min-width:0">ARQUIVOS</div></div>
+          <div class="toolLeft"><div class="ico"></div> <div style="min-width:0">ARQUIVOS</div></div>
           <div class="toolTag">wip</div>
         </div>
 
         <div class="toolbtn" data-view="playlists" tabindex="0">
-          <div class="toolLeft"><div class="ico">♫</div> <div style="min-width:0">PLAYLISTS</div></div>
+          <div class="toolLeft"><div class="ico"></div> <div style="min-width:0">PLAYLISTS</div></div>
           <div class="toolTag">public</div>
         </div>
 
         <div class="toolbtn" data-view="admin" tabindex="0">
-          <div class="toolLeft"><div class="ico">★</div> <div style="min-width:0">ADMIN</div></div>
+          <div class="toolLeft"><div class="ico"></div> <div style="min-width:0">ADMIN</div></div>
           <div class="toolTag">local</div>
         </div>
       </div>
@@ -1072,22 +1121,31 @@
         <div>Editar</div>
         <div>Exibir</div>
         <div>Ajuda</div>
-        <div style="margin-left:auto; opacity:.78">ALLZ HUB — nostalgia 2006–2012 + dark intencional</div>
+        <div style="margin-left:auto; opacity:.78">ALLZ HUB — XP/2009 + dark intencional</div>
       </div>
 
       <section class="stage">
         <div class="videoShell">
-          <div class="tape">VHS / CAPTURE • ALLZ_2009</div>
+          <div class="tape">CAPTURE • ALLZ_2009 • VHS</div>
+
           <video id="amvVideo" playsinline preload="auto" muted loop></video>
 
           <div class="hud">
             <div class="tl">
               <div style="opacity:.88">Bandicam.com</div>
               <div class="rec"><div class="rDot"></div> REC</div>
+              <div class="hudSmall" id="hudMeta1">RES: 1280x720 • FPS: 30</div>
+              <div class="hudSmall" id="hudMeta2">MIC: ON • VOL: 20%</div>
             </div>
-            <div class="tr" id="hudTime">00:00:00</div>
+            <div class="tr">
+              <div id="hudTime">00:00:00</div>
+              <div class="hudSmall" id="hudDate">00/00/0000</div>
+            </div>
             <div class="bl">ALLZ HUB / awake and unafraid</div>
-            <div class="br">SF2 / AMV</div>
+            <div class="br">
+              <div>SF2 / AMV</div>
+              <div class="hudSmall">FILE: amv.mp4</div>
+            </div>
           </div>
         </div>
       </section>
@@ -1102,32 +1160,32 @@
           <div class="winBullet"></div>
           <div id="modalTitleText">SOCIAL</div>
         </div>
-        <div class="xbtn" id="closeModal" aria-label="Fechar">✕</div>
+        <div class="xbtn" id="closeModal" aria-label="Fechar">X</div>
       </div>
 
       <div class="winBody">
         <!-- SOCIAL -->
         <div id="view-social">
           <div style="display:grid;place-items:center;padding:10px 0 14px">
-            <div style="width:min(580px,100%);border:1px solid var(--edge2);border-radius:18px;background:rgba(255,255,255,.03);padding:18px;position:relative;overflow:hidden;box-shadow:0 18px 55px var(--shadow2)">
-              <div style="position:absolute;inset:0;pointer-events:none;opacity:.45;background:linear-gradient(90deg, rgba(255,255,255,.06), transparent 40%), repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px)"></div>
+            <div style="width:min(600px,100%);border:1px solid var(--edge2);border-radius:16px;background:rgba(255,255,255,.03);padding:18px;position:relative;overflow:hidden;box-shadow:0 18px 55px var(--shadow2)">
+              <div style="position:absolute;inset:0;pointer-events:none;opacity:.55;background:linear-gradient(90deg, rgba(255,255,255,.06), transparent 40%), repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, transparent 1px 3px)"></div>
 
               <div style="display:grid;place-items:center;gap:12px;position:relative;z-index:1">
                 <img src="https://files.catbox.moe/ce9qvw.gif" alt=""
-                     style="width:112px;height:112px;border-radius:18px;border:1px solid var(--edge);object-fit:cover;background:rgba(0,0,0,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 14px 40px var(--shadow2)" />
-                <div style="font-family:var(--mono);letter-spacing:.14em;font-size:18px;opacity:.92">allz</div>
+                     style="width:112px;height:112px;border-radius:14px;border:1px solid var(--edge);object-fit:cover;background:rgba(0,0,0,.25);box-shadow:inset 0 1px 0 rgba(255,255,255,.10), 0 14px 40px var(--shadow2)" />
+                <div style="font-family:var(--ui);font-weight:800;letter-spacing:.06em;font-size:18px;opacity:.95">allz</div>
                 <div class="hint" style="font-size:11px;opacity:.9">awake and unafraid</div>
                 <div class="hint" style="font-size:11px">purgatório</div>
 
                 <div style="width:100%;margin-top:10px;border-top:1px solid var(--edge2);padding-top:12px;display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap">
                   <div style="display:flex;align-items:center;gap:10px;min-width:260px">
-                    <img id="rowDiscordAvatar" alt="" style="width:34px;height:34px;border-radius:12px;border:1px solid var(--edge2);object-fit:cover;background:rgba(0,0,0,.25)"/>
+                    <img id="rowDiscordAvatar" alt="" style="width:34px;height:34px;border-radius:10px;border:1px solid var(--edge2);object-fit:cover;background:rgba(0,0,0,.25)"/>
                     <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
                       <div style="display:flex;gap:8px;align-items:center">
                         <div id="rowDiscordDot" class="dot" style="width:8px;height:8px"></div>
                         <div class="hint" id="rowDiscordSub">offline</div>
                       </div>
-                      <div class="hint" style="opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:360px" id="activityText">—</div>
+                      <div class="hint" style="opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:380px" id="activityText">—</div>
                     </div>
                   </div>
 
@@ -1152,7 +1210,7 @@
         <!-- ARQUIVOS -->
         <div id="view-archives" class="hidden">
           <div class="hint">Área simples pra guardar jogos / progresso / arquivos.</div>
-          <div style="margin-top:12px;border:1px solid var(--edge2);border-radius:16px;padding:12px;background:rgba(255,255,255,.03)">
+          <div style="margin-top:12px;border:1px solid var(--edge2);border-radius:14px;padding:12px;background:rgba(255,255,255,.03)">
             <div class="hint">• em breve</div>
           </div>
         </div>
@@ -1224,9 +1282,11 @@
         { title:"Track 03", subtitle:"spotify track", url:"https://open.spotify.com/intl-pt/track/21qg0IBZf8R12qHd9A3AA4?si=3af847b816714aab" },
       ],
 
-      /* V2 extras (sem quebrar nada) */
+      /* V2 extras */
       enterClickSound: true,
       defaultCRT: false,
+      hudFps: 30,
+      hudRes: "1280x720",
     };
 
     const $ = (id) => document.getElementById(id);
@@ -1241,6 +1301,9 @@
 
     const amvVideo = $("amvVideo");
     const hudTime = $("hudTime");
+    const hudDate = $("hudDate");
+    const hudMeta1 = $("hudMeta1");
+    const hudMeta2 = $("hudMeta2");
     const bgAudio = $("bgAudio");
 
     const overlay = $("overlay");
@@ -1277,7 +1340,8 @@
     const openOnSpotifyBtn = $("openOnSpotifyBtn");
     const copyLinkBtn = $("copyLinkBtn");
 
-    const crtBtn = $("crtBtn"); // pode não existir em versões antigas
+    const crtBtn = $("crtBtn");
+    const copyHubBtn = $("copyHubBtn");
     let crtOn = !!CONFIG.defaultCRT;
 
     let hasEntered = false;
@@ -1285,7 +1349,6 @@
     let themeIndex = 0;
 
     function flashCRT(){
-      // “flash” curto (estética capture)
       crt.classList.add("on");
       setTimeout(() => { if(!crtOn) crt.classList.remove("on"); }, 140);
     }
@@ -1296,6 +1359,7 @@
       else crt.classList.remove("on");
       try{ localStorage.setItem("allz_crt", crtOn ? "1" : "0"); }catch{}
     }
+
     // restore CRT
     try{
       const saved = localStorage.getItem("allz_crt");
@@ -1304,8 +1368,12 @@
     }catch{}
     setCRT(crtOn);
 
-    if(crtBtn){
-      crtBtn.addEventListener("click", () => setCRT(!crtOn));
+    if(crtBtn) crtBtn.addEventListener("click", () => setCRT(!crtOn));
+
+    if(copyHubBtn){
+      copyHubBtn.addEventListener("click", async () => {
+        try{ await navigator.clipboard.writeText("ALLZ HUB"); }catch{}
+      });
     }
 
     function applyTheme(t, initial=false){
@@ -1325,6 +1393,12 @@
 
     function pad(n){ return String(n).padStart(2,"0"); }
 
+    function setHudStatic(){
+      if(hudMeta1) hudMeta1.textContent = `RES: ${CONFIG.hudRes} • FPS: ${CONFIG.hudFps}`;
+      if(hudMeta2) hudMeta2.textContent = `MIC: ON • VOL: ${Math.round(CONFIG.audioVolume*100)}%`;
+    }
+    setHudStatic();
+
     function startHudTimer(){
       setInterval(()=>{
         const t = amvVideo && !isNaN(amvVideo.currentTime) ? Math.floor(amvVideo.currentTime) : 0;
@@ -1332,6 +1406,9 @@
         const m = Math.floor((t%3600)/60);
         const s = t%60;
         hudTime.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
+
+        const now = new Date();
+        if(hudDate) hudDate.textContent = `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`;
       }, 250);
     }
 
@@ -1359,7 +1436,7 @@
       applyTheme(CONFIG.themeCycle[themeIndex]);
     });
 
-    /* V2: click sound (sutil, sem arquivo) */
+    /* click sound (sutil, sem arquivo) */
     function playEnterClick(){
       if(!CONFIG.enterClickSound) return;
       try{
@@ -1369,7 +1446,7 @@
         const o = ctx.createOscillator();
         const g = ctx.createGain();
         o.type = "square";
-        o.frequency.value = 540;     // “pc antigo”
+        o.frequency.value = 540;
         g.gain.value = 0.0001;
         o.connect(g);
         g.connect(ctx.destination);
@@ -1381,7 +1458,6 @@
 
         o.start(now);
         o.stop(now + 0.08);
-
         o.onended = () => ctx.close().catch(()=>{});
       }catch{}
     }
@@ -1398,12 +1474,12 @@
       app.style.display = "grid";
 
       amvVideo.src = CONFIG.videoUrl;
-      try { await amvVideo.play(); } catch(e){ /* ok */ }
+      try { await amvVideo.play(); } catch(e){}
 
       bgAudio.src = CONFIG.audioUrl;
       bgAudio.volume = CONFIG.audioVolume;
       bgAudio.loop = true;
-      try { await bgAudio.play(); } catch(e){ /* ok */ }
+      try { await bgAudio.play(); } catch(e){}
 
       startHudTimer();
 
@@ -1541,7 +1617,7 @@
       }
     }
 
-    // Playlists público (serve pra track/playlist/album — inclusive /intl-pt/)
+    // Playlists público
     function normalizeSpotifyUrl(url){
       try{
         const u = new URL(url);
@@ -1693,7 +1769,7 @@
     }
     tick();
 
-    console.log("[ALLZ HUB] V2 visual refit carregou ok");
+    console.log("[ALLZ HUB] V2 XP fusion carregou ok");
   </script>
 </body>
 </html>
