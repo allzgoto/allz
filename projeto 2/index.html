@@ -9,17 +9,14 @@
   <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="theme-dark effects-vhs effects-grain effects-crt">
+<body class="effects-vhs effects-grain effects-crt">
 
+  <!-- ENTER -->
   <div id="enter-screen" class="enter-screen">
-    <div class="enter-box">
-      <div class="enter-title">ALLZ HUB</div>
-      <div class="enter-sub">old web / xp / dark scrapbook</div>
-      <button id="enter-btn" class="enter-btn">ENTER</button>
-      <p class="enter-hint">Clique ou pressione ENTER</p>
-    </div>
+    <button id="enter-btn" class="enter-click-btn">CLICK</button>
   </div>
 
+  <!-- AUDIO -->
   <audio id="bg-audio" loop preload="auto">
     <source src="https://files.catbox.moe/mkmd7z.mp3" type="audio/mpeg" />
   </audio>
@@ -27,6 +24,7 @@
   <div class="ambient-particles"></div>
 
   <main class="app-shell">
+    <!-- LEFT -->
     <aside class="sidebar-left panel-window">
       <div class="window-top">
         <span class="window-dot"></span>
@@ -78,6 +76,7 @@
       </div>
     </aside>
 
+    <!-- CENTER -->
     <section class="center-stage panel-window">
       <div class="window-top">
         <span class="window-dot"></span>
@@ -85,7 +84,6 @@
         <div class="window-actions window-actions-right">
           <button class="mini-pill">TEMA</button>
           <button class="mini-pill">ESCURO</button>
-          <button class="mini-pill" id="mute-toggle-top">MUTAR</button>
         </div>
       </div>
 
@@ -98,9 +96,9 @@
       </div>
 
       <div class="section-holder">
+        <!-- SOCIAL -->
         <section class="main-section active" id="section-social">
           <div class="video-shell vintage-stage">
-
             <div class="vintage-player-frame">
               <div class="vintage-header">
                 <div class="vintage-header-left">
@@ -167,11 +165,11 @@
                 </div>
 
                 <div class="control-buttons">
-                  <button class="ornate-btn small">⏮</button>
-                  <button class="ornate-btn">⏵</button>
-                  <button class="ornate-btn">⏸</button>
-                  <button class="ornate-btn">⏹</button>
-                  <button class="ornate-btn">⏭</button>
+                  <button class="ornate-btn small decorative-btn">⏮</button>
+                  <button class="ornate-btn decorative-btn">⏵</button>
+                  <button class="ornate-btn decorative-btn">⏸</button>
+                  <button class="ornate-btn decorative-btn">⏹</button>
+                  <button class="ornate-btn decorative-btn">⏭</button>
                 </div>
 
                 <div class="vintage-bottom-row">
@@ -183,6 +181,7 @@
           </div>
         </section>
 
+        <!-- FILES -->
         <section class="main-section" id="section-files">
           <div class="files-window">
             <div class="files-tabs">
@@ -218,36 +217,15 @@
               </div>
 
               <div class="file-panel" id="filetab-games">
-                <div class="game-grid">
-                  <article class="game-card">
-                    <div class="game-cover">RE2</div>
-                    <div class="game-info">
-                      <strong>Resident Evil 2</strong>
-                      <span>Survival Horror</span>
-                    </div>
-                  </article>
-                  <article class="game-card">
-                    <div class="game-cover">TQ</div>
-                    <div class="game-info">
-                      <strong>The Quarry</strong>
-                      <span>Interactive Horror</span>
-                    </div>
-                  </article>
-                  <article class="game-card">
-                    <div class="game-cover">UNCH</div>
-                    <div class="game-info">
-                      <strong>Uncharted</strong>
-                      <span>Action Adventure</span>
-                    </div>
-                  </article>
-                  <article class="game-card">
-                    <div class="game-cover">MC</div>
-                    <div class="game-info">
-                      <strong>Minecraft</strong>
-                      <span>Sandbox</span>
-                    </div>
-                  </article>
+                <div class="games-library-head">
+                  <div>
+                    <h3>GAME LIBRARY</h3>
+                    <p>jogos + progresso + conquistas</p>
+                  </div>
+                  <div class="games-summary" id="games-summary">0 jogos</div>
                 </div>
+
+                <div class="game-grid" id="game-grid"></div>
               </div>
 
               <div class="file-panel" id="filetab-album">
@@ -263,22 +241,57 @@
 
               <div class="file-panel" id="filetab-profile">
                 <div class="profile-panel">
-                  <div class="profile-large-avatar" id="profile-large-avatar-wrap">
+                  <div class="profile-large-avatar">
                     <img id="profile-large-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="avatar">
                   </div>
+
                   <div class="profile-texts">
                     <h3 id="profile-display-name">ALLZ</h3>
                     <p id="profile-username-main">@allz.exe</p>
                     <p class="profile-bio">
                       hub pessoal / nostalgia internet antiga / dark melancólico / arquivos / jogos / playlists
                     </p>
+
                     <div class="profile-meta-grid">
-                      <div><span>Jogos</span><strong>4+</strong></div>
-                      <div><span>Horas</span><strong>???</strong></div>
+                      <div><span>Jogos</span><strong id="profile-games-count">0</strong></div>
+                      <div><span>Conquistas</span><strong id="profile-achievement-count">0</strong></div>
                       <div><span>Status</span><strong id="profile-status-main">offline</strong></div>
-                      <div><span>Integração</span><strong>Steam futuramente</strong></div>
+                      <div><span>Integração</span><strong id="steam-connection-status">local system</strong></div>
+                    </div>
+
+                    <div class="steam-box">
+                      <div class="steam-box-head">
+                        <strong>STEAM PROFILE</strong>
+                        <span id="steam-mode-label">modo local</span>
+                      </div>
+
+                      <div class="steam-user-row">
+                        <div class="steam-avatar-wrap">
+                          <img id="steam-avatar" src="https://cdn.discordapp.com/embed/avatars/0.png" alt="steam avatar">
+                        </div>
+
+                        <div class="steam-user-info">
+                          <strong id="steam-name">Allz</strong>
+                          <span id="steam-id-label">Steam ID não conectado</span>
+                          <small id="steam-bio">Você pode usar este bloco como perfil Steam fake agora, ou integrar depois com dados reais.</small>
+                        </div>
+                      </div>
+
+                      <div class="steam-stats">
+                        <div><span>Jogos rastreados</span><strong id="steam-games">0</strong></div>
+                        <div><span>Conquistas totais</span><strong id="steam-achievements">0</strong></div>
+                        <div><span>Horas estimadas</span><strong id="steam-hours">0h</strong></div>
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                <div class="achievements-shell">
+                  <div class="achievements-head">
+                    <h3>CONQUISTAS</h3>
+                    <p>sistema local / steam-ready</p>
+                  </div>
+                  <div class="achievement-grid" id="achievement-grid"></div>
                 </div>
               </div>
 
@@ -294,6 +307,7 @@
           </div>
         </section>
 
+        <!-- PLAYLISTS -->
         <section class="main-section" id="section-playlists">
           <div class="cd-player">
             <div class="cd-left">
@@ -335,6 +349,7 @@
           </div>
         </section>
 
+        <!-- ADMIN -->
         <section class="main-section" id="section-admin">
           <div class="admin-shell">
             <div class="admin-login" id="admin-login-box">
@@ -379,6 +394,7 @@
       <img class="layout-gif" src="https://files.catbox.moe/0bgopj.gif" alt="gif decorativo" />
     </section>
 
+    <!-- RIGHT -->
     <aside class="sidebar-right panel-window">
       <div class="right-card">
         <div class="card-head">
