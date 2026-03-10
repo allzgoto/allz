@@ -2,7 +2,9 @@ const enterScreen = document.getElementById("enter-screen");
 const enterBtn = document.getElementById("enter-btn");
 const bgAudio = document.getElementById("bg-audio");
 const heroVideo = document.getElementById("hero-video");
-const muteToggle = document.getElementById("mute-toggle");
+
+const muteToggleTop = document.getElementById("mute-toggle-top");
+const muteTogglePlayer = document.getElementById("mute-toggle-player");
 
 const navButtons = document.querySelectorAll(".nav-btn");
 const sections = document.querySelectorAll(".main-section");
@@ -47,16 +49,48 @@ function formatDate(date) {
   return date.toLocaleDateString("pt-BR");
 }
 
-function startHub() {
+function updateMuteButtons() {
+  const text = manualMute ? "UNMUTE" : "MUTE";
+  if (muteToggleTop) {
+    muteToggleTop.textContent = manualMute ? "DESMUTAR" : "MUTAR";
+  }
+  if (muteTogglePlayer) {
+    muteTogglePlayer.textContent = text;
+  }
+}
+
+function toggleMute() {
+  manualMute = !manualMute;
+  bgAudio.muted = manualMute;
+  updateMuteButtons();
+}
+
+async function syncStartMedia() {
+  try {
+    bgAudio.pause();
+    heroVideo.pause();
+
+    bgAudio.currentTime = 0;
+    heroVideo.currentTime = 0;
+
+    bgAudio.volume = 0.2;
+    bgAudio.muted = manualMute;
+
+    const playVideo = heroVideo.play();
+    const playAudio = bgAudio.play();
+
+    await Promise.allSettled([playVideo, playAudio]);
+  } catch (error) {
+    console.error("Erro ao iniciar mídia:", error);
+  }
+}
+
+async function startHub() {
   if (siteEntered) return;
   siteEntered = true;
 
   enterScreen.classList.add("hidden");
-
-  bgAudio.volume = 0.2;
-  bgAudio.play().catch(() => {});
-
-  heroVideo.play().catch(() => {});
+  await syncStartMedia();
 }
 
 enterBtn.addEventListener("click", startHub);
@@ -67,11 +101,8 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-muteToggle.addEventListener("click", () => {
-  manualMute = !manualMute;
-  bgAudio.muted = manualMute;
-  muteToggle.textContent = manualMute ? "DESMUTAR" : "MUTAR";
-});
+if (muteToggleTop) muteToggleTop.addEventListener("click", toggleMute);
+if (muteTogglePlayer) muteTogglePlayer.addEventListener("click", toggleMute);
 
 navButtons.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -155,6 +186,8 @@ function setTrack(index, autoPlay = false) {
   bgAudio.src = current.src;
   trackTitle.textContent = current.title;
   trackArtist.textContent = current.artist;
+  bgAudio.volume = 0.2;
+  bgAudio.muted = manualMute;
 
   if (autoPlay) {
     bgAudio.play().catch(() => {});
@@ -207,6 +240,7 @@ bgAudio.addEventListener("ended", () => {
 });
 
 setTrack(0, false);
+updateMuteButtons();
 
 async function loadDiscordStatus() {
   try {
